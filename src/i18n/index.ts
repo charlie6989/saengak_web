@@ -11,6 +11,9 @@ i18n
     fallbackLng: 'en',
     debug: false,
     resources: messages,
+    react: {
+      useSuspense: false  // Disable Suspense to prevent white screen
+    },
     interpolation: {
       escapeValue: false,
     },
