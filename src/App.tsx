@@ -1,16 +1,15 @@
 
-// Testing Router imports
+// Testing ONLY BrowserRouter (not AppRoutes)
 import { BrowserRouter } from 'react-router-dom';
-import { AppRoutes } from './router';
 import i18n from './i18n';
 
 function App() {
-  console.log('App rendering with Router imports');
+  console.log('App rendering with BrowserRouter only');
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>✅ Testing: Router Imports</h1>
-      <p>If you see this, Router is NOT the problem.</p>
+      <h1>✅ Testing: BrowserRouter Only</h1>
+      <p>If you see this, BrowserRouter is fine. Problem is in AppRoutes.</p>
     </div>
   );
 }
