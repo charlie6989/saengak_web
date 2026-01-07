@@ -5,6 +5,7 @@ import { useCart } from '../../contexts/CartContext';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
+import { getMockProductById } from '../../mocks/products';
 
 interface Product {
   id: string;
@@ -39,9 +40,20 @@ export default function ProductPage() {
   /** --------------------------------------------------------------------
    *  Fetch product & related products
    * ------------------------------------------------------------------- */
+  /** --------------------------------------------------------------------
+   *  Fetch product & related products
+   * ------------------------------------------------------------------- */
   const fetchProduct = async () => {
     setLoading(true);
     try {
+      // 1. Try to find in mock data first if it looks like a simple ID
+      const mockProduct = getMockProductById(id || '');
+      if (mockProduct && !id?.startsWith('gid://')) {
+        setProduct(mockProduct);
+        setLoading(false);
+        return;
+      }
+
       const shopifyId = id?.includes('gid://shopify/Product/') ? id : `gid://shopify/Product/${id}`;
 
       // fetch the main product
@@ -85,9 +97,21 @@ export default function ProductPage() {
             setRelatedProducts(filtered.slice(0, 4));
           }
         }
+      } else {
+        // Fallback: if API returns empty/success but no product found, try mock
+        // This handles cases where ID might be "1" but passed as shopify ID to API and failed
+        const fallbackMock = getMockProductById(id || '');
+        if (fallbackMock) {
+          setProduct(fallbackMock);
+        }
       }
     } catch (err) {
       console.error('Error fetching product data:', err);
+      // Final fallback to mock data on error
+      const fallbackMock = getMockProductById(id || '');
+      if (fallbackMock) {
+        setProduct(fallbackMock);
+      }
     } finally {
       setLoading(false);
     }
@@ -182,8 +206,8 @@ export default function ProductPage() {
   const productImages = product?.images?.length
     ? product.images.map((img) => img.url)
     : product
-    ? [product.image, product.hoverImage || product.image]
-    : [];
+      ? [product.image, product.hoverImage || product.image]
+      : [];
 
   const discountPercentage = product?.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -250,9 +274,8 @@ export default function ProductPage() {
                     <li key={idx} className="md:mb-3 last:mb-0">
                       <button
                         onClick={() => handleThumbnailClick(idx)}
-                        className={`block overflow-hidden rounded border ${
-                          selectedImage === idx ? 'border-emerald-600' : 'border-transparent'
-                        }`}
+                        className={`block overflow-hidden rounded border ${selectedImage === idx ? 'border-emerald-600' : 'border-transparent'
+                          }`}
                         style={{ width: '117.133px', height: '174.695px' }}
                       >
                         <img
@@ -600,9 +623,8 @@ export default function ProductPage() {
               <div className="flex gap-0 justify-center">
                 <button
                   onClick={() => setSelectedTab('reviews')}
-                  className={`text-base font-normal transition-all duration-300 ${
-                    selectedTab === 'reviews' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                  }`}
+                  className={`text-base font-normal transition-all duration-300 ${selectedTab === 'reviews' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                    }`}
                   style={{
                     fontFamily: 'Noto Sans TC, sans-serif',
                     width: '355px',
@@ -618,9 +640,8 @@ export default function ProductPage() {
 
                 <button
                   onClick={() => setSelectedTab('details')}
-                  className={`text-base font-normal transition-all duration-300 ${
-                    selectedTab === 'details' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                  }`}
+                  className={`text-base font-normal transition-all duration-300 ${selectedTab === 'details' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                    }`}
                   style={{
                     fontFamily: 'Noto Sans TC, sans-serif',
                     width: '355px',
@@ -636,9 +657,8 @@ export default function ProductPage() {
 
                 <button
                   onClick={() => setSelectedTab('related')}
-                  className={`text-base font-normal transition-all duration-300 ${
-                    selectedTab === 'related' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                  }`}
+                  className={`text-base font-normal transition-all duration-300 ${selectedTab === 'related' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                    }`}
                   style={{
                     fontFamily: 'Noto Sans TC, sans-serif',
                     width: '355px',
@@ -654,9 +674,8 @@ export default function ProductPage() {
 
                 <button
                   onClick={() => setSelectedTab('qa')}
-                  className={`text-base font-normal transition-all duration-300 ${
-                    selectedTab === 'qa' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                  }`}
+                  className={`text-base font-normal transition-all duration-300 ${selectedTab === 'qa' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                    }`}
                   style={{
                     fontFamily: 'Noto Sans TC, sans-serif',
                     width: '355px',
