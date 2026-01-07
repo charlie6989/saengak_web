@@ -11,7 +11,7 @@ function App() {
   return (
     <I18nextProvider i18n={i18n}>
       <CartProvider>
-        <BrowserRouter basename={__BASE_PATH__}>
+        <BrowserRouter>
           <ScrollToTop />
           <AppRoutes />
           <CartSidebar />
