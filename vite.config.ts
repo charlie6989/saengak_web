@@ -19,7 +19,7 @@ export default defineConfig({
     host: '0.0.0.0'
   },
   build: {
-    outDir: 'out',
+    outDir: 'dist',
     sourcemap: true
   }
 })
