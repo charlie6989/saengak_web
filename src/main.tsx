@@ -1,18 +1,13 @@
-import { StrictMode } from 'react'
-import './i18n'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import { supabase } from './lib/supabase'
+// import App from './App.tsx'
+// import { supabase } from './lib/supabase'
 
-console.log('App starting...', {
-  env: import.meta.env,
-  supabaseUrl: import.meta.env.VITE_PUBLIC_SUPABASE_URL ? 'Set' : 'Unset'
-});
-
+console.log('SANITY CHECK: Main.tsx is running');
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <div style={{ padding: 20, fontSize: 24 }}>
+      <h1>System Status: ONLINE</h1>
+      <p>If you see this, React is working. The crash is in App.tsx.</p>
+    </div>
   </StrictMode>,
 )
