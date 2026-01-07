@@ -5,12 +5,14 @@ const supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('Supabase Config Error:', {
+    console.error('Supabase Config Missing (Non-blocking debug mode):', {
         url: supabaseUrl ? 'Defined' : 'Missing',
         key: supabaseAnonKey ? 'Defined' : 'Missing',
-        allKeys: Object.keys(import.meta.env).filter(k => k.startsWith('VITE_'))
+        availableKeys: Object.keys(import.meta.env).filter(k => k.startsWith('VITE_'))
     });
-    throw new Error(`Missing Supabase environment variables. URL: ${supabaseUrl ? 'OK' : 'MISSING'}, Key: ${supabaseAnonKey ? 'OK' : 'MISSING'}`);
+    // Fallback to empty strings to allow app to render debug info
+    if (!supabaseUrl) supabaseUrl = 'https://placeholder.supabase.co';
+    if (!supabaseAnonKey) supabaseAnonKey = 'placeholder';
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
