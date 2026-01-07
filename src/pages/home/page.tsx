@@ -9,6 +9,8 @@ import ReviewSection from './components/ReviewSection';
 import { getFunctionUrl } from '../../lib/supabase';
 
 export default function Home() {
+  console.log('🏠 Home component rendering');
+
   const featuredProductIds = [
     'gid://shopify/Product/9969008509232',
     'gid://shopify/Product/9969008542000',
@@ -20,7 +22,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-      <Header />
+      {/* DEBUG: Visible marker */}
+      <div style={{ position: 'fixed', top: 0, right: 0, background: 'red', color: 'white', padding: '10px', zIndex: 9999 }}>
+        HOME RENDERED
+      </div>
 
       <main>
         <HeroSection />
