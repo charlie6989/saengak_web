@@ -27,6 +27,8 @@ export default function Home() {
         HOME RENDERED
       </div>
 
+      <Header />
+
       <main>
         <HeroSection />
 
