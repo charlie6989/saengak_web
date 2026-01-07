@@ -28,8 +28,7 @@ const TermsOfServicePage = lazy(() => import('../pages/terms-of-service/page'));
 const AdChoicesPage = lazy(() => import('../pages/adchoices/page'));
 const SitemapPage = lazy(() => import('../pages/sitemap/page'));
 const NotFoundPage = lazy(() => import('../pages/NotFound'));
-
-import BestRated from '../pages/best-rated/page';
+const BestRated = lazy(() => import('../pages/best-rated/page'));
 
 const routes: RouteObject[] = [
   {
