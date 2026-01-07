@@ -1,4 +1,5 @@
 
+import { Suspense } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from './router';
 import { I18nextProvider } from 'react-i18next';
@@ -13,7 +14,9 @@ function App() {
       <CartProvider>
         <BrowserRouter>
           <ScrollToTop />
-          <AppRoutes />
+          <Suspense fallback={<div style={{ padding: 20, fontSize: 24 }}>Loading...</div>}>
+            <AppRoutes />
+          </Suspense>
           <CartSidebar />
         </BrowserRouter>
       </CartProvider>
