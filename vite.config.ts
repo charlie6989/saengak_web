@@ -6,7 +6,7 @@ export default defineConfig({
   appType: 'spa', // 👈 確保為單頁應用
   base: process.env.VITE_BASE || '/', // 👈 若未部署子路徑保持根目錄
   define: {
-    __BASE_PATH__: JSON.stringify(process.env.VITE_BASE || '/')
+    // __BASE_PATH__ removed as it is no longer used
   },
   plugins: [react()],
   server: {
