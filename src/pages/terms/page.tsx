@@ -318,8 +318,8 @@ export default function TermsPage() {
               <div>
                 <h4 className="font-semibold text-teal-900 mb-3">公司資訊</h4>
                 <div className="text-teal-800 space-y-2">
-                  <p><strong>公司名稱：</strong>LUCISSI 股份有限公司</p>
-                  <p><strong>統一編號：</strong>12345678</p>
+                  <p><strong>公司名稱：</strong>拜悠衣品有限公司</p>
+                  <p><strong>統一編號：</strong>90014835</p>
                   <p><strong>地址：</strong>台北市信義區信義路五段123號456樓</p>
                 </div>
               </div>

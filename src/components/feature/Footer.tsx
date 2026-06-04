@@ -106,6 +106,12 @@ export default function Footer() {
               <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 © 2024 LUCISSI. All rights reserved.
               </p>
+              <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                公司名稱：拜悠衣品有限公司
+              </p>
+              <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                統一編號：90014835
+              </p>
             </div>
 
             {/* 法律連結 */}
@@ -141,19 +147,6 @@ export default function Footer() {
               >
                 網站地圖
               </Link>
-            </div>
-
-            {/* Readdy 連結 */}
-            <div>
-              <a 
-                href="https://readdy.ai/?origin=logo" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
-                style={{ fontFamily: "Noto Sans TC, sans-serif" }}
-              >
-                Powered by Readdy
-              </a>
             </div>
           </div>
         </div>

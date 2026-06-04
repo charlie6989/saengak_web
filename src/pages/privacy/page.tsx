@@ -542,7 +542,7 @@ export default function Privacy() {
                     <i className="ri-building-line mr-3 text-teal-600 mt-1 flex-shrink-0"></i>
                     <span>
                       台灣台北市信義區信義路五段7號22樓<br />
-                      LUCISSI 股份有限公司<br />
+                      拜悠衣品有限公司<br />
                       個人資料管理人員
                     </span>
                   </p>
@@ -592,7 +592,7 @@ export default function Privacy() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">我們的隱私承諾</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                「本網站」係由 LUCISSI 股份有限公司所維運。我們立志成為優秀的企業公民，建立更和諧美好的社會。我們十分重視誠信和透明，致力於打造信任和互惠的基礎，與客戶建立穩固持久的關係。
+                「本網站」係由 拜悠衣品有限公司 所維運。我們立志成為優秀的企業公民，建立更和諧美好的社會。我們十分重視誠信和透明，致力於打造信任和互惠的基礎，與客戶建立穩固持久的關係。
               </p>
             </div>
           </div>
