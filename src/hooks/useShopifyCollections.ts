@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getFunctionUrl } from '../lib/supabase';
+import { getFunctionHeaders, getFunctionUrl, isShopifyStorefrontEnabled } from '../lib/supabase';
 
 interface Collection {
   id: string;
@@ -50,16 +50,18 @@ export function useShopifyCollections(): UseCollectionsResult {
   const [error, setError] = useState<string | null>(null);
 
   const fetchCollections = async () => {
+    if (!isShopifyStorefrontEnabled) {
+      setCollections([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
 
     try {
       const response = await fetch(getFunctionUrl('get-collections'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`
-        },
+        headers: getFunctionHeaders(),
         body: JSON.stringify({
           first: 50
         })
@@ -77,7 +79,6 @@ export function useShopifyCollections(): UseCollectionsResult {
         throw new Error(data.error || 'Failed to fetch collections');
       }
     } catch (err) {
-      console.error('Error fetching collections:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setCollections([]);
     } finally {
@@ -105,16 +106,19 @@ export function useShopifyCollectionProducts(): UseCollectionProductsResult {
   const [error, setError] = useState<string | null>(null);
 
   const fetchCollectionProducts = async (handle: string) => {
+    if (!isShopifyStorefrontEnabled) {
+      setCollection(null);
+      setProducts([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
 
     try {
       const response = await fetch(getFunctionUrl('get-collections'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`
-        },
+        headers: getFunctionHeaders(),
         body: JSON.stringify({
           collectionHandle: handle,
           first: 50
@@ -134,7 +138,6 @@ export function useShopifyCollectionProducts(): UseCollectionProductsResult {
         throw new Error(data.error || 'Failed to fetch collection products');
       }
     } catch (err) {
-      console.error('Error fetching collection products:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setCollection(null);
       setProducts([]);

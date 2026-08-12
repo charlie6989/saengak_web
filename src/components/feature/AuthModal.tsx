@@ -1,12 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL,
-  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
-);
+import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -38,6 +33,11 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      setMessage('會員系統正在接線，現階段暫不接受登入或註冊');
+      return;
+    }
+
     setLoading(true);
     setMessage('');
 
@@ -73,7 +73,7 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
             data: {
               name: formData.name,
             },
-            emailRedirectTo: `${window.location.origin.replace(':3000', ':5173')}/auth/confirm`
+            emailRedirectTo: `${window.location.origin}/auth/confirm`
           }
         });
 
@@ -96,6 +96,11 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
   };
 
   const handleGoogleLogin = async () => {
+    if (!isSupabaseConfigured) {
+      setMessage('會員系統正在接線，Google 登入尚未開放');
+      return;
+    }
+
     setLoading(true);
     setMessage('');
 
@@ -120,6 +125,11 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
   };
 
   const handleForgotPassword = async () => {
+    if (!isSupabaseConfigured) {
+      setMessage('會員系統正在接線，重設密碼尚未開放');
+      return;
+    }
+
     if (!formData.email) {
       setMessage('請先輸入您的電子郵件地址');
       return;
@@ -127,9 +137,7 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
 
     setLoading(true);
     try {
-      // 使用正確的端口號 5173（Vite 預設端口）
-      const redirectUrl = window.location.origin.replace(':3000', ':5173') + '/reset-password';
-      console.log('Reset password redirect URL:', redirectUrl);
+      const redirectUrl = `${window.location.origin}/reset-password`;
       
       const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
         redirectTo: redirectUrl,
@@ -323,7 +331,7 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               placeholder="請輸入您的密碼"
-              minLength={6}
+              minLength={12}
             />
           </div>
 
@@ -341,7 +349,7 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
                 required={!isLogin}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 placeholder="請再次輸入密碼"
-                minLength={6}
+                minLength={12}
               />
             </div>
           )}

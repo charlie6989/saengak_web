@@ -1,4 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { hasAcceptedPublicKey } from '../create-shopify-cart/auth.ts';
+import {
+  buildStorefrontHeaders,
+  buildStorefrontUrl,
+  isValidShopifyDomain,
+  resolveShopifyDomain,
+  resolveStorefrontApiVersion,
+  shouldIncludeStorefrontInventory,
+} from '../_shared/shopify-storefront.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -6,9 +15,22 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
 
+class ShopifyUpstreamError extends Error {}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
+  }
+
+  if (!hasAcceptedPublicKey(
+    req.headers.get('apikey'),
+    Deno.env.get('SUPABASE_ANON_KEY'),
+    Deno.env.get('SUPABASE_PUBLISHABLE_KEYS'),
+  )) {
+    return new Response(JSON.stringify({ success: false, error: 'Invalid API key' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
   
   try {
@@ -18,12 +40,28 @@ serve(async (req) => {
       throw new Error('Tags parameter is required and must be a non-empty array');
     }
     
-    // 使用與 get-products 相同的預設認證資訊
-    const shopifyDomain = Deno.env.get('ShopifyDomain') || 'ekfvih-rz.myshopify.com';
-    const storefrontAccessToken = Deno.env.get('StorefrontAccessToken') || '1707057fb57281cd5b3956de51a8c896';
+    const shopifyDomain = resolveShopifyDomain(Deno.env.get('ShopifyDomain'));
+    const storefrontAccessToken = Deno.env.get('StorefrontAccessToken');
+    const apiVersion = resolveStorefrontApiVersion(Deno.env.get('ShopifyStorefrontApiVersion'));
+
+    if (!isValidShopifyDomain(shopifyDomain)) {
+      throw new Error('Invalid ShopifyDomain configuration');
+    }
+    if (!storefrontAccessToken) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Product tag access requires a Storefront access token',
+      }), {
+        status: 503,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     console.log('Shopify Domain:', shopifyDomain);
     console.log('Access Token available:', !!storefrontAccessToken);
+    const restrictedVariantFields = shouldIncludeStorefrontInventory(
+      Deno.env.get('ShopifyStorefrontInventoryEnabled'),
+    ) ? 'quantityAvailable' : '';
     
     // 構建標籤查詢字符串 - 修復語法
     const tagQuery = tags.map(tag => `tag:${tag}`).join(' OR ');
@@ -68,7 +106,7 @@ serve(async (req) => {
                       currencyCode
                     }
                     availableForSale
-                    quantityAvailable
+                    ${restrictedVariantFields}
                   }
                 }
               }
@@ -98,19 +136,16 @@ serve(async (req) => {
     console.log('Executing GraphQL query:', query);
     console.log('Variables:', variables);
     
-    const response = await fetch(`https://${shopifyDomain}/api/2024-01/graphql.json`, {
+    const response = await fetch(buildStorefrontUrl(shopifyDomain, apiVersion), {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': storefrontAccessToken,
-      },
+      headers: buildStorefrontHeaders(storefrontAccessToken),
       body: JSON.stringify({ query, variables }),
     });
     
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Shopify API error:', response.status, errorText);
-      throw new Error(`Shopify API error: ${response.status} - ${errorText}`);
+      throw new ShopifyUpstreamError(`Shopify API error: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
@@ -118,7 +153,7 @@ serve(async (req) => {
     
     if (data.errors) {
       console.error('GraphQL errors:', data.errors);
-      throw new Error(`GraphQL errors: ${JSON.stringify(data.errors)}`);
+      throw new ShopifyUpstreamError(`GraphQL errors: ${JSON.stringify(data.errors)}`);
     }
     
     const products = data.data?.products?.edges?.map((edge: any) => transformProduct(edge.node)) || [];
@@ -164,7 +199,7 @@ serve(async (req) => {
         productsByTag: {}
       }),
       { 
-        status: 500,
+        status: error instanceof ShopifyUpstreamError ? 502 : 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );

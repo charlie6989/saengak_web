@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getFunctionUrl } from '../../../lib/supabase';
+import { getFunctionHeaders, getFunctionUrl, isShopifyTagCatalogEnabled } from '../../../lib/supabase';
+import { mockProducts } from '../../../mocks/products';
+import { rankEditorialProducts } from '../../../domain/algorithms';
 
 const ReviewSection: React.FC = () => {
   const navigate = useNavigate();
@@ -12,28 +14,29 @@ const ReviewSection: React.FC = () => {
     const fetchRatedProducts = async () => {
       setLoading(true);
       try {
+        if (!isShopifyTagCatalogEnabled) {
+          setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
+          return;
+        }
         const timestamp = new Date().getTime();
         const response = await fetch(getFunctionUrl('get-products-by-tag') + `?t=${timestamp}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`,
-            'Cache-Control': 'no-cache',
-          },
+          headers: getFunctionHeaders({ 'Cache-Control': 'no-cache' }),
           body: JSON.stringify({
             tags: ['5-star', 'featured'], // Try to match 5-star or featured
             first: 4
           }),
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.products) {
-            setProducts(data.products);
-          }
+        if (!response.ok) {
+          throw new Error(`Rated products request failed (${response.status})`);
         }
-      } catch (error) {
-        console.error('Failed to fetch rated products:', error);
+        const data = await response.json();
+        if (data.products) {
+          setProducts(data.products);
+        }
+      } catch {
+        setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
       } finally {
         setLoading(false);
       }
@@ -66,13 +69,13 @@ const ReviewSection: React.FC = () => {
             className="text-4xl font-bold text-gray-900 mb-4"
             style={{ fontFamily: '"Noto Sans TC", sans-serif' }}
           >
-            選購五星產品
+            編輯精選商品
           </h2>
           <p
             className="text-lg text-gray-600"
             style={{ fontFamily: '"Noto Sans TC", sans-serif' }}
           >
-            提醒五星好評：
+            依商品標記、回饋量與優惠資訊排序，不以展示資料冒充即時星級
           </p>
         </div>
 
@@ -98,15 +101,7 @@ const ReviewSection: React.FC = () => {
 
               {/* 評論內容 */}
               <div className="p-6">
-                {/* 星級評分 - Default to 5 stars if no data, or hide if desired. User asked to sort/show. */}
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <i
-                      key={i}
-                      className="ri-star-fill text-yellow-400 text-lg mr-1"
-                    ></i>
-                  ))}
-                </div>
+                <div className="text-xs font-medium text-teal-700 mb-4">編輯推薦</div>
 
                 {/* 產品名稱 */}
                 <h3
@@ -121,13 +116,13 @@ const ReviewSection: React.FC = () => {
                   className="text-gray-700 text-sm leading-relaxed mb-4 line-clamp-3"
                   style={{ fontFamily: '"Noto Sans TC", sans-serif' }}
                 >
-                  {product.description || '深受用戶喜愛的優質產品，品質保證。'}
+                  {product.description || '目前沒有可顯示的商品說明，待正式目錄補齊。'}
                 </p>
 
-                {/* 評論統計 - Mock/Default for now as backend doesn't have reviews yet */}
+                {/* Source status */}
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span style={{ fontFamily: '"Noto Sans TC", sans-serif' }}>
-                    平均 5.0
+                    編輯資料
                   </span>
                   <span style={{ fontFamily: '"Noto Sans TC", sans-serif' }}>
                     ${product.price.toLocaleString()}
@@ -145,7 +140,7 @@ const ReviewSection: React.FC = () => {
             className="inline-flex items-center gap-2 bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap"
           >
             <span style={{ fontFamily: '"Noto Sans TC", sans-serif' }}>
-              選購全部好評產品
+              查看全部編輯精選
             </span>
             <i className="ri-arrow-right-line"></i>
           </button>

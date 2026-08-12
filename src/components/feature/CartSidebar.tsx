@@ -1,6 +1,11 @@
+import { useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
+import { buildShopifyCheckoutLines, formatTwd, getCartLineKey } from '../../domain/algorithms';
+import { createShopifyCheckout, isShopifyCheckoutConfigured } from '../../lib/shopifyCheckout';
 
 export default function CartSidebar() {
+  const [checkoutMessage, setCheckoutMessage] = useState('');
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const { 
     items, 
     removeFromCart, 
@@ -11,24 +16,42 @@ export default function CartSidebar() {
     setIsCartOpen 
   } = useCart();
 
-  // 韓元轉新台幣匯率 (1 KRW = 0.024 TWD)
-  const convertToTWD = (krwPrice: number) => {
-    return Math.round(krwPrice * 0.024);
-  };
+  const handleCheckout = async () => {
+    setCheckoutMessage('');
 
-  const formatTWDPrice = (twdPrice: number) => {
-    return `$${twdPrice.toLocaleString()}`;
-  };
+    const checkoutLines = buildShopifyCheckoutLines(items);
+    if (!checkoutLines.ready) {
+      if (checkoutLines.reason === 'missing_variant') {
+        setCheckoutMessage(
+          `購物車有 ${checkoutLines.missingItemIds.length} 項展示商品缺少 Shopify 規格 ID，尚不能送往結帳。`,
+        );
+      } else {
+        setCheckoutMessage('購物車是空的，尚無法建立結帳。');
+      }
+      return;
+    }
 
-  const handleCheckout = () => {
-    console.log('Proceeding to checkout with items:', items);
-    // Add checkout logic here
+    if (!isShopifyCheckoutConfigured) {
+      setCheckoutMessage('TapPay／Shopify 測試結帳尚未完成後端設定，目前不會送出付款。');
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      const checkoutUrl = await createShopifyCheckout(checkoutLines.lines);
+      window.location.assign(checkoutUrl);
+    } catch (error) {
+      setCheckoutMessage(error instanceof Error ? error.message : '建立結帳時發生未知錯誤。');
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   const handleProductClick = (item: any) => {
-    const numericId = item.id.includes('gid://shopify/Product/')
-      ? item.id.split('/').pop()
-      : item.id;
+    const productId = String(item.id);
+    const numericId = productId.includes('gid://shopify/Product/')
+      ? productId.split('/').pop()
+      : productId;
     window.location.href = `/product/${numericId}`;
   };
 
@@ -54,7 +77,7 @@ export default function CartSidebar() {
             className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
             aria-label="關閉購物車"
           >
-            <i className="ri-close-line text-2xl text-gray-700"></i>
+            <span className="text-2xl leading-none text-gray-700" aria-hidden="true">×</span>
           </button>
         </div>
 
@@ -74,8 +97,10 @@ export default function CartSidebar() {
             </div>
           ) : (
             <div className="space-y-4">
-              {items.map((item) => (
-                <div key={item.id} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+              {items.map((item) => {
+                const lineKey = getCartLineKey(item);
+                return (
+                <div key={lineKey} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                   {/* Product Image */}
                   <div 
                     className="w-20 h-20 bg-white rounded-lg overflow-hidden flex-shrink-0 cursor-pointer shadow-sm"
@@ -100,11 +125,11 @@ export default function CartSidebar() {
                     
                     <div className="flex items-baseline gap-2 mb-3">
                       <span className="text-base font-bold text-teal-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                        {formatTWDPrice(convertToTWD(item.price))}
+                        {formatTwd(item.price)}
                       </span>
                       {item.originalPrice && item.originalPrice > item.price && (
                         <span className="text-xs text-gray-400 line-through" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                          {formatTWDPrice(convertToTWD(item.originalPrice))}
+                          {formatTwd(item.originalPrice)}
                         </span>
                       )}
                     </div>
@@ -113,35 +138,36 @@ export default function CartSidebar() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 bg-white rounded-lg px-3 py-2 shadow-sm">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(lineKey, item.quantity - 1)}
                           className="w-7 h-7 flex items-center justify-center text-gray-600 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors cursor-pointer"
                           aria-label="減少數量"
                         >
-                          <i className="ri-subtract-line text-base"></i>
+                          <span className="text-lg leading-none" aria-hidden="true">−</span>
                         </button>
                         <span className="text-sm font-semibold text-gray-900 min-w-[24px] text-center" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(lineKey, item.quantity + 1)}
                           className="w-7 h-7 flex items-center justify-center text-gray-600 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors cursor-pointer"
                           aria-label="增加數量"
                         >
-                          <i className="ri-add-line text-base"></i>
+                          <span className="text-lg leading-none" aria-hidden="true">＋</span>
                         </button>
                       </div>
                       
                       <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                        onClick={() => removeFromCart(lineKey)}
+                        className="h-9 px-2 flex items-center justify-center text-xs font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                         aria-label="移除商品"
                       >
-                        <i className="ri-delete-bin-line text-lg"></i>
+                        移除
                       </button>
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -155,19 +181,30 @@ export default function CartSidebar() {
                 總金額
               </span>
               <span className="text-2xl font-bold text-teal-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                {formatTWDPrice(convertToTWD(getTotalPrice()))}
+                {formatTwd(getTotalPrice())}
               </span>
             </div>
 
             {/* Action Buttons */}
             <div className="space-y-3">
+              {checkoutMessage && (
+                <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800" role="status" data-testid="checkout-message">
+                  {checkoutMessage}
+                </p>
+              )}
               <button
                 onClick={handleCheckout}
-                className="w-full bg-teal-600 text-white py-4 rounded-xl font-semibold hover:bg-teal-700 active:bg-teal-800 transition-colors cursor-pointer whitespace-nowrap shadow-lg shadow-teal-600/30"
+                data-testid="checkout-button"
+                disabled={isCheckingOut}
+                aria-busy={isCheckingOut}
+                className="w-full bg-teal-600 text-white py-4 rounded-xl font-semibold hover:bg-teal-700 active:bg-teal-800 transition-colors cursor-pointer whitespace-nowrap shadow-lg shadow-teal-600/30 disabled:cursor-wait disabled:opacity-60"
                 style={{ fontFamily: "Noto Sans TC, sans-serif" }}
               >
-                前往結帳
+                {isCheckingOut ? '正在建立安全結帳…' : '前往 TapPay 安全結帳'}
               </button>
+              <p className="px-2 text-center text-xs leading-5 text-gray-500">
+                將前往 Shopify Checkout，付款方式與最終金額以結帳頁顯示為準。
+              </p>
               <button
                 onClick={clearCart}
                 className="w-full border-2 border-gray-300 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-100 active:bg-gray-200 transition-colors cursor-pointer whitespace-nowrap"

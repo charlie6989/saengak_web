@@ -1,5 +1,13 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { hasAcceptedPublicKey } from '../create-shopify-cart/auth.ts'
+import {
+  buildStorefrontHeaders,
+  buildStorefrontUrl,
+  isValidShopifyDomain,
+  resolveShopifyDomain,
+  resolveStorefrontApiVersion,
+} from '../_shared/shopify-storefront.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,9 +19,25 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  if (!hasAcceptedPublicKey(
+    req.headers.get('apikey'),
+    Deno.env.get('SUPABASE_ANON_KEY'),
+    Deno.env.get('SUPABASE_PUBLISHABLE_KEYS'),
+  )) {
+    return new Response(JSON.stringify({ error: 'Invalid API key' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
   try {
-    const shopifyDomain = Deno.env.get('ShopifyDomain') || 'ekfvih-rz.myshopify.com'
-    const storefrontAccessToken = Deno.env.get('StorefrontAccessToken') || '1707057fb57281cd5b3956de51a8c896'
+    const shopifyDomain = resolveShopifyDomain(Deno.env.get('ShopifyDomain'))
+    const storefrontAccessToken = Deno.env.get('StorefrontAccessToken')
+    const apiVersion = resolveStorefrontApiVersion(Deno.env.get('ShopifyStorefrontApiVersion'))
+
+    if (!isValidShopifyDomain(shopifyDomain)) {
+      throw new Error('Invalid ShopifyDomain configuration')
+    }
 
     const { limit = 12 } = await req.json().catch(() => ({}))
 
@@ -46,22 +70,32 @@ serve(async (req) => {
       }
     `
 
-    const shopifyResponse = await fetch(`https://${shopifyDomain}/api/2024-01/graphql.json`, {
+    const shopifyResponse = await fetch(buildStorefrontUrl(shopifyDomain, apiVersion), {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': storefrontAccessToken,
-      },
+      headers: buildStorefrontHeaders(storefrontAccessToken),
       body: JSON.stringify({
         query,
         variables: { first: limit }
       }),
     })
 
-    const shopifyData = await shopifyResponse.json()
+    const shopifyData = await shopifyResponse.json().catch(() => null)
+
+    if (!shopifyResponse.ok || !shopifyData) {
+      return new Response(
+        JSON.stringify({
+          error: 'Shopify Storefront API request failed',
+          status: shopifyResponse.status,
+        }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      )
+    }
 
     if (shopifyData.errors) {
-      throw new Error(JSON.stringify(shopifyData.errors))
+      return new Response(
+        JSON.stringify({ error: 'Shopify GraphQL request failed', details: shopifyData.errors }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      )
     }
 
     const articles = shopifyData.data.articles.edges.map((edge: any) => edge.node)

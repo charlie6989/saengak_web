@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { mockUsers, mockOrders, mockFavorites, mockAuthState, simulateApiDelay } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { safePublicHttpsUrl } from '../../lib/publicUrl';
 
 interface UserProfile {
   id: string;
@@ -24,8 +25,12 @@ interface Order {
   order_number: string;
   total_amount: number;
   status: string;
+  shipping_method?: string;
+  fulfillment_status?: string;
   created_at: string;
   items: OrderItem[];
+  fulfillments?: OrderFulfillment[];
+  invoices?: OrderInvoice[];
 }
 
 interface OrderItem {
@@ -34,6 +39,24 @@ interface OrderItem {
   quantity: number;
   price: number;
   image_url?: string;
+}
+
+interface OrderFulfillment {
+  id: string;
+  status: string;
+  tracking_company?: string;
+  tracking_numbers: string[];
+  tracking_urls: string[];
+}
+
+interface OrderInvoice {
+  id: string;
+  provider: string;
+  status: 'awaiting-provider' | 'issued' | 'voided' | 'allowance-issued' | 'failed';
+  invoice_number?: string;
+  issued_at?: string;
+  voided_at?: string;
+  allowance_issued_at?: string;
 }
 
 interface Favorite {
@@ -65,7 +88,7 @@ export default function ProfilePage() {
     avatar: ''
   });
   const [message, setMessage] = useState('');
-  const [useMockData, setUseMockData] = useState(localStorage.getItem('useMockAuth') === 'true');
+  const [useMockData, setUseMockData] = useState(import.meta.env.DEV && localStorage.getItem('useMockAuth') === 'true');
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,8 +109,11 @@ export default function ProfilePage() {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUser(user);
-          await loadProfile(user.id);
-          await loadOrders(user.id);
+          await Promise.all([
+            loadProfile(user.id, user),
+            loadOrders(user.id),
+            loadFavorites(user.id),
+          ]);
         } else {
           navigate('/login');
         }
@@ -138,13 +164,15 @@ export default function ProfilePage() {
     }
   };
 
-  const loadProfile = async (userId: string) => {
+  const loadProfile = async (userId: string, authUser = user) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
+
+      if (error) throw error;
 
       if (data) {
         setProfile(data);
@@ -158,9 +186,22 @@ export default function ProfilePage() {
           avatar: data.avatar || ''
         });
         setAvatarPreview(data.avatar || '');
+      } else if (authUser) {
+        const fallbackProfile = {
+          id: userId,
+          email: authUser.email || '',
+          name: authUser.user_metadata?.name || authUser.user_metadata?.full_name || '',
+          created_at: authUser.created_at || new Date().toISOString(),
+        };
+        setProfile(fallbackProfile);
+        setFormData((current) => ({
+          ...current,
+          name: fallbackProfile.name,
+        }));
       }
     } catch (error) {
       console.error('載入個人資料失敗:', error);
+      setMessage('個人資料暫時無法載入');
     }
   };
 
@@ -176,19 +217,56 @@ export default function ProfilePage() {
             quantity,
             price,
             image_url
+          ),
+          order_fulfillments (
+            id,
+            status,
+            tracking_company,
+            tracking_numbers,
+            tracking_urls
+          ),
+          order_invoices (
+            id,
+            provider,
+            status,
+            invoice_number,
+            issued_at,
+            voided_at,
+            allowance_issued_at
           )
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
+      if (error) throw error;
+
       if (data) {
         setOrders(data.map(order => ({
           ...order,
-          items: order.order_items || []
+          items: order.order_items || [],
+          fulfillments: order.order_fulfillments || [],
+          invoices: order.order_invoices || []
         })));
       }
     } catch (error) {
       console.error('載入訂單歷史失敗:', error);
+      setMessage('訂單資料暫時無法載入');
+    }
+  };
+
+  const loadFavorites = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_favorites')
+        .select('id, product_id, product_name, product_price, product_image, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setFavorites(data || []);
+    } catch (error) {
+      console.error('載入收藏失敗:', error);
+      setMessage('收藏資料暫時無法載入');
     }
   };
 
@@ -266,6 +344,7 @@ export default function ProfilePage() {
           });
 
         if (error) {
+          console.error('更新個人資料失敗:', error);
           setMessage('更新失敗，請稍後再試');
         } else {
           setMessage('個人資料更新成功！');
@@ -306,7 +385,7 @@ export default function ProfilePage() {
           .eq('id', favoriteId);
 
         if (!error) {
-          setFavorites(favorites.filter(fav => fav.id !== favoriteId));
+          setFavorites((current) => current.filter(fav => fav.id !== favoriteId));
         }
       } catch (error) {
         console.error('移除收藏失敗:', error);
@@ -323,6 +402,9 @@ export default function ProfilePage() {
       case 'completed': return 'text-green-600 bg-green-100';
       case 'processing': return 'text-blue-600 bg-blue-100';
       case 'shipped': return 'text-purple-600 bg-purple-100';
+      case 'paid': return 'text-teal-700 bg-teal-100';
+      case 'refunded': return 'text-amber-700 bg-amber-100';
+      case 'payment_failed': return 'text-red-600 bg-red-100';
       case 'cancelled': return 'text-red-600 bg-red-100';
       default: return 'text-gray-600 bg-gray-100';
     }
@@ -333,8 +415,21 @@ export default function ProfilePage() {
       case 'completed': return '已完成';
       case 'processing': return '處理中';
       case 'shipped': return '已出貨';
+      case 'paid': return '已付款';
+      case 'refunded': return '已退款';
+      case 'payment_failed': return '付款失敗';
       case 'cancelled': return '已取消';
       default: return '未知狀態';
+    }
+  };
+
+  const getInvoiceStatusText = (status: OrderInvoice['status']) => {
+    switch (status) {
+      case 'issued': return '已開立';
+      case 'voided': return '已作廢';
+      case 'allowance-issued': return '已開立折讓';
+      case 'failed': return '開立失敗，待人工處理';
+      default: return '等待發票供應商回讀';
     }
   };
 
@@ -661,6 +756,55 @@ export default function ProfilePage() {
                             </div>
                           </div>
                         ))}
+                      </div>
+
+                      {(order.shipping_method || (order.fulfillments?.length ?? 0) > 0) && (
+                        <div className="mt-5 border-t border-gray-100 pt-4 text-sm text-gray-700">
+                          {order.shipping_method && (
+                            <p className="mb-2">
+                              <span className="font-medium text-gray-900">配送方式：</span>
+                              {order.shipping_method}
+                            </p>
+                          )}
+                          {order.fulfillments?.map((fulfillment) => {
+                            const trackingNumber = fulfillment.tracking_numbers?.[0];
+                            const trackingUrl = safePublicHttpsUrl(fulfillment.tracking_urls?.[0]);
+                            return (
+                              <div key={fulfillment.id} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                <span>{fulfillment.tracking_company || '物流配送'}</span>
+                                {trackingNumber && <span>追蹤碼：{trackingNumber}</span>}
+                                {trackingUrl && (
+                                  <a
+                                    href={trackingUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="font-medium text-[#225B4F] underline underline-offset-2"
+                                  >
+                                    查詢配送進度
+                                  </a>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div className="mt-5 border-t border-gray-100 pt-4 text-sm text-gray-700">
+                        <p className="font-medium text-gray-900">電子發票</p>
+                        {(order.invoices?.length ?? 0) === 0 ? (
+                          <p className="mt-1 text-gray-500">
+                            尚無發票供應商回讀；發票狀態不會由付款狀態自動推測。
+                          </p>
+                        ) : (
+                          <div className="mt-2 space-y-1">
+                            {order.invoices?.map((invoice) => (
+                              <p key={invoice.id}>
+                                {getInvoiceStatusText(invoice.status)}
+                                {invoice.invoice_number ? `｜發票號碼 ${invoice.invoice_number}` : ''}
+                              </p>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

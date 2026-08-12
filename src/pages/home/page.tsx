@@ -1,32 +1,54 @@
 import { useState, useEffect } from 'react';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { buildShopifyArticleUrl } from '../../lib/shopifyNavigation';
 import HeroSection from './components/HeroSection';
 import ProductSection from './components/ProductSection';
 import BrandSection from './components/BrandSection';
 import SolutionSection from './components/SolutionSection';
 import ReviewSection from './components/ReviewSection';
-import { getFunctionUrl } from '../../lib/supabase';
+import { getFunctionHeaders, getFunctionUrl, isShopifyStorefrontEnabled } from '../../lib/supabase';
+
+const fallbackArticles = [
+  { id: 'care-guide', title: '日常私密護理：先理解身體，再選擇產品', excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的照護原則。', tags: ['健康知識'], publishedAt: '2026-07-18', url: '/blog', image: null },
+  { id: 'fabric-guide', title: '貼身衣物材質怎麼選？', excerpt: '用透氣、摩擦與清潔頻率三個面向，整理日常挑選貼身衣物的重點。', tags: ['選購指南'], publishedAt: '2026-07-18', url: '/faq', image: null },
+  { id: 'brand-method', title: '我們如何整理產品與內容', excerpt: '所有推薦先說明資料來源；沒有即時評價時，就以編輯精選清楚標示。', tags: ['品牌方法'], publishedAt: '2026-07-18', url: '/brand-story', image: null },
+];
 
 export default function Home() {
-  console.log('🏠 Home component rendering');
-
+  const [articles, setArticles] = useState<any[]>([]);
   const featuredProductIds = [
-    'gid://shopify/Product/9969008509232',
-    'gid://shopify/Product/9969008542000',
-    'gid://shopify/Product/9969008574768',
-    'gid://shopify/Product/9969008607536',
-    'gid://shopify/Product/9969008673072',
-    'gid://shopify/Product/9975451189552'
+    'gid://shopify/Product/7786993614915'
   ];
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      if (!isShopifyStorefrontEnabled) {
+        setArticles(fallbackArticles);
+        return;
+      }
+
+      try {
+        const response = await fetch(getFunctionUrl('get-articles'), {
+          method: 'POST',
+          headers: getFunctionHeaders(),
+        });
+        if (!response.ok) throw new Error(`Article request failed (${response.status})`);
+
+        const data = await response.json();
+        setArticles(Array.isArray(data.articles) && data.articles.length > 0
+          ? data.articles
+          : fallbackArticles);
+      } catch {
+        setArticles(fallbackArticles);
+      }
+    };
+
+    fetchArticles();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-      {/* DEBUG: Visible marker */}
-      <div style={{ position: 'fixed', top: 0, right: 0, background: 'red', color: 'white', padding: '10px', zIndex: 9999 }}>
-        HOME RENDERED
-      </div>
-
       <Header />
 
       <main>
@@ -34,7 +56,7 @@ export default function Home() {
 
         <ProductSection
           title="精選產品"
-          subtitle="探索我們最受歡迎的女性護理產品"
+          subtitle="目前為展示目錄；正式價格、規格與庫存將以 Shopify 商品資料為準"
           shopifyProductIds={featuredProductIds}
         />
 
@@ -48,12 +70,12 @@ export default function Home() {
         {/* 白色間隔區域 */}
         <section className="py-12 bg-white"></section>
 
-        {/* LUCISSI Talk｜私密對話 區塊 */}
+        {/* SAENGAK Talk｜私密對話 區塊 */}
         <section className="py-20" style={{ backgroundColor: '#F7F7F5' }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                LUCISSI Talk｜私密對話
+                SAENGAK Talk｜私密對話
               </h2>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-4xl mx-auto" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 談身體，也談心。<br />
@@ -77,8 +99,8 @@ export default function Home() {
                           專業文章
                         </h4>
                         <p className="text-gray-600 leading-relaxed text-lg" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                          由醫師與專家撰寫的女性健康與私密護理內容，<br />
-                          以科學為基礎，提供妳最可靠的知識與建議。
+                          整理女性健康與私密護理主題，<br />
+                          專業內容完成審閱後，才標示作者與資格。
                         </p>
                       </div>
                     </div>
@@ -92,11 +114,11 @@ export default function Home() {
                       </div>
                       <div className="flex-1">
                         <h4 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                          Instagram 動態
+                          社群內容規劃
                         </h4>
                         <p className="text-gray-600 leading-relaxed text-lg" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                          每日更新保養小知識、產品使用教學與真實用戶心得，<br />
-                          一起打造屬於妳的私密健康日常。
+                          規劃保養知識、產品教學與品牌更新，<br />
+                          正式帳號串接後再顯示貼文與互動數據。
                         </p>
                       </div>
                     </div>
@@ -129,7 +151,7 @@ export default function Home() {
                       }}
                     >
                       <i className="ri-instagram-line mr-2"></i>
-                      追蹤 Instagram
+                      查看社群主題
                     </a>
                   </div>
                 </div>
@@ -139,8 +161,8 @@ export default function Home() {
               <div className="flex items-stretch">
                 <div className="w-full h-full min-h-[500px] relative overflow-hidden shadow-lg" style={{ borderRadius: '16px' }}>
                   <img
-                    src="https://readdy.ai/api/search-image?query=Intimate%20conversation%20between%20women%20about%20feminine%20health%2C%20warm%20and%20caring%20atmosphere%2C%20soft%20lighting%2C%20comfortable%20setting%20for%20sharing%20personal%20topics%2C%20Korean%20women%20having%20heart%20to%20heart%20talk%20about%20body%20and%20mind%20wellness%2C%20professional%20healthcare%20consultation%20environment&width=600&height=500&seq=lucissi-talk-redesign&orientation=landscape"
-                    alt="LUCISSI Talk 私密對話"
+                    src="https://readdy.ai/api/search-image?query=Intimate%20conversation%20between%20women%20about%20feminine%20health%2C%20warm%20and%20caring%20atmosphere%2C%20soft%20lighting%2C%20comfortable%20setting%20for%20sharing%20personal%20topics%2C%20Korean%20women%20having%20heart%20to%20heart%20talk%20about%20body%20and%20mind%20wellness%2C%20professional%20healthcare%20consultation%20environment&width=600&height=500&seq=saengak-talk-redesign&orientation=landscape"
+                    alt="SAENGAK Talk 私密對話"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
@@ -164,49 +186,23 @@ export default function Home() {
                 最新話題
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {(() => {
-                  const [articles, setArticles] = useState<any[]>([]);
-
-                  useEffect(() => {
-                    const fetchArticles = async () => {
-                      try {
-                        const response = await fetch(getFunctionUrl('get-articles'), {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`,
-                          },
-                        });
-                        const data = await response.json();
-                        if (data.articles) {
-                          setArticles(data.articles);
-                        }
-                      } catch (error) {
-                        console.error('Error fetching articles:', error);
-                      }
-                    };
-                    fetchArticles();
-                  }, []);
-
-                  if (articles.length === 0) {
-                    // Fallback loading state or empty
-                    return (
-                      <div className="col-span-3 text-center py-10">
-                        <div className="inline-block animate-spin h-8 w-8 border-b-2 border-gray-900"></div>
-                      </div>
-                    );
-                  }
-
-                  return articles.map((article: any) => (
+                {articles.length === 0 ? (
+                  <div className="col-span-3 text-center py-10">
+                    <div className="inline-block animate-spin h-8 w-8 border-b-2 border-gray-900"></div>
+                  </div>
+                ) : articles.map((article: any) => (
                     <div
                       key={article.id}
                       className="bg-white shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:transform hover:scale-105 cursor-pointer flex flex-col h-full"
                       style={{ borderRadius: '16px' }}
-                      onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'saengak.myshopify.com'}/blogs/${article.blog.handle}/${article.handle}`, '_blank')}
+                      onClick={() => {
+                        const articleUrl = buildShopifyArticleUrl(article.blog?.handle, article.handle);
+                        if (articleUrl) window.open(articleUrl, '_blank', 'noopener,noreferrer');
+                      }}
                     >
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
-                          src={article.image?.url || 'https://via.placeholder.com/400x300?text=No+Image'}
+                          src={article.image?.url || 'https://readdy.ai/api/search-image?query=calm%20minimal%20women%20wellness%20editorial%20still%20life%20soft%20natural%20light%20green%20and%20white%20palette&width=800&height=600&seq=saengak-editorial-fallback&orientation=landscape'}
                           alt={article.image?.altText || article.title}
                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                         />
@@ -228,8 +224,7 @@ export default function Home() {
                         </p>
                       </div>
                     </div>
-                  ));
-                })()}
+                  ))}
               </div>
             </div>
           </div>

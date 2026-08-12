@@ -2,11 +2,11 @@
 export const mockUsers = [
   {
     id: 'user-001',
-    email: 'demo@example.com',
-    password: '123456',
-    name: '王小美',
-    phone: '0912-345-678',
-    address: '台北市信義區信義路五段7號',
+    email: 'mock1@saengak.invalid',
+    password: 'development-only-1',
+    name: '測試使用者一',
+    phone: '',
+    address: '',
     birth_date: '1990-05-15',
     gender: 'female',
     created_at: '2024-01-15T08:30:00Z',
@@ -14,11 +14,11 @@ export const mockUsers = [
   },
   {
     id: 'user-002',
-    email: 'test@gmail.com',
-    password: '123456',
-    name: '李雅婷',
-    phone: '0987-654-321',
-    address: '新北市板橋區文化路一段188號',
+    email: 'mock2@saengak.invalid',
+    password: 'development-only-2',
+    name: '測試使用者二',
+    phone: '',
+    address: '',
     birth_date: '1985-08-22',
     gender: 'female',
     created_at: '2024-02-01T10:15:00Z',
@@ -26,11 +26,11 @@ export const mockUsers = [
   },
   {
     id: 'user-003',
-    email: 'user@test.com',
-    password: '123456',
-    name: '陳美玲',
-    phone: '0955-123-456',
-    address: '台中市西屯區台灣大道三段99號',
+    email: 'mock3@saengak.invalid',
+    password: 'development-only-3',
+    name: '測試使用者三',
+    phone: '',
+    address: '',
     birth_date: '1992-12-03',
     gender: 'female',
     created_at: '2024-02-10T14:20:00Z',
@@ -50,7 +50,7 @@ export const mockOrders = [
     items: [
       {
         id: 'item-001',
-        product_name: 'VAGI 私密護理潔淨慕斯',
+        product_name: 'SAENGAK 展示商品',
         quantity: 2,
         price: 590,
         image_url: 'https://readdy.ai/api/search-image?query=elegant%20feminine%20hygiene%20foam%20cleanser%20bottle%20white%20clean%20minimalist%20packaging%20premium%20skincare%20product%20photography&width=300&height=300&seq=product1&orientation=squarish'
@@ -113,7 +113,7 @@ export const mockFavorites = [
     id: 'fav-001',
     user_id: 'user-001',
     product_id: 'prod-001',
-    product_name: 'VAGI 私密護理潔淨慕斯',
+    product_name: 'SAENGAK 展示商品',
     product_price: 590,
     product_image: 'https://readdy.ai/api/search-image?query=elegant%20feminine%20hygiene%20foam%20cleanser%20bottle%20white%20clean%20minimalist%20packaging%20premium%20skincare%20product%20photography&width=300&height=300&seq=product1&orientation=squarish',
     created_at: '2024-03-01T09:30:00Z'

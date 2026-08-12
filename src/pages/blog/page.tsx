@@ -1,23 +1,23 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { mockProducts } from '../../mocks/products';
+import { formatTwd } from '../../domain/algorithms';
 
 export default function BlogArticle() {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
 
-  // 模擬文章數據
+  // Local editorial draft shown while the verified CMS source is not connected.
   const article = {
     id: 1,
-    title: '女性私密護理完整指南：專家教你正確保養方式',
+    title: '日常私密護理整理：理解身體與基本照護原則',
     content: `
-      <p class="mb-8 text-lg leading-relaxed">女性私密護理是健康生活的重要組成部分，正確的護理方式不僅能維持健康的pH值平衡，還能預防各種感染和不適症狀。本文將為您詳細介紹專業的私密護理知識。</p>
+      <p class="mb-8 text-lg leading-relaxed">女性私密護理是日常健康的一部分。本文整理一般清潔原則與需要留意的身體變化，協助建立適合自己的照護習慣。</p>
 
       <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">為什麼私密護理如此重要？</h2>
       <p class="mb-6 leading-relaxed">女性私密部位具有獨特的生理結構和微環境，需要特別的護理方式。正常情況下，陰道內的pH值應維持在3.8-4.5之間，這種弱酸性環境有助於抑制有害細菌的生長，維護健康的菌群平衡。</p>
@@ -39,7 +39,7 @@ export default function BlogArticle() {
         <li class="leading-relaxed">• pH值接近私密部位的自然酸性環境</li>
         <li class="leading-relaxed">• 含有溫和的天然成分</li>
         <li class="leading-relaxed">• 無香料或使用天然香料</li>
-        <li class="leading-relaxed">• 經過皮膚科測試</li>
+        <li class="leading-relaxed">• 若標示通過相關測試，可進一步確認測試機構與適用範圍</li>
       </ul>
 
       <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">2. 正確的清潔方式</h3>
@@ -85,16 +85,12 @@ export default function BlogArticle() {
       <p class="mb-8 leading-relaxed">正確的私密護理是維護女性健康的重要環節。通過選擇合適的產品、採用正確的護理方式，並避免常見誤區，每位女性都能維護自己的私密健康。記住，每個人的身體狀況不同，如有疑問，請諮詢專業的醫療人員。</p>
     `,
     category: '私密護理',
-    author: 'Dr. 林美華',
-    authorBio: '婦產科專科醫師，擁有15年臨床經驗，專精於女性健康護理',
-    date: '2024年1月15日',
+    author: 'SAENGAK 編輯',
+    authorBio: '本篇為編輯整理稿，尚待合格醫療專業人員審閱；內容僅供一般知識參考，不能取代診斷或個別醫療建議。',
+    date: '2026年7月18日',
     readTime: '8分鐘',
     image: 'https://readdy.ai/api/search-image?query=Professional%20female%20healthcare%20expert%20explaining%20feminine%20health%20care%20importance%2C%20clean%20medical%20consultation%20room%2C%20educational%20materials%20about%20womens%20health%2C%20professional%20healthcare%20setting%2C%20Korean%20medical%20expert&width=1200&height=600&seq=article-detail&orientation=landscape',
-    tags: ['私密護理', '健康知識', '專家建議'],
-    likes: 128,
-    comments: 23,
-    views: 1250,
-    shares: 45
+    tags: ['私密護理', '健康知識', '編輯整理'],
   };
 
   const relatedArticles = [
@@ -124,47 +120,7 @@ export default function BlogArticle() {
     }
   ];
 
-  // 推薦相關產品
-  const recommendedProducts = [
-    {
-      id: 1,
-      name: '溫和私密護理潔淨露',
-      price: 'NT$ 680',
-      originalPrice: 'NT$ 850',
-      image: 'https://readdy.ai/api/search-image?query=Gentle%20feminine%20intimate%20care%20cleanser%20bottle%2C%20natural%20ingredients%2C%20clean%20product%20photography%2C%20minimalist%20design%2C%20healthcare%20product&width=300&height=300&seq=product1&orientation=squarish',
-      rating: 4.8,
-      reviews: 156,
-      isOnSale: true
-    },
-    {
-      id: 2,
-      name: '天然草本私密護理凝膠',
-      price: 'NT$ 520',
-      image: 'https://readdy.ai/api/search-image?query=Natural%20herbal%20intimate%20care%20gel%20tube%2C%20organic%20ingredients%2C%20professional%20healthcare%20product%20photography%2C%20clean%20white%20background&width=300&height=300&seq=product2&orientation=squarish',
-      rating: 4.6,
-      reviews: 89,
-      isOnSale: false
-    },
-    {
-      id: 3,
-      name: '舒緩保濕私密護理霜',
-      price: 'NT$ 750',
-      originalPrice: 'NT$ 920',
-      image: 'https://readdy.ai/api/search-image?query=Soothing%20moisturizing%20intimate%20care%20cream%20jar%2C%20premium%20skincare%20product%2C%20elegant%20packaging%2C%20professional%20product%20photography&width=300&height=300&seq=product3&orientation=squarish',
-      rating: 4.9,
-      reviews: 203,
-      isOnSale: true
-    },
-    {
-      id: 4,
-      name: '益生菌私密護理膠囊',
-      price: 'NT$ 1,280',
-      image: 'https://readdy.ai/api/search-image?query=Probiotic%20intimate%20health%20supplement%20capsules%20bottle%2C%20healthcare%20supplement%2C%20clean%20medical%20product%20photography%2C%20professional%20packaging&width=300&height=300&seq=product4&orientation=squarish',
-      rating: 4.7,
-      reviews: 124,
-      isOnSale: false
-    }
-  ];
+  const recommendedProducts = mockProducts.slice(0, 4);
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
@@ -189,7 +145,7 @@ export default function BlogArticle() {
   };
 
   const handleProductClick = (productId: number) => {
-    navigate('/product');
+    navigate(`/product/${productId}`);
   };
 
   useEffect(() => {
@@ -225,25 +181,9 @@ export default function BlogArticle() {
                 {article.title}
               </h1>
               
-              <div className="flex items-center justify-between">
-                <div className="flex items-center text-sm opacity-90">
-                  <span>作者：{article.author}</span>
-                </div>
-                
-                <div className="flex items-center space-x-4 text-sm opacity-90">
-                  <div className="flex items-center">
-                    <i className="ri-heart-line mr-1"></i>
-                    <span>{article.likes}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <i className="ri-chat-3-line mr-1"></i>
-                    <span>{article.comments}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <i className="ri-eye-line mr-1"></i>
-                    <span>{article.views}</span>
-                  </div>
-                </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 text-sm opacity-90">
+                <span>作者：{article.author}</span>
+                <span>編輯整理｜專業審閱待完成</span>
               </div>
             </div>
           </div>
@@ -271,18 +211,6 @@ export default function BlogArticle() {
               {/* Article Actions */}
               <div className="flex items-center justify-between mb-12 pb-8 border-b" style={{ borderColor: '#CDCDCD' }}>
                 <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => setIsLiked(!isLiked)}
-                    className={`flex items-center space-x-2 px-6 py-3 border transition-colors cursor-pointer ${
-                      isLiked 
-                        ? 'border-red-300 bg-red-50 text-red-600' 
-                        : 'border-gray-300 hover:border-red-300 hover:bg-red-50 hover:text-red-600'
-                    }`}
-                  >
-                    <i className={`${isLiked ? 'ri-heart-fill' : 'ri-heart-line'}`}></i>
-                    <span className="text-sm font-medium">喜歡 ({article.likes + (isLiked ? 1 : 0)})</span>
-                  </button>
-                  
                   <button
                     onClick={() => setIsBookmarked(!isBookmarked)}
                     className={`flex items-center space-x-2 px-6 py-3 border transition-colors cursor-pointer ${
@@ -372,6 +300,10 @@ export default function BlogArticle() {
                 </div>
               </div>
 
+              <div className="mb-10 border border-amber-300 bg-amber-50 px-5 py-4 text-sm leading-relaxed text-amber-900">
+                <strong>內容狀態：</strong>本篇為編輯整理稿，尚未完成醫療專業審閱；如有症狀或個別健康疑問，請諮詢合格醫療人員。
+              </div>
+
               {/* Article Content */}
               <div 
                 className="prose prose-lg max-w-none"
@@ -432,14 +364,13 @@ export default function BlogArticle() {
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold mb-3" style={{ color: '#000000' }}>{article.author}</h3>
                     <p className="mb-6 leading-relaxed" style={{ color: '#555555' }}>{article.authorBio}</p>
-                    <div className="flex items-center space-x-6">
-                      <button className="text-sm font-medium cursor-pointer hover:opacity-80" style={{ color: '#225B4F' }}>
-                        查看更多文章
-                      </button>
-                      <button className="text-sm font-medium cursor-pointer hover:opacity-80" style={{ color: '#225B4F' }}>
-                        關注作者
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => navigate('/community')}
+                      className="text-sm font-medium cursor-pointer hover:opacity-80"
+                      style={{ color: '#225B4F' }}
+                    >
+                      返回內容列表
+                    </button>
                   </div>
                 </div>
               </div>
@@ -483,26 +414,15 @@ export default function BlogArticle() {
                           {product.name}
                         </h4>
                         <div className="flex items-center space-x-2">
-                          <span className="font-bold text-sm" style={{ color: '#225B4F' }}>{product.price}</span>
-                          {product.originalPrice && (
-                            <span className="text-xs line-through" style={{ color: '#BBBBBB' }}>{product.originalPrice}</span>
+                          <span className="font-bold text-sm" style={{ color: '#225B4F' }}>{formatTwd(product.price)}</span>
+                          {product.originalPrice && product.originalPrice > product.price && (
+                            <span className="text-xs line-through" style={{ color: '#BBBBBB' }}>{formatTwd(product.originalPrice)}</span>
                           )}
-                          {product.isOnSale && (
+                          {product.originalPrice && product.originalPrice > product.price && (
                             <span className="text-xs px-2 py-1 bg-red-100 text-red-600">特價</span>
                           )}
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, i) => (
-                              <i 
-                                key={i} 
-                                className={`ri-star-${i < Math.floor(product.rating) ? 'fill' : 'line'} text-xs`}
-                                style={{ color: '#007AFF' }}
-                              ></i>
-                            ))}
-                          </div>
-                          <span className="text-xs" style={{ color: '#747775' }}>({product.reviews})</span>
-                        </div>
+                        <span className="text-xs" style={{ color: '#747775' }}>展示目錄</span>
                       </div>
                     </div>
                   ))}
@@ -546,7 +466,7 @@ export default function BlogArticle() {
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-20 pt-8 border-t" style={{ borderColor: '#CDCDCD' }}>
+          <div className="flex items-center mt-20 pt-8 border-t" style={{ borderColor: '#CDCDCD' }}>
             <button 
               onClick={() => navigate('/community')}
               className="flex items-center cursor-pointer transition-colors"
@@ -557,92 +477,24 @@ export default function BlogArticle() {
               <i className="ri-arrow-left-line mr-2"></i>
               返回文章列表
             </button>
-            
-            <div className="flex items-center space-x-4">
-              <button 
-                className="flex items-center cursor-pointer transition-colors"
-                style={{ color: '#555555' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#000000'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}
-              >
-                <i className="ri-arrow-left-line mr-1"></i>
-                上一篇
-              </button>
-              <button 
-                className="flex items-center cursor-pointer transition-colors"
-                style={{ color: '#555555' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#000000'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}
-              >
-                下一篇
-                <i className="ri-arrow-right-line ml-1"></i>
-              </button>
-            </div>
           </div>
         </div>
 
         {/* Comments Section */}
         <section className="py-20 px-6" style={{ backgroundColor: '#F7F7F5' }}>
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold mb-12" style={{ color: '#000000' }}>讀者留言 ({article.comments})</h2>
-            
-            {/* Comment Form */}
-            <div className="bg-white border p-8 mb-12" style={{ borderColor: '#CDCDCD' }}>
-              <h3 className="text-lg font-semibold mb-6" style={{ color: '#000000' }}>發表留言</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium mb-3" style={{ color: '#555555' }}>姓名</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    style={{ borderColor: '#CDCDCD' }}
-                    placeholder="請輸入您的姓名"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-3" style={{ color: '#555555' }}>留言內容</label>
-                  <textarea
-                    rows={4}
-                    className="w-full px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
-                    style={{ borderColor: '#CDCDCD' }}
-                    placeholder="分享您的想法..."
-                  ></textarea>
-                </div>
-                <button className="px-8 py-3 text-white font-medium hover:opacity-90 transition-colors cursor-pointer whitespace-nowrap" style={{ backgroundColor: '#225B4F' }}>
-                  發表留言
-                </button>
-              </div>
-            </div>
-
-            {/* Comments List */}
-            <div className="space-y-8">
-              {[1, 2, 3].map((comment) => (
-                <div key={comment} className="bg-white border p-8" style={{ borderColor: '#CDCDCD' }}>
-                  <div className="flex items-start space-x-6">
-                    <div className="w-12 h-12 flex items-center justify-center" style={{ backgroundColor: '#BBBBBB' }}>
-                      <i className="ri-user-line" style={{ color: '#555555' }}></i>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <span className="font-semibold" style={{ color: '#000000' }}>讀者{comment}</span>
-                        <span className="text-sm" style={{ color: '#747775' }}>2024年1月{15 - comment}日</span>
-                      </div>
-                      <p className="mb-4 leading-relaxed" style={{ color: '#555555' }}>
-                        非常實用的文章！我一直在尋找正確的私密護理方式，這篇文章解答了我很多疑問。特別是關於產品選擇的部分，讓我知道該注意哪些成分。
-                      </p>
-                      <div className="flex items-center space-x-6">
-                        <button className="flex items-center text-sm cursor-pointer transition-colors" style={{ color: '#747775' }} onMouseEnter={(e) => e.currentTarget.style.color = '#007AFF'} onMouseLeave={(e) => e.currentTarget.style.color = '#747775'}>
-                          <i className="ri-heart-line mr-1"></i>
-                          喜歡 (5)
-                        </button>
-                        <button className="text-sm cursor-pointer transition-colors" style={{ color: '#747775' }} onMouseEnter={(e) => e.currentTarget.style.color = '#000000'} onMouseLeave={(e) => e.currentTarget.style.color = '#747775'}>
-                          回覆
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <h2 className="text-2xl font-bold mb-8" style={{ color: '#000000' }}>讀者留言</h2>
+            <div className="bg-white border p-8" style={{ borderColor: '#CDCDCD' }}>
+              <p className="mb-5 leading-relaxed" style={{ color: '#555555' }}>
+                留言後端與審核機制尚未接入，因此目前不收集姓名，也不顯示示範留言。
+              </p>
+              <button
+                onClick={() => navigate('/customer-service')}
+                className="font-medium cursor-pointer hover:opacity-80"
+                style={{ color: '#225B4F' }}
+              >
+                聯絡客服
+              </button>
             </div>
           </div>
         </section>

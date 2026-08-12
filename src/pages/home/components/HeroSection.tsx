@@ -63,31 +63,42 @@ export default function HeroSection() {
               {/* 桌面版圖片 */}
               <img
                 src={slide.desktop}
-                alt={`內心想法產品 ${index + 1}`}
+                alt={`SAENGAK 品牌商品展示 ${index + 1}`}
                 className="hidden md:block w-full h-full object-cover object-center"
               />
               {/* 手機版圖片 */}
               <img
-                src={slide.mobile}
-                alt={`內心想法產品 ${index + 1}`}
-                className="md:hidden w-full h-full object-cover object-center"
+                src={slide.desktop}
+                alt={`SAENGAK 品牌商品展示 ${index + 1}`}
+                className="md:hidden h-full w-full object-cover object-[21%_center]"
               />
             </a>
           </div>
         ))}
       </div>
 
+      <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 -translate-y-1/2 md:flex md:justify-center">
+        <div className="mx-auto flex min-h-[210px] max-w-3xl flex-col justify-center bg-[#173f36]/95 px-6 py-8 text-center text-white shadow-lg backdrop-blur-sm md:mx-0 md:min-h-[230px] md:px-12 md:py-10">
+          <p className="text-xl font-semibold md:text-3xl">先確認資料，再選擇日常護理</p>
+          <p className="mt-2 text-sm leading-6 text-white/90 md:text-base">
+            目前為品牌展示目錄；成分、認證、測試與適用方式，以正式商品資料及實際包裝標示為準。
+          </p>
+        </div>
+      </div>
+
       {/* 導航按鈕 */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-white/80 hover:bg-white/90 text-gray-800 backdrop-blur-sm transition-all duration-200 z-10 rounded-full"
+        aria-label="上一張品牌圖片"
+        className="absolute left-4 top-[72%] -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-white/80 hover:bg-white/90 text-gray-800 backdrop-blur-sm transition-all duration-200 z-10 rounded-full md:top-1/2"
       >
         <i className="ri-arrow-left-line text-xl"></i>
       </button>
       
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-white/80 hover:bg-white/90 text-gray-800 backdrop-blur-sm transition-all duration-200 z-10 rounded-full"
+        aria-label="下一張品牌圖片"
+        className="absolute right-4 top-[72%] -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-white/80 hover:bg-white/90 text-gray-800 backdrop-blur-sm transition-all duration-200 z-10 rounded-full md:top-1/2"
       >
         <i className="ri-arrow-right-line text-xl"></i>
       </button>
@@ -98,6 +109,7 @@ export default function HeroSection() {
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
+            aria-label={`顯示第 ${index + 1} 張品牌圖片`}
             className={`w-3 h-3 rounded-full transition-all duration-200 ${
               index === currentSlide
                 ? 'bg-white w-8'

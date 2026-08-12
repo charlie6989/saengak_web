@@ -7,6 +7,8 @@ import ProductCard from '../../components/feature/ProductCard';
 import { useShopifyCollections, useShopifyCollectionProducts } from '../../hooks/useShopifyCollections';
 import { useShopifyProductsByTag, COMMON_TAGS, TAG_COMBINATIONS } from '../../hooks/useShopifyTags';
 import { mockProducts, type Product } from '../../mocks/products';
+import { calculateSearchScore, deriveCatalogSignals, paginateItems } from '../../domain/algorithms';
+import { getFunctionHeaders, getFunctionUrl, isShopifyStorefrontEnabled } from '../../lib/supabase';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -19,6 +21,7 @@ export default function Search() {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loadingMethod, setLoadingMethod] = useState<'default' | 'collection' | 'tag'>('default');
 
   // 新增篩選狀態 - 改為多選
@@ -94,19 +97,14 @@ export default function Search() {
   const sortOptions = [
     '相關性',
     '最受歡迎',
-    '評分',
+    '回饋數',
     '最新上架',
     '價格低到高',
     '價格高到低'
   ];
 
   const shopifyProductIds = [
-    'gid://shopify/Product/9969008509232',
-    'gid://shopify/Product/9969008542000',
-    'gid://shopify/Product/9969008574768',
-    'gid://shopify/Product/9969008607536',
-    'gid://shopify/Product/9969008673072',
-    'gid://shopify/Product/9975451189552'
+    'gid://shopify/Product/7786993614915'
   ];
 
   // 載入產品數據
@@ -114,7 +112,11 @@ export default function Search() {
     const loadProducts = async () => {
       try {
         setLoading(true);
-        console.log('Loading products - method determination...');
+        if (!isShopifyStorefrontEnabled) {
+          setLoadingMethod('default');
+          setProducts(mockProducts);
+          return;
+        }
 
         // 優先級：collection > tag > category > default
         if (collectionHandle) {
@@ -155,11 +157,9 @@ export default function Search() {
         console.log('Loading products from Shopify (default)...');
         setLoadingMethod('default');
 
-        const response = await fetch('https://vcswjiyxqhhdpvmsamil.supabase.co/functions/v1/get-products', {
+        const response = await fetch(getFunctionUrl('get-products'), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: getFunctionHeaders(),
           body: JSON.stringify({
             productIds: shopifyProductIds
           })
@@ -183,9 +183,7 @@ export default function Search() {
             price: product.price,
             originalPrice: product.originalPrice,
             model: product.handle,
-            reviews: Math.floor(Math.random() * 500) + 50,
-            isBest: Math.random() > 0.7,
-            isNew: Math.random() > 0.8,
+            ...deriveCatalogSignals(product),
             tags: product.tags || [],
             productType: product.productType || '',
             vendor: product.vendor || ''
@@ -220,9 +218,7 @@ export default function Search() {
         price: product.price,
         originalPrice: product.originalPrice,
         model: product.handle,
-        reviews: Math.floor(Math.random() * 500) + 50,
-        isBest: Math.random() > 0.7,
-        isNew: Math.random() > 0.8,
+        ...deriveCatalogSignals(product),
         tags: product.tags || [],
         productType: product.productType || '',
         vendor: product.vendor || ''
@@ -243,9 +239,7 @@ export default function Search() {
         price: product.price,
         originalPrice: product.originalPrice,
         model: product.handle,
-        reviews: Math.floor(Math.random() * 500) + 50,
-        isBest: Math.random() > 0.7,
-        isNew: Math.random() > 0.8,
+        ...deriveCatalogSignals(product),
         tags: product.tags || [],
         productType: product.productType || '',
         vendor: product.vendor || ''
@@ -342,8 +336,7 @@ export default function Search() {
   };
 
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = !searchQuery || calculateSearchScore(product, searchQuery) > 0;
 
     // 改進分類匹配邏輯 - 更寬鬆的匹配規則
     const matchesCategory = selectedCategories.length === 0 ||
@@ -452,33 +445,25 @@ export default function Search() {
       case '價格高到低':
         return b.price - a.price;
       case '最新上架':
-        return b.isNew ? 1 : -1;
-      case '評分':
+        return Number(Boolean(b.isNew)) - Number(Boolean(a.isNew));
+      case '回饋數':
+      case '最受歡迎':
         return (b.reviews || 0) - (a.reviews || 0);
       case '相關性':
         if (searchQuery) {
-          const getRelevanceScore = (product: Product) => {
-            let score = 0;
-            const query = searchQuery.toLowerCase();
-            const name = product.name.toLowerCase();
-            const description = product.description.toLowerCase();
-
-            if (name === query) score += 100;
-            else if (name.startsWith(query)) score += 80;
-            else if (name.includes(query)) score += 60;
-
-            if (description.includes(query)) score += 30;
-
-            return score;
-          };
-
-          return getRelevanceScore(b) - getRelevanceScore(a);
+          return calculateSearchScore(b, searchQuery) - calculateSearchScore(a, searchQuery);
         }
         return 0;
       default:
         return 0;
     }
   });
+
+  const paginatedProducts = paginateItems(sortedProducts, currentPage, 12);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategories, selectedUsages, selectedSizes, selectedColors, selectedBrands, priceRange, sortBy]);
 
   // 檢查是否有任何篩選條件
   const hasActiveFilters = selectedCategories.length > 0 || selectedUsages.length > 0 ||
@@ -936,7 +921,7 @@ export default function Search() {
                 className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
                 data-product-shop
               >
-                {sortedProducts.map((product) => (
+                {paginatedProducts.items.map((product) => (
                   <motion.div
                     key={product.id}
                     variants={{
@@ -963,15 +948,38 @@ export default function Search() {
             </div>
           )}
 
-          {/* Pagination - 手機版優化 */}
-          {!loading && sortedProducts.length > 0 && (
+          {/* Pagination */}
+          {!loading && paginatedProducts.pageCount > 1 && (
             <div className="flex justify-center items-center gap-2 py-6 sm:py-8">
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded-lg hover:bg-gray-100">
+              <button
+                type="button"
+                aria-label="上一頁"
+                disabled={paginatedProducts.page === 1}
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                className="p-2 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer rounded-lg hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+              >
                 <i className="ri-arrow-left-s-line text-lg"></i>
               </button>
-              <button className="px-3 py-1.5 sm:px-4 sm:py-2 bg-teal-600 text-white font-medium cursor-pointer rounded-lg text-sm">1</button>
-              <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer rounded-lg text-sm">2</button>
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer rounded-lg hover:bg-gray-100">
+              {Array.from({ length: paginatedProducts.pageCount }, (_, index) => index + 1).map((page) => (
+                <button
+                  type="button"
+                  key={page}
+                  aria-current={page === paginatedProducts.page ? 'page' : undefined}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 font-medium cursor-pointer rounded-lg text-sm ${page === paginatedProducts.page
+                    ? 'bg-teal-600 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'}`}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                type="button"
+                aria-label="下一頁"
+                disabled={paginatedProducts.page === paginatedProducts.pageCount}
+                onClick={() => setCurrentPage((page) => Math.min(paginatedProducts.pageCount, page + 1))}
+                className="p-2 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer rounded-lg hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+              >
                 <i className="ri-arrow-right-s-line text-lg"></i>
               </button>
             </div>

@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { getFunctionUrl } from '../../../lib/supabase';
+import { getFunctionHeaders, getFunctionUrl, isShopifyStorefrontEnabled } from '../../../lib/supabase';
 import ProductCard from '../../../components/feature/ProductCard';
+import { mockProducts } from '../../../mocks/products';
 
 interface Product {
   id: string;
@@ -39,48 +40,38 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
     setLoading(true);
     setError(null);
     try {
-      console.log('開始獲取 Shopify 產品...');
+      if (!isShopifyStorefrontEnabled) {
+        setAllProducts(mockProducts.slice(0, Math.min(shopifyProductIds?.length || 4, mockProducts.length)));
+        return;
+      }
       const timestamp = new Date().getTime();
       const response = await fetch(getFunctionUrl('get-products') + `?t=${timestamp}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`,
-          'Cache-Control': 'no-cache',
-        },
+        headers: getFunctionHeaders({ 'Cache-Control': 'no-cache' }),
         body: JSON.stringify({
           productIds: shopifyProductIds
         }),
       });
 
-      console.log('API 響應狀態:', response.status);
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API 錯誤響應:', errorText);
         throw new Error(`API 請求失敗: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log('收到的數據:', data);
 
       if (data.success && data.products && Array.isArray(data.products)) {
-        console.log(`成功獲取 ${data.products.length} 個產品`);
         setAllProducts(data.products);
         setError(null);
       } else if (data.products && Array.isArray(data.products)) {
-        console.log(`獲取 ${data.products.length} 個產品（無 success 標記）`);
         setAllProducts(data.products);
         setError(null);
       } else {
-        console.error('數據格式錯誤:', data);
         setError('數據格式錯誤');
         setAllProducts([]);
       }
-    } catch (error) {
-      console.error('獲取 Shopify 產品時發生錯誤:', error);
-      setError(error instanceof Error ? error.message : '未知錯誤');
-      setAllProducts([]);
+    } catch {
+      setAllProducts(mockProducts.slice(0, Math.min(shopifyProductIds?.length || 4, mockProducts.length)));
+      setError(null);
     } finally {
       setLoading(false);
     }

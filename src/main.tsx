@@ -1,11 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-
-console.log('STEP 2: Testing App.tsx import...');
+import TestAccessGate from './TestAccessGate.tsx'
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <App />
+        <TestAccessGate />
     </StrictMode>,
 )

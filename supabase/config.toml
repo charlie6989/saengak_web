@@ -1,0 +1,22 @@
+project_id = "saengak_web"
+
+[functions.create-shopify-cart]
+verify_jwt = false
+
+[functions.get-articles]
+verify_jwt = false
+
+[functions.get-collections]
+verify_jwt = false
+
+[functions.get-products]
+verify_jwt = false
+
+[functions.get-products-by-tag]
+verify_jwt = false
+
+[functions.smart-search]
+verify_jwt = false
+
+[functions.shopify-orders-webhook]
+verify_jwt = false

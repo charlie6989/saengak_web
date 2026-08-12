@@ -1,15 +1,10 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { mockUsers, mockAuthState, simulateApiDelay } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
-
-const supabase = createClient(
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL,
-  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -21,7 +16,7 @@ export default function RegisterPage() {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [useMockData, setUseMockData] = useState(localStorage.getItem('useMockAuth') === 'true');
+  const [useMockData, setUseMockData] = useState(import.meta.env.DEV && localStorage.getItem('useMockAuth') === 'true');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -77,6 +72,11 @@ export default function RegisterPage() {
   };
 
   const handleRealRegister = async () => {
+    if (!isSupabaseConfigured) {
+      setMessage('會員系統正在接線，現階段暫不開放註冊');
+      return;
+    }
+
     setLoading(true);
     setMessage('');
 
@@ -94,11 +94,11 @@ export default function RegisterPage() {
 
       if (error) {
         setMessage(`註冊失敗: ${error.message}`);
+      } else if (data.session) {
+        setMessage('註冊成功！正在前往會員歡迎頁面');
+        window.setTimeout(() => navigate('/welcome'), 1200);
       } else {
-        setMessage('註冊成功！請檢查您的電子郵件以驗證帳號');
-        setTimeout(() => {
-          navigate('/welcome');
-        }, 2000);
+        setMessage('註冊申請已送出，請先到電子郵件完成驗證，再回來登入');
       }
     } catch (error) {
       setMessage('發生錯誤，請稍後再試');
@@ -115,8 +115,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setMessage('密碼至少需要 6 個字元');
+    if (formData.password.length < 12) {
+      setMessage('密碼至少需要 12 個字元');
       return;
     }
 
@@ -124,35 +124,6 @@ export default function RegisterPage() {
       await handleMockRegister();
     } else {
       await handleRealRegister();
-    }
-  };
-
-  const handleSocialLogin = async (provider: 'google' | 'facebook' | 'apple') => {
-    if (useMockData) {
-      setMessage('假數據模式下暫不支援社交註冊，請使用電子郵件註冊');
-      return;
-    }
-
-    setLoading(true);
-    setMessage('');
-
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: provider,
-        options: {
-          redirectTo: `${window.location.origin}/welcome`
-        }
-      });
-
-      if (error) {
-        console.error(`${provider} OAuth error:`, error);
-        setMessage(`${provider === 'google' ? 'Google' : provider === 'facebook' ? 'Facebook' : 'Apple'} 註冊設定中，請稍後再試或使用電子郵件註冊`);
-      }
-    } catch (error) {
-      console.error(`${provider} register error:`, error);
-      setMessage(`${provider === 'google' ? 'Google' : provider === 'facebook' ? 'Facebook' : 'Apple'} 註冊功能暫時無法使用，請使用電子郵件註冊`);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -174,6 +145,11 @@ export default function RegisterPage() {
 
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-6 shadow-lg rounded-lg border">
+            {!useMockData && !isSupabaseConfigured && (
+              <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md text-sm text-amber-800">
+                會員資料庫尚未完成正式綁定；現階段不會收集註冊資料。
+              </div>
+            )}
             {/* 假數據模式提示 */}
             {useMockData && (
               <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
@@ -187,47 +163,8 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* 社交註冊按鈕 */}
-            <div className="space-y-3 mb-6">
-              <button
-                type="button"
-                onClick={() => handleSocialLogin('google')}
-                disabled={loading}
-                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <i className="ri-google-fill text-red-500 mr-3 text-lg"></i>
-                使用 Google 註冊
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSocialLogin('facebook')}
-                disabled={loading}
-                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <i className="ri-facebook-fill text-blue-600 mr-3 text-lg"></i>
-                使用 Facebook 註冊
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSocialLogin('apple')}
-                disabled={loading}
-                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <i className="ri-apple-fill text-black mr-3 text-lg"></i>
-                使用 Apple 註冊
-              </button>
-            </div>
-
-            {/* 分隔線 */}
-            <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">或使用電子郵件註冊</span>
-              </div>
+            <div className="mb-6 rounded-md border border-teal-100 bg-teal-50 p-3 text-sm text-teal-800">
+              目前只開放電子郵件註冊，送出後必須完成信箱驗證才可登入。
             </div>
 
             {/* 註冊表單 */}
@@ -269,8 +206,8 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
-                  placeholder="密碼（至少 6 個字元）"
-                  minLength={6}
+                  placeholder="密碼（至少 12 個字元）"
+                  minLength={12}
                 />
               </div>
 
@@ -285,7 +222,7 @@ export default function RegisterPage() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
                   placeholder="確認密碼"
-                  minLength={6}
+                  minLength={12}
                 />
               </div>
 

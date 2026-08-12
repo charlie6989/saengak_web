@@ -17,7 +17,6 @@ const WelcomePage = lazy(() => import('../pages/welcome/page'));
 const ForgotPasswordPage = lazy(() => import('../pages/forgot-password/page'));
 const ResetPasswordPage = lazy(() => import('../pages/reset-password/page'));
 const AuthConfirmPage = lazy(() => import('../pages/auth/confirm/page'));
-const AdminPage = lazy(() => import('../pages/admin/page'));
 const OrderStatusPage = lazy(() => import('../pages/order-status/page'));
 const CustomerServicePage = lazy(() => import('../pages/customer-service/page'));
 const FAQPage = lazy(() => import('../pages/faq/page'));
@@ -94,10 +93,6 @@ const routes: RouteObject[] = [
   {
     path: '/auth/confirm',
     element: <AuthConfirmPage />,
-  },
-  {
-    path: '/admin',
-    element: <AdminPage />,
   },
   {
     path: '/order-status',

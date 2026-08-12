@@ -1,10 +1,22 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { hasAcceptedPublicKey } from '../create-shopify-cart/auth.ts';
+import {
+  buildStorefrontHeaders,
+  buildStorefrontUrl,
+  isValidShopifyDomain,
+  resolveShopifyDomain,
+  resolveStorefrontApiVersion,
+  shouldIncludeStorefrontInventory,
+} from '../_shared/shopify-storefront.ts';
+import { parseShopifyProductIds } from '../_shared/shopify-product-query.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
+
+class ShopifyUpstreamError extends Error {}
 
 // 搜索權重配置
 const SEARCH_WEIGHTS = {
@@ -126,31 +138,38 @@ function calculateRelevanceScore(product: any, query: string, expandedQuery: str
 
 // 獲取Shopify產品
 async function fetchShopifyProducts(productIds?: string[]) {
-  const shopifyDomain = Deno.env.get('ShopifyDomain') || 'ekfvih-rz.myshopify.com';
-  const storefrontAccessToken = Deno.env.get('StorefrontAccessToken') || '1707057fb57281cd5b3956de51a8c896';
+  const shopifyDomain = resolveShopifyDomain(Deno.env.get('ShopifyDomain'));
+  const storefrontAccessToken = Deno.env.get('StorefrontAccessToken');
+  const apiVersion = resolveStorefrontApiVersion(Deno.env.get('ShopifyStorefrontApiVersion'));
+
+  if (!isValidShopifyDomain(shopifyDomain)) {
+    throw new Error('Invalid ShopifyDomain configuration');
+  }
   
   // 如果沒有指定產品ID，獲取所有產品
+  const includeInventory = shouldIncludeStorefrontInventory(
+    Deno.env.get('ShopifyStorefrontInventoryEnabled'),
+  );
   const query = productIds && productIds.length > 0 
-    ? buildSpecificProductsQuery(productIds)
-    : buildAllProductsQuery();
+    ? buildSpecificProductsQuery(productIds, Boolean(storefrontAccessToken), includeInventory)
+    : buildAllProductsQuery(Boolean(storefrontAccessToken), includeInventory);
   
-  const response = await fetch(`https://${shopifyDomain}/api/2024-01/graphql.json`, {
+  const response = await fetch(buildStorefrontUrl(shopifyDomain, apiVersion), {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': storefrontAccessToken,
-    },
+    headers: buildStorefrontHeaders(storefrontAccessToken),
     body: JSON.stringify({ query }),
   });
   
   if (!response.ok) {
-    throw new Error(`Shopify API error: ${response.status}`);
+    throw new ShopifyUpstreamError(`Shopify API error: ${response.status}`);
   }
   
   return await response.json();
 }
 
-function buildAllProductsQuery() {
+function buildAllProductsQuery(includeRestrictedFields: boolean, includeInventory: boolean) {
+  const productFields = includeRestrictedFields ? 'tags' : '';
+  const variantFields = includeInventory ? 'quantityAvailable' : '';
   return `
     query GetAllProducts {
       products(first: 50) {
@@ -161,7 +180,7 @@ function buildAllProductsQuery() {
             description
             descriptionHtml
             handle
-            tags
+            ${productFields}
             productType
             vendor
             createdAt
@@ -191,7 +210,7 @@ function buildAllProductsQuery() {
                     currencyCode
                   }
                   availableForSale
-                  quantityAvailable
+                  ${variantFields}
                 }
               }
             }
@@ -212,7 +231,13 @@ function buildAllProductsQuery() {
   `;
 }
 
-function buildSpecificProductsQuery(productIds: string[]) {
+function buildSpecificProductsQuery(
+  productIds: string[],
+  includeRestrictedFields: boolean,
+  includeInventory: boolean,
+) {
+  const productFields = includeRestrictedFields ? 'tags' : '';
+  const variantFields = includeInventory ? 'quantityAvailable' : '';
   const cleanIds = productIds.map(id => 
     id.startsWith('gid://shopify/Product/') ? id : `gid://shopify/Product/${id}`
   );
@@ -224,7 +249,7 @@ function buildSpecificProductsQuery(productIds: string[]) {
       description
       descriptionHtml
       handle
-      tags
+      ${productFields}
       productType
       vendor
       createdAt
@@ -254,7 +279,7 @@ function buildSpecificProductsQuery(productIds: string[]) {
               currencyCode
             }
             availableForSale
-            quantityAvailable
+            ${variantFields}
           }
         }
       }
@@ -278,19 +303,43 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
+
+  if (!hasAcceptedPublicKey(
+    req.headers.get('apikey'),
+    Deno.env.get('SUPABASE_ANON_KEY'),
+    Deno.env.get('SUPABASE_PUBLISHABLE_KEYS'),
+  )) {
+    return new Response(JSON.stringify({ success: false, error: 'Invalid API key' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
   
   try {
     const { query, filters, sortBy, productIds } = await req.json();
+    const parsedProductIds = productIds === undefined
+      ? undefined
+      : parseShopifyProductIds(productIds);
+    if (parsedProductIds && !parsedProductIds.ok) {
+      return new Response(JSON.stringify({
+        error: parsedProductIds.error,
+        success: false,
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const validatedProductIds = parsedProductIds?.ids;
     
     // 獲取產品數據
-    const shopifyData = await fetchShopifyProducts(productIds);
+    const shopifyData = await fetchShopifyProducts(validatedProductIds);
     
-    let products = [];
+    let products: any[] = [];
     
     // 處理產品數據
-    if (productIds && productIds.length > 0) {
+    if (validatedProductIds && validatedProductIds.length > 0) {
       // 特定產品查詢
-      for (let i = 0; i < productIds.length; i++) {
+      for (let i = 0; i < validatedProductIds.length; i++) {
         const product = shopifyData.data?.[`product${i}`];
         if (product) products.push(product);
       }
@@ -410,15 +459,16 @@ serve(async (req) => {
     );
     
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('Smart search error:', error);
     return new Response(
       JSON.stringify({
         error: 'Search failed',
-        details: error.message,
+        details: errorMessage,
         success: false
       }),
       { 
-        status: 500,
+        status: error instanceof ShopifyUpstreamError ? 502 : 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );

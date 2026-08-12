@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { siteContent } from '../../content/site';
 
 export default function Footer() {
   return (
@@ -58,10 +59,10 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="text-base text-gray-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                週一至週五 9:30~18:00
+                {siteContent.supportStatus}
               </li>
               <li className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                (國定例假日除外)
+                {siteContent.supportSafetyNotice}
               </li>
             </ul>
           </div>
@@ -83,16 +84,10 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="https://www.instagram.com" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-base text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2"
-                  style={{ fontFamily: "Noto Sans TC, sans-serif" }}
-                >
+                <span className="text-base text-gray-500 flex items-center gap-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                   <i className="ri-instagram-line text-xl"></i>
-                  Instagram
-                </a>
+                  正式社群帳號確認中
+                </span>
               </li>
             </ul>
           </div>
@@ -104,13 +99,16 @@ export default function Footer() {
             {/* 版權資訊 */}
             <div className="flex flex-col space-y-2">
               <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                © 2024 LUCISSI. All rights reserved.
+                © 2026 {siteContent.brandName}. All rights reserved.
               </p>
               <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                公司名稱：拜悠衣品有限公司
+                公司名稱：{siteContent.legalName}
               </p>
               <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                統一編號：90014835
+                統一編號：{siteContent.taxId}
+              </p>
+              <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                登記地址：{siteContent.registeredAddress}
               </p>
             </div>
 

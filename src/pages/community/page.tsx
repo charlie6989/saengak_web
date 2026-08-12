@@ -3,7 +3,17 @@ import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
-import { getFunctionUrl } from '../../lib/supabase';
+import { buildShopifyArticleUrl } from '../../lib/shopifyNavigation';
+import { getFunctionHeaders, getFunctionUrl, isShopifyStorefrontEnabled } from '../../lib/supabase';
+import { estimateReadingMinutes } from '../../domain/algorithms';
+
+const editorialFallbackImage = 'https://readdy.ai/api/search-image?query=calm%20minimal%20women%20wellness%20editorial%20still%20life%20soft%20natural%20light%20green%20and%20white%20palette&width=800&height=600&seq=saengak-editorial-fallback&orientation=landscape';
+
+const localArticles = [
+  { id: 'care-guide', title: '日常私密護理：先理解身體，再選擇產品', excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的照護原則。', category: '健康知識', author: 'SAENGAK 編輯', date: '2026/7/18', readTime: '1 分鐘', image: editorialFallbackImage, tags: ['健康知識', '私密護理'], url: '/blog' },
+  { id: 'fabric-guide', title: '貼身衣物材質怎麼選？', excerpt: '用透氣、摩擦與清潔頻率三個面向，整理日常挑選貼身衣物的重點。', category: '選購指南', author: 'SAENGAK 編輯', date: '2026/7/18', readTime: '1 分鐘', image: editorialFallbackImage, tags: ['選購指南'], url: '/faq' },
+  { id: 'brand-method', title: '我們如何整理產品與內容', excerpt: '所有推薦先說明資料來源；沒有即時評價時，就以編輯精選清楚標示。', category: '品牌方法', author: 'SAENGAK 編輯', date: '2026/7/18', readTime: '1 分鐘', image: editorialFallbackImage, tags: ['品牌方法'], url: '/brand-story' },
+];
 
 export default function Community() {
   const navigate = useNavigate();
@@ -14,7 +24,6 @@ export default function Community() {
   const tags = ['全部', '私密護理', '健康知識', '產品介紹', '使用心得', '專家建議', '生理期', '懷孕', '運動', '夏季護理'];
 
   const [articles, setArticles] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchArticles();
@@ -22,39 +31,36 @@ export default function Community() {
 
   const fetchArticles = async () => {
     try {
+      if (!isShopifyStorefrontEnabled) {
+        setArticles(localArticles);
+        return;
+      }
       const response = await fetch(getFunctionUrl('get-articles'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`,
-        },
+        headers: getFunctionHeaders(),
         body: JSON.stringify({ limit: 12 }),
       });
       const data = await response.json();
       if (data.articles) {
         // Map Shopify articles to your component's expected format
-        const mappedArticles = data.articles.map((article: any, index: number) => ({
+        const mappedArticles = data.articles.map((article: any) => ({
           id: article.id,
           title: article.title,
           excerpt: article.excerpt || article.contentHtml?.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...',
           category: article.blog?.title || '精彩文章',
-          author: article.authorV2?.name || 'LUCISSI 編輯',
+          author: article.authorV2?.name || 'SAENGAK 編輯',
           date: new Date(article.publishedAt).toLocaleDateString(),
-          readTime: '3分鐘', // Estimate or default
-          image: article.image?.url || `https://via.placeholder.com/800x500?text=No+Image`,
+          readTime: `${estimateReadingMinutes(article.contentHtml || article.excerpt || '')} 分鐘`,
+          image: article.image?.url || editorialFallbackImage,
           tags: article.tags || [],
-          likes: 0, // Mock or fetch if possible
-          comments: 0, // Mock
-          views: 0, // Mock
           handle: article.handle,
-          blogHandle: article.blog?.handle
+          blogHandle: article.blog?.handle,
+          url: article.url,
         }));
         setArticles(mappedArticles);
       }
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-    } finally {
-      setLoading(false);
+    } catch {
+      setArticles(localArticles);
     }
   };
 
@@ -63,49 +69,31 @@ export default function Community() {
       id: 1,
       image: 'https://readdy.ai/api/search-image?query=Instagram%20style%20feminine%20care%20product%20flat%20lay%20photography%2C%20aesthetic%20pink%20and%20white%20background%2C%20Korean%20beauty%20products%20arranged%20beautifully%2C%20social%20media%20content%20style&width=400&height=400&seq=ig1&orientation=squarish',
       caption: '每日護理小貼士 💕 選擇溫和的私密護理產品，讓妳每天都充滿自信！ #私密護理 #女性健康 #內心想法',
-      likes: 245,
-      comments: 18,
-      date: '2天前'
     },
     {
       id: 2,
       image: 'https://readdy.ai/api/search-image?query=Healthy%20lifestyle%20flat%20lay%20with%20feminine%20care%20products%2C%20natural%20ingredients%2C%20wellness%20concept%2C%20Instagram%20aesthetic%20photography%2C%20clean%20minimalist%20style&width=400&height=400&seq=ig2&orientation=squarish',
-      caption: '天然成分的力量 🌿 我們堅持使用最純淨的天然成分，為妳的健康把關 #天然護理 #健康生活',
-      likes: 189,
-      comments: 12,
-      date: '3天前'
+      caption: '成分資訊要能追溯 🌿 未取得原廠文件或包裝標示前，不把展示內容當作商品宣稱。 #成分透明 #資料來源',
     },
     {
       id: 3,
       image: 'https://readdy.ai/api/search-image?query=Educational%20infographic%20about%20feminine%20health%20tips%2C%20modern%20design%2C%20pastel%20colors%2C%20Instagram%20post%20style%2C%20Korean%20healthcare%20education%20content&width=400&height=400&seq=ig3&orientation=squarish',
       caption: '健康小知識分享 📚 正確的私密護理方式，讓妳遠離不適困擾 #健康教育 #護理知識',
-      likes: 312,
-      comments: 25,
-      date: '5天前'
     },
     {
       id: 4,
       image: 'https://readdy.ai/api/search-image?query=Customer%20testimonial%20and%20review%20concept%2C%20happy%20Asian%20woman%20with%20feminine%20care%20products%2C%20authentic%20user%20experience%2C%20Instagram%20story%20style&width=400&height=400&seq=ig4&orientation=squarish',
-      caption: '用戶真實分享 ✨ 感謝每一位信任我們的女性朋友，妳們的回饋是我們前進的動力 #用戶分享 #真實體驗',
-      likes: 156,
-      comments: 8,
-      date: '1週前'
+      caption: '內容規劃：公開回饋前先確認本人授權、商品與訂單來源，不以示範文字冒充使用心得。 #內容規劃 #來源查核',
     },
     {
       id: 5,
       image: 'https://readdy.ai/api/search-image?query=Menstrual%20care%20and%20period%20comfort%20products%2C%20soft%20feminine%20colors%2C%20caring%20atmosphere%2C%20Instagram%20wellness%20content%2C%20Korean%20feminine%20care%20brand&width=400&height=400&seq=ig5&orientation=squarish',
       caption: '生理期護理指南 🌸 溫柔呵護每個特殊的日子，讓妳舒適度過 #生理期護理 #女性關懷',
-      likes: 278,
-      comments: 19,
-      date: '1週前'
     },
     {
       id: 6,
       image: 'https://readdy.ai/api/search-image?query=Professional%20healthcare%20consultation%2C%20female%20doctor%20and%20patient%20discussion%2C%20medical%20advice%20about%20womens%20health%2C%20Instagram%20educational%20content&width=400&height=400&seq=ig6&orientation=squarish',
       caption: '專家建議時間 👩‍⚕️ 定期諮詢專業醫師，是維護健康的重要步驟 #專家建議 #健康諮詢',
-      likes: 201,
-      comments: 14,
-      date: '2週前'
     }
   ];
 
@@ -123,6 +111,11 @@ export default function Community() {
 
   const handleRegister = () => {
     navigate('/register');
+  };
+
+  const handleArticleOpen = (article: any) => {
+    const articleUrl = buildShopifyArticleUrl(article.blogHandle, article.handle);
+    if (articleUrl) window.open(articleUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -238,7 +231,7 @@ export default function Community() {
                 {/* Featured Article - 手機版優化 */}
                 {filteredArticles.length > 0 && (
                   <div className="mb-8 md:mb-16">
-                    <div className="relative overflow-hidden rounded-lg cursor-pointer group" onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'saengak.myshopify.com'}/blogs/${filteredArticles[0].blogHandle}/${filteredArticles[0].handle}`, '_blank')}>
+                    <div className="relative overflow-hidden rounded-lg cursor-pointer group" onClick={() => handleArticleOpen(filteredArticles[0])}>
                       {/* 手機版使用 4:3 比例，平板以上使用 21:9 */}
                       <div className="aspect-[4/3] md:aspect-[16/9] lg:aspect-[21/9] overflow-hidden">
                         <img
@@ -269,24 +262,10 @@ export default function Community() {
                             <div className="flex items-center text-xs md:text-sm opacity-90">
                               <span className="truncate">作者：{filteredArticles[0].author}</span>
                               <span className="mx-2">•</span>
-                              <span className="hidden sm:inline">{filteredArticles[0].date}</span>
-                              <span className="sm:hidden">1月15日</span>
+                              <span>{filteredArticles[0].date}</span>
                             </div>
 
-                            <div className="flex items-center space-x-3 md:space-x-4 text-xs md:text-sm opacity-90">
-                              <div className="flex items-center">
-                                <i className="ri-heart-line mr-1"></i>
-                                <span>{filteredArticles[0].likes}</span>
-                              </div>
-                              <div className="flex items-center">
-                                <i className="ri-chat-3-line mr-1"></i>
-                                <span>{filteredArticles[0].comments}</span>
-                              </div>
-                              <div className="flex items-center">
-                                <i className="ri-eye-line mr-1"></i>
-                                <span>{filteredArticles[0].views}</span>
-                              </div>
-                            </div>
+                            <span className="text-xs md:text-sm opacity-90">站內編輯內容</span>
                           </div>
                         </div>
                       </div>
@@ -313,7 +292,7 @@ export default function Community() {
                           hidden: { opacity: 0, y: 16 },
                           show: { opacity: 1, y: 0, transition: { duration: 0.2 } },
                         }}
-                        onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'saengak.myshopify.com'}/blogs/${article.blogHandle}/${article.handle}`, '_blank')}
+                        onClick={() => handleArticleOpen(article)}
                       >
                         {/* 手機版使用 16:10 比例 */}
                         <div className="aspect-[16/10] overflow-hidden">
@@ -364,22 +343,7 @@ export default function Community() {
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3 md:space-x-4 text-xs text-gray-500">
-                              <div className="flex items-center">
-                                <i className="ri-heart-line mr-1"></i>
-                                <span>{article.likes}</span>
-                              </div>
-                              <div className="flex items-center">
-                                <i className="ri-chat-3-line mr-1"></i>
-                                <span>{article.comments}</span>
-                              </div>
-                              <div className="flex items-center">
-                                <i className="ri-eye-line mr-1"></i>
-                                <span>{article.views}</span>
-                              </div>
-                            </div>
-
+                          <div className="flex items-center justify-end">
                             <div className="font-medium text-xs md:text-sm transition-colors whitespace-nowrap" style={{ color: '#225B4F' }}>
                               閱讀更多
                               <i className="ri-arrow-right-line ml-1"></i>
@@ -410,20 +374,6 @@ export default function Community() {
                   </div>
                 )}
 
-                {/* Pagination - 手機版優化 */}
-                {filteredArticles.length > 0 && (
-                  <div className="flex justify-center items-center gap-2 py-8">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
-                      <i className="ri-arrow-left-s-line text-lg"></i>
-                    </button>
-                    <button className="w-8 h-8 flex items-center justify-center text-sm text-gray-900 font-bold cursor-pointer hover:text-teal-600 transition-colors">1</button>
-                    <button className="w-8 h-8 flex items-center justify-center text-sm text-gray-600 font-medium hover:text-teal-600 transition-colors cursor-pointer">2</button>
-                    <button className="w-8 h-8 flex items-center justify-center text-sm text-gray-600 font-medium hover:text-teal-600 transition-colors cursor-pointer">3</button>
-                    <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
-                      <i className="ri-arrow-right-s-line text-lg"></i>
-                    </button>
-                  </div>
-                )}
               </>
             )}
 
@@ -434,23 +384,17 @@ export default function Community() {
                 <div className="text-center mb-8 md:mb-12">
                   <div className="flex items-center justify-center mb-4">
                     <i className="ri-instagram-line text-3xl md:text-4xl mr-2 md:mr-3" style={{ color: '#225B4F' }}></i>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">@innercare_official</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">社群內容主題</h2>
                   </div>
                   <p className="text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-                    追蹤我們的 Instagram，獲得最新的健康護理小貼士、產品資訊和用戶分享
+                    以下為預計發布的內容方向；正式 Instagram 帳號與貼文串接後，才會顯示貼文日期與互動數據。
                   </p>
-                  <div className="mt-6">
-                    <button className="inline-flex items-center px-6 py-3 text-sm md:text-base text-white font-medium rounded-lg transition-colors duration-200 cursor-pointer whitespace-nowrap" style={{ backgroundColor: '#225B4F' }}>
-                      <i className="ri-instagram-line mr-2"></i>
-                      追蹤我們
-                    </button>
-                  </div>
                 </div>
 
                 {/* Instagram Posts Grid - 手機版優化 */}
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
                   {instagramPosts.map((post) => (
-                    <div key={post.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                    <div key={post.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden group">
                       <div className="aspect-square overflow-hidden">
                         <img
                           src={post.image}
@@ -464,35 +408,12 @@ export default function Community() {
                           {post.caption}
                         </p>
 
-                        <div className="flex items-center justify-between text-xs text-gray-500">
-                          <div className="flex items-center space-x-3 md:space-x-4">
-                            <div className="flex items-center">
-                              <i className="ri-heart-line mr-1"></i>
-                              <span>{post.likes}</span>
-                            </div>
-                            <div className="flex items-center">
-                              <i className="ri-chat-3-line mr-1"></i>
-                              <span>{post.comments}</span>
-                            </div>
-                          </div>
-                          <span className="text-xs">{post.date}</span>
-                        </div>
+                        <span className="text-xs font-medium text-[#225B4F]">內容主題</span>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Instagram CTA - 手機版優化 */}
-                <div className="text-center mt-8 md:mt-12 p-6 md:p-8 rounded-lg" style={{ backgroundColor: '#F7F7F5' }}>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">想看更多內容？</h3>
-                  <p className="text-sm md:text-base text-gray-600 mb-4 md:mb-6 leading-relaxed">
-                    在 Instagram 上追蹤我們，獲得每日健康小貼士、產品使用教學和社群互動
-                  </p>
-                  <button className="inline-flex items-center px-6 md:px-8 py-3 text-sm md:text-base text-white font-medium rounded-lg transition-colors duration-200 cursor-pointer whitespace-nowrap" style={{ backgroundColor: '#225B4F' }}>
-                    <i className="ri-instagram-line mr-2"></i>
-                    前往 Instagram
-                  </button>
-                </div>
               </div>
             )}
           </div>
@@ -505,7 +426,7 @@ export default function Community() {
               加入我們的健康社群
             </h2>
             <p className="text-sm md:text-base lg:text-lg text-gray-600 mb-6 md:mb-8 leading-relaxed px-4">
-              成為我們的會員，享受專屬健康資訊推送、專家諮詢服務，以及會員限定的護理指南
+              電子郵件會員已完成技術接線；目前提供個人資料、收藏與已連結訂單的權限基線，不宣稱尚未啟用的諮詢或推播服務。
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -533,24 +454,24 @@ export default function Community() {
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
                   <i className="ri-mail-line text-xl" style={{ color: '#225B4F' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">專屬健康資訊</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">定期接收最新的健康知識和護理建議，個人化推薦適合您的內容</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">電子郵件帳號</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">完成信箱驗證後登入；不會自動訂閱未啟用的行銷郵件。</p>
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
                   <i className="ri-user-heart-line text-xl" style={{ color: '#225B4F' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">專家諮詢服務</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">享受專業醫師和護理師的線上諮詢服務，解答您的健康疑問</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">個人資料權限</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">會員資料與收藏採本人權限隔離；本站目前不提供醫療或護理師諮詢。</p>
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
                   <i className="ri-vip-crown-line text-xl" style={{ color: '#225B4F' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">會員專屬優惠</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">獲得產品優惠、會員限定活動邀請，以及專屬護理指南下載</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">訂單連結基線</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">正式結帳啟用後，只顯示與已驗證會員 Cart 連結的 Shopify 訂單。</p>
               </div>
             </div>
           </div>

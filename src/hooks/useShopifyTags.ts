@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getFunctionUrl } from '../lib/supabase';
+import { getFunctionHeaders, getFunctionUrl, isShopifyTagCatalogEnabled } from '../lib/supabase';
 
 interface Product {
   id: string;
@@ -53,6 +53,13 @@ export function useShopifyProductsByTag(): UseProductsByTagResult {
       return;
     }
 
+    if (!isShopifyTagCatalogEnabled) {
+      setProducts([]);
+      setProductsByTag({});
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSearchTags(tags);
@@ -60,10 +67,7 @@ export function useShopifyProductsByTag(): UseProductsByTagResult {
     try {
       const response = await fetch(getFunctionUrl('get-products-by-tag'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`
-        },
+        headers: getFunctionHeaders(),
         body: JSON.stringify({
           tags,
           first: options.first || 20,
@@ -85,7 +89,6 @@ export function useShopifyProductsByTag(): UseProductsByTagResult {
         throw new Error(data.error || 'Failed to fetch products by tag');
       }
     } catch (err) {
-      console.error('Error fetching products by tag:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setProducts([]);
       setProductsByTag({});

@@ -1,4 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { hasAcceptedPublicKey } from '../create-shopify-cart/auth.ts';
+import {
+  buildStorefrontHeaders,
+  buildStorefrontUrl,
+  isValidShopifyDomain,
+  resolveShopifyDomain,
+  resolveStorefrontApiVersion,
+  shouldIncludeStorefrontInventory,
+} from '../_shared/shopify-storefront.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,6 +19,17 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
+
+  if (!hasAcceptedPublicKey(
+    req.headers.get('apikey'),
+    Deno.env.get('SUPABASE_ANON_KEY'),
+    Deno.env.get('SUPABASE_PUBLISHABLE_KEYS'),
+  )) {
+    return new Response(JSON.stringify({ success: false, error: 'Invalid API key' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
   
   try {
     console.log('=== Get Collections Function Started ===');
@@ -19,33 +39,33 @@ serve(async (req) => {
     console.log('Request params:', { collectionHandle, first });
     
     // 獲取 Shopify 認證資訊
-    const shopifyDomain = Deno.env.get('ShopifyDomain');
+    const shopifyDomain = resolveShopifyDomain(Deno.env.get('ShopifyDomain'));
     const storefrontAccessToken = Deno.env.get('StorefrontAccessToken');
+    const apiVersion = resolveStorefrontApiVersion(Deno.env.get('ShopifyStorefrontApiVersion'));
     
     console.log('Environment check:');
     console.log('ShopifyDomain:', shopifyDomain ? 'configured' : 'missing');
     console.log('StorefrontAccessToken:', storefrontAccessToken ? 'configured' : 'missing');
     
-    if (!shopifyDomain || !storefrontAccessToken) {
-      console.error('Missing Shopify credentials');
+    if (!isValidShopifyDomain(shopifyDomain)) {
+      console.error('Invalid Shopify domain');
       
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Shopify credentials not configured',
-          details: 'Missing ShopifyDomain or StorefrontAccessToken in environment variables',
-          debug: {
-            shopifyDomain: !!shopifyDomain,
-            storefrontAccessToken: !!storefrontAccessToken
-          }
+          error: 'Invalid ShopifyDomain configuration',
         }),
         { 
-          status: 200,
+          status: 503,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
     }
     
+    const restrictedProductFields = storefrontAccessToken ? 'tags' : '';
+    const restrictedVariantFields = shouldIncludeStorefrontInventory(
+      Deno.env.get('ShopifyStorefrontInventoryEnabled'),
+    ) ? 'quantityAvailable' : '';
     let query;
     let variables = {};
     
@@ -70,7 +90,7 @@ serve(async (req) => {
                   description
                   descriptionHtml
                   handle
-                  tags
+                  ${restrictedProductFields}
                   productType
                   vendor
                   createdAt
@@ -100,7 +120,7 @@ serve(async (req) => {
                           currencyCode
                         }
                         availableForSale
-                        quantityAvailable
+                        ${restrictedVariantFields}
                         selectedOptions {
                           name
                           value
@@ -164,15 +184,12 @@ serve(async (req) => {
     
     console.log('Executing GraphQL query...');
     
-    const shopifyUrl = `https://${shopifyDomain}/api/2024-01/graphql.json`;
+    const shopifyUrl = buildStorefrontUrl(shopifyDomain, apiVersion);
     console.log('Shopify URL:', shopifyUrl);
     
     const response = await fetch(shopifyUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': storefrontAccessToken,
-      },
+      headers: buildStorefrontHeaders(storefrontAccessToken),
       body: JSON.stringify({ query, variables }),
     });
     
@@ -189,7 +206,7 @@ serve(async (req) => {
           details: errorText
         }),
         { 
-          status: 200,
+          status: 502,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
@@ -208,7 +225,7 @@ serve(async (req) => {
           details: JSON.stringify(data.errors)
         }),
         { 
-          status: 200,
+          status: 502,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
@@ -227,7 +244,7 @@ serve(async (req) => {
             products: []
           }),
           { 
-            status: 200,
+            status: 404,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
           }
         );
@@ -277,6 +294,7 @@ serve(async (req) => {
     );
     
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('=== Get Collections Function Error ===');
     console.error('Error:', error);
     
@@ -284,10 +302,10 @@ serve(async (req) => {
       JSON.stringify({
         success: false,
         error: 'Internal server error',
-        details: error.message || 'Unknown error'
+        details: errorMessage || 'Unknown error'
       }),
       { 
-        status: 200,
+        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
