@@ -130,13 +130,13 @@ flowchart LR
 
 ## 6. Git 與部署狀態風險
 
-盤點時：
+2026-08-13 安全復原後：
 
-- branch：`main`
-- committed HEAD：`9051a1e`
-- `main` 與 `origin/main` 同步，但工作目錄有大量尚未提交的實作。
-- 共有 55 個 modified、1 個 deleted，合計 56 個 tracked changes；另有 20 個 untracked 路徑。
-- 本機 build 的入口 JS 為 `index-CBnnU-PJ.js`，正式站當時載入 `index-BALt2yh5.js`；兩者不同。
+- 原始基線：`main`／`origin/main` 的 `9051a1e`。
+- 復原 branch：`codex/saengak-recovery-security-review-20260813`。
+- 復原 commit：`53982ee`（127 個 paths；包含原本 56 個 tracked changes、untracked 原始碼、安全修復、測試與交接文件）。
+- branch 已 push 到 `origin`；尚未合併 `main`、未建立 PR、未觸發正式部署。
+- 2026-08-13 本機安全修復 build 的入口 JS 為 `index-C6lJYbPp.js`，正式站回讀載入 `index-BALt2yh5.js`；兩者不同，表示復原 branch 尚未部署到 production。
 
 接手者不得假設：
 
@@ -144,14 +144,14 @@ flowchart LR
 - Vercel READY 就代表本機全部修改已上線。
 - 線上 23/23 surface probe 通過就代表付款、物流、發票已驗收；它只證明公開 surface 與未授權拒絕基線正常。
 
-建議先建立明確的 launch branch，逐檔確認現有修改的來源與目的。不要 reset、checkout 或覆寫未知修改；它們可能是尚未提交的使用者工作。
+接手者應從復原 branch 建立 PR／Preview，逐檔確認來源與目的；不要直接把 `main` 或目前 Vercel deployment 當成這份復原快照。
 
 ## 7. P0：正式上線前必須完成
 
 ### P0-1　凍結可追溯版本
 
-- [ ] 逐檔審查 dirty worktree，排除暫存檔與不應發布內容。
-- [ ] 確認所有上線功能都在同一個可追溯 commit／branch。
+- [x] 多 agent 逐檔審查 dirty worktree，排除 generated Supabase `.temp` 與不應發布的機密值。
+- [x] 將目前可取得的本機功能收斂到可追溯的復原 commit／branch 並 push。
 - [ ] 產生 Preview deployment，記錄 commit SHA 與 deployment URL。
 - [ ] Preview 與正式網域不得指向不同功能版本。
 
