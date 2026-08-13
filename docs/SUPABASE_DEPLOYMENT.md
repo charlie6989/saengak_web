@@ -34,10 +34,10 @@
 
 ## 遠端部署狀態
 
-以下 2026-07-20 的數量是正式環境歷史回讀；2026-08-13 新增的兩個 Amego migrations、`amego-invoice-dispatch` 與退款版 `shopify-orders-webhook` 尚未部署，因此不得用本機測試結果宣稱正式發票／折讓已啟用。
+以下狀態以 2026-08-13 正式環境回讀為準。兩個 Amego migrations 已部署；`amego-invoice-dispatch`、退款版 `shopify-orders-webhook`、Amego secrets 與 scheduler 仍未部署，因此不得把資料庫就緒誤稱為正式發票／折讓已啟用。
 
 1. 2026-07-20 已建立免費的 `SAENGAK Production`，project ref 為 `tmqzkagkrzhioftvwbqo`、region 為 Tokyo；目前回讀為 `ACTIVE_HEALTHY`、Postgres 17.6。不得使用 `dhktmpcvtoxcicqkwgpn`。`npm run verify:binding:supabase` 專門阻擋錯誤的 Supabase CLI link；`npm run verify:binding:vercel` 可獨立驗證前端部署目標，不能用前端驗證結果冒充 Supabase 已重新 link。
-2. 五個基線 migration 已部署（含 `add_provider_neutral_invoice_projection`）；七個 Edge Functions 已為 `ACTIVE`。2026-07-20 管理 API 回讀：`create-shopify-cart` 與五個目錄／搜尋 Functions 為 v4，`shopify-orders-webhook` 為 v3。
+2. 七個 migration 已部署（五個既有基線加上 Amego invoice outbox 與 allowance lifecycle）；既有七個 Edge Functions 已為 `ACTIVE`。2026-07-20 管理 API 回讀：`create-shopify-cart` 與五個目錄／搜尋 Functions 為 v4，`shopify-orders-webhook` 為 v3；這些版本不包含 2026-08-13 新增的 Amego worker 與退款 webhook 程式。
 3. Vercel production 已設定新專案 URL 與 publishable key，並已重新部署及確認 production bundle 只包含新專案 ref。
 4. Supabase Auth Site URL 已保存為 `https://saengak.com.tw`；2026-07-20 正式後台回讀的 redirect allow list 為 `https://saengak.com.tw/auth/confirm` 與 `https://saengak.com.tw/reset-password` 兩條。文件不保存一次性 signed query 或密鑰。
 5. 2026-07-20 已在正式資料庫以兩個暫時 auth user 執行跨帳號交易測試：會員自己的 profile／order／item／fulfillment／favorite 可見，跨帳號 profile 更新與 favorite 新增、瀏覽器訂單新增、checkout link 讀取及匿名 profile 讀取均被阻擋，結果 11/11；交易最後 rollback，回讀測試 user／order／favorite 殘留皆為 0。
@@ -46,9 +46,12 @@
 8. 六個瀏覽器可呼叫的 Storefront Functions 皆設為 `verify_jwt=false`，並在函式內核對 Supabase `apikey`；缺 key 回覆 401、錯誤 Origin 回覆 403。這是為了相容現行 publishable key，不代表匿名放行。
 9. `StorefrontAccessToken` 只在商品 tags／受限庫存欄位需要；`get-products-by-tag` 缺 token 時安全回覆 503。`ShopifyWebhookSecret` 已保存於 Edge Function Secrets；webhook v2 未簽章 probe 由原本 503 改為 401。以同一 secret 產生的有效 HMAC 可通過驗簽，無效空 payload 於解析階段回覆 400 且沒有資料寫入。
 10. 正式 Auth `/auth/v1/settings` 已以 production bundle 的 publishable key 唯讀回讀：email provider 開啟、signup 允許、email confirmation 必須完成，Google／Facebook／Apple 與其他 OAuth providers 皆為關閉。公開登入／註冊頁因此只顯示電子郵件流程。
-11. 2026-07-20 再以 Supabase 管理連線回讀：五個遠端 migration 名稱與本地基線一致、七個 Edge Functions 全部為 `ACTIVE`；公開七表均啟用 RLS，anon 無任何 table grant，authenticated 只取得各模組需要的 SELECT／profile 與 favorite 自管權限，public schema 沒有 `SECURITY DEFINER` function。
+11. 2026-08-13 以 Supabase CLI 與 owner API 回讀：七個遠端 migration 的版本與名稱均與 Git 一致；公開資料表均啟用 RLS，anon 無新增 table grant，authenticated 只取得訂單本人可讀的 allowance projection，private outbox 對 anon／authenticated 無 schema usage 或 table grant。13 個發票／折讓 RPC 均為 `SECURITY INVOKER`、固定空 `search_path`，除受信任 worker 外不可執行。
 12. `order_invoices` 已完成正式跨帳號 transaction 測試：會員本人可讀、另一會員不可讀、匿名不可讀、會員不能 INSERT、service role 可寫；測試 invoice 與兩個暫時 auth user 在 rollback 後殘留皆為 0。會員中心已查詢此 provider-neutral projection，沒有供應商回讀時明示不從付款狀態推測發票。
 13. 會員中心發票查詢已部署至 Vercel production 並綁定 `saengak.com.tw`；正式 entry 的 lazy bundle 已回讀包含 `order_invoices` 查詢及發票來源提示。
 14. 2026-07-20 最新 Vercel production 為 `dpl_GymaDrHXPzoDyAA2ZHcaCJHx94dy`。正式站已加入 CSP、禁止第三方 frame、MIME sniffing 防護、Referrer Policy、Permissions Policy 與安全 opener policy；`npm run verify:production` 對 7 條正式路由、同源 JS／CSS bundle、6 類安全標頭及 7 個 Edge Function 未授權探針共 23/23 通過。
+15. 2026-08-13 已用官方 CLI 正式 link 到 `tmqzkagkrzhioftvwbqo`。遠端原有五筆 migration 與 Git 同名但時間戳不同；前三筆 SQL MD5 完全相同，後兩筆只差換行或 transaction wrapper，因此只修復 `supabase_migrations` history，沒有重跑舊 DDL。修復後 `db push --dry-run` 只列出 `20260813045204` 與 `20260813070648`。
+16. 部署前已保存 25,619-byte schema-only 快照，SHA-256 為 `a10bc7cfbfe970ac01d9d93dedc1ea0ff37feee68b5e2c6c42ee2cb501c7a96a`；114/114 unit tests、141/141 pgTAP assertions、typecheck、build、Supabase baseline 與遠端 schema lint 全數通過。兩筆 migration 套用後，CLI dry-run 回覆 `Remote database is up to date`，owner API 回讀為 7/7。
+17. 部署後 security advisor 只有兩個 INFO：`shopify_checkout_links` 與 private allowance outbox 的 deny-by-default RLS 沒有 client policy；兩者均未授權匿名／會員直接存取。Performance advisor 新增三個未覆蓋外鍵索引提示，屬後續容量優化，不阻擋目前部署；不要為消除 INFO 任意開放 client policy。
 
 會員資料隔離已完成遠端驗證；會員正式驗收尚需完成真實註冊信、確認連結、重設密碼與登入後收藏／訂單頁的端到端回歸。

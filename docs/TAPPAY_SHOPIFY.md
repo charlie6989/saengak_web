@@ -100,13 +100,13 @@ Storefront 前端另採兩個預設關閉的 release gate：
 - SAENGAK Production Supabase 專案已於 2026-07-30 恢復為 `ACTIVE_HEALTHY`；七個 Shopify Edge Functions 已部署新版本，`create-shopify-cart` v5 遠端回讀固定指向 `gh2xgs-zf.myshopify.com`。使用測試 Variant 的遠端 probe 已正確回傳 `SHOPIFY_STOREFRONT_LOCKED`，仍須 Shopify 解鎖與真實 Variant 才能取得 checkoutUrl。
 
 - Vercel production 已加入新 SAENGAK Supabase URL 與 publishable key、重新部署完成，主要公開路由回歸為 200。
-- `SAENGAK Production` (`tmqzkagkrzhioftvwbqo`) 已建立，五個 migration 與七個 Edge Functions 已部署並回讀為 `ACTIVE`；新增的 provider-neutral `order_invoices` 只接受受信任後端／發票供應商回寫。商店 domain／API version／公開 Origin 不再依賴 custom secrets。
+- `SAENGAK Production` (`tmqzkagkrzhioftvwbqo`) 已建立；2026-08-13 七個 migration 已與 Git 對齊並部署，既有七個 Edge Functions 回讀為 `ACTIVE`。新增的 provider-neutral `order_invoices` 只接受受信任後端／發票供應商回寫；Amego worker 與退款版 webhook 尚待部署。商店 domain／API version／公開 Origin 不再依賴 custom secrets。
 - `dhktmpcvtoxcicqkwgpn` 已由 `lucissi.com` 正式 bundle 證實屬於另一個網站，不得綁到 SAENGAK；`npm run verify:binding:supabase` 與完整的 `npm run verify:binding` 會阻擋此誤接，`verify:binding:vercel` 只允許驗證前端部署目標，不能取代 Supabase link。
 - 舊的 SAENGAK Shopify 商店 `zy6dge-rn.myshopify.com` 是 2026-07-20 的歷史基線，已不再作為目前結帳目標。
 - Shopify 2026-07 Storefront API 的 tokenless probe 已可讀取公開商品與 Variant；仍需以真實 Cart／Checkout、付款設定與同一筆 sandbox 訂單回讀證明結帳鏈路。
 - TapPay Shopify App Store 目前標示 App 免費。2026-07-20 已在 SAENGAK 商店同意 TapPay Payment App 權限並導向 TapPay 三步驟設定頁，但頁面停在「安裝前請先登入」；只有完成 TapPay 登入、選擇 Shopify 商家設定、開始串接並回到 Shopify 啟用後，才算安裝完成。
 - TapPay 要求的 Shopify 權限包含商店擁有人聯絡資料，以及編輯付款閘道／付款工作階段；尚未取得 TapPay Shopify 帳號、3D 收單規格、MGID 或 sandbox 對帳證據。
-- 新商店目前尚未完成 ShipAny 安裝／綁定、Amego migration／worker／secrets 部署與完整 sandbox 對帳；完成前不可宣稱正式結帳、物流或發票可用。
+- 新商店仍須完成 ShipAny owner-system 驗收，以及 Amego worker／secrets／scheduler 與完整 sandbox 對帳；Amego DB migrations 已於 2026-08-13 部署。完成前不可宣稱正式結帳、物流或發票可用。
 - `index.html` 中舊 Shopify chat domain `ekfvih-rz.myshopify.com` 目前回傳 404，不能當作有效商店來源。
 - Shopify 方案仍需由帳戶持有人選定；這會產生訂閱費用，不能由程式自動購買。
 - 現有 mock 商品沒有 Shopify Variant ID，只能驗證安全阻擋，不能建立真實 Shopify Cart。

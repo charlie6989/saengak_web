@@ -40,7 +40,7 @@ SAENGAK Cart
 
 ## 程式狀態
 
-已在目前 branch 實作、尚未部署至正式環境：
+以下程式已在目前 branch 實作；兩筆資料庫 migration 已於 2026-08-13 部署至 `SAENGAK Production`，Edge Functions、secrets、scheduler 與供應商 sandbox 驗收仍未部署／完成：
 
 - Checkout 收集個人、公司統編、手機條碼、光貿 Email 載具或捐贈碼；前後端都做格式驗證。只有已登入、且能以 checkout link 精確連回同一會員訂單的付款，才進入自動 Amego outbox；未知 cart token 或其他 Shopify 通路不會自動開票。匿名結帳在財會另訂流程前不得算作自動開票上線證據。
 - `private.checkout_invoice_preferences`：依 Shopify cart token 暫存，瀏覽器角色無權讀寫。

@@ -37,7 +37,7 @@
 - 尚無一份填入正式後台回讀值、且讓 `npm run verify:commerce` 回傳 `launchReady=true` 的交易證據檔。
 - 尚未在本次盤點完成 TapPay `success`、`failed`、`cancelled` 三種 sandbox 情境及跨系統對帳。
 - `order-status` 對公開未登入訪客仍被 Coming Soon 擋住；目前不能把付款回跳頁視為公開可用。
-- repo 已移除 `supabase/.temp` 這類機器產生的 binding 檔；目前沒有可接受的本機 Supabase link 證據，不可直接執行正式資料庫 push／function deploy。
+- 2026-08-13 已用具權限的官方 Supabase CLI 正式 link 並讀回 `tmqzkagkrzhioftvwbqo`；七筆 migration 已與 Git 對齊。`.temp` 仍是本機狀態且不得提交，後續每個新環境仍須重新登入、link 與驗證。
 - 正式客服電話、Email、官方 LINE、物流帳號綁定、發票供應商回讀與法務核准尚未閉環。
 - 正式站目前仍送出 `noindex, nofollow, noarchive`，搜尋引擎不應收錄。
 
@@ -60,7 +60,7 @@
 | 正式網域 | `https://saengak.com.tw` | 公開站目前為 Coming Soon |
 | Vercel project | `saengak-web-d2ux` | 本機 Vercel binding 檢查可通過 |
 | Shopify store | `gh2xgs-zf.myshopify.com`（My Store 7） | 不可使用其他 Shopify 商店的 Product／Variant |
-| Supabase production | `tmqzkagkrzhioftvwbqo` | repo 不保存 `.temp/project-ref`；需由具權限者正式 `supabase link` 後回讀 |
+| Supabase production | `tmqzkagkrzhioftvwbqo` | 2026-08-13 已正式 link／回讀；repo 不保存 `.temp/project-ref`，新環境須重新驗證 |
 | Shopify order webhook | SAENGAK production `shopify-orders-webhook` | 必須驗證 HMAC、shop domain、topic、webhook ID 與事件時間 |
 
 禁止手動修改 `supabase/.temp/project-ref` 假裝完成綁定。應由已登入且具權限的 Supabase CLI 執行正式 `link`，再以驗證腳本讀回。
@@ -116,7 +116,8 @@ flowchart LR
 
 | 檢查 | 結果 | 處理方式 |
 | --- | --- | --- |
-| `npm run verify:binding` | 失敗；repo 不保存本機 Supabase link，且驗證器要求兩個 Vercel Supabase URL 精確指向正式 project | 使用正確帳號執行 `supabase link`，在受控環境提供 Vercel env，再讀回驗證 |
+| `npm run verify:binding:supabase` | 通過；CLI readback 為 `tmqzkagkrzhioftvwbqo` | 新機器仍須用官方 `supabase link` 建立本機狀態；不得提交 `.temp` |
+| 完整 `npm run verify:binding` | 仍需在具 Vercel production env 的受控環境執行 | 同時核對兩個 Vercel Supabase URL 與 Supabase CLI ref |
 | `npm run verify:commerce -- docs/commerce-sandbox-evidence.template.json` | `launchReady=false` | 模板只是空白骨架；必須用三個真實 sandbox 情境的最小化回讀值填寫另一份受控檔案 |
 | 公開 `/order-status?source=shopify` | 只顯示 Coming Soon | 正式上線時移除全站 gate，重新驗證付款回跳 |
 | SEO | title／description 為 Coming Soon，meta 與 header 為 noindex | 上線版本更新 metadata 並移除 noindex |
@@ -167,12 +168,13 @@ flowchart LR
 
 ### P0-3　修正 Supabase CLI 綁定並完成 DB 驗證
 
-- [ ] 使用具權限帳號登入 Supabase CLI。
-- [ ] 正式 link 到 `tmqzkagkrzhioftvwbqo`。
-- [ ] 執行 `npm run verify:binding:supabase`，確認 readback 正確。
-- [ ] 啟動 Docker 並執行 `npm run test:db`。
-- [ ] 執行 DB lint 與 migration dry-run，確認只作用於 SAENGAK。
-- [ ] 若需部署 migration／function，先保存 dry-run／diff，再 apply 並回讀版本與狀態。
+- [x] 使用具權限帳號登入 Supabase CLI。
+- [x] 正式 link 到 `tmqzkagkrzhioftvwbqo`。
+- [x] 執行 `npm run verify:binding:supabase`，確認 readback 正確。
+- [x] 啟動 Docker 並執行 `npm run test:db`（141/141，五個 transaction 全部 rollback）。
+- [x] 執行 DB lint 與 migration dry-run，確認只作用於 SAENGAK。
+- [x] 保存 schema snapshot／dry-run，部署兩筆 Amego migration，再以 CLI 與 owner API 回讀 7/7。
+- [ ] 部署並回讀 `amego-invoice-dispatch`、退款版 `shopify-orders-webhook`、secrets 與 scheduler；DB migration 完成不代表 worker 已上線。
 
 完成標準：binding、pgTAP、rollback、lint、dry-run、遠端 migrations／functions readback 全部一致。
 
@@ -197,7 +199,7 @@ flowchart LR
 - [ ] Checkout 顯示預期的宅配／超取選項，避免重複物流方式。
 - [ ] success 案例可建單並把 fulfillment 與 HTTPS tracking URL 回寫 Shopify／Supabase。
 - [ ] failed／cancelled 案例不得誤建 fulfillment 或追蹤連結。
-- [ ] Amego 完成公司／字軌／API 申請、Supabase secrets、migration 與 worker 部署。
+- [ ] Amego 完成公司／字軌／API 申請、Supabase secrets 與 worker 部署；兩筆 DB migration 已於 2026-08-13 部署完成。
 - [ ] 發票 `issued` 只接受 Amego `invoice_query` 回讀 C0401 + status 99；付款成功或 API code=0 不可自行推測已開票。
 - [ ] 取消已開票訂單停在 `void_review`，由財會確認作廢／折讓與跨期規則後核准。
 - [ ] 驗證作廢與折讓事件的資料投影。
@@ -309,7 +311,7 @@ npm run verify:binding:vercel
 - [ ] 從指定 release commit 部署，不從未整理的 dirty worktree 部署。
 - [ ] 確認 Vercel project 是 `saengak-web-d2ux`。
 - [ ] 確認 domain alias 是 `saengak.com.tw`。
-- [ ] 確認 Supabase production ref 是 `tmqzkagkrzhioftvwbqo`。
+- [x] 確認 Supabase production ref 是 `tmqzkagkrzhioftvwbqo`，並回讀七筆 migration 一致。
 - [ ] 解除 Coming Soon 與 noindex。
 
 ### 11.3 部署後回讀
