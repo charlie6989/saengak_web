@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(22);
+select plan(25);
 
 select has_table('public', 'shopify_checkout_links', 'checkout links table exists');
 select ok(
@@ -105,6 +105,28 @@ select results_eq(
 );
 select results_eq(
   $$ select public.sync_shopify_order_webhook(
+    'f54557e4-bdd9-4b37-8a5f-bf7d70bcd047', 'orders/updated',
+    'saengak.myshopify.com', 'gid://shopify/Order/9554194432293',
+    'cart-token-123456', '#1001', 680, 'TWD', 'completed', 'paid',
+    'ShipAny 7-ELEVEN 超商取貨', 'fulfilled',
+    '2026-07-19T03:59:00Z', '2026-07-19T05:01:00Z',
+    '2026-07-19T05:01:02Z',
+    '[{"shopifyLineItemGid":"gid://shopify/LineItem/111222333","productId":"gid://shopify/Product/444555666","productVariantGid":"gid://shopify/ProductVariant/777888999","productName":"深層修護私密清潔露","quantity":1,"price":"680.00","imageUrl":""}]'::jsonb,
+    '[{"shopifyFulfillmentGid":"gid://shopify/Fulfillment/99112233","status":"success","trackingCompany":"ShipAny / T-CAT","trackingNumbers":["TCAT-123456"],"trackingUrls":["https://example.test/track/TCAT-123456-v2"],"createdAt":"2026-07-19T05:00:00Z","updatedAt":"2026-07-19T05:01:00Z"}]'::jsonb
+  ) $$,
+  array['applied'::text],
+  'a later delivery with the same Shopify update time uses the triggered-at tie breaker'
+);
+select results_eq(
+  $$ select f.tracking_company || '|' || f.tracking_urls[1]
+     from public.order_fulfillments f
+     join public.orders o on o.id = f.order_id
+     where o.shopify_order_gid = 'gid://shopify/Order/9554194432293' $$,
+  array['ShipAny / T-CAT|https://example.test/track/TCAT-123456-v2'::text],
+  'ShipAny-shaped tracking update is projected without a ShipAny API key'
+);
+select results_eq(
+  $$ select public.sync_shopify_order_webhook(
     'c54557e4-bdd9-4b37-8a5f-bf7d70bcd044', 'orders/cancelled',
     'saengak.myshopify.com', 'gid://shopify/Order/9554194432293',
     'cart-token-123456', '#1001', 680, 'TWD', 'cancelled', 'voided',
@@ -136,6 +158,12 @@ select results_eq(
   'select count(*)::bigint from public.orders',
   array[1::bigint],
   'unlinked and duplicate deliveries do not add orders'
+);
+select results_eq(
+  $$ select count(*)::bigint from private.amego_invoice_jobs
+     where shopify_order_gid = 'gid://shopify/Order/9554194432294' $$,
+  array[0::bigint],
+  'unlinked Shopify orders cannot enqueue Amego invoice mutations'
 );
 
 reset role;

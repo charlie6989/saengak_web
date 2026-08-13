@@ -236,8 +236,9 @@ export async function verifyShopifyWebhookHmac(
   secret: string,
 ): Promise<boolean> {
   if (!receivedHmac || !secret) return false;
-  const signature = base64ToBytes(receivedHmac);
-  if (!signature) return false;
+  const decodedSignature = base64ToBytes(receivedHmac);
+  if (!decodedSignature) return false;
+  const signature = new Uint8Array(decodedSignature);
 
   const key = await crypto.subtle.importKey(
     'raw',

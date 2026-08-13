@@ -43,7 +43,8 @@ export default function Privacy() {
 
         <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-sm">
           <h2 className="text-2xl font-semibold">服務供應商與資料安全</h2>
-          <p className="leading-7">網站目前使用或規劃使用 Vercel（網站託管）、Supabase（會員與訂單投影資料）及 Shopify（商品、購物車與結帳）。實際付款資料將由啟用後的付款服務商依其結帳畫面與政策處理。</p>
+          <p className="leading-7">網站目前使用或規劃使用 Vercel（網站託管）、Supabase（會員、訂單與受限發票處理資料）、Shopify（商品、購物車與結帳）、TapPay（付款）、ShipAny 與其承運商（配送、收件與追蹤），以及 Amego 光貿（電子發票、統編、載具、捐贈與通知）。各服務只依完成交易、配送、法定發票及安全維運所需範圍處理資料。</p>
+          <p className="leading-7">ShipAny 及承運商可能處理收件人姓名、電話、地址或超商取件資訊；Amego 可能處理買受人名稱、統一編號、通知 Email、載具或捐贈碼。發票暫存資料位於瀏覽器不可直接讀寫的後端，完成開立或作廢後會清除工作佇列中的敏感請求內容；依法必須保存的訂單與發票紀錄則依適用法令辦理。</p>
           <p className="leading-7">會員與訂單資料已設定帳號隔離規則；但任何網路服務都無法保證絕對安全，請勿在非官方管道提供密碼、卡號或驗證碼。</p>
         </section>
 

@@ -27,7 +27,7 @@ npm run verify:commerce -- /tmp/saengak-commerce-evidence.json
 
 ## 三個案例的算法
 
-- `success`：TapPay=`success`、Shopify=`paid`、Supabase=`paid`；三方 TWD 金額與 Shopify Order ID 一致。配送方式必須完成、fulfillment／HTTPS tracking URL 回寫，發票必須由供應商事件確認 `issued`。
+- `success`：TapPay=`success`、Shopify=`paid`、Supabase=`paid`；三方 TWD 金額與 Shopify Order ID 一致。ShipAny 配送方式完成，Shopify／Supabase 的 fulfillment GID 與 HTTPS tracking URL 必須一致；Amego 必須回讀 `invoice_type=C0401`、`invoice_status=99`、相同 Provider OrderId 與金額後才能確認 `issued`。
 - `failed`：TapPay=`failed`，Shopify 與 Supabase 都必須提供明確的非 `paid` 回讀；缺值不算證據。不能建立 fulfillment、tracking URL 或發票供應商事件，發票狀態須明確為 `not-issued`／`voided`。
 - `cancelled`：TapPay=`cancelled`、Shopify `cancelled=true`，Shopify 與 Supabase 都必須明確非 `paid`；同樣不能誤建物流或發票。
 
@@ -41,7 +41,7 @@ npm run verify:commerce -- /tmp/saengak-commerce-evidence.json
 
 - 2026-08-12 至 08-13 公開唯讀回讀已可取得 SAENGAK 商店、商品與 Variant；這只證明 Storefront 表面可讀，尚未證明 Shopify Checkout 與 TapPay 可付款。
 - TapPay App Store 顯示免費，但 App 仍顯示「安裝」；進入 TapPay Portal 後停在「安裝前請先登入」。
-- Waaship 已免費安裝到 SAENGAK，Shopify 左側導覽與 App iframe 均已回讀；目前停在「帳號綁定」，尚未輸入 Waaship 電子信箱／密碼、選擇付費方案或設定物流與發票。ShipAny 只完成唯讀比較，未同時安裝，避免重複 Checkout 物流方式。
+- 歷史上 Waaship 曾免費安裝但未完成帳號綁定。現已選擇 ShipAny＋Amego 架構；正式操作時須先停用 Waaship 重複配送方式，再安裝／綁定 ShipAny。Amego 程式基線使用私有 outbox 與 status 99 回讀，但 migration、worker、secrets、scheduler 與 sandbox 實單仍待部署／驗收。
 - `SAENGAK Order Sync`、Supabase webhook secret 與五個訂單 topics 已完成，但尚未有真實 TapPay sandbox 訂單 delivery 可供本驗證器對帳。
 
 因此目前必須維持 `launchReady=false`，不得啟用正式扣款。

@@ -7,6 +7,7 @@ import {
 } from './commerce-sandbox-lib.mjs';
 
 function baseEvidence(scenario) {
+  const orderId = { success: '9554194432293', failed: '9554194432294', cancelled: '9554194432295' }[scenario];
   return {
     scenario,
     environment: 'sandbox',
@@ -17,7 +18,7 @@ function baseEvidence(scenario) {
       variantCheckoutVerified: true,
       checkoutUrl: 'https://gh2xgs-zf.myshopify.com/checkouts/test',
       orderCreated: true,
-      orderId: `gid://shopify/Order/${scenario}`,
+      orderId: `gid://shopify/Order/${orderId}`,
       financialStatus: scenario === 'success' ? 'paid' : 'pending',
       cancelled: scenario === 'cancelled',
       amountTwd: 680,
@@ -29,7 +30,7 @@ function baseEvidence(scenario) {
       domainsConfigured: REQUIRED_TAPPAY_DOMAINS,
       testMode: true,
       status: scenario,
-      shopifyOrderId: `gid://shopify/Order/${scenario}`,
+      shopifyOrderId: `gid://shopify/Order/${orderId}`,
       amountTwd: 680,
     },
     webhook: {
@@ -39,31 +40,47 @@ function baseEvidence(scenario) {
     supabase: {
       projectRef: 'tmqzkagkrzhioftvwbqo',
       orderLinked: true,
-      shopifyOrderId: `gid://shopify/Order/${scenario}`,
+      shopifyOrderId: `gid://shopify/Order/${orderId}`,
       paymentStatus: scenario === 'success' ? 'paid' : scenario,
       amountTwd: 680,
     },
     logistics: scenario === 'success' ? {
-      provider: 'waaship',
+      provider: 'shipany',
       appInstalled: true,
       accountBound: true,
       checkoutMethodVerified: true,
       shopifyFulfillmentWrittenBack: true,
-      trackingUrl: 'https://tracking.example.com/test',
+      shopifyOrderId: `gid://shopify/Order/${orderId}`,
+      shopifyFulfillmentGid: 'gid://shopify/Fulfillment/99112233',
+      supabaseFulfillmentGid: 'gid://shopify/Fulfillment/99112233',
+      shopifyTrackingUrl: 'https://tracking.example.com/test',
+      supabaseTrackingUrl: 'https://tracking.example.com/test',
     } : {
-      provider: 'waaship',
+      provider: 'shipany',
       appInstalled: true,
       accountBound: true,
       shopifyFulfillmentWrittenBack: false,
+      shopifyFulfillmentGid: null,
+      supabaseFulfillmentGid: null,
+      shopifyTrackingUrl: null,
+      supabaseTrackingUrl: null,
     },
     invoice: scenario === 'success' ? {
       providerConfigured: true,
       authoritativeProviderEvent: true,
+      provider: 'amego',
       status: 'issued',
+      providerStatus: 99,
+      shopifyOrderId: `gid://shopify/Order/${orderId}`,
+      providerOrderId: 'S9554194432293',
+      invoiceNumber: 'AA12345678',
+      amountTwd: 680,
     } : {
       providerConfigured: true,
       authoritativeProviderEvent: false,
       status: 'not-issued',
+      providerOrderId: null,
+      invoiceNumber: null,
     },
   };
 }
@@ -119,12 +136,35 @@ describe('commerce sandbox reconciliation', () => {
 
   it('rejects a private tracking URL', () => {
     const evidence = baseEvidence('success');
-    evidence.logistics.trackingUrl = 'https://127.0.0.1/order/test';
+    evidence.logistics.shopifyTrackingUrl = 'https://127.0.0.1/order/test';
     const report = evaluateSandboxCase(evidence);
     expect(report.gates).toContainEqual(expect.objectContaining({
       id: 'fulfillment_projection',
       status: 'fail',
     }));
+  });
+
+  it('rejects Waaship after ShipAny was selected', () => {
+    const evidence = baseEvidence('success');
+    evidence.logistics.provider = 'waaship';
+    const report = evaluateSandboxCase(evidence);
+    expect(report.gates).toContainEqual(expect.objectContaining({ id: 'logistics_provider', status: 'fail' }));
+  });
+
+  it('rejects an empty or malformed fulfillment GID', () => {
+    const evidence = baseEvidence('success');
+    evidence.logistics.shopifyFulfillmentGid = '';
+    evidence.logistics.supabaseFulfillmentGid = '';
+    const report = evaluateSandboxCase(evidence);
+    expect(report.gates).toContainEqual(expect.objectContaining({ id: 'fulfillment_projection', status: 'fail' }));
+  });
+
+  it('rejects an invoice from another order or amount', () => {
+    const evidence = baseEvidence('success');
+    evidence.invoice.providerOrderId = 'S9554194439999';
+    evidence.invoice.amountTwd = 679;
+    const report = evaluateSandboxCase(evidence);
+    expect(report.gates).toContainEqual(expect.objectContaining({ id: 'invoice_projection', status: 'fail' }));
   });
 
   it('does not accept omitted payment outcomes as non-paid evidence', () => {
@@ -145,11 +185,14 @@ describe('commerce sandbox reconciliation', () => {
   it('does not create fulfillment or invoice state for a failed payment', () => {
     const evidence = baseEvidence('failed');
     evidence.logistics = {
-      provider: 'waaship',
+      provider: 'shipany',
       appInstalled: true,
       accountBound: true,
       shopifyFulfillmentWrittenBack: true,
-      trackingUrl: 'https://tracking.example.com/should-not-exist',
+      shopifyFulfillmentGid: 'gid://shopify/Fulfillment/99112233',
+      supabaseFulfillmentGid: 'gid://shopify/Fulfillment/99112233',
+      shopifyTrackingUrl: 'https://tracking.example.com/should-not-exist',
+      supabaseTrackingUrl: 'https://tracking.example.com/should-not-exist',
     };
     evidence.invoice.status = 'issued';
     const report = evaluateSandboxCase(evidence);

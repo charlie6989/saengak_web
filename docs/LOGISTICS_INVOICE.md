@@ -1,85 +1,96 @@
-# SAENGAK 物流與電子發票評估／部署基線
+# SAENGAK：ShipAny 物流＋Amego 光貿電子發票整合
 
-更新日期：2026-07-19
+更新日期：2026-08-13
 
-## 建議結論
-
-現階段建議 SAENGAK 以 **Waaship 高級方案**作為第一順位，原因是正式上線同時需要台灣超商／宅配與電子發票，而 Waaship 官方方案已明列高級方案包含自動開立發票、2 間商店、前 300 筆訂單免處理費與跨通路庫存。專業方案較適合 5 間商店、每月近千單或需要優先支援的階段，目前不必先負擔。
-
-ShipAny 適合作為物流成本與承運商覆蓋的備選：官方台灣方案可零月費、按運費使用，結帳服務點列表為 NT$398／月且符合每月出貨條件可豁免，並有較廣的本地、冷運與跨境物流選擇。但截至本次查核，ShipAny 公開的 Shopify／台灣產品頁沒有證明可直接完成台灣銷售電子發票，因此若選 ShipAny，必須另接發票服務，不能把物流帳單或 Shopify 已付款狀態當成銷售發票已開立。
-
-## 能力與成本比較
-
-| 評估項目 | Waaship | ShipAny | SAENGAK 判定 |
-| --- | --- | --- | --- |
-| 7-ELEVEN／全家超取 | 支援 | 支援，另含萊爾富等 | 兩者可用，需在真實 Shopify Checkout 驗證選店 |
-| 台灣宅配 | 黑貓、郵局、順豐、嘉里等 | 黑貓、順豐、嘉里及其他承運商 | 兩者可用 |
-| 電子發票 | 高級／專業方案明列自動開立，串接綠界或鯨躍 | 公開頁面未列出台灣銷售電子發票 | 發票是上線必要條件時選 Waaship |
-| 多通路／庫存 | Shopify＋蝦皮訂單與庫存整合 | Shopify 物流與多承運商自動化為主 | 有蝦皮同步需求時 Waaship 較合適 |
-| 固定月費 | 基本 NT$499；高級 NT$1,299；專業 NT$3,299 | 寄付物流 NT$0；服務點列表 NT$398，符合條件可豁免 | 只做物流試跑時 ShipAny 成本較低 |
-| COD | 超取、宅配貨到付款 | 代收金額 0.7%，最低 NT$30 | 正式啟用前需確認 TapPay 與 COD 是否同時顯示及對帳 |
-| 跨境／冷運 | 有跨境物流 | 承運商與服務類型較廣，明列冷運 | 特殊物流可保留 ShipAny 備援評估 |
-
-以上費用與功能來自 2026-07-19 查核的官方公開頁面；物流實際運費、超材限制、偏遠／離島費、代收撥款週期及發票加值中心費用仍要取得書面報價後確認。
-
-## 系統責任切分
+## 已選架構
 
 ```text
-SAENGAK 商品與購物車
+SAENGAK Cart
   -> Shopify Checkout
-     -> TapPay：線上付款
-     -> Waaship 或 ShipAny：配送選項／超商選店
+     -> TapPay：付款
+     -> ShipAny：配送方式／超商選店
   -> Shopify Order
-     -> 物流 App：叫件、標籤、貨態與 tracking 回寫
-     -> 發票 App／加值中心：開立、作廢、折讓
-  -> Shopify signed webhook
-     -> Supabase：會員可讀的訂單與配送投影
+     -> ShipAny 回寫 Shopify fulfillment + tracking
+     -> Shopify signed order webhook -> Supabase 訂單／物流投影
+     -> exact paid -> private Amego outbox
+        -> 獨立 worker -> Amego API
+        -> invoice_query 回讀 C0401 + status 99
+        -> public.order_invoices（會員只讀自己的）
 ```
 
-- 商品售價、付款結果、配送選擇與訂單狀態以 Shopify 為準。
-- 卡號與 TapPay Partner Key 不進入 SAENGAK 前端或 Supabase。
-- 物流 App 的 API 金鑰、承運商客代與電子發票憑證只放在供應商／Shopify 管理端。
-- Supabase 只保存配送方式、Shopify fulfillment 狀態、承運商、追蹤碼與 HTTPS 追蹤連結；不複製 Shopify webhook 中的完整姓名、電話與地址。
-- 「已付款」不等於「發票已開立」；發票狀態必須來自 Waaship／發票加值中心的可驗證回讀。未確認 API 或 webhook 前，發票查詢仍以該平台後台為權威來源。
+- ShipAny 採 Shopify App 原生整合。repo、Vercel 與 Supabase **不需要 ShipAny API key**。
+- ShipAny 官方 App 說明支援訂單同步、標記 Shopify fulfillment 與 tracking URL 回寫；SAENGAK 只信任 Shopify HMAC webhook，不另信任物流商 payload。
+- Amego 使用 `/json/f0401` 自動配號；HTTP 2xx 或 `code=0` 都不直接標記 `issued`。只有 `/json/invoice_query` 回讀同一 `OrderId`、同金額、`invoice_type=C0401` 且 `invoice_status=99` 才建立會員可見發票投影。
+- 付款 webhook 只在資料庫 transaction 內建立私有、具 SHA-256 digest 的 outbox；不等待 Amego 網路呼叫。
+- 作廢不自動執行。Shopify 取消已開票訂單只會進 `void_review`，須財會確認跨期、折讓與申報狀態後，以受限 RPC 核准。
 
-## 物流選擇算法
+## 程式狀態
 
-管理端只根據可驗證欄位配置規則，不在網站自行猜運費：
+已在目前 branch 實作、尚未部署至正式環境：
 
-1. 先依目的地排除不服務的本島、離島或海外方式。
-2. 依包裹實際重量、材積、溫層與商品限制排除超材、禁運或不相容承運商。
-3. 依顧客選擇的宅配／超取與線上付款／COD 保留可用服務。
-4. 在承諾到貨日內，按「完整落地成本＝運費＋平台費＋COD 費＋偏遠／離島附加費－可核實折扣」排序。
-5. 同成本時依近期妥投率優先，再依平均配送時間與異常率；資料量不足時維持人工指定，不生成虛構排名。
-6. 促銷贈品、液體、組合品與多件訂單必須以實際包裝後重量／材積重新檢查，不能只用單品重量相加後直接叫件。
+- Checkout 收集個人、公司統編、手機條碼、光貿 Email 載具或捐贈碼；前後端都做格式驗證。只有已登入、且能以 checkout link 精確連回同一會員訂單的付款，才進入自動 Amego outbox；未知 cart token 或其他 Shopify 通路不會自動開票。匿名結帳在財會另訂流程前不得算作自動開票上線證據。
+- `private.checkout_invoice_preferences`：依 Shopify cart token 暫存，瀏覽器角色無權讀寫。
+- `private.amego_invoice_jobs`：transactional outbox、不可變 request snapshot/digest、具 fencing token 的 lease、外部 mutation 一次送出後只查詢、退避重試與人工作廢審核。
+- `amego-invoice-dispatch`：固定只連 `https://invoice-api.amego.tw`，form-urlencoded、官方 MD5 簽章、10 秒 timeout、禁止 redirect、限制 response 大小、先查再開與開後再查。
+- provider response 只保存狀態、發票號碼與時間；不記錄 App Key、簽章、載具、買受人資料、QR code 或原始 response。
+- 開立、作廢、取消、終止失敗或轉人工審查後清空 outbox 的 PII payload；過期 checkout preference 會在保存、同步與 worker claim 時清除，另提供受限 purge RPC 供排程執行。`order_invoices` 仍由 RLS 限制為訂單本人可讀。
+- ShipAny 回寫沿用 `orders/updated`／`orders/fulfilled`；相同 Shopify update timestamp 以 webhook triggered-at 解決排序，不新增 ShipAny secret 或不同 payload 的 fulfillment webhook。
 
-第一階段先在 Shopify／物流 App 設定固定方式與運費；有至少 30 天真實出貨資料後，才啟用依妥投率與成本的自動路由。
+## 正式啟用前必要步驟
 
-上述規則已落地於 `src/domain/fulfillment.ts`：沒有符合條件的服務會回傳 `no_eligible_service`；妥投率／平均時效未滿 30 天證據門檻時回傳 `insufficient_performance_evidence` 並要求人工選擇。發票顯示狀態同樣只接受發票供應商事件；即使 Shopify／TapPay 已付款，沒有供應商回讀仍維持 `awaiting-provider`。
+### ShipAny（Shopify owner 操作）
 
-## 部署步驟
+1. 精確確認商店為 `gh2xgs-zf.myshopify.com`，再安裝 ShipAny。
+2. 先停用 Waaship 可能建立的重複 Checkout 配送方式；不要讓兩套超商選店同時對客。
+3. 審閱 App 所需訂單、顧客與履約權限，以及 ShipAny 隱私政策。
+4. 綁定台灣帳號、寄件／退貨地址、7-ELEVEN／全家與宅配承運商。
+5. 若要在 Checkout 顯示即時計算運費，確認 Shopify 方案具第三方承運商計算運費資格。
+6. 如需服務點列表，帳戶持有人確認 NT$398／月、14 天試用及當期豁免條件後再接受訂閱。
+7. 實測完整出貨、部分出貨與後補 tracking，逐層回讀 ShipAny → Shopify → signed webhook → Supabase → 會員中心。
 
-1. 建立或指定 **SAENGAK 專用 Shopify 商店**；不得安裝到目前已識別為 LUCISSI 商品用途的商店。
-2. 先在測試／未公開商店安裝 Waaship，選高級方案；建立物流與發票加值中心帳號，方案與促銷資訊只在管理端處理，不寫入公開 repo。
-3. 設定 7-ELEVEN／全家超取、宅配、離島、免運門檻與 COD；確認商品重量、出貨地址、寄件人資料及退貨地址。
-4. 設定 B2C、B2B 統編、手機條碼／載具、捐贈、作廢、退貨折讓與海外零稅率流程，取得測試發票證據。
-5. Shopify Checkout 逐一測試：宅配、超取選店、TapPay 成功、TapPay 失敗／取消、COD、超材、離島、地址／電話驗證。
-6. 從物流 App 建單並列印標籤，確認 tracking number／URL 回寫 Shopify；再確認 SAENGAK 會員中心只顯示該會員自己的追蹤資料。
-7. 用同一筆訂單 ID 對帳 Shopify、TapPay、Waaship／ShipAny、發票加值中心與 Supabase；金額、付款、發票、出貨及取消狀態全數一致才切正式模式。
-8. 若 Waaship 的真實運費或作業流程不符合需求，再以相同驗收案例 A/B 試跑 ShipAny；不要在同一正式 Checkout 同時啟用重複的超取方式。
+### Amego（公司／財會與工程共同操作）
 
-## 已完成與阻擋點
+1. 公司代表在 Amego 完成公司新增、財政部授權、字軌與 API 申請；不要共用 owner 密碼。
+2. 先用官方 test seller 測試，再切正式公司統編與 App Key。測試與正式共用 host，必須靠 `AmegoMode`、seller allowlist 與 release kill switch 防止誤用。
+3. 把 `AmegoAppKey`、`AmegoSellerTaxId`、`AmegoDispatchToken` 只放 Supabase Edge Function Secrets；dispatch token 至少 32 bytes，並由秘密管理器隨機產生。
+4. 部署 migration 與兩個更新／新增 Edge Functions後，配置受信任 scheduler 呼叫 worker與每日 purge RPC；queue 只傳 order GID，不傳 PII。
+5. 財會書面決定：手動標記付款是否可開票、B2B 稅額規則、跨期作廢、退款折讓、混合稅率與海外零稅率。未決定前保持 `AmegoInvoiceReleaseEnabled=false`。
+6. success／failed／cancelled 各跑一筆 sandbox；success 必須取得 Amego status 99，failed/cancelled 必須證明沒有 provider OrderId／發票號碼。
 
-已完成：SAENGAK 專用 Shopify 商店與 Supabase 專案已建立；`SAENGAK Order Sync` 已只安裝於 Saengak，五個訂單 webhook topics、Supabase secret 與 HMAC 驗簽鏈路已完成。Shopify order webhook 解析與資料庫投影已改為物流商中立，可接 Waaship 或 ShipAny 回寫的 Shopify fulfillment。`order_invoices` 發票商中立投影與會員中心查詢亦已部署；正式 Supabase 遠端跨帳號 RLS 測試確認會員只能讀自己的追蹤與發票資料，瀏覽器不能偽造狀態。
+## 環境變數契約
 
-2026-07-20 已把 Waaship 免費安裝到 SAENGAK，並在 Shopify 導覽與 App iframe 回讀成功；目前停在 Waaship「帳號綁定」，未輸入帳密、未選付費方案、未套用不公開折扣碼。ShipAny 維持只讀備援評估，沒有同時安裝，避免重複 Checkout 物流方式。
+| 名稱 | 放置位置 | 說明 |
+| --- | --- | --- |
+| `AmegoInvoiceReleaseEnabled` | Supabase secret | 預設 `false`；核准後才可精確設為 `true` |
+| `AmegoMode` | Supabase secret | `test` 或 `production` |
+| `AmegoSellerTaxId` | Supabase secret | 賣方統編，不得放入 `VITE_*` |
+| `AmegoAllowedSellerTaxIds` | Supabase secret | 允許統編清單，避免 test/prod 誤切 |
+| `AmegoAppKey` | Supabase secret | 光貿 App Key |
+| `AmegoDispatchToken` | Supabase secret／scheduler | worker 自訂驗證 token，需高熵並輪替 |
+| ShipAny secret | 不存在 | 設定留在 ShipAny／Shopify 管理端 |
 
-尚未完成：Shopify 方案選擇、商品匯入、Waaship 帳號綁定、物流／發票帳號開通與 sandbox 實單。付款頁目前要求先選方案，Online Store API 亦回覆 channel locked；不會改動既有 LUCISSI 商店，也不會代購方案或啟用正式扣款。
+## 正式驗收證據
+
+執行：
+
+```bash
+npm run verify:commerce -- docs/commerce-sandbox-evidence.local.json
+```
+
+成功案例必須同時符合：
+
+- Shopify、TapPay、Supabase 的同一 Order GID 與整數 TWD 金額一致。
+- ShipAny 已安裝／綁定，Checkout 配送方式已實測。
+- Shopify 與 Supabase 的同一 fulfillment GID、公開 HTTPS tracking URL 完全一致。
+- Amego provider=`amego`、provider status=99、同一 Shopify Order GID、不可變 `S<Shopify numeric order id>` Provider OrderId 與合法發票號碼。
+
+failed／cancelled 案例必須明確沒有 fulfillment GID、tracking URL、Amego Provider OrderId 或發票號碼。正式 launch 仍需 DB pgTAP、binding、三情境證據與 owner-system readback 全部完成。
 
 ## 官方參考
 
-- [Waaship Shopify App](https://apps.shopify.com/waaship?locale=zh-TW)
-- [Waaship 方案](https://waaship.com/zh-tw/plansPricing/)
-- [Waaship 物流服務](https://waaship.com/zh-tw/shipping/)
 - [ShipAny Shopify App](https://apps.shopify.com/shipany-1?locale=zh-TW)
 - [ShipAny 台灣方案](https://www.shipany.io/zho/pricing/)
+- [Shopify 第三方計算運費資格](https://help.shopify.com/en/manual/fulfillment/setup/shipping-rates/third-party-carrier-calculated-shipping)
+- [Amego API 文件](https://invoice.amego.tw/api_doc/)
+- [Amego API 範例](https://invoice.amego.tw/api_doc/example)
+- [Amego 錯誤碼](https://invoice.amego.tw/info_detail?mid=71)

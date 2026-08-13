@@ -52,7 +52,7 @@ Deno.serve(async (request: Request) => {
 
   const webhookId = request.headers.get('X-Shopify-Webhook-Id');
   const topic = request.headers.get('X-Shopify-Topic');
-  const shopDomain = normalizeShopifyDomain(request.headers.get('X-Shopify-Shop-Domain'));
+  const shopDomain = normalizeShopifyDomain(request.headers.get('X-Shopify-Shop-Domain') ?? undefined);
   const triggeredAt = request.headers.get('X-Shopify-Triggered-At') ?? '';
 
   if (

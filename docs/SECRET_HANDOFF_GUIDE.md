@@ -42,6 +42,8 @@
 - Supabase production secrets 通常不能用「把 owner token 一起複製」的方式安全移交；應邀請接手者加入 project，再由帳戶持有人在 Dashboard／受控密碼管理器交付或輪替必要值。
 - 前端只可使用 `VITE_PUBLIC_SUPABASE_PUBLISHABLE_KEY` 或必要的 legacy anon key；不得使用 `sb_secret_*`／`service_role`。
 - Edge Functions 可能需要：`ShopifyDomain`、`ShopifyStorefrontApiVersion`、`StorefrontAccessToken`、`ShopifyWebhookSecret`、`CheckoutAllowedOrigins`、`CheckoutReleaseEnabled`，以及 Supabase 平台提供的 backend defaults。
+- Amego worker 另需要 `AmegoInvoiceReleaseEnabled`、`AmegoMode`、`AmegoSellerTaxId`、`AmegoAllowedSellerTaxIds`、`AmegoAppKey`、`AmegoDispatchToken`。所有值只放 Supabase Secrets；正式開通前 release flag 維持 `false`。
+- ShipAny 採 Shopify App 原生整合，repo／Vercel／Supabase 不應出現 ShipAny API key；帳號、承運商與付費方案留在 ShipAny／Shopify 管理端。
 - `CheckoutReleaseEnabled` 是 server-side kill switch，預設必須為 `false`；只有 sandbox 三情境、binding、DB 與 owner-system readback 全部通過且核准上線後，才可設為精確字串 `true`。
 - 接手者取得權限後，先以 `supabase secrets list --project-ref tmqzkagkrzhioftvwbqo` 讀回名稱與 digest，再決定輪替；不要把 secret value 寫回 repo。
 
@@ -82,7 +84,7 @@ TapPay 金鑰不應放在 React/Vite 前端。若 Portal 不允許再次顯示�
 | Supabase | project member，依工作分配 Developer／Read-only | owner access token、service role 放入前端 |
 | Shopify | collaborator／staff role | owner 密碼、Cookie、OTP |
 | TapPay | Portal member／商家角色 | owner 密碼、Partner Key 明文聊天 |
-| Waaship／發票 | 各自建立成員帳號 | 共用主帳號密碼、付款資料 |
+| ShipAny／Amego | 各自建立成員帳號；App Key 只進 Supabase secret | 共用主帳號密碼、App Key 明文聊天、付款資料 |
 
 ## 4. 加密包使用方式
 

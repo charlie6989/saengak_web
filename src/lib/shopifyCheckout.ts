@@ -1,4 +1,5 @@
 import type { ShopifyCheckoutLine } from '../domain/algorithms';
+import type { InvoicePreference } from '../domain/invoice';
 import { isSupabaseConfigured, supabase } from './supabase';
 
 export const SAENGAK_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
@@ -52,6 +53,9 @@ export function getShopifyCheckoutErrorMessage(
   }
 
   if (status === 401) {
+    if (data.code === 'INVOICE_PREFERENCE_REQUIRES_MEMBER') {
+      return '使用統編、載具、捐贈碼或發票通知 Email 前，請先登入會員。';
+    }
     return '結帳服務驗證失敗，請重新整理後再試。';
   }
 
@@ -69,7 +73,10 @@ export function validateShopifyCheckoutUrl(rawCheckoutUrl: string): string {
   return checkoutUrl.toString();
 }
 
-export async function createShopifyCheckout(lines: ShopifyCheckoutLine[]): Promise<string> {
+export async function createShopifyCheckout(
+  lines: ShopifyCheckoutLine[],
+  invoicePreference: InvoicePreference,
+): Promise<string> {
   if (!isShopifyCheckoutConfigured) {
     throw new Error('Shopify checkout 尚未設定');
   }
@@ -91,7 +98,7 @@ export async function createShopifyCheckout(lines: ShopifyCheckoutLine[]): Promi
     {
       method: 'POST',
       headers,
-      body: JSON.stringify({ lines }),
+      body: JSON.stringify({ lines, invoicePreference }),
     },
   );
 

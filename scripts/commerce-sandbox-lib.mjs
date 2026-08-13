@@ -217,11 +217,27 @@ function evaluateDownstreamEffects(evidence) {
   const logistics = evidence.logistics ?? {};
   const invoice = evidence.invoice ?? {};
   if (evidence.scenario === 'success') {
+    const shopifyOrderId = evidence.shopify?.orderId;
+    const shopifyNumericOrderId = typeof shopifyOrderId === 'string'
+      ? shopifyOrderId.match(/^gid:\/\/shopify\/Order\/([1-9]\d*)$/)?.[1]
+      : undefined;
+    const fulfillmentGidPattern = /^gid:\/\/shopify\/Fulfillment\/[1-9]\d*$/;
     const logisticsPass = logistics.checkoutMethodVerified === true
       && logistics.shopifyFulfillmentWrittenBack === true
-      && isPublicHttpsUrl(logistics.trackingUrl);
+      && logistics.shopifyOrderId === shopifyOrderId
+      && fulfillmentGidPattern.test(logistics.shopifyFulfillmentGid ?? '')
+      && logistics.shopifyFulfillmentGid === logistics.supabaseFulfillmentGid
+      && isPublicHttpsUrl(logistics.shopifyTrackingUrl)
+      && logistics.shopifyTrackingUrl === logistics.supabaseTrackingUrl;
     const invoicePass = invoice.authoritativeProviderEvent === true
-      && invoice.status === 'issued';
+      && invoice.provider === 'amego'
+      && invoice.status === 'issued'
+      && invoice.providerStatus === 99
+      && invoice.shopifyOrderId === shopifyOrderId
+      && Boolean(shopifyNumericOrderId)
+      && invoice.providerOrderId === `S${shopifyNumericOrderId}`
+      && invoice.amountTwd === evidence.shopify?.amountTwd
+      && /^[A-Z]{2}\d{8}$/.test(invoice.invoiceNumber ?? '');
     return [
       gate(
         'fulfillment_projection',
@@ -240,9 +256,15 @@ function evaluateDownstreamEffects(evidence) {
     ];
   }
 
-  const logisticsPass = logistics.shopifyFulfillmentWrittenBack === false && logistics.trackingUrl == null;
-  const invoicePass = invoice.authoritativeProviderEvent === false
-    && ['not-issued', 'voided'].includes(invoice.status);
+    const logisticsPass = logistics.shopifyFulfillmentWrittenBack === false
+      && logistics.shopifyFulfillmentGid == null
+      && logistics.supabaseFulfillmentGid == null
+      && logistics.shopifyTrackingUrl == null
+      && logistics.supabaseTrackingUrl == null;
+    const invoicePass = invoice.authoritativeProviderEvent === false
+      && invoice.providerOrderId == null
+      && invoice.invoiceNumber == null
+      && ['not-issued', 'voided'].includes(invoice.status);
   return [
     gate(
       'fulfillment_projection',
@@ -319,14 +341,14 @@ export function evaluateSandboxCase(evidence) {
     ),
     gate(
       'logistics_provider',
-      ['waaship', 'shipany'].includes(evidence.logistics?.provider)
+      evidence.logistics?.provider === 'shipany'
         && evidence.logistics?.appInstalled === true
         && evidence.logistics?.accountBound === true ? 'pass' : 'fail',
-      ['waaship', 'shipany'].includes(evidence.logistics?.provider)
+      evidence.logistics?.provider === 'shipany'
         && evidence.logistics?.appInstalled === true
         && evidence.logistics?.accountBound === true
-        ? '物流 App 已安裝並綁定供應商帳號'
-        : '必須安裝 Waaship 或 ShipAny，並完成供應商帳號綁定',
+        ? 'ShipAny 已安裝並綁定供應商帳號'
+        : '必須安裝 ShipAny、停用重複物流方案，並完成供應商帳號綁定',
     ),
     booleanGate(
       'invoice_provider',

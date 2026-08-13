@@ -8,7 +8,7 @@ const modules = [
   ['購物車／金流', '待解鎖', 'TapPay 商家設定完成；結帳已改接新商店，待 Shopify Online Store、真實 Variant 與三案例 sandbox'],
   ['會員中心', '技術基線完成', '正式註冊／登入／重設表單、Auth URLs、publishable key 與跨帳號 RLS 11/11 已驗證'],
   ['訂單查詢', '串接中', 'App secret、五個 webhook topics、HMAC 與會員唯讀投影已完成；待真實 sandbox delivery'],
-  ['物流／發票', 'App 已安裝', 'Waaship 已安裝於 SAENGAK；待帳號綁定、方案、物流／發票 sandbox 實單'],
+  ['物流／發票', '程式整合中', '已選 ShipAny＋Amego；待 App 綁定、後端部署、方案與 sandbox 實單'],
   ['內容中心', '靜態可用', 'Shopify Blog 即時資料待接'],
   ['法務內容', '已建立', '正式發布前仍需法務確認'],
 ];

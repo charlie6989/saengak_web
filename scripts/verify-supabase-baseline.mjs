@@ -19,6 +19,10 @@ const rlsTest = readFileSync(
   'utf8',
 );
 const functionConfig = readFileSync('supabase/config.toml', 'utf8');
+const amegoFunctionSource = readFileSync(
+  'supabase/functions/amego-invoice-dispatch/index.ts',
+  'utf8',
+);
 
 const tables = [
   'profiles',
@@ -178,6 +182,43 @@ requirePattern(
   /grant execute on function public\.sync_shopify_order_webhook[\s\S]*to service_role/i,
   'Shopify 訂單同步 RPC 必須只交給受信任後端角色',
 );
+requirePattern(
+  /create table if not exists private\.checkout_invoice_preferences\s*\(/i,
+  '缺少 private checkout invoice preferences',
+);
+requirePattern(
+  /create table if not exists private\.amego_invoice_jobs\s*\(/i,
+  '缺少 private Amego transactional outbox',
+);
+requirePattern(
+  /request_sha256 text not null/i,
+  'Amego outbox 缺少 immutable snapshot digest',
+);
+requirePattern(
+  /revoke all on table private\.amego_invoice_jobs from public, anon, authenticated/i,
+  'Amego outbox 未撤銷瀏覽器角色權限',
+);
+requirePattern(
+  /grant execute on function public\.claim_amego_invoice_job\(text\)\s+to service_role/i,
+  'Amego worker claim RPC 必須只交給 service role',
+);
+requirePattern(
+  /grant execute on function public\.mark_amego_invoice_mutation_started\(uuid, uuid\)\s+to service_role/i,
+  'Amego mutation boundary must stay service-role only',
+);
+requirePattern(
+  /grant execute on function public\.complete_amego_invoice_job[\s\S]*to service_role/i,
+  'Amego worker completion RPC 必須只交給 service role',
+);
+if (!/\[functions\.amego-invoice-dispatch\]\s+verify_jwt\s*=\s*false/m.test(functionConfig)) {
+  errors.push('amego-invoice-dispatch 未宣告自訂驗證模式');
+}
+for (const safeguard of ['AmegoDispatchToken', 'AmegoInvoiceReleaseEnabled', 'secureEquals']) {
+  if (!amegoFunctionSource.includes(safeguard)) errors.push(`Amego worker 缺少 ${safeguard} safeguard`);
+}
+if (/VITE_/i.test(amegoFunctionSource)) {
+  errors.push('Amego worker 不得使用瀏覽器公開環境變數');
+}
 
 if (errors.length) {
   errors.forEach((error) => console.error(`ERROR: ${error}`));

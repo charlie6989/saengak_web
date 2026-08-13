@@ -12,7 +12,8 @@ SAENGAK 購物車
   -> Shopify Storefront API cartCreate
   -> Shopify checkoutUrl
   -> TapPay Payment App
-  -> Waaship 或 ShipAny Shopify App 提供配送／超商選店
+  -> ShipAny Shopify App 提供配送／超商選店
+  -> Amego private outbox 於付款確認後處理電子發票
   -> Shopify signed order webhook
   -> Supabase trusted member order／fulfillment projection
 ```
@@ -29,8 +30,8 @@ SAENGAK 購物車
 - `shopify-orders-webhook` 以原始 request body 驗證 Shopify HMAC，檢查商店、topic、Webhook ID 與 payload，再由 service role 投影訂單。
 - 同一 Webhook ID 會去重；較舊的 `updated_at` 事件不會覆蓋較新的付款狀態；未找到可信 Cart 連結的訂單只記錄 `unlinked`，不建立會員訂單。
 - Webhook receipts 只保存事件 ID、topic、商店、訂單 GID、時間與處理結果，不保存地址、電話或完整顧客 payload。
-- 物流 App 回寫 Shopify fulfillment 後，同一簽章 webhook 會同步配送方式、承運商、追蹤碼與 HTTPS 追蹤連結；不綁死 Waaship 或 ShipAny 私有 API。
-- `orders`／`order_items`／`order_fulfillments` 維持會員唯讀。程式測試需由 CI／本機重跑；目前 DB runner 應執行 61 項 pgTAP assertion，但 2026-08-13 因 Docker daemon 未啟動，不能宣稱本次資料庫測試已通過。
+- ShipAny 回寫 Shopify fulfillment 後，同一簽章 webhook 會同步配送方式、承運商、追蹤碼與 HTTPS 追蹤連結；SAENGAK 不保存 ShipAny 私有 API key。
+- `orders`／`order_items`／`order_fulfillments` 維持會員唯讀。程式測試需由 CI／本機重跑；目前 DB runner 應執行 107 項 pgTAP assertion，正式部署前必須有本機 PostgreSQL 全數通過證據。
 
 ## 管理端設定清單
 
@@ -105,7 +106,7 @@ Storefront 前端另採兩個預設關閉的 release gate：
 - Shopify 2026-07 Storefront API 的 tokenless probe 已可讀取公開商品與 Variant；仍需以真實 Cart／Checkout、付款設定與同一筆 sandbox 訂單回讀證明結帳鏈路。
 - TapPay Shopify App Store 目前標示 App 免費。2026-07-20 已在 SAENGAK 商店同意 TapPay Payment App 權限並導向 TapPay 三步驟設定頁，但頁面停在「安裝前請先登入」；只有完成 TapPay 登入、選擇 Shopify 商家設定、開始串接並回到 Shopify 啟用後，才算安裝完成。
 - TapPay 要求的 Shopify 權限包含商店擁有人聯絡資料，以及編輯付款閘道／付款工作階段；尚未取得 TapPay Shopify 帳號、3D 收單規格、MGID 或 sandbox 對帳證據。
-- 新商店目前尚未完成商品匯入、TapPay、Waaship／ShipAny 與發票設定；在選定 Shopify 方案與付款供應商前，不可宣稱正式結帳可用。
+- 新商店目前尚未完成 ShipAny 安裝／綁定、Amego migration／worker／secrets 部署與完整 sandbox 對帳；完成前不可宣稱正式結帳、物流或發票可用。
 - `index.html` 中舊 Shopify chat domain `ekfvih-rz.myshopify.com` 目前回傳 404，不能當作有效商店來源。
 - Shopify 方案仍需由帳戶持有人選定；這會產生訂閱費用，不能由程式自動購買。
 - 現有 mock 商品沒有 Shopify Variant ID，只能驗證安全阻擋，不能建立真實 Shopify Cart。

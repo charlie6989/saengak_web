@@ -29,6 +29,7 @@ const requiredHeaders = new Map([
 ]);
 
 const protectedFunctions = [
+  ['amego-invoice-dispatch', 'POST'],
   ['create-shopify-cart', 'POST'],
   ['get-articles', 'GET'],
   ['get-collections', 'GET'],

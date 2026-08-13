@@ -15,6 +15,7 @@ import {
   resolveStorefrontApiVersion,
 } from './shopify.ts';
 import { buildStorefrontUrl } from '../_shared/shopify-storefront.ts';
+import { parseInvoicePreference } from '../_shared/invoice-preference.ts';
 
 const defaultAllowedOrigins = [
   'https://saengak.com.tw',
@@ -136,18 +137,38 @@ Deno.serve(async (req: Request) => {
       checkoutUserId = data.user.id;
     }
 
-    const body = await req.json().catch(() => null) as { lines?: unknown } | null;
+    const body = await req.json().catch(() => null) as {
+      lines?: unknown;
+      invoicePreference?: unknown;
+    } | null;
+    const invoicePreference = parseInvoicePreference(body?.invoicePreference ?? {
+      kind: 'personal',
+      notificationEmail: '',
+      carrier: 'none',
+      carrierId: '',
+    });
     if (
       !body ||
       !Array.isArray(body.lines) ||
       body.lines.length === 0 ||
       body.lines.length > 50 ||
-      !body.lines.every(isCheckoutLine)
+      !body.lines.every(isCheckoutLine) ||
+      !invoicePreference
     ) {
       return responseJson({
-        error: 'Invalid cart lines',
-        details: 'Provide 1-50 Shopify ProductVariant lines with quantities from 1-99',
+        error: 'Invalid checkout input',
+        details: 'Provide valid cart lines and invoice preferences',
       }, 400, origin);
+    }
+
+    const hasSensitiveInvoicePreference = invoicePreference.kind === 'company' ||
+      Boolean(invoicePreference.notificationEmail) ||
+      (invoicePreference.kind === 'personal' && invoicePreference.carrier !== 'none');
+    if (hasSensitiveInvoicePreference && !checkoutUserId) {
+      return responseJson({
+        error: 'Sign in before saving invoice details',
+        code: 'INVOICE_PREFERENCE_REQUIRES_MEMBER',
+      }, 401, origin);
     }
 
     const query = `
@@ -230,24 +251,36 @@ Deno.serve(async (req: Request) => {
       return responseJson({ error: 'Shopify did not return checkoutUrl' }, 502, origin);
     }
 
+    const cartToken = extractShopifyCartToken(payload.cart.id);
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const secretKey = getPreferredSecretKey(
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
+      Deno.env.get('SUPABASE_SECRET_KEYS'),
+    );
+    if (!cartToken || !supabaseUrl || !secretKey) {
+      return responseJson({ error: 'Unable to secure checkout metadata' }, 503, origin);
+    }
+
+    const adminClient = createClient(supabaseUrl, secretKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    if (hasSensitiveInvoicePreference) {
+      const { error: preferenceError } = await adminClient.rpc(
+        'save_checkout_invoice_preference',
+        {
+          p_shopify_store_domain: shopifyDomain,
+          p_shopify_cart_token: cartToken,
+          p_preference: invoicePreference,
+        },
+      );
+      if (preferenceError) {
+        console.error('Unable to persist invoice preference', { code: preferenceError.code });
+        return responseJson({ error: 'Unable to secure invoice preference' }, 502, origin);
+      }
+    }
+
     let orderTrackingLinked = false;
     if (checkoutUserId) {
-      const cartToken = extractShopifyCartToken(payload.cart.id);
-      const supabaseUrl = Deno.env.get('SUPABASE_URL');
-      const secretKey = getPreferredSecretKey(
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
-        Deno.env.get('SUPABASE_SECRET_KEYS'),
-      );
-
-      if (!cartToken || !supabaseUrl || !secretKey) {
-        return responseJson({
-          error: 'Unable to link checkout to member order history',
-        }, 503, origin);
-      }
-
-      const adminClient = createClient(supabaseUrl, secretKey, {
-        auth: { persistSession: false, autoRefreshToken: false },
-      });
       const { error: linkError } = await adminClient
         .from('shopify_checkout_links')
         .upsert({

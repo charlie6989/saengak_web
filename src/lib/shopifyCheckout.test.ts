@@ -27,4 +27,11 @@ describe('Shopify checkout safeguards', () => {
       details: ['Online Store channel is locked.'],
     }, 502)).toContain('Shopify 商店尚未解鎖');
   });
+
+  it('explains why sensitive invoice preferences require a member session', () => {
+    expect(getShopifyCheckoutErrorMessage({
+      error: 'Sign in before saving invoice details',
+      code: 'INVOICE_PREFERENCE_REQUIRES_MEMBER',
+    }, 401)).toContain('請先登入會員');
+  });
 });

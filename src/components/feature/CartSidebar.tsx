@@ -1,11 +1,17 @@
 import { useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { buildShopifyCheckoutLines, formatTwd, getCartLineKey } from '../../domain/algorithms';
+import {
+  defaultInvoicePreference,
+  type InvoicePreference,
+  validateInvoicePreference,
+} from '../../domain/invoice';
 import { createShopifyCheckout, isShopifyCheckoutConfigured } from '../../lib/shopifyCheckout';
 
 export default function CartSidebar() {
   const [checkoutMessage, setCheckoutMessage] = useState('');
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [invoicePreference, setInvoicePreference] = useState<InvoicePreference>(defaultInvoicePreference);
   const { 
     items, 
     removeFromCart, 
@@ -36,9 +42,15 @@ export default function CartSidebar() {
       return;
     }
 
+    const invoiceError = validateInvoicePreference(invoicePreference);
+    if (invoiceError) {
+      setCheckoutMessage(invoiceError);
+      return;
+    }
+
     setIsCheckingOut(true);
     try {
-      const checkoutUrl = await createShopifyCheckout(checkoutLines.lines);
+      const checkoutUrl = await createShopifyCheckout(checkoutLines.lines, invoicePreference);
       window.location.assign(checkoutUrl);
     } catch (error) {
       setCheckoutMessage(error instanceof Error ? error.message : '建立結帳時發生未知錯誤。');
@@ -183,6 +195,99 @@ export default function CartSidebar() {
               <span className="text-2xl font-bold text-teal-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {formatTwd(getTotalPrice())}
               </span>
+            </div>
+
+            <div className="space-y-3 rounded-xl bg-white p-4 shadow-sm">
+              <div>
+                <label htmlFor="invoice-kind" className="text-sm font-semibold text-gray-800">電子發票</label>
+                <select
+                  id="invoice-kind"
+                  value={invoicePreference.kind}
+                  onChange={(event) => setInvoicePreference(event.target.value === 'company'
+                    ? { kind: 'company', notificationEmail: invoicePreference.notificationEmail, buyerName: '', taxId: '' }
+                    : { ...defaultInvoicePreference, notificationEmail: invoicePreference.notificationEmail })}
+                  className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                >
+                  <option value="personal">個人電子發票</option>
+                  <option value="company">公司統編發票</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="invoice-email" className="text-xs font-medium text-gray-700">通知 Email（選填）</label>
+                <input
+                  id="invoice-email"
+                  type="email"
+                  autoComplete="email"
+                  value={invoicePreference.notificationEmail}
+                  onChange={(event) => setInvoicePreference({ ...invoicePreference, notificationEmail: event.target.value })}
+                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  placeholder="name@example.com"
+                />
+              </div>
+
+              {invoicePreference.kind === 'personal' ? (
+                <>
+                  <div>
+                    <label htmlFor="invoice-carrier" className="text-xs font-medium text-gray-700">載具／捐贈</label>
+                    <select
+                      id="invoice-carrier"
+                      value={invoicePreference.carrier}
+                      onChange={(event) => setInvoicePreference({
+                        ...invoicePreference,
+                        carrier: event.target.value as 'none' | 'mobile' | 'amego-email' | 'donation',
+                        carrierId: '',
+                      })}
+                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    >
+                      <option value="none">一般電子發票</option>
+                      <option value="mobile">手機條碼載具</option>
+                      <option value="amego-email">光貿 Email 載具</option>
+                      <option value="donation">捐贈碼</option>
+                    </select>
+                  </div>
+                  {invoicePreference.carrier !== 'none' && (
+                    <div>
+                      <label htmlFor="invoice-carrier-id" className="text-xs font-medium text-gray-700">
+                        {invoicePreference.carrier === 'mobile' ? '手機條碼' : invoicePreference.carrier === 'donation' ? '捐贈碼' : '載具 Email'}
+                      </label>
+                      <input
+                        id="invoice-carrier-id"
+                        value={invoicePreference.carrierId}
+                        onChange={(event) => setInvoicePreference({ ...invoicePreference, carrierId: event.target.value })}
+                        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      />
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label htmlFor="invoice-tax-id" className="text-xs font-medium text-gray-700">統一編號</label>
+                    <input
+                      id="invoice-tax-id"
+                      inputMode="numeric"
+                      maxLength={8}
+                      value={invoicePreference.taxId}
+                      onChange={(event) => setInvoicePreference({ ...invoicePreference, taxId: event.target.value })}
+                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="invoice-buyer-name" className="text-xs font-medium text-gray-700">公司抬頭</label>
+                    <input
+                      id="invoice-buyer-name"
+                      maxLength={60}
+                      value={invoicePreference.buyerName}
+                      onChange={(event) => setInvoicePreference({ ...invoicePreference, buyerName: event.target.value })}
+                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    />
+                  </div>
+                </div>
+              )}
+              <p className="text-xs leading-5 text-gray-500">
+                發票資料只送往光貿並暫存於受限後端；不會放入公開原始碼或瀏覽器可寫的資料表。
+              </p>
             </div>
 
             {/* Action Buttons */}

@@ -20,3 +20,8 @@ verify_jwt = false
 
 [functions.shopify-orders-webhook]
 verify_jwt = false
+
+# Uses its own constant-time AmegoDispatchToken check because it is called by
+# a scheduler/worker rather than a browser Supabase session.
+[functions.amego-invoice-dispatch]
+verify_jwt = false

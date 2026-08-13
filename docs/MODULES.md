@@ -18,7 +18,7 @@
 | 會員 | 註冊、登入、重設密碼、個人資料、收藏 | Supabase Auth；後台權限只能讀 `app_metadata`；`profiles`／`user_favorites` 以 `auth.uid()` 做擁有權 RLS | 電子郵件 Auth、production URLs 與跨帳號 RLS 11/11 已驗證；OAuth providers 皆未啟用，待真實郵件流程回歸 |
 | 內容文章 | 品牌、知識、法務與社群內容 | HTML 去標籤、繁中每分鐘 400 字與西文每分鐘 200 字的閱讀時間估算；編輯稿明示審閱狀態，不顯示假留言或假互動 | 品牌與政策頁已收斂為現況說明；醫療內容仍待專業審閱，Shopify Blog 待接 |
 | 訂單 | 導向真實訂單來源，不顯示示範個資 | 已驗證會員 session 建立可信 Cart link；Shopify HMAC、Webhook ID 去重、事件時間戳防倒退；`orders`／`order_items` 僅允許會員讀自己的列。`verify:commerce` 要求 success／failed／cancelled 三種案例的 Order ID、金額、付款、物流與發票跨系統一致 | App、secret、五個 subscriptions 與 HMAC 鏈路已完成；待真實 Shopify／TapPay sandbox 三案例驗收 |
-| 物流／發票 | Shopify Checkout 選擇宅配／超取，物流 App 叫件及回寫貨態，發票平台開立／作廢／折讓 | `src/domain/fulfillment.ts` 先按目的地、材積、溫層、付款方式、商品限制與 SLA 過濾，再計算完整落地成本；滿 30 天證據才用妥投率／時效排序，否則要求人工選擇。發票狀態只接受供應商事件，不由付款狀態推測。`verify:commerce` 另要求 App、帳號綁定、success 案例回寫及 failed／cancelled 不誤建狀態 | provider-neutral projection、會員唯讀 RLS、會員中心查詢及路由算法已部署；Waaship 已安裝，待帳號綁定與 sandbox 實單 |
+| 物流／發票 | ShipAny 提供 Shopify Checkout 宅配／超取並回寫 fulfillment；Amego 開立／作廢電子發票 | 物流不保存 ShipAny key，只信任 Shopify HMAC。Amego 付款後寫 private outbox，由獨立 worker 呼叫並以 `invoice_query` status 99 回讀；作廢需人工核准。`verify:commerce` 要求 Shopify／Supabase fulfillment GID、tracking URL 與 Amego Provider OrderId／發票號碼一致 | 程式與本機測試基線已整合於 branch；尚未安裝／綁定 ShipAny、部署 Amego migration/worker、設定 secrets 或完成 sandbox 實單 |
 | 營運後台 | 顯示模塊健康度與外部管理入口 | 管理員 `app_metadata.role` 授權、即時讀回、不得顯示假 KPI | 待 Auth／資料源 |
 | 法務與客服 | 隱私、條款、退換貨、FAQ、聯絡資訊 | 公司資料統一由 `src/content/site.ts` 提供；`verify:content` 阻擋舊品牌、假電話／地址、跨品牌信箱與無來源安全宣稱 | 舊品牌與假聯絡資料已移除；正式客服管道及法務核准仍待營運提供 |
 

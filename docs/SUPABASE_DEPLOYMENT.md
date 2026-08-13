@@ -23,11 +23,12 @@
 - 物流商中立出貨投影 Migration：`supabase/migrations/20260719042534_add_provider_neutral_fulfillment_projection.sql`
 - Checkout link 外鍵索引 Migration：`supabase/migrations/20260719181240_add_checkout_links_user_index.sql`
 - 發票商中立投影 Migration：`supabase/migrations/20260719195708_add_provider_neutral_invoice_projection.sql`
+- Amego 私有偏好／transactional outbox／worker RPC Migration：`supabase/migrations/20260813045204_add_amego_invoice_outbox.sql`
 - RLS 測試：`supabase/tests/database/saengak_membership_rls.test.sql`
 - Shopify 訂單同步測試：`supabase/tests/database/shopify_order_sync.test.sql`
 - 靜態結構檢查：`npm run verify:supabase`
 - 真實本機 PostgreSQL 測試：先啟動 `supabase start`，再執行 `npm run test:db`
-- 2026-07-19 本機結果：會員／RLS 27 項加上 Shopify 訂單／物流同步 22 項，共 49/49 assertions 通過；`supabase db lint` 無 schema errors。2026-07-20 新增發票投影 pgTAP 12 項；目前 Docker API 500，先以正式 Postgres transaction／rollback 完成同等 RLS 驗證，待本機引擎恢復後補跑整套 `test:db`。
+- 整套包含會員／RLS 27 項、發票投影 12 項、Shopify 訂單／物流 25 項與 Amego outbox 43 項，合計 107 assertions；正式部署前須先啟動 Docker 並執行 `npm run test:db` 全數通過。
 
 ## 遠端部署狀態
 

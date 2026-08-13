@@ -36,17 +36,27 @@
       "amountTwd": null
     },
     "logistics": {
-      "provider": "waaship",
+      "provider": "shipany",
       "appInstalled": true,
       "accountBound": null,
       "checkoutMethodVerified": null,
       "shopifyFulfillmentWrittenBack": null,
-      "trackingUrl": null
+      "shopifyOrderId": null,
+      "shopifyFulfillmentGid": null,
+      "supabaseFulfillmentGid": null,
+      "shopifyTrackingUrl": null,
+      "supabaseTrackingUrl": null
     },
     "invoice": {
       "providerConfigured": null,
       "authoritativeProviderEvent": null,
-      "status": null
+      "provider": "amego",
+      "status": null,
+      "providerStatus": null,
+      "shopifyOrderId": null,
+      "providerOrderId": null,
+      "invoiceNumber": null,
+      "amountTwd": null
     }
   },
   {
@@ -86,17 +96,27 @@
       "amountTwd": null
     },
     "logistics": {
-      "provider": "waaship",
+      "provider": "shipany",
       "appInstalled": true,
       "accountBound": null,
       "checkoutMethodVerified": null,
       "shopifyFulfillmentWrittenBack": false,
-      "trackingUrl": null
+      "shopifyOrderId": null,
+      "shopifyFulfillmentGid": null,
+      "supabaseFulfillmentGid": null,
+      "shopifyTrackingUrl": null,
+      "supabaseTrackingUrl": null
     },
     "invoice": {
       "providerConfigured": null,
       "authoritativeProviderEvent": false,
-      "status": "not-issued"
+      "provider": "amego",
+      "status": "not-issued",
+      "providerStatus": null,
+      "shopifyOrderId": null,
+      "providerOrderId": null,
+      "invoiceNumber": null,
+      "amountTwd": null
     }
   },
   {
@@ -136,17 +156,27 @@
       "amountTwd": null
     },
     "logistics": {
-      "provider": "waaship",
+      "provider": "shipany",
       "appInstalled": true,
       "accountBound": null,
       "checkoutMethodVerified": null,
       "shopifyFulfillmentWrittenBack": false,
-      "trackingUrl": null
+      "shopifyOrderId": null,
+      "shopifyFulfillmentGid": null,
+      "supabaseFulfillmentGid": null,
+      "shopifyTrackingUrl": null,
+      "supabaseTrackingUrl": null
     },
     "invoice": {
       "providerConfigured": null,
       "authoritativeProviderEvent": false,
-      "status": "not-issued"
+      "provider": "amego",
+      "status": "not-issued",
+      "providerStatus": null,
+      "shopifyOrderId": null,
+      "providerOrderId": null,
+      "invoiceNumber": null,
+      "amountTwd": null
     }
   }
 ]

@@ -5,6 +5,7 @@ const testFiles = [
   'supabase/tests/database/saengak_membership_rls.test.sql',
   'supabase/tests/database/shopify_order_sync.test.sql',
   'supabase/tests/database/order_invoice_projection.test.sql',
+  'supabase/tests/database/amego_invoice_outbox.test.sql',
 ];
 const sql = testFiles.map((testFile) => readFileSync(testFile, 'utf8')).join('\n');
 const result = spawnSync(
@@ -41,11 +42,14 @@ if (/\bnot ok\b/i.test(output)) errors.push('pgTAP reported a failed assertion')
 if (!/ok 27 - the member can read the favorite they created/i.test(output)) {
   errors.push('pgTAP did not complete all 27 assertions');
 }
-if (!/ok 22 - another member cannot read tracking details/i.test(output)) {
-  errors.push('pgTAP did not complete all 22 Shopify order and fulfillment assertions');
+if (!/ok 25 - another member cannot read tracking details/i.test(output)) {
+  errors.push('pgTAP did not complete all 25 Shopify order and fulfillment assertions');
 }
 if (!/ok 12 - anonymous visitors have no invoice table grant/i.test(output)) {
   errors.push('pgTAP did not complete all 12 invoice projection assertions');
+}
+if (!/ok 43 - order owner can read the confirmed provider projection/i.test(output)) {
+  errors.push('pgTAP did not complete all 43 Amego outbox assertions');
 }
 const rollbackCount = output.match(/^ROLLBACK\r?$/gm)?.length ?? 0;
 if (rollbackCount !== testFiles.length) {
@@ -59,7 +63,7 @@ if (errors.length) {
 
 console.log(JSON.stringify({
   ok: true,
-  assertions: 61,
+  assertions: 107,
   testFiles,
   database: 'local Supabase PostgreSQL',
 }, null, 2));

@@ -97,7 +97,7 @@ describe('Shopify order webhook validation', () => {
       fulfillments: [{
         id: 99112233,
         status: 'success',
-        tracking_company: 'T-CAT',
+        tracking_company: 'ShipAny / T-CAT',
         tracking_number: 'TCAT-123456',
         tracking_numbers: ['TCAT-123456'],
         tracking_url: 'https://example.test/track/TCAT-123456',
@@ -113,7 +113,7 @@ describe('Shopify order webhook validation', () => {
       p_fulfillments: [{
         shopifyFulfillmentGid: 'gid://shopify/Fulfillment/99112233',
         status: 'success',
-        trackingCompany: 'T-CAT',
+        trackingCompany: 'ShipAny / T-CAT',
         trackingNumbers: ['TCAT-123456'],
         trackingUrls: ['https://example.test/track/TCAT-123456'],
       }],

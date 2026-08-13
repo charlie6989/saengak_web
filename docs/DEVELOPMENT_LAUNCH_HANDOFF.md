@@ -29,7 +29,7 @@
   - Variant GID：`gid://shopify/ProductVariant/43639647502403`
   - 售價：`TWD 680`
   - `availableForSale=true`
-- 本機 TypeScript、79 個單元測試、Vite build、公開內容檢查、dependency audit 與 Supabase 靜態基線檢查均通過。
+- 本機 TypeScript、101 個單元測試、107 個 PostgreSQL pgTAP assertions、Vite build、公開內容檢查、dependency audit 與 Supabase 靜態基線檢查均通過。
 - Shopify Checkout、TapPay、訂單 webhook、會員訂單投影、物流與發票投影已有程式與測試基線。
 
 ### 2.2 不可宣稱已完成的部分
@@ -38,7 +38,6 @@
 - 尚未在本次盤點完成 TapPay `success`、`failed`、`cancelled` 三種 sandbox 情境及跨系統對帳。
 - `order-status` 對公開未登入訪客仍被 Coming Soon 擋住；目前不能把付款回跳頁視為公開可用。
 - repo 已移除 `supabase/.temp` 這類機器產生的 binding 檔；目前沒有可接受的本機 Supabase link 證據，不可直接執行正式資料庫 push／function deploy。
-- 本次資料庫 pgTAP 因 Docker daemon 未啟動而沒有完成，不能沿用舊結果宣稱今天通過。
 - 正式客服電話、Email、官方 LINE、物流帳號綁定、發票供應商回讀與法務核准尚未閉環。
 - 正式站目前仍送出 `noindex, nofollow, noarchive`，搜尋引擎不應收錄。
 
@@ -78,10 +77,11 @@ flowchart LR
     F --> G["Signed Shopify webhooks"]
     G --> H["Supabase orders and order_items"]
     H --> I["Member order status"]
-    F --> J["Waaship or ShipAny fulfillment"]
-    J --> K["Shopify fulfillment and HTTPS tracking"]
-    F --> L["Invoice provider event"]
-    L --> M["Supabase order_invoices"]
+    F --> J["ShipAny fulfillment"]
+    F --> K["Amego private invoice outbox"]
+    J --> L["Shopify fulfillment and HTTPS tracking"]
+    K --> N["Invoice provider event"]
+    N --> M["Supabase order_invoices"]
 ```
 
 權威來源原則：
@@ -100,11 +100,12 @@ flowchart LR
 | 檢查 | 結果 |
 | --- | --- |
 | `npm run typecheck` | 通過 |
-| `npm test -- --run` | 16 files、79/79 tests 通過 |
-| `npm run build` | 通過；Vite 576 modules transformed |
-| `npm run verify:content` | 通過；含 production `dist` 共 139 files checked |
+| `npm test -- --run` | 19 files、101/101 tests 通過 |
+| `npm run test:db` | 本機 Supabase PostgreSQL 107/107 pgTAP assertions 通過；四個 test transaction 均 rollback |
+| `npm run build` | 通過；Vite 577 modules transformed |
+| `npm run verify:content` | 通過；含 production `dist` 共 141 files checked |
 | `npm run verify:supabase` | 靜態基線通過；7 tables、11 policies |
-| `npm run verify:production -- --base-url https://saengak.com.tw` | 22/22 通過；必要 route 拒絕跨 pathname redirect |
+| `npm run verify:production -- --base-url https://saengak.com.tw` | branch 最新 probe 為 22/23；正式站尚未部署 `amego-invoice-dispatch`，目前 404，符合「尚未上線」而非通過 |
 | `npm audit --audit-level=moderate` | 通過；0 vulnerabilities |
 | 公開桌機與 390×844 手機 | Coming Soon 正常、無相關 console error |
 | 授權測試站 `/` → `/about` | 導覽與內容渲染正常、無相關 console error |
@@ -116,7 +117,6 @@ flowchart LR
 | 檢查 | 結果 | 處理方式 |
 | --- | --- | --- |
 | `npm run verify:binding` | 失敗；repo 不保存本機 Supabase link，且驗證器要求兩個 Vercel Supabase URL 精確指向正式 project | 使用正確帳號執行 `supabase link`，在受控環境提供 Vercel env，再讀回驗證 |
-| `npm run test:db` | 未完成；Docker daemon 未啟動 | 啟動 Docker，確認全部 pgTAP assertions 與 rollback 通過 |
 | `npm run verify:commerce -- docs/commerce-sandbox-evidence.template.json` | `launchReady=false` | 模板只是空白骨架；必須用三個真實 sandbox 情境的最小化回讀值填寫另一份受控檔案 |
 | 公開 `/order-status?source=shopify` | 只顯示 Coming Soon | 正式上線時移除全站 gate，重新驗證付款回跳 |
 | SEO | title／description 為 Coming Soon，meta 與 header 為 noindex | 上線版本更新 metadata 並移除 noindex |
@@ -193,12 +193,13 @@ flowchart LR
 
 ### P0-5　完成物流與發票
 
-- [ ] Waaship 或 ShipAny 只選定一個正式方案，完成帳號綁定。
+- [ ] 只啟用 ShipAny 正式物流方案，停用 Waaship 重複配送方式並完成帳號綁定。
 - [ ] Checkout 顯示預期的宅配／超取選項，避免重複物流方式。
 - [ ] success 案例可建單並把 fulfillment 與 HTTPS tracking URL 回寫 Shopify／Supabase。
 - [ ] failed／cancelled 案例不得誤建 fulfillment 或追蹤連結。
-- [ ] 發票供應商完成正式設定與 sandbox／測試事件。
-- [ ] 發票 `issued` 只接受供應商事件；付款成功不可自行推測已開票。
+- [ ] Amego 完成公司／字軌／API 申請、Supabase secrets、migration 與 worker 部署。
+- [ ] 發票 `issued` 只接受 Amego `invoice_query` 回讀 C0401 + status 99；付款成功或 API code=0 不可自行推測已開票。
+- [ ] 取消已開票訂單停在 `void_review`，由財會確認作廢／折讓與跨期規則後核准。
 - [ ] 驗證作廢與折讓事件的資料投影。
 
 完成證據：物流 App readback、Shopify fulfillment、tracking URL、發票供應商事件與 Supabase readback。
