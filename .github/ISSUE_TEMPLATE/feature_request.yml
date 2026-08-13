@@ -1,0 +1,46 @@
+name: Feature request
+description: Propose a scoped product, engineering or operational improvement.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or operational problem should be solved?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe the desired behavior, not just an implementation.
+    validations:
+      required: true
+  - type: dropdown
+    id: systems
+    attributes:
+      label: Systems affected
+      multiple: true
+      options:
+        - Frontend/UI
+        - Supabase/Auth/Database
+        - Shopify/Checkout
+        - TapPay/Payment
+        - Logistics/Invoice
+        - Vercel/Release tooling
+        - Documentation only
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How will the result be verified without using real customer or payment data?
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and dependencies
+      description: Include owner-system access, compliance, legal or launch-gate dependencies.

@@ -29,7 +29,21 @@
     "vite": "7.3.6",
     "vitest": "4.1.10"
   },
-  "name": "react",
+  "name": "saengak-web",
+  "description": "SAENGAK pre-launch commerce website and release verification baseline",
+  "homepage": "https://saengak.com.tw",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charlie6989/saengak_web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/charlie6989/saengak_web/issues"
+  },
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10"
+  },
+  "license": "UNLICENSED",
   "private": true,
   "scripts": {
     "build": "vite build",
