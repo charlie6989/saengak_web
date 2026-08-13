@@ -1,10 +1,11 @@
-const acceptedTopics = new Set([
+const acceptedOrderTopics = new Set([
   'orders/create',
   'orders/paid',
   'orders/updated',
   'orders/fulfilled',
   'orders/cancelled',
 ]);
+const acceptedTopics = new Set([...acceptedOrderTopics, 'refunds/create']);
 
 const financialStatuses = new Set([
   'pending',
@@ -71,6 +72,32 @@ export interface ShopifyOrderSyncInput {
   p_fulfillments: ShopifyFulfillmentInput[];
 }
 
+export interface ShopifyRefundSyncInput {
+  p_webhook_id: string;
+  p_topic: 'refunds/create';
+  p_shopify_store_domain: string;
+  p_shopify_order_gid: string;
+  p_shopify_refund_gid: string;
+  p_allowance_number: string;
+  p_refund_created_at: string;
+  p_triggered_at: string;
+  p_total_amount: string;
+  p_net_amount: string;
+  p_tax_amount: string;
+  p_request_payload: {
+    currencyCode: 'TWD';
+    allowanceDate: string;
+    lineItems: ShopifyRefundLineInput[];
+  };
+}
+
+interface ShopifyRefundLineInput {
+  description: string;
+  quantity: number;
+  netAmount: string;
+  taxAmount: string;
+}
+
 interface ShopifyOrderLineInput {
   shopifyLineItemGid: string;
   productId: string;
@@ -99,7 +126,7 @@ const asRecord = (value: unknown): UnknownRecord | undefined =>
     : undefined;
 
 const identifier = (value: unknown): string | undefined => {
-  if (typeof value === 'string' && /^\d+$/.test(value)) return value;
+  if (typeof value === 'string' && /^[1-9]\d*$/.test(value)) return value;
   if (typeof value === 'number' && Number.isSafeInteger(value) && value > 0) {
     return String(value);
   }
@@ -216,6 +243,9 @@ export const normalizeShopifyDomain = (value: string | null | undefined): string
   (value ?? '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/+$/, '');
 
 export const isAcceptedShopifyOrderTopic = (topic: string | null): topic is string =>
+  Boolean(topic && acceptedOrderTopics.has(topic));
+
+export const isAcceptedShopifyWebhookTopic = (topic: string | null): topic is string =>
   Boolean(topic && acceptedTopics.has(topic));
 
 export const isValidWebhookId = (value: string | null): value is string =>
@@ -397,5 +427,130 @@ export function parseShopifyOrderWebhook(
     p_triggered_at: triggeredAt,
     p_line_items: lineItems as ShopifyOrderLineInput[],
     p_fulfillments: fulfillments,
+  };
+}
+
+const wholeTwd = (value: unknown): number | undefined => {
+  const normalized = positiveMoney(value);
+  if (!normalized) return undefined;
+  const amount = Number(normalized);
+  return Number.isSafeInteger(amount) ? amount : undefined;
+};
+
+const taiwanCalendarDate = (value: unknown): string | undefined => {
+  if (typeof value !== 'string') return undefined;
+  const match = value.trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match || !isoTimestamp(value)) return undefined;
+  return `${match[1]}${match[2]}${match[3]}`;
+};
+
+const splitTaxableGross = (grossAmount: number) => {
+  const netAmount = Math.round(grossAmount / 1.05);
+  return { netAmount, taxAmount: grossAmount - netAmount };
+};
+
+export function parseShopifyRefundWebhook(
+  rawPayload: unknown,
+  metadata: {
+    webhookId: string;
+    topic: string;
+    shopDomain: string;
+    triggeredAt: string;
+  },
+): ShopifyRefundSyncInput | undefined {
+  const payload = asRecord(rawPayload);
+  if (!payload || metadata.topic !== 'refunds/create') return undefined;
+
+  const refundId = identifier(payload.id);
+  const orderId = identifier(payload.order_id);
+  const createdAt = isoTimestamp(payload.processed_at ?? payload.created_at);
+  const allowanceDate = taiwanCalendarDate(payload.processed_at ?? payload.created_at);
+  const triggeredAt = isoTimestamp(metadata.triggeredAt);
+  const shopDomain = normalizeShopifyDomain(metadata.shopDomain);
+  if (
+    !refundId || refundId.length > 16 || !orderId || !createdAt || !allowanceDate ||
+    !triggeredAt || !/^[a-z0-9][a-z0-9.-]*\.myshopify\.com$/.test(shopDomain)
+  ) return undefined;
+
+  const rawRefundLines = Array.isArray(payload.refund_line_items)
+    ? payload.refund_line_items
+    : [];
+  if (rawRefundLines.length > 250) return undefined;
+  const lines = rawRefundLines.map((rawLine) => {
+    const line = asRecord(rawLine);
+    const originalLine = asRecord(line?.line_item);
+    if (!line || !originalLine) return undefined;
+    const description = boundedText(originalLine.name ?? originalLine.title, 256);
+    const quantity = Number(line.quantity);
+    const subtotal = wholeTwd(line.subtotal);
+    const totalTax = wholeTwd(line.total_tax ?? 0);
+    if (
+      !description || !Number.isInteger(quantity) || quantity < 1 || quantity > 99 ||
+      subtotal == null || totalTax == null
+    ) return undefined;
+    const grossAmount = subtotal + totalTax;
+    const split = splitTaxableGross(grossAmount);
+    if (subtotal !== split.netAmount || totalTax !== split.taxAmount) return undefined;
+    return {
+      description,
+      quantity,
+      netAmount: String(subtotal),
+      taxAmount: String(totalTax),
+    };
+  });
+  if (lines.some((line) => !line)) return undefined;
+
+  const rawTransactions = Array.isArray(payload.transactions) ? payload.transactions : [];
+  const successfulRefunds = rawTransactions.map(asRecord).filter((transaction) =>
+    transaction?.kind === 'refund' && transaction.status === 'success'
+  );
+  if (successfulRefunds.some((transaction) =>
+    boundedText(transaction?.currency, 3).toUpperCase() !== 'TWD' ||
+    wholeTwd(transaction?.amount) == null
+  )) return undefined;
+
+  const parsedLines = lines as ShopifyRefundLineInput[];
+  const lineGross = parsedLines.reduce(
+    (sum, line) => sum + Number(line.netAmount) + Number(line.taxAmount),
+    0,
+  );
+  const transactionGross = successfulRefunds.length > 0
+    ? successfulRefunds.reduce((sum, transaction) => sum + (wholeTwd(transaction?.amount) ?? 0), 0)
+    : lineGross;
+  if (!Number.isSafeInteger(transactionGross) || transactionGross <= 0 || lineGross > transactionGross) {
+    return undefined;
+  }
+  if (lineGross < transactionGross) {
+    const split = splitTaxableGross(transactionGross - lineGross);
+    parsedLines.push({
+      description: '退款／運費調整',
+      quantity: 1,
+      netAmount: String(split.netAmount),
+      taxAmount: String(split.taxAmount),
+    });
+  }
+  if (parsedLines.length === 0 || parsedLines.length > 250) return undefined;
+
+  const netAmount = parsedLines.reduce((sum, line) => sum + Number(line.netAmount), 0);
+  const taxAmount = parsedLines.reduce((sum, line) => sum + Number(line.taxAmount), 0);
+  if (netAmount + taxAmount !== transactionGross) return undefined;
+
+  return {
+    p_webhook_id: metadata.webhookId,
+    p_topic: 'refunds/create',
+    p_shopify_store_domain: shopDomain,
+    p_shopify_order_gid: toGid('Order', orderId),
+    p_shopify_refund_gid: toGid('Refund', refundId),
+    p_allowance_number: refundId,
+    p_refund_created_at: createdAt,
+    p_triggered_at: triggeredAt,
+    p_total_amount: String(transactionGross),
+    p_net_amount: String(netAmount),
+    p_tax_amount: String(taxAmount),
+    p_request_payload: {
+      currencyCode: 'TWD',
+      allowanceDate,
+      lineItems: parsedLines,
+    },
   };
 }

@@ -6,6 +6,7 @@ const testFiles = [
   'supabase/tests/database/shopify_order_sync.test.sql',
   'supabase/tests/database/order_invoice_projection.test.sql',
   'supabase/tests/database/amego_invoice_outbox.test.sql',
+  'supabase/tests/database/amego_allowance_lifecycle.test.sql',
 ];
 const sql = testFiles.map((testFile) => readFileSync(testFile, 'utf8')).join('\n');
 const result = spawnSync(
@@ -51,6 +52,9 @@ if (!/ok 12 - anonymous visitors have no invoice table grant/i.test(output)) {
 if (!/ok 43 - order owner can read the confirmed provider projection/i.test(output)) {
   errors.push('pgTAP did not complete all 43 Amego outbox assertions');
 }
+if (!/ok 34 - anonymous visitors have no allowance table grant/i.test(output)) {
+  errors.push('pgTAP did not complete all 34 allowance lifecycle assertions');
+}
 const rollbackCount = output.match(/^ROLLBACK\r?$/gm)?.length ?? 0;
 if (rollbackCount !== testFiles.length) {
   errors.push(`expected ${testFiles.length} database test rollbacks, received ${rollbackCount}`);
@@ -63,7 +67,7 @@ if (errors.length) {
 
 console.log(JSON.stringify({
   ok: true,
-  assertions: 107,
+  assertions: 141,
   testFiles,
   database: 'local Supabase PostgreSQL',
 }, null, 2));

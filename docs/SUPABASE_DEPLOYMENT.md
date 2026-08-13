@@ -1,6 +1,6 @@
 # SAENGAK Supabase 部署與驗證
 
-更新日期：2026-07-20
+更新日期：2026-08-13
 
 ## 資料責任
 
@@ -11,6 +11,7 @@
 | `order_items` | Shopify webhook／受信任後端 | 會員只能透過自己的訂單讀取明細，不能自行寫入 |
 | `order_fulfillments` | Shopify 簽章 webhook／受信任後端 | 會員只能透過自己的訂單讀取配送方式、承運商與追蹤資料，不能自行寫入 |
 | `order_invoices` | 發票供應商 webhook／受信任後端 | 會員只能透過自己的訂單讀取供應商確認的開立／作廢／折讓狀態，不能自行寫入 |
+| `order_invoice_allowances` | Shopify 簽章退款 webhook建立審核工作，Amego worker 只投影 provider status 99 的結果 | 會員只能透過自己的訂單讀取已確認的折讓／折讓作廢狀態，不能自行寫入 |
 | `user_favorites` | 會員本人 | 會員只能讀寫自己的收藏 |
 | `shopify_checkout_links` | `create-shopify-cart` 受信任後端 | 瀏覽器完全不可讀寫；用 Shopify cart token 將付款後訂單連回已驗證會員 |
 
@@ -24,13 +25,16 @@
 - Checkout link 外鍵索引 Migration：`supabase/migrations/20260719181240_add_checkout_links_user_index.sql`
 - 發票商中立投影 Migration：`supabase/migrations/20260719195708_add_provider_neutral_invoice_projection.sql`
 - Amego 私有偏好／transactional outbox／worker RPC Migration：`supabase/migrations/20260813045204_add_amego_invoice_outbox.sql`
+- Amego 折讓／折讓作廢 lifecycle Migration：`supabase/migrations/20260813070648_add_amego_allowance_lifecycle.sql`
 - RLS 測試：`supabase/tests/database/saengak_membership_rls.test.sql`
 - Shopify 訂單同步測試：`supabase/tests/database/shopify_order_sync.test.sql`
 - 靜態結構檢查：`npm run verify:supabase`
 - 真實本機 PostgreSQL 測試：先啟動 `supabase start`，再執行 `npm run test:db`
-- 整套包含會員／RLS 27 項、發票投影 12 項、Shopify 訂單／物流 25 項與 Amego outbox 43 項，合計 107 assertions；正式部署前須先啟動 Docker 並執行 `npm run test:db` 全數通過。
+- 整套包含會員／RLS 27 項、發票投影 12 項、Shopify 訂單／物流 25 項、Amego 發票 outbox 43 項與折讓 lifecycle 34 項，合計 141 assertions；正式部署前須先啟動 Docker 並執行 `npm run test:db` 全數通過。
 
 ## 遠端部署狀態
+
+以下 2026-07-20 的數量是正式環境歷史回讀；2026-08-13 新增的兩個 Amego migrations、`amego-invoice-dispatch` 與退款版 `shopify-orders-webhook` 尚未部署，因此不得用本機測試結果宣稱正式發票／折讓已啟用。
 
 1. 2026-07-20 已建立免費的 `SAENGAK Production`，project ref 為 `tmqzkagkrzhioftvwbqo`、region 為 Tokyo；目前回讀為 `ACTIVE_HEALTHY`、Postgres 17.6。不得使用 `dhktmpcvtoxcicqkwgpn`。`npm run verify:binding:supabase` 專門阻擋錯誤的 Supabase CLI link；`npm run verify:binding:vercel` 可獨立驗證前端部署目標，不能用前端驗證結果冒充 Supabase 已重新 link。
 2. 五個基線 migration 已部署（含 `add_provider_neutral_invoice_projection`）；七個 Edge Functions 已為 `ACTIVE`。2026-07-20 管理 API 回讀：`create-shopify-cart` 與五個目錄／搜尋 Functions 為 v4，`shopify-orders-webhook` 為 v3。

@@ -1,5 +1,9 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { getPreferredSecretKey } from '../create-shopify-cart/auth.ts';
+import {
+  dispatchAmegoAllowanceJob,
+  type AmegoAllowanceJob,
+} from './allowance.ts';
 import { dispatchAmegoJob, type AmegoCredentials, type AmegoJob } from './amego.ts';
 
 const json = (body: Record<string, unknown>, status: number) => new Response(JSON.stringify(body), {
@@ -83,34 +87,102 @@ Deno.serve(async (request: Request) => {
     return json({ error: 'Unable to claim invoice work' }, 500);
   }
   const job = Array.isArray(data) ? data[0] as AmegoJob | undefined : undefined;
-  if (!job) return new Response(null, { status: 204 });
-
-  const result = await dispatchAmegoJob(job, credentials, fetch, async () => {
-    const { error: mutationError } = await admin.rpc('mark_amego_invoice_mutation_started', {
+  if (job) {
+    const result = await dispatchAmegoJob(job, credentials, fetch, async () => {
+      const { error: mutationError } = await admin.rpc('mark_amego_invoice_mutation_started', {
+        p_job_id: job.job_id,
+        p_lease_token: job.lease_token,
+      });
+      if (mutationError) throw new Error('Unable to persist Amego mutation boundary');
+    });
+    const persistedOutcome = result.outcome === 'failed' && !result.retryable
+      ? 'failed_terminal'
+      : result.outcome;
+    const { error: completionError } = await admin.rpc('complete_amego_invoice_job', {
       p_job_id: job.job_id,
       p_lease_token: job.lease_token,
+      p_outcome: persistedOutcome,
+      p_mutation_accepted: 'mutationAccepted' in result ? result.mutationAccepted : false,
+      p_mutation_rejected: 'mutationRejected' in result ? result.mutationRejected === true : false,
+      p_invoice_number: 'invoiceNumber' in result ? result.invoiceNumber ?? null : null,
+      p_provider_status: 'providerStatus' in result ? result.providerStatus ?? null : null,
+      p_provider_updated_at: 'providerUpdatedAt' in result ? result.providerUpdatedAt : null,
+      p_error_code: 'errorCode' in result ? result.errorCode : null,
+      p_error_message: 'errorMessage' in result ? result.errorMessage : null,
     });
-    if (mutationError) throw new Error('Unable to persist Amego mutation boundary');
-  });
-  const persistedOutcome = result.outcome === 'failed' && !result.retryable
-    ? 'failed_terminal'
-    : result.outcome;
-  const { error: completionError } = await admin.rpc('complete_amego_invoice_job', {
-    p_job_id: job.job_id,
-    p_lease_token: job.lease_token,
-    p_outcome: persistedOutcome,
-    p_mutation_accepted: 'mutationAccepted' in result ? result.mutationAccepted : false,
-    p_mutation_rejected: 'mutationRejected' in result ? result.mutationRejected === true : false,
-    p_invoice_number: 'invoiceNumber' in result ? result.invoiceNumber ?? null : null,
-    p_provider_status: 'providerStatus' in result ? result.providerStatus ?? null : null,
-    p_provider_updated_at: 'providerUpdatedAt' in result ? result.providerUpdatedAt : null,
-    p_error_code: 'errorCode' in result ? result.errorCode : null,
-    p_error_message: 'errorMessage' in result ? result.errorMessage : null,
-  });
-  if (completionError) {
-    console.error('Unable to complete Amego invoice job', { jobId: job.job_id, code: completionError.code });
-    return json({ error: 'Unable to persist invoice result' }, 500);
+    if (completionError) {
+      console.error('Unable to complete Amego invoice job', { jobId: job.job_id, code: completionError.code });
+      return json({ error: 'Unable to persist invoice result' }, 500);
+    }
+    return json({ ok: true, jobId: job.job_id, outcome: result.outcome }, 200);
   }
 
-  return json({ ok: true, jobId: job.job_id, outcome: result.outcome }, 200);
+  const { data: allowanceData, error: allowanceError } = await admin.rpc(
+    'claim_amego_allowance_job',
+    { p_shopify_order_gid: requestedOrder },
+  );
+  if (allowanceError) {
+    console.error('Unable to claim Amego allowance job', { code: allowanceError.code });
+    return json({ error: 'Unable to claim allowance work' }, 500);
+  }
+  const allowanceJob = Array.isArray(allowanceData)
+    ? allowanceData[0] as AmegoAllowanceJob | undefined
+    : undefined;
+  if (!allowanceJob) return new Response(null, { status: 204 });
+
+  const allowanceResult = await dispatchAmegoAllowanceJob(
+    allowanceJob,
+    credentials,
+    fetch,
+    async () => {
+      const { error: mutationError } = await admin.rpc(
+        'mark_amego_allowance_mutation_started',
+        {
+          p_job_id: allowanceJob.job_id,
+          p_lease_token: allowanceJob.lease_token,
+        },
+      );
+      if (mutationError) throw new Error('Unable to persist Amego allowance mutation boundary');
+    },
+  );
+  const persistedAllowanceOutcome = allowanceResult.outcome === 'failed' && !allowanceResult.retryable
+    ? 'failed_terminal'
+    : allowanceResult.outcome;
+  const { error: allowanceCompletionError } = await admin.rpc(
+    'complete_amego_allowance_job',
+    {
+      p_job_id: allowanceJob.job_id,
+      p_lease_token: allowanceJob.lease_token,
+      p_outcome: persistedAllowanceOutcome,
+      p_mutation_accepted: 'mutationAccepted' in allowanceResult
+        ? allowanceResult.mutationAccepted
+        : false,
+      p_mutation_rejected: 'mutationRejected' in allowanceResult
+        ? allowanceResult.mutationRejected === true
+        : false,
+      p_allowance_number: 'allowanceNumber' in allowanceResult
+        ? allowanceResult.allowanceNumber ?? null
+        : null,
+      p_provider_status: 'providerStatus' in allowanceResult
+        ? allowanceResult.providerStatus ?? null
+        : null,
+      p_provider_updated_at: 'providerUpdatedAt' in allowanceResult
+        ? allowanceResult.providerUpdatedAt
+        : null,
+      p_error_code: 'errorCode' in allowanceResult ? allowanceResult.errorCode : null,
+      p_error_message: 'errorMessage' in allowanceResult ? allowanceResult.errorMessage : null,
+    },
+  );
+  if (allowanceCompletionError) {
+    console.error('Unable to complete Amego allowance job', {
+      jobId: allowanceJob.job_id,
+      code: allowanceCompletionError.code,
+    });
+    return json({ error: 'Unable to persist allowance result' }, 500);
+  }
+  return json({
+    ok: true,
+    jobId: allowanceJob.job_id,
+    outcome: allowanceResult.outcome,
+  }, 200);
 });

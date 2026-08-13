@@ -91,6 +91,56 @@ describe('Amego invoice dispatch', () => {
     });
   });
 
+  it('accepts an A0401 status 99 readback for a company invoice', async () => {
+    const companyJob: AmegoJob = {
+      ...job,
+      expected_buyer_identifier: '12345678',
+      request_payload: {
+        ...job.request_payload,
+        preference: {
+          kind: 'company', notificationEmail: 'buyer@example.test',
+          taxId: '12345678', buyerName: '測試公司',
+        },
+      },
+    };
+    const fetcher = vi.fn().mockResolvedValue(response({
+      code: 0,
+      data: {
+        invoice_number: 'AA12345678', invoice_type: 'A0401', invoice_status: 99,
+        order_id: job.amego_order_id, total_amount: 680,
+        buyer_identifier: '12345678', create_date: 1_788_000_000,
+      },
+    }));
+    await expect(dispatchAmegoJob(companyJob, credentials, fetcher)).resolves.toMatchObject({
+      outcome: 'issued', providerStatus: 99,
+    });
+  });
+
+  it('rejects a B2C C0401 readback for an approved company invoice', async () => {
+    const companyJob: AmegoJob = {
+      ...job,
+      expected_buyer_identifier: '12345678',
+      request_payload: {
+        ...job.request_payload,
+        preference: {
+          kind: 'company', notificationEmail: 'buyer@example.test',
+          taxId: '12345678', buyerName: '測試公司',
+        },
+      },
+    };
+    const fetcher = vi.fn().mockResolvedValue(response({
+      code: 0,
+      data: {
+        invoice_number: 'AA12345678', invoice_type: 'C0401', invoice_status: 99,
+        order_id: job.amego_order_id, total_amount: 680,
+        buyer_identifier: '12345678', create_date: 1_788_000_000,
+      },
+    }));
+    await expect(dispatchAmegoJob(companyJob, credentials, fetcher)).resolves.toMatchObject({
+      outcome: 'failed', errorCode: 'UNEXPECTED_INVOICE_TYPE', retryable: false,
+    });
+  });
+
   it('can void an issued invoice after the PII request payload was scrubbed', async () => {
     const voidJob: AmegoJob = {
       ...job,

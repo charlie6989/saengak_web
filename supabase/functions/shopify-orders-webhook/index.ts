@@ -1,10 +1,11 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { getPreferredSecretKey } from '../create-shopify-cart/auth.ts';
 import {
-  isAcceptedShopifyOrderTopic,
+  isAcceptedShopifyWebhookTopic,
   isValidWebhookId,
   MAX_WEBHOOK_BODY_BYTES,
   parseShopifyOrderWebhook,
+  parseShopifyRefundWebhook,
   readRequestBodyWithLimit,
   verifyShopifyWebhookHmac,
   WebhookBodyTooLargeError,
@@ -57,7 +58,7 @@ Deno.serve(async (request: Request) => {
 
   if (
     !isValidWebhookId(webhookId) ||
-    !isAcceptedShopifyOrderTopic(topic) ||
+    !isAcceptedShopifyWebhookTopic(topic) ||
     shopDomain !== expectedShopDomain
   ) {
     return jsonResponse({ error: 'Invalid webhook metadata' }, 400);
@@ -69,14 +70,20 @@ Deno.serve(async (request: Request) => {
   } catch {
     return jsonResponse({ error: 'Invalid JSON payload' }, 400);
   }
-  const syncInput = parseShopifyOrderWebhook(payload, {
+  const metadata = {
     webhookId,
     topic,
     shopDomain,
     triggeredAt,
-  });
-  if (!syncInput) {
-    return jsonResponse({ error: 'Invalid order payload' }, 400);
+  };
+  const orderSyncInput = topic === 'refunds/create'
+    ? undefined
+    : parseShopifyOrderWebhook(payload, metadata);
+  const refundSyncInput = topic === 'refunds/create'
+    ? parseShopifyRefundWebhook(payload, metadata)
+    : undefined;
+  if (!orderSyncInput && !refundSyncInput) {
+    return jsonResponse({ error: 'Invalid Shopify payload' }, 400);
   }
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -91,15 +98,21 @@ Deno.serve(async (request: Request) => {
   const adminClient = createClient(supabaseUrl, secretKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data, error } = await adminClient.rpc('sync_shopify_order_webhook', syncInput);
+  const rpcName = refundSyncInput
+    ? 'sync_shopify_refund_webhook'
+    : 'sync_shopify_order_webhook';
+  const { data, error } = await adminClient.rpc(
+    rpcName,
+    refundSyncInput ?? orderSyncInput,
+  );
 
   if (error) {
-    console.error('Shopify order projection failed', {
+    console.error('Shopify commerce projection failed', {
       webhookId,
       topic,
       code: error.code,
     });
-    return jsonResponse({ error: 'Order projection failed' }, 500);
+    return jsonResponse({ error: 'Commerce projection failed' }, 500);
   }
 
   return jsonResponse({ ok: true, result: data }, 200);

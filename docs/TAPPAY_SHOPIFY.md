@@ -27,11 +27,11 @@ SAENGAK 購物車
 - 前端只接受 HTTPS `checkoutUrl`，缺少後端環境時不導向、不送出付款。
 - 正式商品價格、折扣、稅金與可售狀態以 Shopify Checkout 回讀為準，不信任 localStorage 合計。
 - 已登入會員建立 Cart 時，後端驗證 session 後保存 `cart_token -> user_id`；訪客結帳不會被猜測或用 email 自動掛到會員。
-- `shopify-orders-webhook` 以原始 request body 驗證 Shopify HMAC，檢查商店、topic、Webhook ID 與 payload，再由 service role 投影訂單。
+- `shopify-orders-webhook` 以原始 request body 驗證 Shopify HMAC，檢查商店、topic、Webhook ID 與 payload，再由 service role 投影訂單或建立退款折讓審核工作。
 - 同一 Webhook ID 會去重；較舊的 `updated_at` 事件不會覆蓋較新的付款狀態；未找到可信 Cart 連結的訂單只記錄 `unlinked`，不建立會員訂單。
 - Webhook receipts 只保存事件 ID、topic、商店、訂單 GID、時間與處理結果，不保存地址、電話或完整顧客 payload。
 - ShipAny 回寫 Shopify fulfillment 後，同一簽章 webhook 會同步配送方式、承運商、追蹤碼與 HTTPS 追蹤連結；SAENGAK 不保存 ShipAny 私有 API key。
-- `orders`／`order_items`／`order_fulfillments` 維持會員唯讀。程式測試需由 CI／本機重跑；目前 DB runner 應執行 107 項 pgTAP assertion，正式部署前必須有本機 PostgreSQL 全數通過證據。
+- `orders`／`order_items`／`order_fulfillments` 維持會員唯讀。程式測試需由 CI／本機重跑；目前 DB runner 應執行 141 項 pgTAP assertion，正式部署前必須有本機 PostgreSQL 全數通過證據。
 
 ## 管理端設定清單
 
@@ -48,7 +48,7 @@ SAENGAK 購物車
    - `shopify.tappaysdk.com`
 6. Shopify【付款】→ TapPay：先開啟測試模式（第 15–16 頁）。
 7. 建立一筆 sandbox 訂單，確認 Shopify 訂單、TapPay 交易與失敗／取消狀態一致後，才評估正式模式。
-8. 已以 SAENGAK 專用 Shopify App 訂閱 `orders/create`、`orders/paid`、`orders/updated`、`orders/fulfilled`、`orders/cancelled`，HTTPS 目的地設為 Supabase `shopify-orders-webhook`；API 使用 2026-07，且只授予 `read_orders`。
+8. 訂閱 `orders/create`、`orders/paid`、`orders/updated`、`orders/fulfilled`、`orders/cancelled` 與 `refunds/create`，HTTPS 目的地設為 Supabase `shopify-orders-webhook`；API 使用 2026-07，且只需要 `read_orders`。退款事件只建立人工會計審核工作，不會直接對供應商開立折讓。
 
 三種交易的跨系統證據以 `npm run verify:commerce -- <evidence.json>` 驗收，格式與權威來源見 `docs/COMMERCE_SANDBOX_ACCEPTANCE.md`。成功案例還必須驗證物流 fulfillment／tracking 與發票供應商事件；失敗及取消案例則必須證明沒有誤建物流或發票。
 
@@ -62,7 +62,7 @@ npm run shopify:webhooks
 SHOPIFY_ADMIN_ACCESS_TOKEN=*** npm run shopify:webhooks -- --apply
 ```
 
-腳本固定只允許 `gh2xgs-zf.myshopify.com`、Admin API `2026-07` 與 SAENGAK Production 的 webhook URL；不會把 token 印到輸出，也不會刪除既有 subscription。2026-07-20 建立於舊商店的 `SAENGAK Order Sync` 與訂閱不能當作新商店證據；切換後必須在新商店重新安裝、同步並回讀五個 topics。client secret 只保存於 Supabase Edge Function Secrets，不進入前端、repo 或文件。
+腳本固定只允許 `gh2xgs-zf.myshopify.com`、Admin API `2026-07` 與 SAENGAK Production 的 webhook URL；不會把 token 印到輸出，也不會刪除既有 subscription。2026-07-20 建立於舊商店的 `SAENGAK Order Sync` 與訂閱不能當作新商店證據；切換後必須在新商店重新安裝、同步並回讀六個 topics。client secret 只保存於 Supabase Edge Function Secrets，不進入前端、repo 或文件。
 
 ## 後端環境設定
 

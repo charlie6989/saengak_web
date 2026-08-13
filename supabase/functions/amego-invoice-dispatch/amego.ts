@@ -192,8 +192,14 @@ async function readLimitedJson(response: Response): Promise<UnknownRecord> {
   return record;
 }
 
-async function callAmego(
-  path: '/json/f0401' | '/json/f0501' | '/json/invoice_query',
+export async function callAmego(
+  path:
+    | '/json/f0401'
+    | '/json/f0501'
+    | '/json/invoice_query'
+    | '/json/g0401'
+    | '/json/g0501'
+    | '/json/allowance_query',
   data: unknown,
   credentials: AmegoCredentials,
   fetcher: typeof fetch,
@@ -238,14 +244,32 @@ function evaluateQuery(job: AmegoJob, response: UnknownRecord): AmegoDispatchRes
   if (providerStatus === 91) {
     return { outcome: 'failed', errorCode: 'PROVIDER_STATUS_91', errorMessage: 'Provider reports an invoice processing error', retryable: false };
   }
-  if (job.operation === 'issue' && invoiceType === 'C0401' && providerStatus === 99) {
+  const issuedTypes = job.expected_buyer_identifier === '0000000000'
+    ? new Set(['C0401'])
+    : /^\d{8}$/.test(job.expected_buyer_identifier ?? '')
+      ? new Set(['A0401'])
+      : new Set<string>();
+  if (
+    job.operation === 'issue' &&
+    providerStatus === 99 &&
+    ['C0401', 'A0401'].includes(invoiceType) &&
+    !issuedTypes.has(invoiceType)
+  ) {
+    return {
+      outcome: 'failed',
+      errorCode: 'UNEXPECTED_INVOICE_TYPE',
+      errorMessage: 'Provider invoice type does not match the approved buyer identity',
+      retryable: false,
+    };
+  }
+  if (job.operation === 'issue' && issuedTypes.has(invoiceType) && providerStatus === 99) {
     return { outcome: 'issued', invoiceNumber, providerStatus: 99, providerUpdatedAt: unixSecondsToIso(data.create_date) };
   }
-  if (job.operation === 'void' && invoiceType === 'C0501' && providerStatus === 99 && Number(data.cancel_date) > 0) {
+  if (job.operation === 'void' && ['C0501', 'A0501'].includes(invoiceType) && providerStatus === 99 && Number(data.cancel_date) > 0) {
     return { outcome: 'voided', invoiceNumber, providerStatus: 99, providerUpdatedAt: unixSecondsToIso(data.cancel_date) };
   }
-  if (job.operation === 'void' && providerStatus === 99 && invoiceType !== 'C0401') {
-    return { outcome: 'failed', errorCode: 'UNSUPPORTED_VOID_SOURCE', errorMessage: 'Only a confirmed C0401 invoice can be voided', retryable: false };
+  if (job.operation === 'void' && providerStatus === 99 && !['C0401', 'A0401'].includes(invoiceType)) {
+    return { outcome: 'failed', errorCode: 'UNSUPPORTED_VOID_SOURCE', errorMessage: 'Only a confirmed C0401/A0401 invoice can be voided', retryable: false };
   }
   return {
     outcome: 'provider_pending', invoiceNumber, invoiceType, providerStatus,
@@ -281,7 +305,7 @@ export async function dispatchAmegoJob(
     const readyToVoid = job.operation === 'void'
       && existing?.outcome === 'provider_pending'
       && existing.providerStatus === 99
-      && existing.invoiceType === 'C0401'
+      && ['C0401', 'A0401'].includes(existing.invoiceType ?? '')
       && Boolean(existing.invoiceNumber);
     if (existing && !readyToVoid) return existing;
 

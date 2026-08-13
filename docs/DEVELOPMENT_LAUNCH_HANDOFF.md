@@ -29,7 +29,7 @@
   - Variant GID：`gid://shopify/ProductVariant/43639647502403`
   - 售價：`TWD 680`
   - `availableForSale=true`
-- 本機 TypeScript、101 個單元測試、107 個 PostgreSQL pgTAP assertions、Vite build、公開內容檢查、dependency audit 與 Supabase 靜態基線檢查均通過。
+- 本機 TypeScript、114 個單元測試、141 個 PostgreSQL pgTAP assertions、Vite build、公開內容檢查、dependency audit 與 Supabase 靜態基線檢查均通過。
 - Shopify Checkout、TapPay、訂單 webhook、會員訂單投影、物流與發票投影已有程式與測試基線。
 
 ### 2.2 不可宣稱已完成的部分
@@ -100,11 +100,11 @@ flowchart LR
 | 檢查 | 結果 |
 | --- | --- |
 | `npm run typecheck` | 通過 |
-| `npm test -- --run` | 19 files、101/101 tests 通過 |
-| `npm run test:db` | 本機 Supabase PostgreSQL 107/107 pgTAP assertions 通過；四個 test transaction 均 rollback |
+| `npm test -- --run` | 20 files、114/114 tests 通過 |
+| `npm run test:db` | 本機 Supabase PostgreSQL 141/141 pgTAP assertions 通過；五個 test transaction 均 rollback |
 | `npm run build` | 通過；Vite 577 modules transformed |
 | `npm run verify:content` | 通過；含 production `dist` 共 141 files checked |
-| `npm run verify:supabase` | 靜態基線通過；7 tables、11 policies |
+| `npm run verify:supabase` | 靜態基線通過；8 tables、12 policies |
 | `npm run verify:production -- --base-url https://saengak.com.tw` | branch 最新 probe 為 22/23；正式站尚未部署 `amego-invoice-dispatch`，目前 404，符合「尚未上線」而非通過 |
 | `npm audit --audit-level=moderate` | 通過；0 vulnerabilities |
 | 公開桌機與 390×844 手機 | Coming Soon 正常、無相關 console error |

@@ -9,6 +9,7 @@ export const REQUIRED_ORDER_WEBHOOK_TOPICS = [
   'ORDERS_UPDATED',
   'ORDERS_FULFILLED',
   'ORDERS_CANCELLED',
+  'REFUNDS_CREATE',
 ];
 
 export function normalizeShopifyDomain(value = '') {

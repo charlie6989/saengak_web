@@ -58,7 +58,7 @@
 - `SAENGAK Order Sync` custom app 與 `read_orders` scope。
 - Admin API access token（若 webhook 同步工具需要）；不得放在前端或交接文件。
 - Shopify webhook client secret／`ShopifyWebhookSecret`。
-- 五個訂單 webhook subscriptions 及 production endpoint readback。
+- 五個既有訂單 webhook subscriptions，以及部署退款處理程式後新增的 `REFUNDS_CREATE`；六個 production endpoint subscriptions 都須回讀。
 - Theme `145031036995` 的來源與 storefront redirect 設定。
 
 若 Shopify Admin 不再顯示既有 token 明文，應建立新 token、更新 Supabase/Vercel secrets、驗證新 token，再撤銷舊 token；不要嘗試從瀏覽器 Cookie 或 session 擷取 owner 權限。

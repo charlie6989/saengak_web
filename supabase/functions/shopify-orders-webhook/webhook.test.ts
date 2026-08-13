@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   httpsUrl,
   parseShopifyOrderWebhook,
+  parseShopifyRefundWebhook,
   readRequestBodyWithLimit,
   verifyShopifyWebhookHmac,
 } from './webhook';
@@ -149,5 +150,87 @@ describe('Shopify order webhook validation', () => {
 
     expect(parseShopifyOrderWebhook({ ...payload, cart_token: null }, metadata)).toBeUndefined();
     expect(parseShopifyOrderWebhook(payload, { ...metadata, topic: 'orders/delete' })).toBeUndefined();
+  });
+
+  it('normalizes a TWD refund into an allowance review snapshot', () => {
+    const result = parseShopifyRefundWebhook({
+      id: 889900112233,
+      order_id: 9554194432293,
+      created_at: '2026-08-13T15:30:00+08:00',
+      processed_at: '2026-08-13T15:31:00+08:00',
+      refund_line_items: [{
+        quantity: 1,
+        subtotal: '600',
+        total_tax: '30',
+        line_item: { name: '深層修護私密清潔露' },
+      }],
+      transactions: [{
+        kind: 'refund', status: 'success', currency: 'TWD', amount: '680',
+      }],
+    }, {
+      ...metadata,
+      topic: 'refunds/create',
+      shopDomain: 'gh2xgs-zf.myshopify.com',
+    });
+
+    expect(result).toMatchObject({
+      p_shopify_order_gid: 'gid://shopify/Order/9554194432293',
+      p_shopify_refund_gid: 'gid://shopify/Refund/889900112233',
+      p_allowance_number: '889900112233',
+      p_total_amount: '680',
+      p_request_payload: {
+        currencyCode: 'TWD',
+        allowanceDate: '20260813',
+        lineItems: [
+          { description: '深層修護私密清潔露' },
+          { description: '退款／運費調整' },
+        ],
+      },
+    });
+    expect(Number(result?.p_net_amount) + Number(result?.p_tax_amount)).toBe(680);
+  });
+
+  it('rejects non-TWD, fractional, oversized or inconsistent refunds', () => {
+    const refund = {
+      id: 889900112233,
+      order_id: 9554194432293,
+      created_at: '2026-08-13T15:30:00+08:00',
+      refund_line_items: [{
+        quantity: 1,
+        subtotal: '648',
+        total_tax: '32',
+        line_item: { name: '測試商品' },
+      }],
+      transactions: [{ kind: 'refund', status: 'success', currency: 'TWD', amount: '680' }],
+    };
+    const refundMetadata = {
+      ...metadata,
+      topic: 'refunds/create',
+      shopDomain: 'gh2xgs-zf.myshopify.com',
+    };
+    expect(parseShopifyRefundWebhook({
+      ...refund,
+      transactions: [{ kind: 'refund', status: 'success', currency: 'USD', amount: '680' }],
+    }, refundMetadata)).toBeUndefined();
+    expect(parseShopifyRefundWebhook({
+      ...refund,
+      transactions: [{ kind: 'refund', status: 'success', currency: 'TWD', amount: '680.5' }],
+    }, refundMetadata)).toBeUndefined();
+    expect(parseShopifyRefundWebhook({ ...refund, id: '12345678901234567' }, refundMetadata))
+      .toBeUndefined();
+    expect(parseShopifyRefundWebhook({ ...refund, id: '0' }, refundMetadata))
+      .toBeUndefined();
+    expect(parseShopifyRefundWebhook({
+      ...refund,
+      refund_line_items: [{
+        ...refund.refund_line_items[0],
+        total_tax: '0',
+      }],
+      transactions: [{ kind: 'refund', status: 'success', currency: 'TWD', amount: '648' }],
+    }, refundMetadata)).toBeUndefined();
+    expect(parseShopifyRefundWebhook({
+      ...refund,
+      transactions: [{ kind: 'refund', status: 'success', currency: 'TWD', amount: '600' }],
+    }, refundMetadata)).toBeUndefined();
   });
 });

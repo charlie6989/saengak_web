@@ -12,6 +12,7 @@ export const REQUIRED_WEBHOOK_TOPICS = [
   'ORDERS_UPDATED',
   'ORDERS_FULFILLED',
   'ORDERS_CANCELLED',
+  'REFUNDS_CREATE',
 ];
 export const REQUIRED_SANDBOX_SCENARIOS = ['success', 'failed', 'cancelled'];
 
@@ -330,8 +331,8 @@ export function evaluateSandboxCase(evidence) {
       'webhook_subscriptions',
       sameStringSet(webhook.subscriptions, REQUIRED_WEBHOOK_TOPICS) ? 'pass' : 'fail',
       sameStringSet(webhook.subscriptions, REQUIRED_WEBHOOK_TOPICS)
-        ? '五個 Shopify 訂單 webhook topics 已回讀完整'
-        : 'Shopify 訂單 webhook subscriptions 不完整',
+        ? '六個 Shopify 訂單／退款 webhook topics 已回讀完整'
+        : 'Shopify 訂單／退款 webhook subscriptions 不完整',
     ),
     booleanGate('webhook_delivery', webhook.eventAccepted, '本案例 webhook 已驗簽接受', '缺少本案例 webhook 成功投遞證據'),
     gate(

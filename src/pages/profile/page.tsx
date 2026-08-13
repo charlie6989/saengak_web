@@ -57,6 +57,14 @@ interface OrderInvoice {
   issued_at?: string;
   voided_at?: string;
   allowance_issued_at?: string;
+  allowances?: OrderInvoiceAllowance[];
+}
+
+interface OrderInvoiceAllowance {
+  id: string;
+  allowance_number: string;
+  status: 'issued' | 'voided' | 'failed';
+  gross_amount: number;
 }
 
 interface Favorite {
@@ -232,7 +240,13 @@ export default function ProfilePage() {
             invoice_number,
             issued_at,
             voided_at,
-            allowance_issued_at
+            allowance_issued_at,
+            allowances:order_invoice_allowances (
+              id,
+              allowance_number,
+              status,
+              gross_amount
+            )
           )
         `)
         .eq('user_id', userId)
@@ -798,10 +812,19 @@ export default function ProfilePage() {
                         ) : (
                           <div className="mt-2 space-y-1">
                             {order.invoices?.map((invoice) => (
-                              <p key={invoice.id}>
-                                {getInvoiceStatusText(invoice.status)}
-                                {invoice.invoice_number ? `｜發票號碼 ${invoice.invoice_number}` : ''}
-                              </p>
+                              <div key={invoice.id}>
+                                <p>
+                                  {getInvoiceStatusText(invoice.status)}
+                                  {invoice.invoice_number ? `｜發票號碼 ${invoice.invoice_number}` : ''}
+                                </p>
+                                {invoice.allowances?.map((allowance) => (
+                                  <p key={allowance.id} className="pl-3 text-gray-600">
+                                    折讓單 {allowance.allowance_number}
+                                    {allowance.status === 'voided' ? '｜已作廢' : '｜已開立'}
+                                    {`｜NT$ ${Number(allowance.gross_amount).toLocaleString()}`}
+                                  </p>
+                                ))}
+                              </div>
                             ))}
                           </div>
                         )}
