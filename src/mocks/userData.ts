@@ -43,14 +43,14 @@ export const mockOrders = [
   {
     id: 'order-001',
     user_id: 'user-001',
-    order_number: 'VG2024030001',
+    order_number: 'SG2024030001',
     total_amount: 1580,
     status: 'completed',
     created_at: '2024-03-01T09:30:00Z',
     items: [
       {
         id: 'item-001',
-        product_name: 'VAGI 私密護理潔淨慕斯',
+        product_name: 'SAENGAK 私密護理潔淨慕斯',
         quantity: 2,
         price: 590,
         image_url: 'https://readdy.ai/api/search-image?query=elegant%20feminine%20hygiene%20foam%20cleanser%20bottle%20white%20clean%20minimalist%20packaging%20premium%20skincare%20product%20photography&width=300&height=300&seq=product1&orientation=squarish'
@@ -67,7 +67,7 @@ export const mockOrders = [
   {
     id: 'order-002',
     user_id: 'user-001',
-    order_number: 'VG2024030015',
+    order_number: 'SG2024030015',
     total_amount: 2340,
     status: 'processing',
     created_at: '2024-03-15T14:45:00Z',
@@ -91,7 +91,7 @@ export const mockOrders = [
   {
     id: 'order-003',
     user_id: 'user-002',
-    order_number: 'VG2024030022',
+    order_number: 'SG2024030022',
     total_amount: 1190,
     status: 'shipped',
     created_at: '2024-03-22T11:20:00Z',
@@ -113,7 +113,7 @@ export const mockFavorites = [
     id: 'fav-001',
     user_id: 'user-001',
     product_id: 'prod-001',
-    product_name: 'VAGI 私密護理潔淨慕斯',
+    product_name: 'SAENGAK 私密護理潔淨慕斯',
     product_price: 590,
     product_image: 'https://readdy.ai/api/search-image?query=elegant%20feminine%20hygiene%20foam%20cleanser%20bottle%20white%20clean%20minimalist%20packaging%20premium%20skincare%20product%20photography&width=300&height=300&seq=product1&orientation=squarish',
     created_at: '2024-03-01T09:30:00Z'

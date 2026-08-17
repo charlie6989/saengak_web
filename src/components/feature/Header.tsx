@@ -165,7 +165,7 @@ export default function Header() {
         style={{ height: '32px', fontFamily: "Noto Sans TC, sans-serif" }}
       >
         <div className="animate-marquee whitespace-nowrap flex items-center justify-center h-full text-sm">
-          橄欖洋行、新世界百貨江南店、江南產後護理院、藥局入駐！
+          SAENGAK 官方旗艦館｜專注私密肌膚健康呵護，全館品質嚴選
           {/* 開發模式切換按鈕 */}
           <button
             onClick={toggleMockMode}

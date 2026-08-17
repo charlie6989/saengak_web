@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 interface OrderStatus {
   id: string;
@@ -63,7 +64,7 @@ export default function OrderStatusPage() {
       ],
       shipping: {
         method: '宅配到府',
-        address: '台北市信義區信義路五段123號456樓',
+        address: siteConfig.companyAddress,
         trackingNumber: 'TW1234567890'
       },
       statusHistory: [
@@ -314,8 +315,8 @@ export default function OrderStatusPage() {
               <div className="bg-yellow-50 border border-yellow-200 p-4 max-w-md mx-auto">
                 <p className="text-yellow-800 text-sm">
                   如果仍無法找到訂單，請聯絡客服：<br />
-                  電話：0800-123-456<br />
-                  信箱：service@lucissi.com
+                  電話：{siteConfig.servicePhone}<br />
+                  信箱：{siteConfig.supportEmail}
                 </p>
               </div>
             </div>
@@ -332,15 +333,15 @@ export default function OrderStatusPage() {
               <div className="bg-white p-6 text-center">
                 <i className="ri-phone-line text-3xl text-teal-600 mb-4"></i>
                 <h3 className="font-semibold text-gray-900 mb-2">電話客服</h3>
-                <p className="text-gray-600 text-sm mb-4">週一至週五 09:00-18:00</p>
-                <p className="font-semibold text-teal-600">0800-123-456</p>
+                <p className="text-gray-600 text-sm mb-4">{siteConfig.serviceHours}</p>
+                <p className="font-semibold text-teal-600">{siteConfig.servicePhone}</p>
               </div>
               
               <div className="bg-white p-6 text-center">
                 <i className="ri-mail-line text-3xl text-blue-600 mb-4"></i>
                 <h3 className="font-semibold text-gray-900 mb-2">電子郵件</h3>
                 <p className="text-gray-600 text-sm mb-4">24小時內回覆</p>
-                <p className="font-semibold text-blue-600">service@lucissi.com</p>
+                <p className="font-semibold text-blue-600">{siteConfig.supportEmail}</p>
               </div>
               
               <div className="bg-white p-6 text-center">

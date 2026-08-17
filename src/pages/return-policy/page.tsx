@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 export default function ReturnPolicyPage() {
   const [activeTab, setActiveTab] = useState('policy');
@@ -295,22 +296,17 @@ export default function ReturnPolicyPage() {
                       </thead>
                       <tbody>
                         <tr className="border-t">
-                          <td className="p-3">信用卡</td>
-                          <td className="p-3">原卡退款</td>
+                          <td className="p-3">信用卡 (TapPay)</td>
+                          <td className="p-3">原卡刷退</td>
                           <td className="p-3">7-14個工作天</td>
                         </tr>
                         <tr className="border-t">
-                          <td className="p-3">ATM轉帳</td>
+                          <td className="p-3">ATM轉帳 / 虛擬帳號</td>
                           <td className="p-3">銀行轉帳</td>
                           <td className="p-3">3-5個工作天</td>
                         </tr>
                         <tr className="border-t">
-                          <td className="p-3">超商代碼</td>
-                          <td className="p-3">銀行轉帳</td>
-                          <td className="p-3">3-5個工作天</td>
-                        </tr>
-                        <tr className="border-t">
-                          <td className="p-3">貨到付款</td>
+                          <td className="p-3">超商代碼繳費</td>
                           <td className="p-3">銀行轉帳</td>
                           <td className="p-3">3-5個工作天</td>
                         </tr>
@@ -409,15 +405,15 @@ export default function ReturnPolicyPage() {
               <div className="bg-white p-6 text-center">
                 <i className="ri-phone-line text-3xl text-teal-600 mb-4"></i>
                 <h3 className="font-semibold text-gray-900 mb-2">電話客服</h3>
-                <p className="text-gray-600 text-sm mb-4">週一至週五 09:00-18:00</p>
-                <p className="font-semibold text-teal-600">0800-123-456</p>
+                <p className="text-gray-600 text-sm mb-4">{siteConfig.serviceHours}</p>
+                <p className="font-semibold text-teal-600">{siteConfig.servicePhone}</p>
               </div>
               
               <div className="bg-white p-6 text-center">
                 <i className="ri-mail-line text-3xl text-blue-600 mb-4"></i>
                 <h3 className="font-semibold text-gray-900 mb-2">電子郵件</h3>
                 <p className="text-gray-600 text-sm mb-4">24小時內回覆</p>
-                <p className="font-semibold text-blue-600">service@lucissi.com</p>
+                <p className="font-semibold text-blue-600">{siteConfig.supportEmail}</p>
               </div>
               
               <div className="bg-white p-6 text-center">

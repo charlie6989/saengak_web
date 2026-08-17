@@ -38,7 +38,7 @@ export default function Community() {
           title: article.title,
           excerpt: article.excerpt || article.contentHtml?.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...',
           category: article.blog?.title || '精彩文章',
-          author: article.authorV2?.name || 'LUCISSI 編輯',
+          author: article.authorV2?.name || 'SAENGAK 編輯',
           date: new Date(article.publishedAt).toLocaleDateString(),
           readTime: '3分鐘', // Estimate or default
           image: article.image?.url || `https://via.placeholder.com/800x500?text=No+Image`,
@@ -70,7 +70,7 @@ export default function Community() {
     {
       id: 2,
       image: 'https://readdy.ai/api/search-image?query=Healthy%20lifestyle%20flat%20lay%20with%20feminine%20care%20products%2C%20natural%20ingredients%2C%20wellness%20concept%2C%20Instagram%20aesthetic%20photography%2C%20clean%20minimalist%20style&width=400&height=400&seq=ig2&orientation=squarish',
-      caption: '天然成分的力量 🌿 我們堅持使用最純淨的天然成分，為妳的健康把關 #天然護理 #健康生活',
+      caption: '天然成分的力量 🌿 我們堅持使用純淨的植物萃取成分，為妳的日常護理把關 #天然護理 #健康生活',
       likes: 189,
       comments: 12,
       date: '3天前'
@@ -86,7 +86,7 @@ export default function Community() {
     {
       id: 4,
       image: 'https://readdy.ai/api/search-image?query=Customer%20testimonial%20and%20review%20concept%2C%20happy%20Asian%20woman%20with%20feminine%20care%20products%2C%20authentic%20user%20experience%2C%20Instagram%20story%20style&width=400&height=400&seq=ig4&orientation=squarish',
-      caption: '用戶真實分享 ✨ 感謝每一位信任我們的女性朋友，妳們的回饋是我們前進的動力 #用戶分享 #真實體驗',
+      caption: '美好生活分享 ✨ 感謝每一位喜愛我們的朋友，妳們的支持是我們前進的動力 #生活分享 #美好日常',
       likes: 156,
       comments: 8,
       date: '1週前'
@@ -238,7 +238,7 @@ export default function Community() {
                 {/* Featured Article - 手機版優化 */}
                 {filteredArticles.length > 0 && (
                   <div className="mb-8 md:mb-16">
-                    <div className="relative overflow-hidden rounded-lg cursor-pointer group" onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'saengak.myshopify.com'}/blogs/${filteredArticles[0].blogHandle}/${filteredArticles[0].handle}`, '_blank')}>
+                    <div className="relative overflow-hidden rounded-lg cursor-pointer group" onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'gh2xgs-zf.myshopify.com'}/blogs/${filteredArticles[0].blogHandle}/${filteredArticles[0].handle}`, '_blank')}>
                       {/* 手機版使用 4:3 比例，平板以上使用 21:9 */}
                       <div className="aspect-[4/3] md:aspect-[16/9] lg:aspect-[21/9] overflow-hidden">
                         <img
@@ -313,7 +313,7 @@ export default function Community() {
                           hidden: { opacity: 0, y: 16 },
                           show: { opacity: 1, y: 0, transition: { duration: 0.2 } },
                         }}
-                        onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'saengak.myshopify.com'}/blogs/${article.blogHandle}/${article.handle}`, '_blank')}
+                        onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'gh2xgs-zf.myshopify.com'}/blogs/${article.blogHandle}/${article.handle}`, '_blank')}
                       >
                         {/* 手機版使用 16:10 比例 */}
                         <div className="aspect-[16/10] overflow-hidden">
@@ -505,7 +505,7 @@ export default function Community() {
               加入我們的健康社群
             </h2>
             <p className="text-sm md:text-base lg:text-lg text-gray-600 mb-6 md:mb-8 leading-relaxed px-4">
-              成為我們的會員，享受專屬健康資訊推送、專家諮詢服務，以及會員限定的護理指南
+              成為我們的會員，享受專屬健康資訊推送、專業客服諮詢，以及會員限定的護理指南
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -541,8 +541,8 @@ export default function Community() {
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
                   <i className="ri-user-heart-line text-xl" style={{ color: '#225B4F' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">專家諮詢服務</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">享受專業醫師和護理師的線上諮詢服務，解答您的健康疑問</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">專業諮詢支援</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">專屬客服線上諮詢支援，解答您的日常產品挑選與保養疑問</p>
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">

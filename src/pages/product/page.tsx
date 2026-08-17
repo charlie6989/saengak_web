@@ -6,6 +6,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
 import { getMockProductById } from '../../mocks/products';
+import { getFunctionUrl } from '../../lib/supabase';
 
 interface Product {
   id: string;
@@ -58,7 +59,7 @@ export default function ProductPage() {
 
       // fetch the main product
       const response = await fetch(
-        'https://vcswjiyxqhhdpvmsamil.supabase.co/functions/v1/get-products',
+        getFunctionUrl('get-products'),
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -75,7 +76,7 @@ export default function ProductPage() {
 
         // fetch related products (hard‑coded list for demo)
         const relatedResponse = await fetch(
-          'https://vcswjiyxqhhdpvmsamil.supabase.co/functions/v1/get-products',
+          getFunctionUrl('get-products'),
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -491,15 +492,15 @@ export default function ProductPage() {
                     {/* Safety guarantee */}
                     <div className="border-t pt-6">
                       <h4 className="font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                        安全保證
+                        品質承諾
                       </h4>
                       <div className="space-y-3">
                         <p>✓ 通過韓國食品藥品安全處認證</p>
                         <p>✓ 無添加人工香料和色素</p>
                         <p>✓ 低敏配方，適合敏感肌膚</p>
                         <p>✓ 環保包裝，可回收利用</p>
-                        <p>✓ 嚴格品質控制，確保產品安全</p>
-                        <p>✓ 符合國際化妝品安全標準</p>
+                        <p>✓ 嚴格品質控制，確保產品安心</p>
+                        <p>✓ 符合國際化妝品品質標準</p>
                       </div>
                     </div>
 

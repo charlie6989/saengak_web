@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 export default function Privacy() {
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
@@ -19,9 +20,9 @@ export default function Privacy() {
       title: '1. 本隱私權政策之適用範圍',
       content: (
         <div className="space-y-4">
-          <p>「本政策」適用於所有 LUCISSI 的品牌及其子公司或關係企業。</p>
+          <p>「本政策」適用於所有 {siteConfig.brandName} 的品牌及其子公司或關係企業。</p>
           <p>您必須年滿十八(18)歲才能在「本網站」提供您的個人資料。若您未滿十八(18)歲，您必須取得您的父母/法定代理人之同意。您的父母/法定代理人必須閱讀並了解「本網站」所有內容並同意您在「本網站」提供個人資料。我們不會故意蒐集十八(18)歲以下個人之資料。</p>
-          <p>當您繼續使用「本網站」，即代表您無保留的接受並同意「本政策」之所有內容。LUCISSI 保留為因應法規變更及其他因素而隨時修改「本政策」內容之權利，基此，您每次進入或使用「本網站」時，請重新檢視「本政策」以了解變更及修改內容。</p>
+          <p>當您繼續使用「本網站」，即代表您無保留的接受並同意「本政策」之所有內容。{siteConfig.brandName} 保留為因應法規變更及其他因素而隨時修改「本政策」內容之權利，基此，您每次進入或使用「本網站」時，請重新檢視「本政策」以了解變更及修改內容。</p>
         </div>
       )
     },
@@ -65,7 +66,7 @@ export default function Privacy() {
             </li>
           </ul>
           <p className="mt-6 text-gray-600">
-            如您對於個人資料有任何疑問或顧慮，請透過以下方式與我們聯繫：0800-123-456。
+            如您對於個人資料有任何疑問或顧慮，請透過以下方式與我們聯繫：{siteConfig.servicePhone}。
           </p>
         </div>
       )
@@ -75,9 +76,9 @@ export default function Privacy() {
       title: '3. 我們的背景',
       content: (
         <div className="space-y-4">
-          <p>LUCISSI 為台灣領先的美妝保養品牌。LUCISSI 負責蒐集、處理、利用並管理您與我們分享的個人資料。本政策所指「LUCISSI」、「我們」或「我們的」，即指 LUCISSI 品牌。如應適用之個人資料保護相關法規訂定有資料控管者時，LUCISSI 即為個人資料之控管者。</p>
+          <p>{siteConfig.brandName} 為高品質私密日常照護品牌。{siteConfig.brandName} 負責蒐集、處理、利用並管理您與我們分享的個人資料。本政策所指「{siteConfig.brandName}」、「我們」或「我們的」，即指 {siteConfig.brandName} 品牌。如應適用之個人資料保護相關法規訂定有資料控管者時，{siteConfig.brandName} 即為個人資料之控管者。</p>
           <p>如欲查詢我們的聯絡方式，請見「聯絡」部分。</p>
-          <p>LUCISSI 代表多個不同品牌及產品，致力於為消費者提供優質的美妝保養體驗。</p>
+          <p>{siteConfig.brandName} 致力於為消費者提供優質的日常私密護理體驗。</p>
         </div>
       )
     },
@@ -105,7 +106,7 @@ export default function Privacy() {
       title: '5. 我們如何蒐集或使用您的個人資料？',
       content: (
         <div className="space-y-6">
-          <p>我們歡迎您親臨我們的專櫃及瀏覽我們的網站。我們可能透過我們的網站、表格、應用程式、裝置、社群媒體上的品牌頁面或 LUCISSI 產品等，蒐集或接收您的資料。</p>
+          <p>我們歡迎您瀏覽我們的網站。我們可能透過我們的網站、表格、應用程式、裝置、社群媒體上的品牌頁面或 {siteConfig.brandName} 產品等，蒐集或接收您的資料。</p>
           
           <div className="bg-teal-50 rounded-lg p-6">
             <h4 className="font-semibold text-gray-900 mb-4">資料蒐集方式：</h4>
@@ -260,7 +261,7 @@ export default function Privacy() {
             <ul className="list-disc pl-6 space-y-2">
               <li>業務或資產出售時，向潛在買家披露</li>
               <li>遵守法律義務、執行條款及細則</li>
-              <li>保障 LUCISSI、顧客或員工的權利、財產或安全</li>
+              <li>保障 {siteConfig.brandName}、顧客或員工的權利、財產或安全</li>
               <li>已取得您同意的情況</li>
               <li>法律准許的情況</li>
             </ul>
@@ -279,7 +280,7 @@ export default function Privacy() {
               <i className="ri-shield-check-line mr-2"></i>
               安全保障措施
             </h4>
-            <p className="text-green-800">LUCISSI 以安全且合法的方式將資料傳輸至台灣以外之地點。我們會採取必要步驟，確保第三方遵守本政策所列之承諾，包括審核隱私及保安標準，及/或簽署相關合約。</p>
+            <p className="text-green-800">{siteConfig.brandName} 以安全且合法的方式將資料傳輸至台灣以外之地點。我們會採取必要步驟，確保第三方遵守本政策所列之承諾，包括審核隱私及保安標準，及/或簽署相關合約。</p>
           </div>
           <p>如欲了解更多資訊，請按照「聯絡」部分與我們聯繫。</p>
         </div>
@@ -428,7 +429,7 @@ export default function Privacy() {
       title: '15. 您的權利及選擇',
       content: (
         <div className="space-y-6">
-          <p>LUCISSI 尊重您的隱私權，故您能夠掌控個人資料至為重要。您擁有以下個人資料當事人之權利：</p>
+          <p>{siteConfig.brandName} 尊重您的隱私權，故您能夠掌控個人資料至為重要。您擁有以下個人資料當事人之權利：</p>
           
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-teal-50 rounded-lg p-4">
@@ -507,7 +508,7 @@ export default function Privacy() {
       title: '16. 聯絡我們',
       content: (
         <div className="space-y-6">
-          <p>若您對於 LUCISSI 蒐集、處理或利用您的個人資料或「本政策」有任何疑問或顧慮，或希望行使您的個人資料當事人權利，請透過以下方式與我們聯絡：</p>
+          <p>若您對於 {siteConfig.brandName} 蒐集、處理或利用您的個人資料或「本政策」有任何疑問或顧慮，或希望行使您的個人資料當事人權利，請透過以下方式與我們聯絡：</p>
           
           <div className="bg-teal-50 rounded-lg p-6">
             <div className="grid md:grid-cols-2 gap-6">
@@ -519,15 +520,15 @@ export default function Privacy() {
                 <div className="space-y-3 text-teal-800">
                   <div className="flex items-center">
                     <i className="ri-phone-line mr-3 text-teal-600"></i>
-                    <span><strong>客服電話：</strong>0800-123-456</span>
+                    <span><strong>客服電話：</strong>{siteConfig.servicePhone}</span>
                   </div>
                   <div className="flex items-center">
                     <i className="ri-mail-line mr-3 text-teal-600"></i>
-                    <span><strong>電子郵件：</strong>privacy@lucissi.com</span>
+                    <span><strong>電子郵件：</strong>{siteConfig.supportEmail}</span>
                   </div>
                   <div className="flex items-center">
                     <i className="ri-time-line mr-3 text-teal-600"></i>
-                    <span><strong>服務時間：</strong>週一至週五 09:00-18:00</span>
+                    <span><strong>服務時間：</strong>{siteConfig.serviceHours}</span>
                   </div>
                 </div>
               </div>
@@ -541,8 +542,8 @@ export default function Privacy() {
                   <p className="flex items-start">
                     <i className="ri-building-line mr-3 text-teal-600 mt-1 flex-shrink-0"></i>
                     <span>
-                      台灣台北市信義區信義路五段7號22樓<br />
-                      拜悠衣品有限公司<br />
+                      {siteConfig.companyAddress}<br />
+                      {siteConfig.companyName}<br />
                       個人資料管理人員
                     </span>
                   </p>
@@ -592,7 +593,7 @@ export default function Privacy() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">我們的隱私承諾</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                「本網站」係由 拜悠衣品有限公司 所維運。我們立志成為優秀的企業公民，建立更和諧美好的社會。我們十分重視誠信和透明，致力於打造信任和互惠的基礎，與客戶建立穩固持久的關係。
+                「本網站」係由 {siteConfig.companyName} 所維運。我們立志成為優秀的企業公民，建立更和諧美好的社會。我們十分重視誠信和透明，致力於打造信任和互惠的基礎，與客戶建立穩固持久的關係。
               </p>
             </div>
           </div>
@@ -633,15 +634,15 @@ export default function Privacy() {
               <div className="bg-white rounded-lg p-6 text-center shadow-sm">
                 <i className="ri-phone-line text-3xl text-teal-600 mb-4"></i>
                 <h3 className="font-semibold text-gray-900 mb-2">電話諮詢</h3>
-                <p className="text-gray-600 text-sm mb-4">週一至週五 09:00-18:00</p>
-                <p className="font-semibold text-teal-600">0800-123-456</p>
+                <p className="text-gray-600 text-sm mb-4">{siteConfig.serviceHours}</p>
+                <p className="font-semibold text-teal-600">{siteConfig.servicePhone}</p>
               </div>
               
               <div className="bg-white rounded-lg p-6 text-center shadow-sm">
                 <i className="ri-mail-line text-3xl text-blue-600 mb-4"></i>
                 <h3 className="font-semibold text-gray-900 mb-2">電子郵件</h3>
                 <p className="text-gray-600 text-sm mb-4">我們會在24小時內回覆</p>
-                <p className="font-semibold text-blue-600">privacy@lucissi.com</p>
+                <p className="font-semibold text-blue-600">{siteConfig.supportEmail}</p>
               </div>
               
               <div className="bg-white rounded-lg p-6 text-center shadow-sm">

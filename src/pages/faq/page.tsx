@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 interface FAQItem {
   id: string;
@@ -66,13 +67,13 @@ export default function FAQPage() {
       id: '7',
       category: 'payment',
       question: '支援哪些付款方式？',
-      answer: '我們支援多種付款方式：1. 信用卡（Visa、MasterCard、JCB） 2. 金融卡 3. ATM轉帳 4. 超商代碼繳費 5. 貨到付款（限台灣本島）。所有付款方式都採用SSL加密保護，確保交易安全。'
+      answer: '我們支援線上信用卡安全刷卡付款（Visa、MasterCard、JCB）。所有付款流程皆透過 TapPay 進行代碼化安全加密，確保卡號不落地與交易安全性。'
     },
     {
       id: '8',
       category: 'payment',
       question: '付款後多久會收到確認通知？',
-      answer: '信用卡和金融卡付款會立即收到確認通知。ATM轉帳和超商繳費通常在1-2個工作天內確認。貨到付款則在訂單確認後開始備貨流程。'
+      answer: '信用卡刷卡完成授權後，系統將立即發送訂單確認通知至您的註冊信箱，並開始進行備貨與出貨流程。'
     },
     {
       id: '9',
@@ -222,15 +223,15 @@ export default function FAQPage() {
               <div className="bg-white p-6 text-center">
                 <i className="ri-phone-line text-3xl text-teal-600 mb-4"></i>
                 <h3 className="font-semibold text-gray-900 mb-2">電話客服</h3>
-                <p className="text-gray-600 text-sm mb-4">週一至週五 09:00-18:00</p>
-                <p className="font-semibold text-teal-600">0800-123-456</p>
+                <p className="text-gray-600 text-sm mb-4">{siteConfig.serviceHours}</p>
+                <p className="font-semibold text-teal-600">{siteConfig.servicePhone}</p>
               </div>
               
               <div className="bg-white p-6 text-center">
                 <i className="ri-mail-line text-3xl text-blue-600 mb-4"></i>
                 <h3 className="font-semibold text-gray-900 mb-2">電子郵件</h3>
                 <p className="text-gray-600 text-sm mb-4">24小時內回覆</p>
-                <p className="font-semibold text-blue-600">service@lucissi.com</p>
+                <p className="font-semibold text-blue-600">{siteConfig.supportEmail}</p>
               </div>
               
               <div className="bg-white p-6 text-center">

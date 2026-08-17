@@ -59,7 +59,7 @@ export default function BrandStoryPage() {
                 關於 Saengak
               </h2>
               <p className="text-xl md:text-2xl text-gray-700 max-w-5xl mx-auto leading-relaxed font-light">
-                Saengak 是來自韓國的女性私密護理品牌，長期深耕女性私密健康與日常舒緩照護，深受韓國市場信賴。<br />
+                Saengak 是專注於女性私密健康與日常舒緩照護的品牌。<br />
                 我們相信，私密不適不只是身體表面的問題，而是與壓力、情緒與生活節奏息息相關。
               </p>
             </div>
@@ -85,7 +85,7 @@ export default function BrandStoryPage() {
                     深耕女性私密健康
                   </h3>
                   <p className="text-gray-700 text-lg leading-relaxed font-light">
-                    長期專注於女性私密健康與日常舒緩照護，深受韓國市場信賴與喜愛。
+                    長期專注於女性私密健康與日常舒緩照護，致力提供安心舒適的護理體驗。
                   </p>
                 </div>
                 
@@ -147,10 +147,10 @@ export default function BrandStoryPage() {
                   <i className="ri-shield-check-line text-3xl text-white"></i>
                 </div>
                 <h3 className="text-2xl font-bold mb-4" style={{ color: '#225B4F' }}>
-                  安全保證
+                  品質承諾
                 </h3>
                 <p className="text-gray-700 leading-relaxed font-light">
-                  嚴格品質控管，確保每一款產品都安全可靠
+                  嚴格品質控管，確保每一款產品都安心可靠
                 </p>
               </div>
               
@@ -175,7 +175,7 @@ export default function BrandStoryPage() {
                   </h3>
                   <div className="space-y-6 text-gray-700 text-lg leading-relaxed font-light">
                     <p>
-                      Saengak 以<strong className="font-semibold">溫和、安全與日常可用</strong>為產品核心，
+                      Saengak 以<strong className="font-semibold">溫和、安心與日常可用</strong>為產品核心，
                       不追求刺激性的即時效果，而是陪伴女性在每個生活節奏中，
                       維持私密肌膚的舒適與穩定。
                     </p>

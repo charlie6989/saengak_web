@@ -2,20 +2,21 @@
 import { useEffect } from 'react';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 export default function AboutPage() {
   useEffect(() => {
-    document.title = '品牌故事 - LUCISSI CARE 私密護理專家';
+    document.title = `品牌故事 - ${siteConfig.brandName} 私密護理專家`;
     
     // SEO meta tags
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', '了解 LUCISSI CARE 的品牌故事，從性感到健康，自信始於內在的美好平衡。結合韓國專業技術與溫柔科學，為現代女性打造日常私密護理新標準。');
+      metaDescription.setAttribute('content', `了解 ${siteConfig.brandName} 的品牌故事，從性感到健康，自信始於內在的美好平衡。結合專業技術與溫柔科學，為現代女性打造日常私密護理新標準。`);
     }
     
     const metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) {
-      metaKeywords.setAttribute('content', '品牌故事, LUCISSI CARE, 私密護理, 女性健康, 韓國技術, 溫柔科學');
+      metaKeywords.setAttribute('content', `品牌故事, ${siteConfig.brandName}, 私密護理, 女性健康, 溫柔科學`);
     }
   }, []);
 
@@ -37,7 +38,7 @@ export default function AboutPage() {
           <div className="relative max-w-6xl mx-auto px-6">
             <div className="max-w-3xl">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
-                LUCISSI CARE
+                {siteConfig.brandName}
               </h1>
               <p className="text-2xl md:text-3xl text-white/95 mb-6 leading-relaxed font-light">
                 品牌故事
@@ -58,7 +59,7 @@ export default function AboutPage() {
               </h2>
               <p className="text-xl md:text-2xl text-gray-700 max-w-5xl mx-auto leading-relaxed font-light">
                 我們相信，性感不是外在的姿態，而是內在的平衡與自信。<br />
-                LUCISSI CARE 誕生於這個信念——讓每一位女性在日常中，<br />
+                {siteConfig.brandName} 誕生於這個信念——讓每一位女性在日常中，<br />
                 都能以最自然、最舒適的狀態，照顧自己最親密的部分。
               </p>
             </div>
@@ -125,10 +126,10 @@ export default function AboutPage() {
                   <i className="ri-flask-line text-3xl text-white"></i>
                 </div>
                 <h3 className="text-2xl font-bold mb-4" style={{ color: '#225B4F' }}>
-                  韓國專業技術
+                  專業研發技術
                 </h3>
                 <p className="text-gray-700 leading-relaxed font-light">
-                  結合韓國專業私密護理品牌 Saengak 的先進技術與研發成果
+                  結合專業私密護理的先進技術與研發成果
                 </p>
               </div>
               
@@ -152,7 +153,7 @@ export default function AboutPage() {
                   溫柔呵護
                 </h3>
                 <p className="text-gray-700 leading-relaxed font-light">
-                  以女性身體的自然節奏為出發點，追求安全、平衡與相容性
+                  以女性身體的自然節奏為出發點，追求平衡與相容性
                 </p>
               </div>
             </div>
@@ -165,8 +166,7 @@ export default function AboutPage() {
                   </h3>
                   <div className="space-y-6 text-gray-700 text-lg leading-relaxed font-light">
                     <p>
-                      LUCISSI CARE 結合 <strong className="font-semibold">韓國專業私密護理品牌 Saengak 的技術</strong> 與
-                      LUCISSI 長期在女性時尚與身體美學的洞察。
+                      {siteConfig.brandName} 結合專業私密護理技術與長期在女性美學的深刻洞察。
                     </p>
                     <p>
                       我們希望用「<span style={{ color: '#225B4F' }} className="font-semibold">溫柔 × 科學</span>」的方式，
@@ -174,7 +174,7 @@ export default function AboutPage() {
                     </p>
                     <p>
                       從清潔、修護、保濕到舒緩，每一項產品都以女性身體的自然節奏為出發點，
-                      追求安全、平衡、與肌膚真正的相容性。
+                      追求溫和、平衡與肌膚真正的相容性。
                     </p>
                   </div>
                 </div>
@@ -216,7 +216,7 @@ export default function AboutPage() {
                     以及那份「我在照顧自己」的心安裡。
                   </p>
                   <p>
-                    LUCISSI CARE 不只是護理品牌，<br />
+                    {siteConfig.brandName} 不只是護理品牌，<br />
                     更是一種「<span style={{ color: '#225B4F' }} className="font-semibold">從內而外愛自己</span>」的生活方式。
                   </p>
                   <p>
@@ -256,10 +256,10 @@ export default function AboutPage() {
                   <i className="ri-shield-check-line text-2xl" style={{ color: '#225B4F' }}></i>
                 </div>
                 <h4 className="text-lg font-bold mb-4" style={{ color: '#225B4F' }}>
-                  安全保證
+                  品質承諾
                 </h4>
                 <p className="text-gray-700 text-sm leading-relaxed font-light">
-                  嚴格品質控管，確保產品安全性
+                  嚴格品質控管，提供安心可靠的護理體驗
                 </p>
               </div>
               
@@ -346,8 +346,8 @@ export default function AboutPage() {
                   持續創新的承諾
                 </h3>
                 <p className="text-gray-700 text-lg lg:text-xl leading-relaxed font-light max-w-5xl mx-auto">
-                  LUCISSI CARE 將持續與全球優質品牌、醫學實驗室合作，<br />
-                  引入安全有效的護理技術，<br />
+                  {siteConfig.brandName} 將持續與優質供應鏈合作，<br />
+                  引入安心有效的護理技術，<br />
                   同時堅持以簡約、自然、美感為設計語言，<br />
                   打造屬於現代女性的「<span style={{ color: '#225B4F' }} className="font-semibold">日常私密護理新標準</span>」。
                 </p>
@@ -377,7 +377,7 @@ export default function AboutPage() {
               </div>
               <div className="border-t pt-12" style={{ borderColor: '#EBF3EC' }}>
                 <h3 className="text-3xl lg:text-4xl font-bold mb-6" style={{ color: '#225B4F' }}>
-                  LUCISSI CARE
+                  {siteConfig.brandName}
                 </h3>
                 <p className="text-xl lg:text-2xl text-gray-600 italic font-light">
                   from confidence to comfort, from sensuality to self-love.
@@ -394,7 +394,7 @@ export default function AboutPage() {
               開始妳的自信之旅
             </h2>
             <p className="text-xl lg:text-2xl text-white/90 mb-12 leading-relaxed font-light">
-              讓 LUCISSI CARE 陪伴妳探索身體與感受的連結，從內而外愛自己
+              讓 {siteConfig.brandName} 陪伴妳探索身體與感受的連結，從內而外愛自己
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <a

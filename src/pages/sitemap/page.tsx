@@ -2,23 +2,24 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 const SitemapPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
-    document.title = '網站地圖 - LUCISSI CARE | 探索完整網站結構';
+    document.title = `網站地圖 - ${siteConfig.brandName} | 探索完整網站結構`;
     
     // SEO meta tags
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', '瀏覽 LUCISSI 完整網站地圖，快速找到您需要的頁面和功能。包含產品分類、客戶服務、政策條款等所有重要連結，提供最佳的網站導航體驗。');
+      metaDescription.setAttribute('content', `瀏覽 ${siteConfig.brandName} 完整網站地圖，快速找到您需要的頁面和功能。包含產品分類、客戶服務、政策條款等所有重要連結，提供最佳的網站導航體驗。`);
     }
     
     const metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) {
-      metaKeywords.setAttribute('content', '網站地圖, 導航, 頁面索引, 網站結構, 快速導航, LUCISSI, 女性護理');
+      metaKeywords.setAttribute('content', `網站地圖, 導航, 頁面索引, 網站結構, 快速導航, ${siteConfig.brandName}, 女性護理`);
     }
   }, []);
 
@@ -29,11 +30,11 @@ const SitemapPage = () => {
       color: 'text-teal-600',
       bgColor: 'bg-teal-50',
       links: [
-        { name: '首頁', url: '/', description: '探索 LUCISSI 精選產品和最新優惠活動' },
+        { name: '首頁', url: '/', description: `探索 ${siteConfig.brandName} 精選產品和最新優惠活動` },
         { name: '產品搜尋', url: '/search', description: '搜尋和瀏覽所有女性護理產品' },
         { name: '社群', url: '/community', description: '加入我們的健康知識社群' },
         { name: '促銷活動', url: '/promotion', description: '查看最新優惠和促銷活動' },
-        { name: '品牌故事', url: '/brand-story', description: '了解 LUCISSI 的品牌理念' },
+        { name: '品牌故事', url: '/brand-story', description: `了解 ${siteConfig.brandName} 的品牌理念` },
       ]
     },
     {
@@ -42,8 +43,8 @@ const SitemapPage = () => {
       color: 'text-teal-600',
       bgColor: 'bg-teal-50',
       links: [
-        { name: '會員登入', url: '/login', description: '登入您的 LUCISSI 會員帳戶' },
-        { name: '會員註冊', url: '/register', description: '註冊成為 LUCISSI 會員享受專屬優惠' },
+        { name: '會員登入', url: '/login', description: `登入您的 ${siteConfig.brandName} 會員帳戶` },
+        { name: '會員註冊', url: '/register', description: `註冊成為 ${siteConfig.brandName} 會員享受專屬優惠` },
         { name: '個人資料', url: '/profile', description: '管理您的個人資料和偏好設定' },
         { name: '忘記密碼', url: '/forgot-password', description: '重設您的帳戶密碼' },
         { name: '歡迎頁面', url: '/welcome', description: '新會員歡迎頁面和使用指南' },

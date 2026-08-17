@@ -1,5 +1,6 @@
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 export default function CustomerService() {
 
@@ -20,7 +21,7 @@ export default function CustomerService() {
           <div className="flex flex-wrap justify-center gap-4 text-sm sm:text-base text-white/80">
             <div className="flex items-center gap-2">
               <i className="ri-time-line text-lg"></i>
-              <span>週一至週五 9:30-18:00</span>
+              <span>{siteConfig.serviceHours}</span>
             </div>
             <div className="flex items-center gap-2">
               <i className="ri-customer-service-2-line text-lg"></i>
@@ -62,9 +63,7 @@ export default function CustomerService() {
                   <i className="ri-time-line text-teal-600 text-2xl"></i>
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2 text-center text-base sm:text-lg">服務時間</h4>
-                <p className="text-gray-600 text-sm text-center">週一至週五</p>
-                <p className="text-gray-600 text-sm text-center">9:30 - 18:00</p>
-                <p className="text-gray-500 text-xs text-center mt-1">(國定例假日除外)</p>
+                <p className="text-gray-600 text-sm text-center">{siteConfig.serviceHours}</p>
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-100">
@@ -72,8 +71,8 @@ export default function CustomerService() {
                   <i className="ri-mail-line text-teal-600 text-2xl"></i>
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2 text-center text-base sm:text-lg">電子郵件</h4>
-                <a href="mailto:service@lucissi.com" className="text-teal-600 hover:text-teal-700 text-sm block text-center transition-colors duration-200">
-                  service@lucissi.com
+                <a href={`mailto:${siteConfig.supportEmail}`} className="text-teal-600 hover:text-teal-700 text-sm block text-center transition-colors duration-200">
+                  {siteConfig.supportEmail}
                 </a>
                 <p className="text-gray-500 text-xs text-center mt-1">24小時內回覆</p>
               </div>

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
+import { siteConfig } from '../../content/site';
 
 interface Product {
   id: string;
@@ -36,7 +37,7 @@ export default function BestRated() {
   const [categories, setCategories] = useState<CategorySection[]>([]);
 
   useEffect(() => {
-    document.title = '五星好評產品 - LUCISSI CARE | 精選高評分女性護理產品';
+    document.title = `五星好評產品 - ${siteConfig.brandName} | 精選高評分女性護理產品`;
     
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {

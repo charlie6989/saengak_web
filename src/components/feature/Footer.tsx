@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { siteConfig } from '../../content/site';
 
 export default function Footer() {
   return (
@@ -58,10 +59,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="text-base text-gray-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                週一至週五 9:30~18:00
-              </li>
-              <li className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                (國定例假日除外)
+                {siteConfig.serviceHours}
               </li>
             </ul>
           </div>
@@ -104,13 +102,13 @@ export default function Footer() {
             {/* 版權資訊 */}
             <div className="flex flex-col space-y-2">
               <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                © 2024 LUCISSI. All rights reserved.
+                © 2024 {siteConfig.brandName}. All rights reserved.
               </p>
               <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                公司名稱：拜悠衣品有限公司
+                公司名稱：{siteConfig.companyName}
               </p>
               <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                統一編號：90014835
+                統一編號：{siteConfig.taxId}
               </p>
             </div>
 

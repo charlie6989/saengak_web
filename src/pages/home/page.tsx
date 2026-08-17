@@ -7,6 +7,7 @@ import BrandSection from './components/BrandSection';
 import SolutionSection from './components/SolutionSection';
 import ReviewSection from './components/ReviewSection';
 import { getFunctionUrl } from '../../lib/supabase';
+import { siteConfig } from '../../content/site';
 
 export default function Home() {
   console.log('🏠 Home component rendering');
@@ -48,12 +49,12 @@ export default function Home() {
         {/* 白色間隔區域 */}
         <section className="py-12 bg-white"></section>
 
-        {/* LUCISSI Talk｜私密對話 區塊 */}
+        {/* SAENGAK Talk｜私密對話 區塊 */}
         <section className="py-20" style={{ backgroundColor: '#F7F7F5' }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                LUCISSI Talk｜私密對話
+                {siteConfig.brandName} Talk｜私密對話
               </h2>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-4xl mx-auto" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 談身體，也談心。<br />
@@ -77,7 +78,7 @@ export default function Home() {
                           專業文章
                         </h4>
                         <p className="text-gray-600 leading-relaxed text-lg" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                          由醫師與專家撰寫的女性健康與私密護理內容，<br />
+                          專業深入的女性健康與私密護理內容，<br />
                           以科學為基礎，提供妳最可靠的知識與建議。
                         </p>
                       </div>
@@ -95,7 +96,7 @@ export default function Home() {
                           Instagram 動態
                         </h4>
                         <p className="text-gray-600 leading-relaxed text-lg" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                          每日更新保養小知識、產品使用教學與真實用戶心得，<br />
+                          每日更新保養小知識、產品使用教學與生活心得，<br />
                           一起打造屬於妳的私密健康日常。
                         </p>
                       </div>
@@ -139,8 +140,8 @@ export default function Home() {
               <div className="flex items-stretch">
                 <div className="w-full h-full min-h-[500px] relative overflow-hidden shadow-lg" style={{ borderRadius: '16px' }}>
                   <img
-                    src="https://readdy.ai/api/search-image?query=Intimate%20conversation%20between%20women%20about%20feminine%20health%2C%20warm%20and%20caring%20atmosphere%2C%20soft%20lighting%2C%20comfortable%20setting%20for%20sharing%20personal%20topics%2C%20Korean%20women%20having%20heart%20to%20heart%20talk%20about%20body%20and%20mind%20wellness%2C%20professional%20healthcare%20consultation%20environment&width=600&height=500&seq=lucissi-talk-redesign&orientation=landscape"
-                    alt="LUCISSI Talk 私密對話"
+                    src="https://readdy.ai/api/search-image?query=Intimate%20conversation%20between%20women%20about%20feminine%20health%2C%20warm%20and%20caring%20atmosphere%2C%20soft%20lighting%2C%20comfortable%20setting%20for%20sharing%20personal%20topics%2C%20Korean%20women%20having%20heart%20to%20heart%20talk%20about%20body%20and%20mind%20wellness%2C%20professional%20healthcare%20consultation%20environment&width=600&height=500&seq=saengak-talk-redesign&orientation=landscape"
+                    alt="SAENGAK Talk 私密對話"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
@@ -202,7 +203,7 @@ export default function Home() {
                       key={article.id}
                       className="bg-white shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:transform hover:scale-105 cursor-pointer flex flex-col h-full"
                       style={{ borderRadius: '16px' }}
-                      onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'saengak.myshopify.com'}/blogs/${article.blog.handle}/${article.handle}`, '_blank')}
+                      onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'gh2xgs-zf.myshopify.com'}/blogs/${article.blog.handle}/${article.handle}`, '_blank')}
                     >
                       <div className="aspect-[4/3] overflow-hidden">
                         <img

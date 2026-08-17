@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { siteConfig } from '../../content/site';
 
 export default function TermsOfServicePage() {
   return (
@@ -37,7 +38,7 @@ export default function TermsOfServicePage() {
             
             <div className="space-y-4 text-gray-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               <p className="leading-relaxed">
-                本條款適用於您在 LUCISSI CARE官方網站（以下簡稱「本網站」）進行的所有網路購物行為。當您使用本網站服務或完成訂購時，即表示您已閱讀、瞭解並同意接受本條款的所有內容。
+                本條款適用於您在 {siteConfig.brandName} 官方網站（以下簡稱「本網站」）進行的所有網路購物行為。當您使用本網站服務或完成訂購時，即表示您已閱讀、瞭解並同意接受本條款的所有內容。
               </p>
               <p className="leading-relaxed">
                 本公司保留隨時修改本條款的權利，修改後的條款將公佈於網站上，恕不另行通知。建議您定期查閱本條款內容。
@@ -165,19 +166,15 @@ export default function TermsOfServicePage() {
                 <ul className="space-y-3">
                   <li className="flex items-center text-gray-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                     <i className="ri-bank-card-line text-teal-600 mr-3"></i>
-                    信用卡（Visa、MasterCard、JCB）
+                    信用卡（Visa、MasterCard、JCB，TapPay 安全加密）
                   </li>
                   <li className="flex items-center text-gray-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                     <i className="ri-bank-line text-teal-600 mr-3"></i>
-                    ATM轉帳
+                    虛擬帳號 ATM 轉帳
                   </li>
                   <li className="flex items-center text-gray-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                     <i className="ri-store-line text-teal-600 mr-3"></i>
                     超商代碼繳費
-                  </li>
-                  <li className="flex items-center text-gray-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    <i className="ri-truck-line text-teal-600 mr-3"></i>
-                    貨到付款
                   </li>
                 </ul>
               </div>
@@ -194,11 +191,11 @@ export default function TermsOfServicePage() {
                     </li>
                     <li className="flex items-start">
                       <i className="ri-shield-check-line mr-2 mt-1"></i>
-                      不儲存信用卡資訊
+                      TapPay 卡號零落地安全政策（Zero-Card-Storage）
                     </li>
                     <li className="flex items-start">
                       <i className="ri-shield-check-line mr-2 mt-1"></i>
-                      第三方金流服務保障
+                      符合 PCI-DSS SAQ A-EP 資安規範
                     </li>
                   </ul>
                 </div>
@@ -217,13 +214,13 @@ export default function TermsOfServicePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h4 className="font-semibold text-gray-900 mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    標準配送
+                    標準宅配
                   </h4>
                   <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                     1-2個工作日出貨
                   </p>
                   <p className="text-sm text-gray-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    運費：滿$800免運，未滿收取$60
+                    運費：滿NT$1,500免運，未滿收取NT$80
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4">
@@ -234,7 +231,7 @@ export default function TermsOfServicePage() {
                     當日或隔日到貨
                   </p>
                   <p className="text-sm text-gray-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    運費：$120（限台北市、新北市）
+                    運費：NT$120（限台北市、新北市）
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4">
@@ -245,7 +242,7 @@ export default function TermsOfServicePage() {
                     2-3個工作日到店
                   </p>
                   <p className="text-sm text-gray-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    運費：$60（可貨到付款）
+                    運費：滿NT$1,500免運，未滿收取NT$65
                   </p>
                 </div>
               </div>

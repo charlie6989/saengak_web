@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { mockAuthState } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 const supabase = createClient(
   import.meta.env.VITE_PUBLIC_SUPABASE_URL,
@@ -76,7 +77,7 @@ export default function WelcomePage() {
               <i className="ri-user-smile-line text-3xl text-teal-600"></i>
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              歡迎加入 VAGI！
+              歡迎加入 {siteConfig.brandName}！
             </h1>
             <p className="text-xl text-gray-600 mb-2">
               嗨 {user?.name || user?.user_metadata?.full_name || user?.email}，很高興您選擇我們
@@ -124,15 +125,15 @@ export default function WelcomePage() {
                   專為女性設計的私密護理
                 </h2>
                 <p className="text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-                  我們提供高品質的女性私密護理產品，包括日常清潔、深層修護、舒適穿著等全方位解決方案。每一款產品都經過嚴格測試，確保安全溫和。
+                  我們提供高品質的女性私密護理產品，包括日常清潔、深層修護、舒適穿著等全方位解決方案。每一款產品皆秉持嚴謹品質把關，確保安心溫和。
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                   <div className="text-center p-4">
                     <div className="w-16 h-16 mx-auto mb-3 bg-teal-100 rounded-full flex items-center justify-center">
                       <i className="ri-shield-check-line text-2xl text-teal-600"></i>
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">安全認證</h3>
-                    <p className="text-sm text-gray-600">通過多項安全檢測</p>
+                    <h3 className="font-semibold text-gray-900 mb-2">品質承諾</h3>
+                    <p className="text-sm text-gray-600">通過完整品質把關</p>
                   </div>
                   <div className="text-center p-4">
                     <div className="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-full flex items-center justify-center">
@@ -146,7 +147,7 @@ export default function WelcomePage() {
                       <i className="ri-customer-service-2-line text-2xl text-purple-600"></i>
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">專業服務</h3>
-                    <p className="text-sm text-gray-600">24小時客服支援</p>
+                    <p className="text-sm text-gray-600">貼心客服支援</p>
                   </div>
                 </div>
               </div>
@@ -209,8 +210,8 @@ export default function WelcomePage() {
                       <i className="ri-percent-line text-2xl text-teal-600"></i>
                     </div>
                     <h3 className="font-bold text-gray-900 mb-2 text-lg">首購優惠</h3>
-                    <p className="text-teal-600 font-semibold text-xl mb-2">85折優惠</p>
-                    <p className="text-sm text-gray-600">首次購買享受特別折扣</p>
+                    <p className="text-teal-600 font-semibold text-xl mb-2">首購現折 NT$100</p>
+                    <p className="text-sm text-gray-600">首次購買享受專屬折抵</p>
                   </div>
                   <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 text-center border border-purple-100">
                     <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
@@ -218,13 +219,13 @@ export default function WelcomePage() {
                     </div>
                     <h3 className="font-bold text-gray-900 mb-2 text-lg">免費配送</h3>
                     <p className="text-purple-600 font-semibold text-xl mb-2">滿額免運</p>
-                    <p className="text-sm text-gray-600">購買滿一定金額即享免費配送</p>
+                    <p className="text-sm text-gray-600">購買滿 NT$1,500 即享免費配送</p>
                   </div>
                 </div>
                 <div className="mt-8 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                   <p className="text-sm text-yellow-800">
                     <i className="ri-information-line mr-2"></i>
-                    優惠碼將自動套用到您的帳戶，購買時會自動折扣
+                    優惠券可於結帳頁面直接選用折抵
                   </p>
                 </div>
               </div>

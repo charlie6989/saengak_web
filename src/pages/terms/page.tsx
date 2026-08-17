@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 export default function TermsPage() {
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
@@ -132,17 +133,15 @@ export default function TermsPage() {
               <div className="bg-blue-50 p-4 border border-blue-200">
                 <h5 className="font-medium text-blue-900 mb-2">線上付款</h5>
                 <ul className="text-blue-800 text-sm space-y-1">
-                  <li>• 信用卡（Visa、MasterCard、JCB）</li>
-                  <li>• 金融卡</li>
-                  <li>• 電子錢包</li>
+                  <li>• 信用卡（Visa、MasterCard、JCB，TapPay 安全加密）</li>
+                  <li>• 行動支付（LINE Pay、Apple Pay 等）</li>
                 </ul>
               </div>
               <div className="bg-green-50 p-4 border border-green-200">
                 <h5 className="font-medium text-green-900 mb-2">其他方式</h5>
                 <ul className="text-green-800 text-sm space-y-1">
-                  <li>• 銀行轉帳</li>
+                  <li>• 虛擬帳號 ATM 轉帳</li>
                   <li>• 超商代碼繳費</li>
-                  <li>• 貨到付款（限台灣本島）</li>
                 </ul>
               </div>
             </div>
@@ -318,18 +317,17 @@ export default function TermsPage() {
               <div>
                 <h4 className="font-semibold text-teal-900 mb-3">公司資訊</h4>
                 <div className="text-teal-800 space-y-2">
-                  <p><strong>公司名稱：</strong>拜悠衣品有限公司</p>
-                  <p><strong>統一編號：</strong>90014835</p>
-                  <p><strong>地址：</strong>台北市信義區信義路五段123號456樓</p>
+                  <p><strong>公司名稱：</strong>{siteConfig.companyName}</p>
+                  <p><strong>統一編號：</strong>{siteConfig.taxId}</p>
+                  <p><strong>地址：</strong>{siteConfig.companyAddress}</p>
                 </div>
               </div>
               <div>
                 <h4 className="font-semibold text-teal-900 mb-3">聯絡方式</h4>
                 <div className="text-teal-800 space-y-2">
-                  <p><strong>客服電話：</strong>0800-123-456</p>
-                  <p><strong>電子郵件：</strong>service@lucissi.com</p>
-                  <p><strong>營業時間：</strong>平日 09:00~18:00</p>
-                  <p className="text-sm">（午休時間 12:00~13:00）</p>
+                  <p><strong>客服電話：</strong>{siteConfig.servicePhone}</p>
+                  <p><strong>電子郵件：</strong>{siteConfig.supportEmail}</p>
+                  <p><strong>營業時間：</strong>{siteConfig.serviceHours}</p>
                 </div>
               </div>
             </div>

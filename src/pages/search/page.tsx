@@ -7,6 +7,7 @@ import ProductCard from '../../components/feature/ProductCard';
 import { useShopifyCollections, useShopifyCollectionProducts } from '../../hooks/useShopifyCollections';
 import { useShopifyProductsByTag, COMMON_TAGS, TAG_COMBINATIONS } from '../../hooks/useShopifyTags';
 import { mockProducts, type Product } from '../../mocks/products';
+import { getFunctionUrl } from '../../lib/supabase';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -155,7 +156,7 @@ export default function Search() {
         console.log('Loading products from Shopify (default)...');
         setLoadingMethod('default');
 
-        const response = await fetch('https://vcswjiyxqhhdpvmsamil.supabase.co/functions/v1/get-products', {
+        const response = await fetch(getFunctionUrl('get-products'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

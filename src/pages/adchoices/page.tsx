@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteConfig } from '../../content/site';
 
 export default function AdChoicesPage() {
   const [activeSection, setActiveSection] = useState('overview');
@@ -459,8 +460,8 @@ export default function AdChoicesPage() {
                     </button>
                   </div>
                   <div className="mt-6 text-sm text-teal-100">
-                    <p>客服時間：週一至週五 09:00-18:00</p>
-                    <p>客服信箱：privacy@innercare.com</p>
+                    <p>客服時間：{siteConfig.serviceHours}</p>
+                    <p>客服信箱：{siteConfig.supportEmail}</p>
                   </div>
                 </div>
               </div>
