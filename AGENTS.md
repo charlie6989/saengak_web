@@ -1,6 +1,6 @@
-# AGENTS.md - SAENGAK AI Agent Guidelines & Skills Integration
+# AGENTS.md - SAENGAK AI Agent Guidelines
 
-本檔案記錄 `saengak_web` 專案的 AI Agent 運作規範、Matt Pocock Skills 設定與權威架構對齊原則。
+本檔案記錄 `saengak_web` 專案的 AI Agent 運作規範與權威架構對齊原則。
 
 ---
 
@@ -26,9 +26,9 @@
 
 ---
 
-## 3. Matt Pocock Agent Skills 設定 (`docs/agents/`)
+## 3. 領域文件與任務配置 (`docs/agents/`)
 
-專案已通過 `/setup-matt-pocock-skills` 完成完整初始化：
+專案文件與任務追蹤配置：
 
 - **[Domain Docs Index](file:///c:/Projects/saengak_web/docs/agents/domain-docs.md)**: 涵蓋權威總表 [`00_DECISION_LOG.md`](file:///c:/Projects/saengak_web/docs/00_DECISION_LOG.md)、主規格書 [`MAIN_SPECIFICATION.md`](file:///c:/Projects/saengak_web/docs/MAIN_SPECIFICATION.md)、各子規格書與 ADR 決策紀錄。
 - **[Issue Tracker Config](file:///c:/Projects/saengak_web/docs/agents/issue-tracker.md)**: 使用 GitHub Issues 追蹤任務與需求。
@@ -36,21 +36,7 @@
 
 ---
 
-## 4. 可用 Agent Skills (Available Skills)
-
-* `/ask-matt`: 諮詢工程設計、架構原則與 TypeScript 最佳實踐。
-* `/code-review`: 針對變更檔案進行嚴格的 Code Review 與資安檢視。
-* `/codebase-design`: 規劃軟體模組結構與組件職責。
-* `/diagnosing-bugs`: 遵循排錯四部曲（完整 log 檢視 -> 重現 -> Failing Test -> 修復）。
-* `/domain-modeling`: 進行領域驅動設計 (DDD) 與資料庫 Schema / Type 定義。
-* `/find-skills`: 搜尋與建議適用的 Agent Skill。
-* `/grilling` / `/grill-me`: 互動式質問與設計決策驗收。
-* `/handoff`: 產生開發進度與交接紀錄。
-* `/prototype`: 快速進行 POC 與原型開發。
-
----
-
-## 5. Agent 開發工作流程原則
+## 4. Agent 開發工作流程原則
 
 1. **先查閱權威規格**: 任何改動前，必須優先讀取 [`docs/00_DECISION_LOG.md`](file:///c:/Projects/saengak_web/docs/00_DECISION_LOG.md) 與對應的領域規格書。
 2. **完整性與不降級**: 嚴禁撕毀防護、回傳 Fake Data 或抹去既有測試；改動必須經由測試與型態檢查驗證。
