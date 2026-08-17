@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '../../../contexts/CartContext';
-import { getFunctionUrl } from '../../../lib/supabase';
+import { getShopifyProducts, type ShopifyProduct } from '../../../lib/shopify';
 
 interface Product {
   id: string;
@@ -25,8 +25,6 @@ export default function SolutionSection() {
   const [loading, setLoading] = useState(false);
   const { addToCart } = useCart();
 
-
-
   useEffect(() => {
     fetchShopifyProducts();
   }, []);
@@ -34,29 +32,26 @@ export default function SolutionSection() {
   const fetchShopifyProducts = async () => {
     setLoading(true);
     try {
-      // Add timestamp to force fresh data
-      const timestamp = new Date().getTime();
-      const response = await fetch(getFunctionUrl('get-products-by-tag') + `?t=${timestamp}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`,
-          'Cache-Control': 'no-cache',
-        },
-        body: JSON.stringify({
-          tags: ['bundle'],
-          first: 4
-        }),
+      const fetched = await getShopifyProducts({
+        first: 4,
+        sortKey: 'BEST_SELLING',
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-
-      const data = await response.json();
-
-      if (data.products) {
-        setProducts(data.products);
+      if (fetched && fetched.length > 0) {
+        const mapped: Product[] = fetched.map((p) => ({
+          id: p.id,
+          name: p.name || p.title,
+          image: p.image,
+          hoverImage: p.hoverImage || p.image,
+          price: p.price,
+          originalPrice: p.originalPrice,
+          description: p.description,
+          model: p.handle,
+          isBest: true,
+          productType: p.productType,
+          vendor: p.vendor,
+        }));
+        setProducts(mapped);
       }
     } catch (error) {
       console.error('Error fetching Shopify products:', error);

@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { getShopifyCollections, getShopifyProducts, type ShopifyCollection, type ShopifyProduct } from '../lib/shopify';
+import {
+  getShopifyCollections,
+  getShopifyCollectionByHandle,
+  getShopifyProducts,
+  type ShopifyCollection,
+  type ShopifyProduct,
+} from '../lib/shopify';
 
 export type Collection = ShopifyCollection;
 export type Product = ShopifyProduct;
@@ -49,7 +55,7 @@ export function useShopifyCollections(): UseCollectionsResult {
     collections,
     loading,
     error,
-    fetchCollections
+    fetchCollections,
   };
 }
 
@@ -65,12 +71,18 @@ export function useShopifyCollectionProducts(): UseCollectionProductsResult {
     setError(null);
 
     try {
-      // 依 collection handle 查詢商品
-      const fetchedProducts = await getShopifyProducts({
-        first: 50,
-        query: `collection:${handle}`
-      });
-      setProducts(fetchedProducts);
+      const res = await getShopifyCollectionByHandle(handle, { first: 50 });
+      if (res.collection) {
+        setCollection(res.collection);
+        setProducts(res.products);
+      } else {
+        // Fallback: 嘗試以 collection handle query 取得商品
+        const fallbackProducts = await getShopifyProducts({
+          first: 50,
+          query: `collection:${handle}`,
+        });
+        setProducts(fallbackProducts);
+      }
     } catch (err) {
       console.error('Error fetching collection products from Shopify:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -86,6 +98,6 @@ export function useShopifyCollectionProducts(): UseCollectionProductsResult {
     products,
     loading,
     error,
-    fetchCollectionProducts
+    fetchCollectionProducts,
   };
 }

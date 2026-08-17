@@ -7,7 +7,7 @@ import ProductCard from '../../components/feature/ProductCard';
 import { useShopifyCollections, useShopifyCollectionProducts } from '../../hooks/useShopifyCollections';
 import { useShopifyProductsByTag, COMMON_TAGS, TAG_COMBINATIONS } from '../../hooks/useShopifyTags';
 import { mockProducts, type Product } from '../../mocks/products';
-import { getFunctionUrl } from '../../lib/supabase';
+import { getShopifyProducts } from '../../lib/shopify';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -101,39 +101,26 @@ export default function Search() {
     '價格高到低'
   ];
 
-  const shopifyProductIds = [
-    'gid://shopify/Product/9969008509232',
-    'gid://shopify/Product/9969008542000',
-    'gid://shopify/Product/9969008574768',
-    'gid://shopify/Product/9969008607536',
-    'gid://shopify/Product/9969008673072',
-    'gid://shopify/Product/9975451189552'
-  ];
-
   // 載入產品數據
   useEffect(() => {
     const loadProducts = async () => {
       try {
         setLoading(true);
-        console.log('Loading products - method determination...');
 
-        // 優先級：collection > tag > category > default
+        // 優先級：collection > tag > category > search keyword > default
         if (collectionHandle) {
-          console.log('Loading products from collection:', collectionHandle);
           setLoadingMethod('collection');
           await fetchCollectionProducts(collectionHandle);
           return;
         }
 
         if (tag) {
-          console.log('Loading products by tag:', tag);
           setLoadingMethod('tag');
           await fetchProductsByTag([tag]);
           return;
         }
 
         if (category) {
-          console.log('Loading products by category tag:', category);
           setLoadingMethod('tag');
           // 根據分類映射到對應的標籤
           const categoryTagMap: { [key: string]: string[] } = {
@@ -152,30 +139,16 @@ export default function Search() {
           return;
         }
 
-        // 默認載入方式
-        console.log('Loading products from Shopify (default)...');
+        // 默認或關鍵字搜尋載入方式 (直接使用 Storefront SDK)
         setLoadingMethod('default');
-
-        const response = await fetch(getFunctionUrl('get-products'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            productIds: shopifyProductIds
-          })
+        const fetchedProducts = await getShopifyProducts({
+          first: 30,
+          query: q || '',
+          sortKey: 'BEST_SELLING'
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Products loaded:', data);
-
-        if (data.success && data.products) {
-          // 轉換 Shopify 產品數據格式
-          const transformedProducts = data.products.map((product: any) => ({
+        if (fetchedProducts && fetchedProducts.length > 0) {
+          const transformedProducts = fetchedProducts.map((product) => ({
             id: product.id,
             name: product.name || product.title,
             description: product.description,
@@ -193,9 +166,7 @@ export default function Search() {
           }));
 
           setProducts(transformedProducts);
-          console.log('Products set:', transformedProducts.length);
         } else {
-          console.error('Failed to load products:', data);
           setProducts(getFallbackProducts());
         }
       } catch (error) {
@@ -207,7 +178,7 @@ export default function Search() {
     };
 
     loadProducts();
-  }, [collectionHandle, tag, category]);
+  }, [collectionHandle, tag, category, q]);
 
   // 監聽不同數據源的產品變化
   useEffect(() => {

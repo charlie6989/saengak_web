@@ -6,20 +6,31 @@ import ProductSection from './components/ProductSection';
 import BrandSection from './components/BrandSection';
 import SolutionSection from './components/SolutionSection';
 import ReviewSection from './components/ReviewSection';
-import { getFunctionUrl } from '../../lib/supabase';
+import { getShopifyArticles, type ShopifyArticle } from '../../lib/shopify';
 import { siteConfig } from '../../content/site';
 
 export default function Home() {
-  console.log('🏠 Home component rendering');
+  const [articles, setArticles] = useState<ShopifyArticle[]>([]);
+  const [articlesLoading, setArticlesLoading] = useState(true);
 
-  const featuredProductIds = [
-    'gid://shopify/Product/9969008509232',
-    'gid://shopify/Product/9969008542000',
-    'gid://shopify/Product/9969008574768',
-    'gid://shopify/Product/9969008607536',
-    'gid://shopify/Product/9969008673072',
-    'gid://shopify/Product/9975451189552'
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    getShopifyArticles(3)
+      .then((data) => {
+        if (isMounted) {
+          setArticles(data);
+          setArticlesLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load articles:', err);
+        if (isMounted) setArticlesLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
@@ -160,49 +171,24 @@ export default function Home() {
                 最新話題
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {(() => {
-                  const [articles, setArticles] = useState<any[]>([]);
-
-                  useEffect(() => {
-                    const fetchArticles = async () => {
-                      try {
-                        const response = await fetch(getFunctionUrl('get-articles'), {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`,
-                          },
-                        });
-                        const data = await response.json();
-                        if (data.articles) {
-                          setArticles(data.articles);
-                        }
-                      } catch (error) {
-                        console.error('Error fetching articles:', error);
-                      }
-                    };
-                    fetchArticles();
-                  }, []);
-
-                  if (articles.length === 0) {
-                    // Fallback loading state or empty
-                    return (
-                      <div className="col-span-3 text-center py-10">
-                        <div className="inline-block animate-spin h-8 w-8 border-b-2 border-gray-900"></div>
-                      </div>
-                    );
-                  }
-
-                  return articles.map((article: any) => (
+                {articlesLoading ? (
+                  <div className="col-span-3 text-center py-10">
+                    <div className="inline-block animate-spin h-8 w-8 border-b-2 border-gray-900"></div>
+                  </div>
+                ) : (
+                  articles.map((article) => (
                     <div
                       key={article.id}
                       className="bg-white shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:transform hover:scale-105 cursor-pointer flex flex-col h-full"
                       style={{ borderRadius: '16px' }}
-                      onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'gh2xgs-zf.myshopify.com'}/blogs/${article.blog.handle}/${article.handle}`, '_blank')}
+                      onClick={() => {
+                        const blogSlug = article.blog?.handle || 'blogs';
+                        window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'gh2xgs-zf.myshopify.com'}/blogs/${blogSlug}/${article.handle}`, '_blank');
+                      }}
                     >
-                      <div className="aspect-[4/3] overflow-hidden">
+                      <div className="aspect-[4/3] overflow-hidden bg-gray-50">
                         <img
-                          src={article.image?.url || 'https://via.placeholder.com/400x300?text=No+Image'}
+                          src={article.image?.url || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800'}
                           alt={article.image?.altText || article.title}
                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                         />
@@ -224,8 +210,8 @@ export default function Home() {
                         </p>
                       </div>
                     </div>
-                  ));
-                })()}
+                  ))
+                )}
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getFunctionUrl } from '../../../lib/supabase';
+import { getShopifyProducts } from '../../../lib/shopify';
 
 const ReviewSection: React.FC = () => {
   const navigate = useNavigate();
@@ -12,25 +12,13 @@ const ReviewSection: React.FC = () => {
     const fetchRatedProducts = async () => {
       setLoading(true);
       try {
-        const timestamp = new Date().getTime();
-        const response = await fetch(getFunctionUrl('get-products-by-tag') + `?t=${timestamp}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`,
-            'Cache-Control': 'no-cache',
-          },
-          body: JSON.stringify({
-            tags: ['5-star', 'featured'], // Try to match 5-star or featured
-            first: 4
-          }),
+        const fetched = await getShopifyProducts({
+          first: 4,
+          sortKey: 'BEST_SELLING',
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.products) {
-            setProducts(data.products);
-          }
+        if (fetched && fetched.length > 0) {
+          setProducts(fetched);
         }
       } catch (error) {
         console.error('Failed to fetch rated products:', error);

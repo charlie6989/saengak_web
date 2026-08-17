@@ -6,7 +6,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
 import { getMockProductById } from '../../mocks/products';
-import { getShopifyProductByHandle, getShopifyProducts } from '../../lib/shopify';
+import { getShopifyProduct, getShopifyProducts } from '../../lib/shopify';
 
 interface Product {
   id: string;
@@ -41,15 +41,12 @@ export default function ProductPage() {
   /** --------------------------------------------------------------------
    *  Fetch product & related products
    * ------------------------------------------------------------------- */
-  /** --------------------------------------------------------------------
-   *  Fetch product & related products
-   * ------------------------------------------------------------------- */
   const fetchProduct = async () => {
     setLoading(true);
     try {
       if (id) {
-        // 先嘗試從 Shopify Storefront API 依 handle 取得真實商品
-        const shopifyProduct = await getShopifyProductByHandle(id);
+        // 支援依數字 ID、Shopify GID 或 Handle 取得真實商品
+        const shopifyProduct = await getShopifyProduct(id);
         if (shopifyProduct) {
           setProduct(shopifyProduct);
 
