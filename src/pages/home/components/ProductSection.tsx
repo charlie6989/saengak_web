@@ -1,22 +1,6 @@
-
 import { useState, useEffect } from 'react';
-import { getFunctionUrl } from '../../../lib/supabase';
+import { getShopifyProducts, type ShopifyProduct } from '../../../lib/shopify';
 import ProductCard from '../../../components/feature/ProductCard';
-
-interface Product {
-  id: string;
-  name: string;
-  image: string;
-  hoverImage: string;
-  price: number;
-  originalPrice?: number;
-  description: string;
-  model?: string;
-  discountRate?: number;
-  reviews?: number;
-  isBest?: boolean;
-  isNew?: boolean;
-}
 
 interface ProductSectionProps {
   title: string;
@@ -24,72 +8,38 @@ interface ProductSectionProps {
   shopifyProductIds?: string[];
 }
 
-export default function ProductSection({ title, subtitle, shopifyProductIds }: ProductSectionProps) {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+export default function ProductSection({ title, subtitle }: ProductSectionProps) {
+  const [allProducts, setAllProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (shopifyProductIds && shopifyProductIds.length > 0) {
-      fetchShopifyProducts();
-    }
-  }, [shopifyProductIds]);
 
   const fetchShopifyProducts = async () => {
     setLoading(true);
     setError(null);
     try {
-      console.log('開始獲取 Shopify 產品...');
-      const timestamp = new Date().getTime();
-      const response = await fetch(getFunctionUrl('get-products') + `?t=${timestamp}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`,
-          'Cache-Control': 'no-cache',
-        },
-        body: JSON.stringify({
-          productIds: shopifyProductIds
-        }),
+      console.log('開始從 Shopify Storefront GraphQL 獲取精選產品...');
+      const products = await getShopifyProducts({
+        first: 8,
+        sortKey: 'BEST_SELLING'
       });
 
-      console.log('API 響應狀態:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API 錯誤響應:', errorText);
-        throw new Error(`API 請求失敗: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log('收到的數據:', data);
-
-      if (data.success && data.products && Array.isArray(data.products)) {
-        console.log(`成功獲取 ${data.products.length} 個產品`);
-        setAllProducts(data.products);
-        setError(null);
-      } else if (data.products && Array.isArray(data.products)) {
-        console.log(`獲取 ${data.products.length} 個產品（無 success 標記）`);
-        setAllProducts(data.products);
-        setError(null);
-      } else {
-        console.error('數據格式錯誤:', data);
-        setError('數據格式錯誤');
-        setAllProducts([]);
-      }
-    } catch (error) {
-      console.error('獲取 Shopify 產品時發生錯誤:', error);
-      setError(error instanceof Error ? error.message : '未知錯誤');
+      console.log(`成功獲取 ${products.length} 個 Shopify 產品`);
+      setAllProducts(products);
+    } catch (err) {
+      console.error('獲取 Shopify 產品時發生錯誤:', err);
+      setError(err instanceof Error ? err.message : '未知錯誤');
       setAllProducts([]);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchShopifyProducts();
+  }, []);
+
   const handleRefresh = () => {
-    if (shopifyProductIds && shopifyProductIds.length > 0) {
-      fetchShopifyProducts();
-    }
+    fetchShopifyProducts();
   };
 
   return (
@@ -103,7 +53,7 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
             </h2>
             <button
               onClick={handleRefresh}
-              className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
+              className="p-2 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
               title="重新載入產品"
             >
               <i className="ri-refresh-line text-xl"></i>
@@ -133,7 +83,7 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
               <p className="text-red-600 text-sm mb-4">{error}</p>
               <button
                 onClick={handleRefresh}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors cursor-pointer"
               >
                 重新載入
               </button>
@@ -141,7 +91,7 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
           </div>
         )}
 
-        {/* 產品網格 - 確保能顯示所有產品 */}
+        {/* 產品網格 */}
         {!loading && !error && allProducts.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-product-shop>
             {allProducts.map((product) => (
@@ -156,18 +106,16 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 max-w-md mx-auto">
               <i className="ri-shopping-bag-line text-gray-400 text-4xl mb-4"></i>
               <p className="text-gray-500 mb-4">暫無產品資料</p>
-              <p className="text-gray-400 text-sm mb-4">請檢查網絡連接或稍後再試</p>
+              <p className="text-gray-400 text-sm mb-4">請確認 Shopify 後台已發布商品至 Headless 銷售管道</p>
               <button
                 onClick={handleRefresh}
-                className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition-colors"
+                className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition-colors cursor-pointer"
               >
                 重新載入
               </button>
             </div>
           </div>
         )}
-
-
       </div>
     </section>
   );

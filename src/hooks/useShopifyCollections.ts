@@ -1,32 +1,8 @@
 import { useState, useEffect } from 'react';
-import { getFunctionUrl } from '../lib/supabase';
+import { getShopifyCollections, getShopifyProducts, type ShopifyCollection, type ShopifyProduct } from '../lib/shopify';
 
-interface Collection {
-  id: string;
-  title: string;
-  handle: string;
-  description: string;
-  image: string | null;
-  productsCount: number;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  title: string;
-  description: string;
-  descriptionHtml: string;
-  handle: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  hoverImage: string;
-  tags: string[];
-  productType: string;
-  vendor: string;
-  createdAt: string;
-  variants: any[];
-}
+export type Collection = ShopifyCollection;
+export type Product = ShopifyProduct;
 
 interface UseCollectionsResult {
   collections: Collection[];
@@ -43,7 +19,7 @@ interface UseCollectionProductsResult {
   fetchCollectionProducts: (handle: string) => Promise<void>;
 }
 
-// Hook for fetching all collections
+// Hook for fetching all collections directly via Shopify Storefront GraphQL
 export function useShopifyCollections(): UseCollectionsResult {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,30 +30,10 @@ export function useShopifyCollections(): UseCollectionsResult {
     setError(null);
 
     try {
-      const response = await fetch(getFunctionUrl('get-collections'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`
-        },
-        body: JSON.stringify({
-          first: 50
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        setCollections(data.collections || []);
-      } else {
-        throw new Error(data.error || 'Failed to fetch collections');
-      }
+      const data = await getShopifyCollections(50);
+      setCollections(data);
     } catch (err) {
-      console.error('Error fetching collections:', err);
+      console.error('Error fetching collections from Shopify:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setCollections([]);
     } finally {
@@ -109,32 +65,14 @@ export function useShopifyCollectionProducts(): UseCollectionProductsResult {
     setError(null);
 
     try {
-      const response = await fetch(getFunctionUrl('get-collections'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY}`
-        },
-        body: JSON.stringify({
-          collectionHandle: handle,
-          first: 50
-        })
+      // 依 collection handle 查詢商品
+      const fetchedProducts = await getShopifyProducts({
+        first: 50,
+        query: `collection:${handle}`
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        setCollection(data.collection || null);
-        setProducts(data.products || []);
-      } else {
-        throw new Error(data.error || 'Failed to fetch collection products');
-      }
+      setProducts(fetchedProducts);
     } catch (err) {
-      console.error('Error fetching collection products:', err);
+      console.error('Error fetching collection products from Shopify:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setCollection(null);
       setProducts([]);

@@ -6,7 +6,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
 import { getMockProductById } from '../../mocks/products';
-import { getFunctionUrl } from '../../lib/supabase';
+import { getShopifyProductByHandle, getShopifyProducts } from '../../lib/shopify';
 
 interface Product {
   id: string;
@@ -47,68 +47,27 @@ export default function ProductPage() {
   const fetchProduct = async () => {
     setLoading(true);
     try {
-      // 1. Try to find in mock data first if it looks like a simple ID
-      const mockProduct = getMockProductById(id || '');
-      if (mockProduct && !id?.startsWith('gid://')) {
-        setProduct(mockProduct);
-        setLoading(false);
-        return;
+      if (id) {
+        // 先嘗試從 Shopify Storefront API 依 handle 取得真實商品
+        const shopifyProduct = await getShopifyProductByHandle(id);
+        if (shopifyProduct) {
+          setProduct(shopifyProduct);
+
+          // 抓取推薦相關商品
+          const related = await getShopifyProducts({ first: 4 });
+          setRelatedProducts(related.filter(p => p.id !== shopifyProduct.id));
+          setLoading(false);
+          return;
+        }
       }
 
-      const shopifyId = id?.includes('gid://shopify/Product/') ? id : `gid://shopify/Product/${id}`;
-
-      // fetch the main product
-      const response = await fetch(
-        getFunctionUrl('get-products'),
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productIds: [shopifyId] }),
-        },
-      );
-
-      if (!response.ok) throw new Error('Failed to fetch product');
-
-      const data = await response.json();
-
-      if (data.products?.length) {
-        setProduct(data.products[0]);
-
-        // fetch related products (hard‑coded list for demo)
-        const relatedResponse = await fetch(
-          getFunctionUrl('get-products'),
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              productIds: [
-                'gid://shopify/Product/9969008509232',
-                'gid://shopify/Product/9969008574768',
-                'gid://shopify/Product/9969008607536',
-                'gid://shopify/Product/9969008673072',
-              ],
-            }),
-          },
-        );
-
-        if (relatedResponse.ok) {
-          const relatedData = await relatedResponse.json();
-          if (relatedData.products) {
-            const filtered = relatedData.products.filter((p: Product) => p.id !== shopifyId);
-            setRelatedProducts(filtered.slice(0, 4));
-          }
-        }
-      } else {
-        // Fallback: if API returns empty/success but no product found, try mock
-        // This handles cases where ID might be "1" but passed as shopify ID to API and failed
-        const fallbackMock = getMockProductById(id || '');
-        if (fallbackMock) {
-          setProduct(fallbackMock);
-        }
+      // 若未找到或 API 尚未配置，fallback 到 mock 資料
+      const fallbackMock = getMockProductById(id || '');
+      if (fallbackMock) {
+        setProduct(fallbackMock);
       }
     } catch (err) {
-      console.error('Error fetching product data:', err);
-      // Final fallback to mock data on error
+      console.warn('Shopify product fetch warning, fallback to mock:', err);
       const fallbackMock = getMockProductById(id || '');
       if (fallbackMock) {
         setProduct(fallbackMock);

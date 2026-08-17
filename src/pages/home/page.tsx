@@ -23,11 +23,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-      {/* DEBUG: Visible marker */}
-      <div style={{ position: 'fixed', top: 0, right: 0, background: 'red', color: 'white', padding: '10px', zIndex: 9999 }}>
-        HOME RENDERED
-      </div>
-
       <Header />
 
       <main>
