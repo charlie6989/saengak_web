@@ -140,4 +140,6 @@ scripts/
 # CodeGraph local index
 .codegraph/
 
+# AI Agent local directory
+.agents/
 
