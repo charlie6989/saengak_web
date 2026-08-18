@@ -190,18 +190,39 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <>
+      <div className="min-h-screen flex flex-col justify-between" style={{ backgroundColor: '#F7F7F5' }}>
         <Header />
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Product not found</h1>
-            <a href="/" className="text-blue-600 hover:text-blue-800">
-              Return to Home
-            </a>
+        <div className="flex-1 flex items-center justify-center px-4 py-20">
+          <div className="max-w-md w-full text-center bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i className="ri-store-2-line text-2xl"></i>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+              找不到此商品
+            </h1>
+            <p className="text-gray-600 text-sm mb-6 leading-relaxed" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+              該商品可能已下架、調整網址或暫無庫存。您可以瀏覽其他熱銷護理商品。
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a
+                href="/search?query=all"
+                className="px-6 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+              >
+                瀏覽全部商品
+              </a>
+              <a
+                href="/"
+                className="px-6 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+              >
+                返回首頁
+              </a>
+            </div>
           </div>
         </div>
         <Footer />
-      </>
+      </div>
     );
   }
 
@@ -217,7 +238,7 @@ export default function ProductPage() {
 
       <div className="max-w-[1440px] mx-auto px-4 md:px-6 pt-[52px]">
         {/* ------------ Main product section ------------ */}
-        <div className="max-w-[1440px] mx-auto px-4 md:px-6" style={{ marginTop: 'var(--main-offset, 103px)' }}>
+        <div id="product-main-section" className="max-w-[1440px] mx-auto px-4 md:px-6" style={{ marginTop: 'var(--main-offset, 103px)' }}>
           <div className="flex items-start gap-12">
             {/* Left group: thumbnails + main image (sticky as whole group) */}
             <div
@@ -302,21 +323,23 @@ export default function ProductPage() {
 
                 {/* Price */}
                 <div className="space-y-1">
-                  <div className="text-sm text-gray-400 line-through">15,000韓元</div>
+                  {product.originalPrice && product.originalPrice > product.price && (
+                    <div className="text-sm text-gray-400 line-through">
+                      ${(product.originalPrice || 0).toLocaleString()}
+                    </div>
+                  )}
                   <div className="flex items-baseline gap-2">
-                    <span
-                      className="text-lg font-bold"
-                      style={{ fontFamily: 'Noto Sans TC, sans-serif', color: '#225B4F' }}
-                    >
-                      -{discountPercentage}%
-                    </span>
+                    {discountPercentage > 0 && (
+                      <span
+                        className="text-lg font-bold"
+                        style={{ fontFamily: 'Noto Sans TC, sans-serif', color: '#225B4F' }}
+                      >
+                        -{discountPercentage}%
+                      </span>
+                    )}
                     <span className="text-2xl font-bold text-gray-900">
-                      {product.price.toLocaleString()}韓元
+                      ${(product.price || 0).toLocaleString()}
                     </span>
-                  </div>
-                  <div className="text-sm text-gray-600">2+1 促銷價，享受驚喜折扣！</div>
-                  <div className="text-sm text-gray-600">
-                    共 61% 折扣 → 最終優惠價格 $ 5,933 韓元
                   </div>
                 </div>
 
