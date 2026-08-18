@@ -2,7 +2,7 @@
   "dependencies": {
     "@sentry/react": "^10.70.0",
     "@shopify/storefront-api-client": "^2.0.0",
-    "@supabase/supabase-js": "2.57.4",
+    "@supabase/supabase-js": "2.112.3",
     "@vercel/functions": "^3.7.6",
     "framer-motion": "12.23.12",
     "i18next": "25.4.1",
