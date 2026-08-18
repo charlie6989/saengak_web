@@ -67,7 +67,7 @@ export function maskName(name: string): string {
   if (len <= 1) return '*';
   if (len === 2) return `${trimmed[0]}*`;
   if (len === 3) return `${trimmed[0]}*${trimmed[2]}`;
-  
+
   // 4 字元以上：保留首尾，中間以星號遮蔽
   const middleStars = '*'.repeat(len - 2);
   return `${trimmed[0]}${middleStars}${trimmed[len - 1]}`;
@@ -79,7 +79,7 @@ export function maskName(name: string): string {
 export function maskPhone(phone: string): string {
   if (typeof phone !== 'string' || !phone.trim()) return REDACTED_PII;
   const cleaned = phone.replace(/[^0-9+]/g, '');
-  
+
   // 台灣 10 碼手機號碼 (09xxxxxxxx)
   if (cleaned.length === 10) {
     return `${cleaned.slice(0, 4)}***${cleaned.slice(7)}`;

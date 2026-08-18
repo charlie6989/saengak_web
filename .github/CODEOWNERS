@@ -1,0 +1,10 @@
+# Repository-wide review ownership.
+* @charlie6989
+
+# Security-sensitive and release-critical surfaces.
+/.github/ @charlie6989
+/api/ @charlie6989
+/scripts/ @charlie6989
+/supabase/ @charlie6989
+/vercel.json @charlie6989
+/SECURITY.md @charlie6989

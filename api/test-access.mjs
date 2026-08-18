@@ -2,6 +2,9 @@ import { createHash, createHmac, timingSafeEqual } from 'node:crypto'
 
 const COOKIE_NAME = 'saengak_test_session'
 const SESSION_SECONDS = 60 * 60 * 24 * 7
+const ATTEMPT_WINDOW_MS = 15 * 60 * 1000
+const MAX_ATTEMPTS = 5
+const attempts = new Map()
 
 function getConfig() {
   return {
@@ -9,6 +12,35 @@ function getConfig() {
     password: process.env.SAENGAK_TEST_PASSWORD ?? '',
     sessionSecret: process.env.SAENGAK_TEST_SESSION_SECRET ?? '',
   }
+}
+
+function isStrongConfig({ username, password, sessionSecret }) {
+  return username.length >= 6 && password.length >= 24 && sessionSecret.length >= 32
+}
+
+function getClientKey(request, secret) {
+  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-real-ip')?.trim()
+    || 'unknown-client'
+  return createHmac('sha256', secret || 'unconfigured').update(forwarded).digest('base64url')
+}
+
+function getAttemptState(key, now = Date.now()) {
+  const current = attempts.get(key)
+  if (!current || now - current.startedAt >= ATTEMPT_WINDOW_MS) {
+    const fresh = { count: 0, startedAt: now }
+    attempts.set(key, fresh)
+    return fresh
+  }
+  return current
+}
+
+function retryAfterSeconds(state, now = Date.now()) {
+  return Math.max(1, Math.ceil((state.startedAt + ATTEMPT_WINDOW_MS - now) / 1000))
+}
+
+function resetAttemptState() {
+  attempts.clear()
 }
 
 function safeEqual(left, right) {
@@ -66,7 +98,7 @@ function sessionCookie(request, value, maxAge) {
 export default {
   async fetch(request) {
     const config = getConfig()
-    const configured = Boolean(config.username && config.password && config.sessionSecret)
+    const configured = isStrongConfig(config)
 
     if (request.method === 'GET') {
       return json({
@@ -101,17 +133,35 @@ export default {
     }
 
     if (!configured) {
-      return json({ error: '測試登入尚未設定完成。' }, { status: 503 })
+      return json({ error: '測試登入尚未安全設定完成。' }, { status: 503 })
+    }
+
+    const clientKey = getClientKey(request, config.sessionSecret)
+    const attemptState = getAttemptState(clientKey)
+    if (attemptState.count >= MAX_ATTEMPTS) {
+      const retryAfter = retryAfterSeconds(attemptState)
+      return json({ error: '嘗試次數過多，請稍後再試。' }, {
+        status: 429,
+        headers: { 'Retry-After': String(retryAfter) },
+      })
     }
 
     const usernameMatches = safeEqual(body?.username ?? '', config.username)
     const passwordMatches = safeEqual(body?.password ?? '', config.password)
 
     if (!usernameMatches || !passwordMatches) {
+      attemptState.count += 1
       await new Promise((resolve) => setTimeout(resolve, 450))
+      if (attemptState.count >= MAX_ATTEMPTS) {
+        return json({ error: '嘗試次數過多，請稍後再試。' }, {
+          status: 429,
+          headers: { 'Retry-After': String(retryAfterSeconds(attemptState)) },
+        })
+      }
       return json({ error: '帳號或密碼不正確。' }, { status: 401 })
     }
 
+    attempts.delete(clientKey)
     const session = createSession(config.sessionSecret)
     return json({ ok: true }, {
       headers: {
@@ -121,4 +171,4 @@ export default {
   },
 }
 
-export { COOKIE_NAME, SESSION_SECONDS, isAuthorized }
+export { COOKIE_NAME, SESSION_SECONDS, isAuthorized, isStrongConfig, resetAttemptState }

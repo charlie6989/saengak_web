@@ -1,14 +1,9 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
-
-const supabase = createClient(
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL,
-  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -18,6 +13,11 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      setMessage('會員系統正在接線，現階段無法寄送重設密碼郵件');
+      return;
+    }
+
     setLoading(true);
     setMessage('');
 
@@ -61,6 +61,11 @@ export default function ForgotPasswordPage() {
 
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-6 shadow-lg rounded-lg border">
+            {!isSupabaseConfigured && (
+              <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md text-sm text-amber-800">
+                會員資料庫尚未完成正式綁定，重設密碼功能暫未開放。
+              </div>
+            )}
             {!isSuccess ? (
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>

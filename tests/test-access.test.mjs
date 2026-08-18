@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import handler, { COOKIE_NAME } from '../api/test-access.mjs'
+import handler, { COOKIE_NAME, resetAttemptState } from '../api/test-access.mjs'
 
 const originalEnv = {
   username: process.env.SAENGAK_TEST_USERNAME,
@@ -8,6 +8,7 @@ const originalEnv = {
 }
 
 beforeEach(() => {
+  resetAttemptState()
   process.env.SAENGAK_TEST_USERNAME = 'preview-tester'
   process.env.SAENGAK_TEST_PASSWORD = 'correct-horse-battery-staple'
   process.env.SAENGAK_TEST_SESSION_SECRET = 'test-session-secret-that-is-not-used-in-production'
@@ -93,5 +94,27 @@ describe('test access function', () => {
 
     expect(response.status).toBe(403)
     expect(response.headers.get('set-cookie')).toBeNull()
+  })
+
+  it('rate limits repeated credential guesses', async () => {
+    let response
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      response = await handler.fetch(new Request('https://saengak.com.tw/api/test-access', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Forwarded-For': '203.0.113.41',
+        },
+        body: JSON.stringify({ username: 'preview-tester', password: 'incorrect' }),
+      }))
+    }
+    expect(response.status).toBe(429)
+    expect(Number(response.headers.get('retry-after'))).toBeGreaterThan(0)
+  })
+
+  it('fails closed when the configured password is too short', async () => {
+    process.env.SAENGAK_TEST_PASSWORD = 'short'
+    const response = await handler.fetch(new Request('https://saengak.com.tw/api/test-access'))
+    await expect(response.json()).resolves.toMatchObject({ configured: false, authorized: false })
   })
 })

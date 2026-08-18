@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { siteConfig } from '../../../content/site';
 
 export default function StorySection() {
   const navigate = useNavigate();
@@ -9,7 +8,7 @@ export default function StorySection() {
         {/* 標題區域 */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4" style={{ fontFamily: '"Noto Sans TC", sans-serif' }}>
-            {siteConfig.brandName} Talk｜私密對話
+            SAENGAK Talk｜私密對話
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed" style={{ fontFamily: '"Noto Sans TC", sans-serif' }}>
             談身體，也談心
@@ -34,13 +33,13 @@ export default function StorySection() {
             </h3>
             <div className="space-y-6 text-gray-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               <p className="leading-relaxed">
-                {siteConfig.brandName} 品牌創立於對女性健康的深切關懷。我們發現市場上缺乏真正了解女性需求的私密護理產品，因此決定創造一個專為女性設計的溫和日常照護品牌。
+                SAENGAK 希望以清楚、容易理解的方式整理女性日常護理商品資訊，讓每個人都能依自己的需求做選擇。
               </p>
               <p className="leading-relaxed">
-                我們結合專業配方研發經驗，使用天然溫和的成分，確保每一款產品都能為女性帶來安心、舒適的護理體驗。
+                商品成分、測試、認證與使用方式，以原廠文件、正式商品欄位及包裝標示為準；尚未取得來源的資訊不自行推定。
               </p>
               <p className="leading-relaxed">
-                從產品研發到包裝設計，我們都秉持著「以女性為中心」的理念，希望透過我們的產品，讓每位女性都能自信地擁抱自己的美麗。
+                從選品到內容呈現，我們重視資料可追溯、說明不誇大，也提醒使用者有疑問時諮詢合格專業人員。
               </p>
             </div>
 
@@ -91,10 +90,10 @@ export default function StorySection() {
                 <i className="ri-leaf-line text-2xl" style={{ color: '#225B4F' }}></i>
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                天然安心
+                成分透明
               </h4>
               <p className="text-gray-600 text-sm" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                嚴選溫和成分，確保產品的安心感與親膚性
+                只顯示有正式來源的成分、測試與認證資料
               </p>
             </div>
 
@@ -103,10 +102,10 @@ export default function StorySection() {
                 <i className="ri-award-line text-2xl" style={{ color: '#225B4F' }}></i>
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                品質承諾
+                資料審核
               </h4>
               <p className="text-gray-600 text-sm" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                嚴格控管研發製程，確保每款產品都達到品質標準
+                商品宣稱須能回到原廠文件、商品欄位或包裝標示
               </p>
             </div>
           </div>

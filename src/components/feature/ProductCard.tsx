@@ -59,7 +59,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="group cursor-pointer flex flex-col h-full" onClick={handleCardClick}>
-      {/* Product Image - Standardized 3:2 portrait ratio */}
+      {/* Product Image - Standardized 2:3 portrait ratio for search/home cards */}
       <div className="aspect-[2/3] bg-gray-50 overflow-hidden mb-3 relative">
         <img
           src={product.image}
@@ -142,6 +142,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Wishlist Icon - Moved to right side of content */}
           <button
             onClick={handleWishlistClick}
+            aria-label={isWishlisted ? `從收藏移除 ${product.name}` : `收藏 ${product.name}`}
             className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded transition-colors cursor-pointer flex-shrink-0"
           >
             <i className={`${isWishlisted ? 'ri-heart-fill text-red-500' : 'ri-heart-line text-gray-400'} text-sm`}></i>

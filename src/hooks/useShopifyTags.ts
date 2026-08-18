@@ -1,7 +1,23 @@
-import { useState } from 'react';
-import { getShopifyProductsByTags, type ShopifyProduct } from '../lib/shopify';
+import { useState, useEffect } from 'react';
+import { getFunctionHeaders, getFunctionUrl, isShopifyTagCatalogEnabled } from '../lib/supabase';
 
-export type Product = ShopifyProduct;
+interface Product {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  descriptionHtml: string;
+  handle: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  hoverImage: string;
+  tags: string[];
+  productType: string;
+  vendor: string;
+  createdAt: string;
+  variants: any[];
+}
 
 interface UseProductsByTagResult {
   products: Product[];
@@ -9,17 +25,14 @@ interface UseProductsByTagResult {
   loading: boolean;
   error: string | null;
   searchTags: string[];
-  fetchProductsByTag: (
-    tags: string[],
-    options?: {
-      first?: number;
-      sortKey?: string;
-      reverse?: boolean;
-    }
-  ) => Promise<void>;
+  fetchProductsByTag: (tags: string[], options?: {
+    first?: number;
+    sortKey?: string;
+    reverse?: boolean;
+  }) => Promise<void>;
 }
 
-// Hook for fetching products by tags directly via Shopify Storefront SDK
+// Hook for fetching products by tags
 export function useShopifyProductsByTag(): UseProductsByTagResult {
   const [products, setProducts] = useState<Product[]>([]);
   const [productsByTag, setProductsByTag] = useState<{ [tag: string]: Product[] }>({});
@@ -40,28 +53,42 @@ export function useShopifyProductsByTag(): UseProductsByTagResult {
       return;
     }
 
+    if (!isShopifyTagCatalogEnabled) {
+      setProducts([]);
+      setProductsByTag({});
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSearchTags(tags);
 
     try {
-      const fetchedProducts = await getShopifyProductsByTags(tags, {
-        first: options.first || 20,
-        sortKey: options.sortKey || 'BEST_SELLING',
-        reverse: options.reverse ?? false,
+      const response = await fetch(getFunctionUrl('get-products-by-tag'), {
+        method: 'POST',
+        headers: getFunctionHeaders(),
+        body: JSON.stringify({
+          tags,
+          first: options.first || 20,
+          sortKey: options.sortKey || 'CREATED_AT',
+          reverse: options.reverse !== undefined ? options.reverse : true
+        })
       });
 
-      const grouped: { [tag: string]: Product[] } = {};
-      for (const t of tags) {
-        grouped[t] = fetchedProducts.filter((p) =>
-          (p.tags || []).some((itemTag) => itemTag.toLowerCase().includes(t.toLowerCase()))
-        );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      setProducts(fetchedProducts);
-      setProductsByTag(grouped);
+      const data = await response.json();
+
+      if (data.success) {
+        setProducts(data.products || []);
+        setProductsByTag(data.productsByTag || {});
+      } else {
+        throw new Error(data.error || 'Failed to fetch products by tag');
+      }
     } catch (err) {
-      console.error('Error fetching products by tag from Shopify:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setProducts([]);
       setProductsByTag({});
@@ -76,7 +103,7 @@ export function useShopifyProductsByTag(): UseProductsByTagResult {
     loading,
     error,
     searchTags,
-    fetchProductsByTag,
+    fetchProductsByTag
   };
 }
 
@@ -94,7 +121,7 @@ export const COMMON_TAGS = {
   TRAVEL_SIZE: '旅行裝',
   BESTSELLER: '熱銷',
   NEW_ARRIVAL: '新品',
-  SALE: '特價',
+  SALE: '特價'
 } as const;
 
 // 預設標籤組合
@@ -102,5 +129,5 @@ export const TAG_COMBINATIONS = {
   FEMININE_PRODUCTS: [COMMON_TAGS.FEMININE_CARE, COMMON_TAGS.DAILY_CLEAN, COMMON_TAGS.DEEP_REPAIR],
   UNDERWEAR_PRODUCTS: [COMMON_TAGS.UNDERWEAR, COMMON_TAGS.SEAMLESS, COMMON_TAGS.ANTIBACTERIAL, COMMON_TAGS.COTTON],
   SPECIAL_CARE: [COMMON_TAGS.PERIOD_CARE, COMMON_TAGS.SENSITIVE_SKIN],
-  PROMOTIONAL: [COMMON_TAGS.BESTSELLER, COMMON_TAGS.NEW_ARRIVAL, COMMON_TAGS.SALE],
+  PROMOTIONAL: [COMMON_TAGS.BESTSELLER, COMMON_TAGS.NEW_ARRIVAL, COMMON_TAGS.SALE]
 } as const;

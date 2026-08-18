@@ -1,15 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
-import { createClient } from '@supabase/supabase-js';
 import { mockUsers, mockAuthState } from '../../mocks/userData';
 import AuthModal from './AuthModal';
 import SearchOverlay from './SearchOverlay';
-
-const supabase = createClient(
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL,
-  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
-);
+import { supabase } from '../../lib/supabase';
 
 export default function Header() {
   const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
@@ -28,7 +23,7 @@ export default function Header() {
   useEffect(() => {
     const getUser = async () => {
       // 檢查是否使用假數據模式
-      const mockMode = localStorage.getItem('useMockAuth') === 'true';
+      const mockMode = import.meta.env.DEV && localStorage.getItem('useMockAuth') === 'true';
       setUseMockData(mockMode);
 
       if (mockMode) {
@@ -165,15 +160,17 @@ export default function Header() {
         style={{ height: '32px', fontFamily: "Noto Sans TC, sans-serif" }}
       >
         <div className="animate-marquee whitespace-nowrap flex items-center justify-center h-full text-sm">
-          SAENGAK 官方旗艦館｜專注私密肌膚健康呵護，全館品質嚴選
+          SAENGAK 品牌展示目錄｜正式結帳、物流與客服管道啟用後將於本站公告
           {/* 開發模式切換按鈕 */}
-          <button
-            onClick={toggleMockMode}
-            className="ml-8 px-2 py-1 bg-yellow-600 text-white text-xs rounded cursor-pointer"
-            title={`當前模式: ${useMockData ? '假數據' : '真實數據'}`}
-          >
-            {useMockData ? '假數據模式' : '真實模式'}
-          </button>
+          {import.meta.env.DEV && (
+            <button
+              onClick={toggleMockMode}
+              className="ml-8 px-2 py-1 bg-yellow-600 text-white text-xs rounded cursor-pointer"
+              title={`當前模式: ${useMockData ? '假數據' : '真實數據'}`}
+            >
+              {useMockData ? '假數據模式' : '真實模式'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -204,6 +201,7 @@ export default function Header() {
               {/* 左側 - 手機版漢堡選單按鈕 */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label={isMobileMenuOpen ? '關閉主選單' : '開啟主選單'}
                 className="lg:hidden flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-teal-600 outline-none focus:outline-none border-none bg-transparent"
                 style={{
                   width: '48px',
@@ -367,6 +365,7 @@ export default function Header() {
                 {/* 搜尋按鈕 - 手機版也顯示 */}
                 <button
                   onClick={handleSearchIconClick}
+                  aria-label="開啟商品搜尋"
                   className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-teal-600 outline-none focus:outline-none border-none bg-transparent"
                   style={{
                     width: '44px',
@@ -388,6 +387,7 @@ export default function Header() {
                 <div className="hidden lg:block relative">
                   <button
                     onClick={handleUserIconClick}
+                    aria-label={user ? '開啟會員選單' : '前往會員登入'}
                     className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-teal-600 outline-none focus:outline-none border-none bg-transparent"
                     style={{
                       width: 'min(24px, 1.67vw)',
@@ -460,6 +460,8 @@ export default function Header() {
                 {/* 購物車按鈕 - 手機版優化 */}
                 <button
                   onClick={handleCartClick}
+                  aria-label="開啟購物車"
+                  data-testid="desktop-cart-button"
                   className="flex items-center justify-center cursor-pointer relative transition-colors duration-200 hover:text-teal-600 outline-none focus:outline-none border-none bg-transparent"
                   style={{
                     width: '44px',
@@ -520,6 +522,7 @@ export default function Header() {
           {/* 左側膠囊 - 選單按鈕 */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? '關閉主選單' : '開啟主選單'}
             className="flex items-center gap-2 px-5 py-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer border-none outline-none focus:outline-none"
             style={{
               fontFamily: "Noto Sans TC, sans-serif"
@@ -538,6 +541,7 @@ export default function Header() {
           {/* 中間膠囊 - 搜尋按鈕 */}
           <button
             onClick={handleSearchIconClick}
+            aria-label="開啟商品搜尋"
             className="flex items-center justify-center w-14 h-14 bg-teal-600 rounded-full shadow-lg hover:shadow-xl hover:bg-teal-700 transition-all duration-200 cursor-pointer border-none outline-none focus:outline-none"
           >
             <i
@@ -552,6 +556,8 @@ export default function Header() {
           {/* 右側膠囊 - 購物車按鈕 */}
           <button
             onClick={handleCartClick}
+            aria-label="開啟購物車"
+            data-testid="mobile-cart-button"
             className="flex items-center gap-2 px-5 py-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer relative border-none outline-none focus:outline-none"
             style={{
               fontFamily: "Noto Sans TC, sans-serif"

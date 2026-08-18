@@ -1,0 +1,185 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #f7f7f5;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.coming-soon {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 32px 24px;
+  overflow: hidden;
+  background: #f7f7f5;
+}
+
+.coming-soon__content {
+  width: min(100%, 760px);
+  text-align: center;
+}
+
+.coming-soon__brand {
+  margin: 0 0 20px;
+  color: #225b4f;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+}
+
+.coming-soon__title {
+  margin: 0;
+  color: #225b4f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(52px, 10vw, 104px);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.coming-soon__login-trigger {
+  margin-top: 34px;
+  padding: 10px 2px 8px;
+  border: 0;
+  border-bottom: 1px solid rgba(34, 91, 79, 0.42);
+  background: transparent;
+  color: #225b4f;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+.coming-soon__login-trigger:hover {
+  border-color: #225b4f;
+}
+
+.coming-soon__login-trigger:focus-visible,
+.test-login__close:focus-visible,
+.test-login__field input:focus-visible,
+.test-login__submit:focus-visible {
+  outline: 3px solid rgba(34, 91, 79, 0.22);
+  outline-offset: 3px;
+}
+
+.test-login {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  width: min(calc(100% - 40px), 390px);
+  padding: 34px;
+  border: 1px solid rgba(34, 91, 79, 0.16);
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(23, 63, 54, 0.18);
+  text-align: left;
+  transform: translate(-50%, -50%);
+}
+
+.test-login__close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #225b4f;
+  font: inherit;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.test-login__title {
+  margin: 0 0 26px;
+  color: #225b4f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.test-login__form,
+.test-login__field {
+  display: grid;
+  gap: 10px;
+}
+
+.test-login__form {
+  gap: 18px;
+}
+
+.test-login__field span {
+  color: #225b4f;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.test-login__field input {
+  width: 100%;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid rgba(34, 91, 79, 0.28);
+  border-radius: 0;
+  background: #fff;
+  color: #173f36;
+  font: inherit;
+  font-size: 16px;
+}
+
+.test-login__error {
+  margin: -4px 0 0;
+  color: #9d2f2f;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.test-login__submit {
+  height: 48px;
+  border: 1px solid #225b4f;
+  background: #225b4f;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.test-login__submit:disabled {
+  cursor: wait;
+  opacity: 0.64;
+}
+
+@media (max-width: 480px) {
+  .coming-soon {
+    padding-inline: 20px;
+  }
+
+  .coming-soon__brand {
+    margin-bottom: 16px;
+    font-size: 11px;
+  }
+
+  .test-login {
+    padding: 30px 24px 24px;
+  }
+}

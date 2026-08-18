@@ -1,7 +1,7 @@
 import { next } from '@vercel/functions'
 import { isAuthorized } from './api/test-access.mjs'
 
-const PUBLIC_ENTRY_ASSET = /^\/assets\/[A-Za-z0-9_.-]+\.(?:css|js|png|jpg|jpeg|svg|webp|woff2?|map)$/
+const PUBLIC_ENTRY_ASSET = /^\/assets\/index-[A-Za-z0-9_-]+\.(?:css|js)$/
 
 export default function middleware(request) {
   const pathname = new URL(request.url).pathname

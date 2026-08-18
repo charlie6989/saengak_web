@@ -15,7 +15,6 @@ function getEnv(key: string, fallback: string = ''): string {
   }
   return fallback;
 }
-
 export const SHOPIFY_STORE_DOMAIN = getEnv(
   'VITE_PUBLIC_SHOPIFY_STORE_DOMAIN',
   getEnv('VITE_SHOPIFY_DOMAIN', 'gh2xgs-zf.myshopify.com')
@@ -623,4 +622,3 @@ export async function getShopifyArticleByHandle(handle: string): Promise<Shopify
   const fallbacks = await getShopifyArticles(10);
   return fallbacks.find((a) => a.handle === handle || a.id === handle) || null;
 }
-

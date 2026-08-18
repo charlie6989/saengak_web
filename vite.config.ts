@@ -11,16 +11,17 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    // 必須放在 plugins 陣列最後，確保處理的是其他 plugin 轉換完的最終產物。
-    // 若未設定 SENTRY_AUTH_TOKEN，官方行為是印出警告並跳過上傳，不會讓 build 失敗。
-    sentryVitePlugin({
-      org: process.env.SENTRY_ORG,
-      project: process.env.SENTRY_PROJECT,
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-      sourcemaps: {
-        filesToDeleteAfterUpload: ['./dist/**/*.map'],
-      },
-    }),
+    ...(process.env.SENTRY_AUTH_TOKEN
+      ? [sentryVitePlugin({
+          org: process.env.SENTRY_ORG,
+          project: process.env.SENTRY_PROJECT,
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          telemetry: false,
+          sourcemaps: {
+            filesToDeleteAfterUpload: ['./dist/**/*.map'],
+          },
+        })]
+      : []),
   ],
   server: {
     host: '0.0.0.0',
@@ -33,8 +34,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    // 'hidden' 產生 sourcemap 供 Sentry 解析堆疊，但不在 bundle 中插入
-    // //# sourceMappingURL= 標頭，避免洩漏原始碼位置給使用者。
-    sourcemap: 'hidden'
+    // 只有具備 Sentry 上傳權限時才產生隱藏 source map。
+    sourcemap: process.env.SENTRY_AUTH_TOKEN ? 'hidden' : false
   }
 })

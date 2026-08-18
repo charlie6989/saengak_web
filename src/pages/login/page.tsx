@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { mockUsers, mockAuthState, simulateApiDelay } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
@@ -14,7 +14,7 @@ export default function LoginPage() {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [useMockData, setUseMockData] = useState(localStorage.getItem('useMockAuth') === 'true');
+  const [useMockData, setUseMockData] = useState(import.meta.env.DEV && localStorage.getItem('useMockAuth') === 'true');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -56,17 +56,22 @@ export default function LoginPage() {
   };
 
   const handleRealLogin = async () => {
+    if (!isSupabaseConfigured) {
+      setMessage('會員系統正在接線，現階段暫不開放登入');
+      return;
+    }
+
     setLoading(true);
     setMessage('');
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
 
       if (error) {
-        setMessage(`登入失敗: ${error.message}`);
+        setMessage('登入失敗：電子郵件、密碼不正確，或帳號尚未完成驗證');
       } else {
         setMessage('登入成功！');
         setTimeout(() => {
@@ -90,39 +95,10 @@ export default function LoginPage() {
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'facebook' | 'apple') => {
-    if (useMockData) {
-      setMessage('假數據模式下暫不支援社交登入，請使用測試帳號');
-      return;
-    }
-
-    setLoading(true);
-    setMessage('');
-
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: provider,
-        options: {
-          redirectTo: `${window.location.origin}/`
-        }
-      });
-
-      if (error) {
-        console.error(`${provider} OAuth error:`, error);
-        setMessage(`${provider === 'google' ? 'Google' : provider === 'facebook' ? 'Facebook' : 'Apple'} 登入設定中，請稍後再試或使用電子郵件登入`);
-      }
-    } catch (error) {
-      console.error(`${provider} login error:`, error);
-      setMessage(`${provider === 'google' ? 'Google' : provider === 'facebook' ? 'Facebook' : 'Apple'} 登入功能暫時無法使用，請使用電子郵件登入`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fillDemoAccount = () => {
     setFormData({
-      email: 'demo@example.com',
-      password: '123456'
+      email: 'mock1@saengak.invalid',
+      password: 'development-only-1'
     });
   };
 
@@ -144,6 +120,11 @@ export default function LoginPage() {
 
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-6 shadow-lg rounded-lg border">
+            {!useMockData && !isSupabaseConfigured && (
+              <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md text-sm text-amber-800">
+                會員資料庫尚未完成正式綁定；目前可瀏覽商品與內容，但暫不接受登入。
+              </div>
+            )}
             {/* 假數據模式提示 */}
             {useMockData && (
               <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
@@ -152,9 +133,9 @@ export default function LoginPage() {
                   <div className="text-sm text-blue-800">
                     <p className="font-medium mb-2">假數據模式 - 測試帳號</p>
                     <div className="space-y-1 text-xs">
-                      <p>• demo@example.com / 123456</p>
-                      <p>• test@gmail.com / 123456</p>
-                      <p>• user@test.com / 123456</p>
+                      <p>• mock1@saengak.invalid / development-only-1</p>
+                      <p>• mock2@saengak.invalid / development-only-2</p>
+                      <p>• mock3@saengak.invalid / development-only-3</p>
                     </div>
                     <button
                       onClick={fillDemoAccount}
@@ -167,47 +148,8 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* 社交登入按鈕 */}
-            <div className="space-y-3 mb-6">
-              <button
-                type="button"
-                onClick={() => handleSocialLogin('google')}
-                disabled={loading}
-                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <i className="ri-google-fill text-red-500 mr-3 text-lg"></i>
-                使用 Google 登入
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSocialLogin('facebook')}
-                disabled={loading}
-                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <i className="ri-facebook-fill text-blue-600 mr-3 text-lg"></i>
-                使用 Facebook 登入
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSocialLogin('apple')}
-                disabled={loading}
-                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <i className="ri-apple-fill text-black mr-3 text-lg"></i>
-                使用 Apple 登入
-              </button>
-            </div>
-
-            {/* 分隔線 */}
-            <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">或使用電子郵件登入</span>
-              </div>
+            <div className="mb-6 rounded-md border border-teal-100 bg-teal-50 p-3 text-sm text-teal-800">
+              目前只開放電子郵件登入；Google、Facebook 與 Apple 尚未啟用，因此不顯示無效按鈕。
             </div>
 
             {/* 登入表單 */}

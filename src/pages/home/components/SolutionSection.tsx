@@ -1,7 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '../../../contexts/CartContext';
-import { getShopifyProducts, type ShopifyProduct } from '../../../lib/shopify';
+import { getFunctionHeaders, getFunctionUrl, isShopifyTagCatalogEnabled } from '../../../lib/supabase';
+import { mockProducts } from '../../../mocks/products';
+import { rankEditorialProducts } from '../../../domain/algorithms';
 
 interface Product {
   id: string;
@@ -25,6 +27,8 @@ export default function SolutionSection() {
   const [loading, setLoading] = useState(false);
   const { addToCart } = useCart();
 
+
+
   useEffect(() => {
     fetchShopifyProducts();
   }, []);
@@ -32,29 +36,32 @@ export default function SolutionSection() {
   const fetchShopifyProducts = async () => {
     setLoading(true);
     try {
-      const fetched = await getShopifyProducts({
-        first: 4,
-        sortKey: 'BEST_SELLING',
+      if (!isShopifyTagCatalogEnabled) {
+        setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
+        return;
+      }
+      // Add timestamp to force fresh data
+      const timestamp = new Date().getTime();
+      const response = await fetch(getFunctionUrl('get-products-by-tag') + `?t=${timestamp}`, {
+        method: 'POST',
+        headers: getFunctionHeaders({ 'Cache-Control': 'no-cache' }),
+        body: JSON.stringify({
+          tags: ['bundle'],
+          first: 4
+        }),
       });
 
-      if (fetched && fetched.length > 0) {
-        const mapped: Product[] = fetched.map((p) => ({
-          id: p.id,
-          name: p.name || p.title,
-          image: p.image,
-          hoverImage: p.hoverImage || p.image,
-          price: p.price,
-          originalPrice: p.originalPrice,
-          description: p.description,
-          model: p.handle,
-          isBest: true,
-          productType: p.productType,
-          vendor: p.vendor,
-        }));
-        setProducts(mapped);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
       }
-    } catch (error) {
-      console.error('Error fetching Shopify products:', error);
+
+      const data = await response.json();
+
+      if (data.products) {
+        setProducts(data.products);
+      }
+    } catch {
+      setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
     } finally {
       setLoading(false);
     }
@@ -98,8 +105,8 @@ export default function SolutionSection() {
               </button>
             </div>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-              針對持續性私密部位困擾的解決方案<br />
-              內心想法推薦的有效產品
+              依日常清潔、貼身衣物與使用情境整理展示目錄<br />
+              正式規格與適用方式以商品標示為準
             </p>
           </div>
 
@@ -118,10 +125,10 @@ export default function SolutionSection() {
                 ></div>
                 <div className="absolute bottom-8 left-8 text-white">
                   <h3 className="text-2xl font-bold mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    專業護理解決方案
+                    展示目錄分類
                   </h3>
                   <p className="text-sm opacity-90" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    為您的日常護理提供最佳選擇
+                    依目前展示資料整理選購方向
                   </p>
                 </div>
               </div>
@@ -254,7 +261,7 @@ export default function SolutionSection() {
           <div className="relative h-[300px] md:h-[400px]">
             <img
               src="https://readdy.ai/api/search-image?query=Premium%20comfortable%20antibacterial%20underwear%20banner%20design%2C%20elegant%20Korean%20woman%20wearing%20comfortable%20white%20cotton%20underwear%2C%20soft%20pastel%20background%2C%20clean%20minimalist%20aesthetic%2C%20health%20and%20wellness%20theme%2C%20modern%20lifestyle%20photography%2C%20gentle%20lighting%2C%20serene%20and%20comfortable%20atmosphere%2C%20premium%20quality%20fabric%20texture&width=1440&height=400&seq=underwear-banner&orientation=landscape"
-              alt="舒適無菌內褲"
+              alt="SAENGAK 貼身衣物展示"
               className="w-full h-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent"></div>
@@ -262,11 +269,11 @@ export default function SolutionSection() {
               <div className="max-w-7xl mx-auto px-4 w-full">
                 <div className="max-w-2xl">
                   <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    舒適無菌內褲
+                    貼身衣物展示
                   </h2>
                   <p className="text-lg md:text-xl text-white/90 mb-6 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    採用抗菌纖維技術，提供全天候的舒適保護<br />
-                    讓您每一天都感受到清新與自信
+                    材質、剪裁、檢測與適用方式尚待正式商品欄位確認<br />
+                    現階段不以展示圖推定商品功效
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <a

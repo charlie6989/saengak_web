@@ -1,12 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../../lib/supabase';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-
-const supabase = createClient(
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL,
-  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('');
@@ -18,32 +13,52 @@ export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    // 檢查是否有有效的重設密碼 token
+    let mounted = true;
+
+    // Supabase JS 會從 recovery redirect 自動建立 session；以
+    // PASSWORD_RECOVERY 事件為主，並兼容 PKCE code flow。
     const checkToken = async () => {
-      const accessToken = searchParams.get('access_token');
-      const refreshToken = searchParams.get('refresh_token');
-      
-      if (accessToken && refreshToken) {
-        try {
-          const { data, error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          });
-          
-          if (error) {
-            setMessage('重設密碼連結無效或已過期');
-          } else {
+      try {
+        const code = searchParams.get('code');
+        if (code) {
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          if (!error && data.session && mounted) {
             setIsValidToken(true);
+            setMessage('');
+            return;
           }
-        } catch (error) {
-          setMessage('重設密碼連結無效或已過期');
         }
-      } else {
+
+        const hash = new URLSearchParams(window.location.hash.slice(1));
+        const isRecoveryRedirect = hash.get('type') === 'recovery';
+        const { data, error } = await supabase.auth.getSession();
+        if (isRecoveryRedirect && !error && data.session && mounted) {
+          setIsValidToken(true);
+          setMessage('');
+          return;
+        }
+      } catch (error) {
+        console.error('Password recovery session error:', error);
+      }
+
+      if (mounted) {
         setMessage('重設密碼連結無效或已過期');
       }
     };
 
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' && session && mounted) {
+        setIsValidToken(true);
+        setMessage('');
+      }
+    });
+
     checkToken();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [searchParams]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -54,8 +69,8 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setMessage('密碼長度至少需要 6 個字元');
+    if (password.length < 12) {
+      setMessage('密碼長度至少需要 12 個字元');
       return;
     }
 
@@ -137,9 +152,9 @@ export default function ResetPasswordPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={12}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  placeholder="請輸入新密碼（至少 6 個字元）"
+                  placeholder="請輸入新密碼（至少 12 個字元）"
                 />
               </div>
 
@@ -153,7 +168,7 @@ export default function ResetPasswordPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={12}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   placeholder="請再次輸入新密碼"
                 />

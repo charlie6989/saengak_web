@@ -1,4 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { hasAcceptedPublicKey } from '../create-shopify-cart/auth.ts'
+import {
+  buildStorefrontHeaders,
+  buildStorefrontUrl,
+  isValidShopifyDomain,
+  resolveShopifyDomain,
+  resolveStorefrontApiVersion,
+  shouldIncludeStorefrontInventory,
+} from '../_shared/shopify-storefront.ts'
+import {
+  buildShopifyProductsQuery,
+  parseShopifyProductIds,
+} from '../_shared/shopify-product-query.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,14 +26,30 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  if (!hasAcceptedPublicKey(
+    req.headers.get('apikey'),
+    Deno.env.get('SUPABASE_ANON_KEY'),
+    Deno.env.get('SUPABASE_PUBLISHABLE_KEYS'),
+  )) {
+    return new Response(JSON.stringify({ error: 'Invalid API key', success: false }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
   try {
     console.log('=== Starting get-products function ===')
     console.log('Request method:', req.method)
     console.log('Request URL:', req.url)
     
     // Get Shopify credentials from environment
-    const shopifyDomain = Deno.env.get('ShopifyDomain') || 'ekfvih-rz.myshopify.com'
-    const storefrontAccessToken = Deno.env.get('StorefrontAccessToken') || '1707057fb57281cd5b3956de51a8c896'
+    const shopifyDomain = resolveShopifyDomain(Deno.env.get('ShopifyDomain'))
+    const storefrontAccessToken = Deno.env.get('StorefrontAccessToken')
+    const apiVersion = resolveStorefrontApiVersion(Deno.env.get('ShopifyStorefrontApiVersion'))
+
+    if (!isValidShopifyDomain(shopifyDomain)) {
+      throw new Error('Invalid ShopifyDomain configuration')
+    }
     
     console.log('Shopify Domain:', shopifyDomain)
     console.log('Access Token available:', !!storefrontAccessToken)
@@ -35,23 +64,19 @@ serve(async (req) => {
         console.log('Empty request body, using default product IDs')
         requestBody = {
           productIds: [
-            'gid://shopify/Product/9969008509232',
-            'gid://shopify/Product/9969008542000',
-            'gid://shopify/Product/9969008574768',
-            'gid://shopify/Product/9969008607536',
-            'gid://shopify/Product/9969008673072',
-            'gid://shopify/Product/9975451189552'
+            'gid://shopify/Product/7786993614915'
           ]
         }
       } else {
         requestBody = JSON.parse(bodyText)
       }
     } catch (parseError) {
+      const parseErrorMessage = parseError instanceof Error ? parseError.message : String(parseError)
       console.error('Failed to parse request body:', parseError)
       return new Response(
         JSON.stringify({ 
           error: 'Invalid JSON in request body',
-          details: parseError.message,
+          details: parseErrorMessage,
           success: false
         }),
         { 
@@ -61,14 +86,12 @@ serve(async (req) => {
       )
     }
 
-    const { productIds } = requestBody
-    console.log('Requested product IDs:', productIds)
-    
-    if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+    const parsedProductIds = parseShopifyProductIds(requestBody.productIds)
+    if (!parsedProductIds.ok) {
       console.error('Invalid or missing product IDs')
       return new Response(
         JSON.stringify({ 
-          error: 'Product IDs are required and must be an array',
+          error: parsedProductIds.error,
           success: false
         }),
         { 
@@ -77,103 +100,23 @@ serve(async (req) => {
         }
       )
     }
+    const productIds = parsedProductIds.ids
+    console.log('Validated product ID count:', productIds.length)
 
-    // Clean product IDs - remove gid prefix if present
-    const cleanProductIds = productIds.map(id => {
-      if (typeof id === 'string' && id.startsWith('gid://shopify/Product/')) {
-        return id.replace('gid://shopify/Product/', '')
-      }
-      return id
-    })
-    
-    console.log('Clean product IDs:', cleanProductIds)
+    const restrictedProductFields = storefrontAccessToken ? 'tags' : ''
+    const restrictedVariantFields = shouldIncludeStorefrontInventory(
+      Deno.env.get('ShopifyStorefrontInventoryEnabled'),
+    ) ? 'quantityAvailable' : ''
 
-    // Build GraphQL query for multiple products
-    const productQueries = cleanProductIds.map((id, index) => `
-      product${index}: product(id: "gid://shopify/Product/${id}") {
-        id
-        title
-        description
-        descriptionHtml
-        handle
-        tags
-        productType
-        vendor
-        createdAt
-        updatedAt
-        images(first: 10) {
-          edges {
-            node {
-              id
-              url
-              altText
-              width
-              height
-            }
-          }
-        }
-        variants(first: 10) {
-          edges {
-            node {
-              id
-              title
-              price {
-                amount
-                currencyCode
-              }
-              compareAtPrice {
-                amount
-                currencyCode
-              }
-              availableForSale
-              quantityAvailable
-              selectedOptions {
-                name
-                value
-              }
-              image {
-                id
-                url
-                altText
-                width
-                height
-              }
-            }
-          }
-        }
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-          maxVariantPrice {
-            amount
-            currencyCode
-          }
-        }
-        compareAtPriceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-          maxVariantPrice {
-            amount
-            currencyCode
-          }
-        }
-      }
-    `).join('\n')
-
-    const query = `
-      query GetProducts {
-        ${productQueries}
-      }
-    `
+    const query = buildShopifyProductsQuery(
+      Boolean(restrictedProductFields),
+      Boolean(restrictedVariantFields),
+    )
 
     console.log('GraphQL Query built successfully')
 
     // Make request to Shopify Storefront API with timeout
-    const shopifyUrl = `https://${shopifyDomain}/api/2024-01/graphql.json`
+    const shopifyUrl = buildStorefrontUrl(shopifyDomain, apiVersion)
     console.log('Making request to:', shopifyUrl)
     
     const controller = new AbortController()
@@ -183,11 +126,10 @@ serve(async (req) => {
       const shopifyResponse = await fetch(shopifyUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': storefrontAccessToken,
+          ...buildStorefrontHeaders(storefrontAccessToken),
           'User-Agent': 'Supabase Edge Function',
         },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, variables: { ids: productIds } }),
         signal: controller.signal,
       })
 
@@ -208,7 +150,7 @@ serve(async (req) => {
             success: false
           }),
           { 
-            status: 500, 
+            status: 502,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
           }
         )
@@ -226,7 +168,7 @@ serve(async (req) => {
             success: false
           }),
           { 
-            status: 400, 
+            status: 502,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
           }
         )
@@ -235,8 +177,9 @@ serve(async (req) => {
       // Transform the data to match frontend expectations
       const transformedProducts = []
       
-      for (let i = 0; i < cleanProductIds.length; i++) {
-        const product = shopifyData.data?.[`product${i}`]
+      const productNodes = Array.isArray(shopifyData.data?.nodes) ? shopifyData.data.nodes : []
+      for (let i = 0; i < productNodes.length; i++) {
+        const product = productNodes[i]
         
         if (product && product.id) {
           console.log(`Processing product ${i}:`, product.title)
@@ -267,14 +210,14 @@ serve(async (req) => {
             vendor: product.vendor || '',
             createdAt: product.createdAt || '',
             updatedAt: product.updatedAt || '',
-            images: images.map(edge => ({
+            images: images.map((edge: any) => ({
               id: edge.node.id,
               url: edge.node.url,
               altText: edge.node.altText,
               width: edge.node.width,
               height: edge.node.height,
             })),
-            variants: (product.variants?.edges || []).map(edge => ({
+            variants: (product.variants?.edges || []).map((edge: any) => ({
               id: edge.node.id,
               title: edge.node.title,
               price: {
@@ -301,7 +244,7 @@ serve(async (req) => {
           transformedProducts.push(transformedProduct)
           console.log(`Successfully transformed product: ${transformedProduct.name}`)
         } else {
-          console.warn(`Product with ID ${cleanProductIds[i]} not found or invalid`)
+          console.warn(`Product with ID ${productIds[i] ?? '(unknown)'} not found or invalid`)
         }
       }
 
@@ -323,7 +266,7 @@ serve(async (req) => {
     } catch (fetchError) {
       clearTimeout(timeoutId)
       
-      if (fetchError.name === 'AbortError') {
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
         console.error('Request timeout')
         return new Response(
           JSON.stringify({ 
@@ -342,16 +285,17 @@ serve(async (req) => {
     }
 
   } catch (error) {
+    const normalizedError = error instanceof Error ? error : new Error(String(error))
     console.error('=== Function error ===')
-    console.error('Error name:', error.name)
-    console.error('Error message:', error.message)
-    console.error('Error stack:', error.stack)
+    console.error('Error name:', normalizedError.name)
+    console.error('Error message:', normalizedError.message)
+    console.error('Error stack:', normalizedError.stack)
     
     return new Response(
       JSON.stringify({ 
         error: 'Internal server error',
-        details: error.message,
-        name: error.name,
+        details: normalizedError.message,
+        name: normalizedError.name,
         timestamp: new Date().toISOString(),
         success: false
       }),

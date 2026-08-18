@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security report
+    url: https://github.com/charlie6989/saengak_web/security/advisories/new
+    about: Report vulnerabilities privately; never include secrets or customer data in a public issue.
+  - name: Handoff and launch status
+    url: https://github.com/charlie6989/saengak_web/blob/main/docs/DEVELOPMENT_LAUNCH_HANDOFF.md
+    about: Read the current P0 gates before proposing deployment or payment activation.

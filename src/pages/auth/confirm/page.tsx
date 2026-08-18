@@ -1,12 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../../../lib/supabase';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
-const supabase = createClient(
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL,
-  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function AuthConfirmPage() {
   const [loading, setLoading] = useState(true);
@@ -16,9 +11,15 @@ export default function AuthConfirmPage() {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
+    let redirectTimer: number | undefined;
+
     const handleAuthConfirm = async () => {
       try {
-        const { data, error } = await supabase.auth.getSession();
+        const code = searchParams.get('code');
+        const result = code
+          ? await supabase.auth.exchangeCodeForSession(code)
+          : await supabase.auth.getSession();
+        const { data, error } = result;
         
         if (error) {
           console.error('Auth confirmation error:', error);
@@ -28,8 +29,10 @@ export default function AuthConfirmPage() {
         }
 
         if (data.session) {
+          setIsSuccess(true);
+          setLoading(false);
           setMessage('電子郵件驗證成功！正在跳轉...');
-          setTimeout(() => {
+          redirectTimer = window.setTimeout(() => {
             // 驗證成功後跳轉到歡迎頁面
             navigate('/welcome');
           }, 2000);
@@ -45,7 +48,11 @@ export default function AuthConfirmPage() {
     };
 
     handleAuthConfirm();
-  }, [navigate]);
+
+    return () => {
+      if (redirectTimer) window.clearTimeout(redirectTimer);
+    };
+  }, [navigate, searchParams]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

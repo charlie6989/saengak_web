@@ -102,7 +102,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
             <h2 className="text-xl font-bold text-stone-900 mb-2">頁面載入發生異常</h2>
             <p className="text-stone-600 text-sm mb-6 leading-relaxed">
-              很抱歉，系統遇到非預期的狀況。我們已將錯誤紀錄傳送給工程團隊進行分析。
+              很抱歉，系統遇到非預期的狀況。請重新嘗試；若持續發生，請記錄下方錯誤追蹤碼。
             </p>
 
             {eventId && (
