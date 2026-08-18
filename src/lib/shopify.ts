@@ -558,3 +558,69 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
     },
   ];
 }
+
+/**
+ * 依 Handle 取得單一部落格文章詳情
+ */
+export async function getShopifyArticleByHandle(handle: string): Promise<ShopifyArticle | null> {
+  if (!handle) return null;
+
+  try {
+    const gqlQuery = `
+      query GetArticlesForHandle($first: Int!) {
+        articles(first: $first) {
+          edges {
+            node {
+              id
+              title
+              handle
+              excerpt
+              contentHtml
+              publishedAt
+              image {
+                url
+                altText
+              }
+              blog {
+                handle
+                title
+              }
+              authorV2 {
+                name
+              }
+              tags
+            }
+          }
+        }
+      }
+    `;
+
+    const data = await shopifyFetch<{ articles: { edges: { node: any }[] } }>({
+      query: gqlQuery,
+      variables: { first: 50 },
+    });
+
+    const articles = (data.articles?.edges || []).map((edge) => ({
+      id: edge.node.id,
+      title: edge.node.title,
+      handle: edge.node.handle,
+      excerpt: edge.node.excerpt || '',
+      contentHtml: edge.node.contentHtml || '',
+      publishedAt: edge.node.publishedAt,
+      image: edge.node.image ? { url: edge.node.image.url, altText: edge.node.image.altText } : null,
+      blog: edge.node.blog ? { handle: edge.node.blog.handle, title: edge.node.blog.title } : null,
+      author: edge.node.authorV2?.name || 'SAENGAK 編輯團隊',
+      tags: edge.node.tags || [],
+    }));
+
+    const found = articles.find((a) => a.handle === handle || a.id === handle);
+    if (found) return found;
+  } catch (err) {
+    console.warn('Storefront getShopifyArticleByHandle query failed:', err);
+  }
+
+  // 若 Shopify 查不到，在 fallback 中查詢
+  const fallbacks = await getShopifyArticles(10);
+  return fallbacks.find((a) => a.handle === handle || a.id === handle) || null;
+}
+

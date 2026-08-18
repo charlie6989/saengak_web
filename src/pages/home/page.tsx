@@ -42,7 +42,6 @@ export default function Home() {
         <ProductSection
           title="精選產品"
           subtitle="探索我們最受歡迎的女性護理產品"
-          shopifyProductIds={featuredProductIds}
         />
 
         <BrandSection />
@@ -177,14 +176,11 @@ export default function Home() {
                   </div>
                 ) : (
                   articles.map((article) => (
-                    <div
+                    <a
                       key={article.id}
-                      className="bg-white shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:transform hover:scale-105 cursor-pointer flex flex-col h-full"
+                      href={`/blog/${article.handle}`}
+                      className="bg-white shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:transform hover:scale-105 cursor-pointer flex flex-col h-full block"
                       style={{ borderRadius: '16px' }}
-                      onClick={() => {
-                        const blogSlug = article.blog?.handle || 'blogs';
-                        window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'gh2xgs-zf.myshopify.com'}/blogs/${blogSlug}/${article.handle}`, '_blank');
-                      }}
                     >
                       <div className="aspect-[4/3] overflow-hidden bg-gray-50">
                         <img
@@ -209,7 +205,7 @@ export default function Home() {
                           {new Date(article.publishedAt).toLocaleDateString()}
                         </p>
                       </div>
-                    </div>
+                    </a>
                   ))
                 )}
               </div>

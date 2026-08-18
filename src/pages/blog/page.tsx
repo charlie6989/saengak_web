@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { getShopifyArticleByHandle, getShopifyArticles, type ShopifyArticle } from '../../lib/shopify';
 
 export default function BlogArticle() {
   const navigate = useNavigate();
@@ -12,89 +12,116 @@ export default function BlogArticle() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
 
-  // 模擬文章數據
-  const article = {
+  const [article, setArticle] = useState<{
+    id: string | number;
+    title: string;
+    content: string;
+    category: string;
+    author: string;
+    authorBio: string;
+    date: string;
+    readTime: string;
+    image: string;
+    tags: string[];
+    likes: number;
+    comments: number;
+    views: number;
+    shares: number;
+  }>({
     id: 1,
-    title: '女性私密護理完整指南：專家教你正確保養方式',
-    content: `
-      <p class="mb-8 text-lg leading-relaxed">女性私密護理是健康生活的重要組成部分，正確的護理方式不僅能維持健康的pH值平衡，還能預防各種感染和不適症狀。本文將為您詳細介紹專業的私密護理知識。</p>
-
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">為什麼私密護理如此重要？</h2>
-      <p class="mb-6 leading-relaxed">女性私密部位具有獨特的生理結構和微環境，需要特別的護理方式。正常情況下，陰道內的pH值應維持在3.8-4.5之間，這種弱酸性環境有助於抑制有害細菌的生長，維護健康的菌群平衡。</p>
-
-      <p class="mb-4 leading-relaxed">然而，許多因素都可能影響這種平衡，包括：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• 荷爾蒙變化（月經週期、懷孕、更年期）</li>
-        <li class="leading-relaxed">• 不當的清潔習慣</li>
-        <li class="leading-relaxed">• 緊身衣物的長期穿著</li>
-        <li class="leading-relaxed">• 壓力和生活方式</li>
-        <li class="leading-relaxed">• 某些藥物的使用</li>
-      </ul>
-
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">正確的私密護理步驟</h2>
-      
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">1. 選擇合適的清潔產品</h3>
-      <p class="mb-4 leading-relaxed">選擇專為私密部位設計的溫和清潔產品，避免使用含有強烈香料、酒精或刺激性化學成分的產品。理想的私密護理產品應該：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• pH值接近私密部位的自然酸性環境</li>
-        <li class="leading-relaxed">• 含有溫和的天然成分</li>
-        <li class="leading-relaxed">• 無香料或使用天然香料</li>
-        <li class="leading-relaxed">• 經過皮膚科測試</li>
-      </ul>
-
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">2. 正確的清潔方式</h3>
-      <p class="mb-4 leading-relaxed">每日清潔是必要的，但過度清潔可能會破壞自然的菌群平衡。建議的清潔方式包括：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• 使用溫水輕柔清洗外陰部</li>
-        <li class="leading-relaxed">• 從前往後的方向清潔，避免細菌感染</li>
-        <li class="leading-relaxed">• 避免過度搓洗或使用粗糙的毛巾</li>
-        <li class="leading-relaxed">• 清潔後用乾淨的毛巾輕拍乾燥</li>
-      </ul>
-
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">3. 內衣的選擇與護理</h3>
-      <p class="mb-4 leading-relaxed">內衣的選擇對私密健康有重要影響：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• 選擇透氣性好的棉質內衣</li>
-        <li class="leading-relaxed">• 避免過緊的內衣，確保空氣流通</li>
-        <li class="leading-relaxed">• 每日更換乾淨的內衣</li>
-        <li class="leading-relaxed">• 使用溫和的洗衣劑清洗內衣</li>
-      </ul>
-
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">常見的護理誤區</h2>
-      
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">誤區一：頻繁使用陰道沖洗液</h3>
-      <p class="mb-8 leading-relaxed">許多女性認為使用陰道沖洗液能保持清潔，但實際上這可能會破壞陰道內的自然菌群平衡，增加感染風險。</p>
-
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">誤區二：使用普通肥皂清洗</h3>
-      <p class="mb-8 leading-relaxed">普通肥皂的pH值通常偏鹼性，與私密部位的酸性環境不符，長期使用可能導致乾燥和刺激。</p>
-
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">誤區三：忽視月經期間的特殊護理</h3>
-      <p class="mb-8 leading-relaxed">月經期間需要更頻繁的清潔和衛生用品更換，同時要注意選擇透氣性好的衛生用品。</p>
-
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">何時需要尋求專業幫助</h2>
-      <p class="mb-4 leading-relaxed">如果出現以下症狀，建議及時諮詢醫療專業人員：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• 異常分泌物（顏色、氣味、質地改變）</li>
-        <li class="leading-relaxed">• 持續的瘙癢或灼熱感</li>
-        <li class="leading-relaxed">• 排尿時疼痛或不適</li>
-        <li class="leading-relaxed">• 異常出血</li>
-        <li class="leading-relaxed">• 骨盆疼痛</li>
-      </ul>
-
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">結語</h2>
-      <p class="mb-8 leading-relaxed">正確的私密護理是維護女性健康的重要環節。通過選擇合適的產品、採用正確的護理方式，並避免常見誤區，每位女性都能維護自己的私密健康。記住，每個人的身體狀況不同，如有疑問，請諮詢專業的醫療人員。</p>
-    `,
-    category: '私密護理',
-    author: 'Dr. 林美華',
-    authorBio: '婦產科專科醫師，擁有15年臨床經驗，專精於女性健康護理',
-    date: '2024年1月15日',
-    readTime: '8分鐘',
-    image: 'https://readdy.ai/api/search-image?query=Professional%20female%20healthcare%20expert%20explaining%20feminine%20health%20care%20importance%2C%20clean%20medical%20consultation%20room%2C%20educational%20materials%20about%20womens%20health%2C%20professional%20healthcare%20setting%2C%20Korean%20medical%20expert&width=1200&height=600&seq=article-detail&orientation=landscape',
-    tags: ['私密護理', '健康知識', '專家建議'],
+    title: '文章載入中...',
+    content: '<p class="text-gray-500">正在獲取文章內容...</p>',
+    category: '專欄文章',
+    author: 'SAENGAK 編輯團隊',
+    authorBio: 'SAENGAK 專注私密肌膚健康呵護，為您提供專業的保養指南與健康知識。',
+    date: '',
+    readTime: '3分鐘',
+    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=1200',
+    tags: ['私密護理', '健康知識'],
     likes: 128,
     comments: 23,
     views: 1250,
     shares: 45
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  const [toc, setToc] = useState<{ id: string; text: string; level: number }[]>([]);
+  const [processedContent, setProcessedContent] = useState<string>('');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+
+    const loadArticle = async () => {
+      setLoading(true);
+      try {
+        if (id) {
+          const fetched = await getShopifyArticleByHandle(id);
+          if (fetched) {
+            const rawContent = fetched.contentHtml || `<p class="text-lg leading-relaxed">${fetched.excerpt}</p>`;
+            
+            // 自動解析 HTML 中的 <h2> 和 <h3> 標題並注入錨點 id
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = rawContent;
+            
+            const headings = tempDiv.querySelectorAll('h2, h3');
+            const newToc: { id: string; text: string; level: number }[] = [];
+            
+            headings.forEach((heading, idx) => {
+              const text = heading.textContent?.trim() || '';
+              if (text) {
+                const headingId = heading.id || `heading-section-${idx}`;
+                heading.id = headingId;
+                newToc.push({
+                  id: headingId,
+                  text,
+                  level: heading.tagName.toLowerCase() === 'h2' ? 2 : 3
+                });
+              }
+            });
+
+            setToc(newToc);
+            setProcessedContent(tempDiv.innerHTML);
+
+            setArticle({
+              id: fetched.id,
+              title: fetched.title,
+              content: rawContent,
+              category: fetched.blog?.title || (fetched.tags && fetched.tags[0]) || '專欄文章',
+              author: fetched.author || 'SAENGAK 編輯團隊',
+              authorBio: 'SAENGAK 專注私密肌膚健康呵護，為您提供專業的保養指南與健康知識。',
+              date: new Date(fetched.publishedAt).toLocaleDateString(),
+              readTime: '5分鐘',
+              image: fetched.image?.url || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=1200',
+              tags: fetched.tags && fetched.tags.length > 0 ? fetched.tags : ['私密護理', '健康知識'],
+              likes: 128,
+              comments: 23,
+              views: 1250,
+              shares: 45
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load article:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadArticle();
+  }, [id]);
+
+  const scrollToHeading = (headingId: string) => {
+    const el = document.getElementById(headingId);
+    if (el) {
+      const topOffset = 90; // 考慮頂部導航的高度
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - topOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
   };
 
   const relatedArticles = [
@@ -392,7 +419,7 @@ export default function BlogArticle() {
                   '--tw-prose-th-borders': '#CDCDCD',
                   '--tw-prose-td-borders': '#CDCDCD'
                 } as any}
-                dangerouslySetInnerHTML={{ __html: article.content }}
+                dangerouslySetInnerHTML={{ __html: processedContent || article.content }}
               />
 
               {/* Tags */}
@@ -448,18 +475,31 @@ export default function BlogArticle() {
             {/* Sidebar */}
             <aside className="lg:w-80">
               {/* Table of Contents */}
-              <div className="bg-white border p-6 mb-8" style={{ borderColor: '#CDCDCD' }}>
-                <h3 className="text-lg font-semibold mb-6" style={{ color: '#000000' }}>文章目錄</h3>
-                <nav className="space-y-3">
-                  <a href="#" className="block text-sm cursor-pointer transition-colors" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>為什麼私密護理如此重要？</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>正確的私密護理步驟</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors pl-4" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>1. 選擇合適的清潔產品</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors pl-4" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>2. 正確的清潔方式</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors pl-4" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>3. 內衣的選擇與護理</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>常見的護理誤區</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>何時需要尋求專業幫助</a>
-                </nav>
-              </div>
+              {toc.length > 0 && (
+                <div className="bg-white border p-6 mb-8 sticky top-24" style={{ borderColor: '#CDCDCD', borderRadius: '12px' }}>
+                  <h3 className="text-lg font-semibold mb-6 flex items-center gap-2" style={{ color: '#000000' }}>
+                    <i className="ri-list-check-2 text-xl" style={{ color: '#225B4F' }}></i>
+                    文章目錄
+                  </h3>
+                  <nav className="space-y-2.5 max-h-[70vh] overflow-y-auto pr-1">
+                    {toc.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => scrollToHeading(item.id)}
+                        className={`block text-left text-sm cursor-pointer transition-colors leading-snug w-full ${
+                          item.level === 3 ? 'pl-4 text-xs' : 'font-medium'
+                        }`}
+                        style={{ color: '#555555' }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = '#225B4F')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = '#555555')}
+                      >
+                        {item.text}
+                      </button>
+                    ))}
+                  </nav>
+                </div>
+              )}
 
               {/* Recommended Products */}
               <div className="bg-white border p-6 mb-8" style={{ borderColor: '#CDCDCD' }}>

@@ -230,7 +230,7 @@ export default function Community() {
                 {/* Featured Article - 手機版優化 */}
                 {filteredArticles.length > 0 && (
                   <div className="mb-8 md:mb-16">
-                    <div className="relative overflow-hidden rounded-lg cursor-pointer group" onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'gh2xgs-zf.myshopify.com'}/blogs/${filteredArticles[0].blogHandle}/${filteredArticles[0].handle}`, '_blank')}>
+                    <div className="relative overflow-hidden rounded-lg cursor-pointer group" onClick={() => navigate(`/blog/${filteredArticles[0].handle}`)}>
                       {/* 手機版使用 4:3 比例，平板以上使用 21:9 */}
                       <div className="aspect-[4/3] md:aspect-[16/9] lg:aspect-[21/9] overflow-hidden">
                         <img
@@ -305,7 +305,7 @@ export default function Community() {
                           hidden: { opacity: 0, y: 16 },
                           show: { opacity: 1, y: 0, transition: { duration: 0.2 } },
                         }}
-                        onClick={() => window.open(`https://${import.meta.env.VITE_SHOPIFY_DOMAIN || 'gh2xgs-zf.myshopify.com'}/blogs/${article.blogHandle}/${article.handle}`, '_blank')}
+                        onClick={() => navigate(`/blog/${article.handle}`)}
                       >
                         {/* 手機版使用 16:10 比例 */}
                         <div className="aspect-[16/10] overflow-hidden">
