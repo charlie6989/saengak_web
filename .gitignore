@@ -143,3 +143,10 @@ scripts/
 # AI Agent local directory
 .agents/
 
+# Local Secrets & Credentials (NEVER COMMIT)
+.secrets/
+secrets/
+*.credentials.*
+credentials.json
+credentials.md
+
