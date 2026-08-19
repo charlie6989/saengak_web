@@ -10,9 +10,9 @@ import ReviewSection from './components/ReviewSection';
 import { getShopifyArticles } from '../../lib/shopify';
 
 const fallbackArticles = [
-  { id: 'care-guide', title: '日常私密護理：先理解身體，再選擇產品', excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的照護原則。', tags: ['健康知識'], publishedAt: '2026-07-18', url: '/blog', image: null },
-  { id: 'fabric-guide', title: '貼身衣物材質怎麼選？', excerpt: '用透氣、摩擦與清潔頻率三個面向，整理日常挑選貼身衣物的重點。', tags: ['選購指南'], publishedAt: '2026-07-18', url: '/faq', image: null },
-  { id: 'brand-method', title: '我們如何整理產品與內容', excerpt: '所有推薦先說明資料來源；沒有即時評價時，就以編輯精選清楚標示。', tags: ['品牌方法'], publishedAt: '2026-07-18', url: '/brand-story', image: null },
+  { id: 'care-guide', title: '日常私密護理：先理解身體，再選擇產品', excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的照護原則。', contentHtml: '', tags: ['健康知識'], publishedAt: '2026-07-18', url: '/blog', image: null },
+  { id: 'fabric-guide', title: '貼身衣物材質怎麼選？', excerpt: '用透氣、摩擦與清潔頻率三個面向，整理日常挑選貼身衣物的重點。', contentHtml: '', tags: ['選購指南'], publishedAt: '2026-07-18', url: '/faq', image: null },
+  { id: 'brand-method', title: '我們如何整理產品與內容', excerpt: '所有推薦先說明資料來源；沒有即時評價時，就以編輯精選清楚標示。', contentHtml: '', tags: ['品牌方法'], publishedAt: '2026-07-18', url: '/brand-story', image: null },
 ];
 
 export default function Home() {
@@ -27,10 +27,11 @@ export default function Home() {
             id: a.id,
             title: a.title,
             excerpt: a.excerpt || '',
+            contentHtml: a.contentHtml || '',
             tags: a.tags || [],
             publishedAt: a.publishedAt,
             url: buildShopifyArticleUrl(a.handle, a.blog?.handle),
-            image: a.image?.url || null,
+            image: a.image || null,
           })));
         } else {
           setArticles(fallbackArticles);

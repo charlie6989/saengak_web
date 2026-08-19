@@ -42,8 +42,8 @@
 - Supabase production secrets 通常不能用「把 owner token 一起複製」的方式安全移交；應邀請接手者加入 project，再由帳戶持有人在 Dashboard／受控密碼管理器交付或輪替必要值。
 - 前端只可使用 `VITE_PUBLIC_SUPABASE_PUBLISHABLE_KEY` 或必要的 legacy anon key；不得使用 `sb_secret_*`／`service_role`。
 - Edge Functions 可能需要：`ShopifyDomain`、`ShopifyStorefrontApiVersion`、`StorefrontAccessToken`、`ShopifyWebhookSecret`、`CheckoutAllowedOrigins`、`CheckoutReleaseEnabled`，以及 Supabase 平台提供的 backend defaults。
-- Amego worker 另需要 `AmegoInvoiceReleaseEnabled`、`AmegoMode`、`AmegoSellerTaxId`、`AmegoAllowedSellerTaxIds`、`AmegoAppKey`、`AmegoDispatchToken`。所有值只放 Supabase Secrets；正式開通前 release flag 維持 `false`。
-- ShipAny 採 Shopify App 原生整合，repo／Vercel／Supabase 不應出現 ShipAny API key；帳號、承運商與付費方案留在 ShipAny／Shopify 管理端。
+- Amego worker 另需要 `AmegoInvoiceReleaseEnabled`、`AmegoMode`、`AmegoSellerTaxId`、`AmegoAllowedSellerTaxIds`、`AmegoAppKey`、`AmegoDispatchToken`。所有值只放 Supabase Secrets 與 `.env.local`；正式開通前 release flag 維持 `false`。（註：測試統編 `12345678`、正式統編 `90014835`，App Key 不得明文寫入規格書）。
+- ShipAny 採 Shopify App 原生整合，repo／Vercel／Supabase 不應出現 ShipAny API key；超商與承運商設定需登入 [ShipAny Taiwan Portal](https://portal-tw.shipany.io/user/login) (管理帳號：`charlie.liu6989@gmail.com`) 進行操作。
 - `CheckoutReleaseEnabled` 是 server-side kill switch，預設必須為 `false`；只有 sandbox 三情境、binding、DB 與 owner-system readback 全部通過且核准上線後，才可設為精確字串 `true`。
 - 接手者取得權限後，先以 `supabase secrets list --project-ref tmqzkagkrzhioftvwbqo` 讀回名稱與 digest，再決定輪替；不要把 secret value 寫回 repo。
 

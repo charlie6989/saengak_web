@@ -56,19 +56,22 @@ SAENGAK Cart
 
 ### ShipAny（Shopify owner 操作）
 
-1. 精確確認商店為 `gh2xgs-zf.myshopify.com`，再安裝 ShipAny。
-2. 先停用 Waaship 可能建立的重複 Checkout 配送方式；不要讓兩套超商選店同時對客。
-3. 審閱 App 所需訂單、顧客與履約權限，以及 ShipAny 隱私政策。
-4. 綁定台灣帳號、寄件／退貨地址、7-ELEVEN／全家與宅配承運商。
-5. 若要在 Checkout 顯示即時計算運費，確認 Shopify 方案具第三方承運商計算運費資格。
-6. 如需服務點列表，帳戶持有人確認 NT$398／月、14 天試用及當期豁免條件後再接受訂閱。
-7. 實測完整出貨、部分出貨與後補 tracking，逐層回讀 ShipAny → Shopify → signed webhook → Supabase → 會員中心。
+1. 登入 [ShipAny Taiwan Portal](https://portal-tw.shipany.io/user/login) (管理帳號：`charlie.liu6989@gmail.com`)，確認密碼已透過加密管道交接。
+2. 精確確認商店為 `gh2xgs-zf.myshopify.com`，再安裝 ShipAny。
+3. 先停用 Waaship 可能建立的重複 Checkout 配送方式；不要讓兩套超商選店同時對客。
+4. 審閱 App 所需訂單、顧客與履約權限，以及 ShipAny 隱私政策。
+5. 綁定台灣帳號、寄件／退貨地址、7-ELEVEN／全家與宅配承運商。
+6. 若要在 Checkout 顯示即時計算運費，確認 Shopify 方案具第三方承運商計算運費資格。
+7. 如需服務點列表，帳戶持有人確認 NT$398／月、14 天試用及當期豁免條件後再接受訂閱。
+8. 實測完整出貨、部分出貨與後補 tracking，逐層回讀 ShipAny → Shopify → signed webhook → Supabase → 會員中心。
 
 ### Amego（公司／財會與工程共同操作）
 
 1. 公司代表在 Amego 完成公司新增、財政部授權、字軌與 API 申請；不要共用 owner 密碼。
 2. 先用官方 test seller 測試，再切正式公司統編與 App Key。測試與正式共用 host，必須靠 `AmegoMode`、seller allowlist 與 release kill switch 防止誤用。
-3. 把 `AmegoAppKey`、`AmegoSellerTaxId`、`AmegoDispatchToken` 只放 Supabase Edge Function Secrets；dispatch token 至少 32 bytes，並由秘密管理器隨機產生。
+   - **測試統編 (Sandbox)**：`12345678`
+   - **正式統編 (Production)**：`90014835` (SAENGAK)
+3. 將對應的 `AmegoAppKey`、`AmegoSellerTaxId`、`AmegoDispatchToken` 分別更新於 `.env.local` 與 Supabase Edge Function Secrets 中，嚴禁明文寫入規格書。
 4. 部署 `20260813045204_add_amego_invoice_outbox.sql`、`20260813070648_add_amego_allowance_lifecycle.sql` 與兩個更新 Edge Functions 後，新增並回讀 Shopify `REFUNDS_CREATE` subscription；配置受信任 scheduler 呼叫 worker與每日 `purge_expired_invoice_data()`；queue 只傳 order GID，不傳 PII。
 5. 財會書面決定：手動標記付款是否可開票、B2B 稅額規則、跨期作廢、退款折讓、混合稅率與海外零稅率。未決定前保持 `AmegoInvoiceReleaseEnabled=false`。
 6. success／failed／cancelled 各跑一筆 sandbox；success 必須取得 Amego status 99，failed/cancelled 必須證明沒有 provider OrderId／發票號碼。
