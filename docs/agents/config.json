@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "project": "saengak_web",
+  "configured_at": "2026-08-13",
+  "issue_tracker": {
+    "provider": "github",
+    "config_file": "docs/agents/issue-tracker.md"
+  },
+  "triage_labels": {
+    "config_file": "docs/agents/triage-labels.md"
+  },
+  "domain_docs": {
+    "index_file": "docs/agents/domain-docs.md",
+    "root_dir": "docs"
+  }
+}

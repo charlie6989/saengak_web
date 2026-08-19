@@ -1,0 +1,741 @@
+
+/* Korean Typography - Noto Sans TC */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap');
+
+/* Logo Font - Pacifico */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design Tokens (CSS Variables) - Updated Color Palette */
+:root {
+  /* Brand Colors - Updated to New Color Palette */
+  --color-brand: #225B4F;          /* Primary Brand Green */
+  --color-brand-ink: #245B4F;      /* Darker brand for hover states */
+  --color-accent: #BED2C0;         /* Secondary brand accent */
+  --color-text: #000000;           /* Dark Text / Primary Copy */
+  --color-text-weak: #555555;      /* Secondary Text / Sub Copy */
+  --color-text-light: #747775;     /* Light text */
+  --color-border: #CDCDCD;         /* Light border color */
+  --color-bg: #FFFFFF;             /* Background / White Base */
+  --color-bg-weak: #F7F7F5;        /* Soft Neutral / Off-White */
+  --color-bg-soft: #FFFEF2;        /* Alternative soft background */
+  --color-bg-accent: #EBF3EC;      /* Accent background */
+  --color-bg-light: #F1F4F9;       /* Light background */
+  --color-sale: #007AFF;           /* Contrast / Highlight Color */
+  --color-warm-neutral: #92786E;   /* Accent Warm / Earth Tone */
+  --color-warm-light: #D8D6CA;     /* Lighter warm neutral */
+  --color-gray-light: #BBBBBB;     /* Light gray */
+  --color-gray-medium: #999999;    /* Medium gray */
+  --color-gray-dark: #333333;      /* Dark gray */
+  --color-black-light: #111111;    /* Light black */
+  --color-black-medium: #1F1F1F;   /* Medium black */
+  --color-black-dark: #222222;     /* Dark black */
+  --color-accent-dark: #444746;    /* Dark accent */
+
+  /* Add to Cart Button Colors */
+  --color-cart-btn: #BED2C0;       /* Soft pastel green for cart buttons */
+  --color-cart-btn-hover: #EBF3EC; /* Lighter mint green for hover */
+
+  /* Layout */
+  --container-max: 1200px;         
+  --col-left: 120px;               
+  --col-center: 740px;             
+  --col-right: 360px;              
+  --gap-col: 24px;                 
+  --gap-block: 56px;               
+  --radius: 0px;                   /* Flat design - no border radius */
+  --shadow-sm: none;               /* Flat design - no shadows */
+
+  /* Typography */
+  --font-sans: ui-sans-serif, -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --fz-h1: 24px;     --lh-h1: 1.3; --fw-h1: 700;
+  --fz-h2: 20px;     --lh-h2: 1.35; --fw-h2: 600;
+  --fz-body: 16px;   --lh-body: 1.7; --fw-body: 400;
+  --fz-small: 14px;  --lh-small: 1.6; --fw-small: 400;
+
+  /* Buttons - Flat Design */
+  --btn-height: 52px;
+  --btn-radius: 0px;               /* No border radius */
+  --btn-pad-x: 16px;
+
+  /* Images (Portrait, not square) */
+  --img-portrait-ratio: 4/5;       
+  --thumb-width: 100px;            
+  --thumb-gap: 12px;
+
+  /* Breakpoints */
+  --bp-lg: 1200px;
+  --bp-md: 992px;
+  --bp-sm: 768px;
+
+  /* Marquee Banner Height */
+  --marquee-height: 28px;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-body);
+  line-height: var(--lh-body);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* Transparent wrapper for header */
+.view-wrap {
+  background: transparent !important;
+}
+
+/* 全域跑馬燈樣式 */
+.global-marquee {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--marquee-height);
+  background-color: var(--color-black-medium);
+  color: var(--color-bg);
+  text-align: center;
+  font-size: 0.875rem;
+  overflow: hidden;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.global-marquee .animate-marquee {
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* 為所有頁面內容添加頂部間距 */
+.page-content {
+  margin-top: var(--marquee-height);
+}
+
+/* Typography Hierarchy - Updated with new color palette */
+h1 {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-h1);
+  font-size: var(--fz-h1);
+  line-height: var(--lh-h1);
+  color: var(--color-text);
+}
+
+h2 {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-h2);
+  font-size: var(--fz-h2);
+  line-height: var(--lh-h2);
+  color: var(--color-text);
+}
+
+h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+h4 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+p {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-body);
+  line-height: var(--lh-body);
+  font-size: var(--fz-body);
+  color: var(--color-text);
+}
+
+/* Logo Special Font */
+.logo-font {
+  font-family: "Pacifico", serif;
+  color: var(--color-text);
+}
+
+/* Add to Cart Button Styles - Updated with new colors */
+.add-to-cart-btn {
+  width: 100%;
+  height: 47px;
+  border: none;
+  border-radius: 0;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  background-color: var(--color-cart-btn-hover);
+  color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+}
+
+.add-to-cart-btn:hover {
+  background-color: var(--color-cart-btn);
+  color: var(--color-bg);
+}
+
+/* PDP Base Styles - Flat Design */
+.pdp {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: var(--col-left) var(--col-center) var(--col-right);
+  grid-column-gap: var(--gap-col);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+}
+
+@media (max-width: 992px) {
+  .pdp {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Thumbnail column - Flat Design */
+.pdp-thumbs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--thumb-gap);
+  position: sticky;
+  top: 24px;
+  align-self: start;
+}
+
+.pdp-thumbs img {
+  width: var(--thumb-width);
+  aspect-ratio: var(--img-portrait-ratio);
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  background: var(--color-bg-weak);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.pdp-thumbs img:hover,
+.pdp-thumbs img.active {
+  border-color: var(--color-brand);
+}
+
+@media (max-width: 992px) {
+  .pdp-thumbs {
+    flex-direction: row;
+    overflow-x: auto;
+    position: static;
+    padding-bottom: 8px;
+  }
+
+  .pdp-thumbs img {
+    width: 80px;
+    flex-shrink: 0;
+  }
+}
+
+/* Main hero image - Flat Design */
+.pdp-hero {
+  position: relative;
+}
+
+.pdp-hero img {
+  width: 100%;
+  aspect-ratio: var(--img-portrait-ratio);
+  object-fit: cover;
+  border-radius: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+/* Buy box (right column) - Flat Design */
+.pdp-buybox {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  padding: 20px;
+  background: var(--color-bg);
+  box-shadow: none;
+}
+
+@media (max-width: 992px) {
+  .pdp-buybox {
+    position: static;
+  }
+}
+
+/* PDP Title */
+.pdp-title {
+  font-size: var(--fz-h1);
+  font-weight: var(--fw-h1);
+  line-height: var(--lh-h1);
+  margin-bottom: 12px;
+  color: var(--color-text);
+}
+
+/* PDP Price - Updated with new color palette */
+.pdp-price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.pdp-price .sale {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.pdp-price .list {
+  font-size: 16px;
+  color: var(--color-text-weak);
+  text-decoration: line-through;
+}
+
+.pdp-price .discount {
+  background: var(--color-sale);
+  color: var(--color-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* PDP Buttons - Updated with new brand colors */
+.pdp-btn {
+  width: 100%;
+  height: var(--btn-height);
+  border-radius: var(--btn-radius);
+  padding: 0 var(--btn-pad-x);
+  font-weight: 600;
+  font-size: var(--fz-body);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.pdp-btn.primary {
+  background: var(--color-brand);
+  color: var(--color-bg);
+}
+
+.pdp-btn.primary:hover {
+  background: var(--color-brand-ink);
+}
+
+.pdp-btn.secondary {
+  background: var(--color-bg);
+  color: var(--color-brand);
+  border: 1px solid var(--color-brand);
+}
+
+.pdp-btn.secondary:hover {
+  background: var(--color-bg-weak);
+}
+
+/* Quantity Selector - Flat Design */
+.pdp-quantity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pdp-quantity-label {
+  font-size: var(--fz-small);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.pdp-quantity-control {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.pdp-quantity-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--color-bg-weak);
+  color: var(--color-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.pdp-quantity-btn:hover {
+  background: var(--color-border);
+}
+
+.pdp-quantity-input {
+  width: 60px;
+  height: 36px;
+  border: none;
+  text-align: center;
+  font-size: var(--fz-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Product Info */
+.pdp-info {
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.pdp-info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: var(--fz-small);
+}
+
+.pdp-info-label {
+  color: var(--color-text-weak);
+}
+
+.pdp-info-value {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* Button Styles - Updated with new color palette */
+button {
+  font-family: var(--font-sans);
+  transition: all 0.2s ease;
+}
+
+/* Input Styles */
+input, textarea {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+}
+
+/* Link Styles */
+a {
+  font-family: var(--font-sans);
+}
+
+/* Text Truncation */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-weak);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-warm-neutral);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-warm-neutral) var(--color-bg-weak);
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}
+
+/* 🆕 鎖定捲動 */
+.no-scroll {
+  overflow: hidden;
+}
+
+/* Product Card Styles - Updated with new color palette */
+.product-card-shadow {
+  box-shadow: 0 1px 3px rgba(34, 91, 79, 0.1);
+  transition: box-shadow 0.3s ease;
+  background: var(--color-bg);
+}
+
+.product-card-shadow:hover {
+  box-shadow: 0 4px 12px rgba(34, 91, 79, 0.15);
+}
+
+/* Price Text Styles */
+.price-text {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--color-text);
+}
+
+/* Korean Style Buttons - Updated with brand colors */
+.korean-btn {
+  border: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  background: var(--color-brand);
+  color: var(--color-bg);
+}
+
+.korean-btn:hover {
+  transform: translateY(-1px);
+  background: var(--color-brand-ink);
+}
+
+/* Korean Style Cards - Updated styling */
+.korean-card {
+  transition: all 0.3s ease;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.korean-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 91, 79, 0.1);
+}
+
+/* Responsive Typography */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  .text-responsive-sm {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 641px) {
+  .text-responsive-sm {
+    font-size: 1rem;
+  }
+}
+
+/* Ensure consistent aspect ratios for product images */
+.aspect-2-3 {
+  aspect-ratio: 2/3;
+}
+
+/* Hover effects for interactive elements */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+/* Focus states for accessibility - Updated with brand color */
+button:focus,
+a:focus {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* New utility classes for the updated color palette */
+.bg-brand {
+  background-color: var(--color-brand);
+}
+
+.bg-brand-ink {
+  background-color: var(--color-brand-ink);
+}
+
+.bg-warm-neutral {
+  background-color: var(--color-warm-neutral);
+}
+
+.bg-warm-light {
+  background-color: var(--color-warm-light);
+}
+
+.bg-soft {
+  background-color: var(--color-bg-soft);
+}
+
+.bg-accent {
+  background-color: var(--color-bg-accent);
+}
+
+.bg-light {
+  background-color: var(--color-bg-light);
+}
+
+.text-brand {
+  color: var(--color-brand);
+}
+
+.text-warm-neutral {
+  color: var(--color-warm-neutral);
+}
+
+.text-sale {
+  color: var(--color-sale);
+}
+
+.text-weak {
+  color: var(--color-text-weak);
+}
+
+.text-light {
+  color: var(--color-text-light);
+}
+
+.border-brand {
+  border-color: var(--color-brand);
+}
+
+.border-warm-neutral {
+  border-color: var(--color-warm-neutral);
+}
+
+/* Section styling with new color palette */
+.section-accent {
+  background: linear-gradient(135deg, var(--color-bg-soft) 0%, var(--color-bg-weak) 100%);
+}
+
+.section-warm {
+  background: linear-gradient(135deg, var(--color-bg-accent) 0%, var(--color-bg-light) 100%);
+}
+
+/* View All Button Styles - Updated with new colors */
+.view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 1px solid var(--color-text);
+  border-radius: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.view-all-btn:hover {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+/* Flat Design Utility Classes */
+.flat-card {
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--color-bg);
+}
+
+.flat-btn {
+  border-radius: 0;
+  box-shadow: none;
+  border: 1px solid var(--color-border);
+}
+
+.flat-input {
+  border-radius: 0;
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+.flat-modal {
+  border-radius: 0;
+  box-shadow: none;
+  border: 1px solid var(--color-border);
+}
+
+/* Remove all rounded corners globally */
+* {
+  border-radius: 0 !important;
+}
+
+/* Override Tailwind rounded classes */
+.rounded,
+.rounded-sm,
+.rounded-md,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl,
+.rounded-full {
+  border-radius: 0 !important;
+}
+
+/* Remove shadows globally for flat design */
+.shadow,
+.shadow-sm,
+.shadow-md,
+.shadow-lg,
+.shadow-xl,
+.shadow-2xl {
+  box-shadow: none !important;
+}
