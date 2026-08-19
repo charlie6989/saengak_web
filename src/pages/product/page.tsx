@@ -7,6 +7,7 @@ import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
 import { getMockProductById } from '../../mocks/products';
 import { getShopifyProduct, getShopifyProducts } from '../../lib/shopify';
+import { captureExceptionSafe } from '../../lib/sentry';
 import { formatTwd } from '../../domain/algorithms';
 
 interface Product {
@@ -93,6 +94,7 @@ export default function ProductPage() {
       }
     } catch (err) {
       console.error('Error fetching product data:', err);
+      captureExceptionSafe(err, { source: 'ProductPage', fallback: 'mockProducts' });
       const fallbackMock = getMockProductById(id || '');
       if (fallbackMock) {
         setProduct(fallbackMock);

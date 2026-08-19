@@ -18,6 +18,7 @@
 | 電子發票 | 光貿電子發票 [第 2 階段推進] | Waaship 發票 | LOGISTICS_INVOICE |
 | Storefront API 客戶端 | **全面純前端直連 Storefront GraphQL API** (官方 `@shopify/storefront-api-client` SDK，零中介、純前端安全公開憑證模式) | 經由 Supabase Edge Functions 中轉或自建原生 fetch 與私密憑證回退模式 | MAIN_SPECIFICATION / 00_DECISION_LOG |
 | CSP 允許清單治理 (2026-08-19 新增) | **`vercel.json` 為 CSP 唯一事實來源；新增/變更任一外部網域時，必須同步更新 `scripts/production-surface-lib.mjs` 之 `REQUIRED_CSP_DIRECTIVES`，使 `npm test`（讀取 `vercel.json`）與 `npm run verify:production`（線上實測）雙重強制驗證** | 僅憑規格書文字宣稱「已放行」／「已完成」，而未有自動化測試對照實際 `vercel.json` 內容 | 00_DECISION_LOG §3.1 / MAIN_SPECIFICATION §1.2.6 / `scripts/production-surface-lib.mjs` |
+| 靜默降級可觀測性治理 (2026-08-19 新增) | **任何「抓取失敗 → 退回 mock/展示假資料」的 `catch` 區塊，必須同時呼叫 `src/lib/sentry.ts` 之 `captureExceptionSafe(err, { source, fallback })`，並在 Code Review 中列為必查項** | 僅寫 `console.warn`／`console.error`（或完全無日誌的 `catch {}`）即視為已處理錯誤，導致降級狀態無法被監控系統偵測 | 00_DECISION_LOG §3.1 / `src/lib/sentry.ts` |
 
 ## 2. 權威資料源 (Source of Truth) 對照
 
@@ -61,7 +62,9 @@
 
 **新增治理決策（見 §1 表）**：`vercel.json` 為 CSP 唯一事實來源；任何新增或變更的外部網域，**必須同步更新 `REQUIRED_CSP_DIRECTIVES` 並通過 `npm test`**，否則不得於規格書中標記「已完成」。規格書的「✅ 已完成」標記僅作狀態說明，實際合規性一律以自動化測試結果為準。
 
-**已知殘留風險（列入後續待辦，非本次阻擋項）**：`ProductSection.tsx`、`getShopifyArticles()` 等靜默 fallback 路徑目前仍只 `console.warn`、不回報 Sentry，代表**未來若再發生類似的外部依賴故障，正式站仍會無聲退回假資料而不會觸發任何告警**。已列為待辦（改為同時呼叫 `src/lib/sentry.ts` 之 `captureExceptionSafe()`），尚未執行。
+**殘留風險修復（2026-08-19 補完）**：原「已知殘留風險」段落所列之靜默 fallback 路徑已全數補上 `captureExceptionSafe()` 回報，涵蓋：`ProductSection.tsx`、`SolutionSection.tsx`、`ReviewSection.tsx`（後兩者原為完全無日誌的 `catch {}`，連 `console.warn` 都沒有）、`search/page.tsx`、`product/page.tsx`、以及 `shopify.ts` 之 `getShopifyArticles()` / `getShopifyArticleByHandle()`。每處呼叫皆附上 `{ source, fallback: 'mockProducts' }` 形式的 context，供 Sentry 端依來源與降級類型篩選、告警。`npm test`（147/147）通過。**部署後仍須依 LAUNCH_CHECKLIST §5 實測一筆降級事件確實送達 Sentry**，程式碼複查無法確認實際送達。
+
+**本次事故延伸出的通用除錯觀念（列入 §1 治理決策，往後所有新增降級路徑一律適用）**：任何「失敗後靜默退回展示/快取/假資料」的容錯設計，若只寫 `console.warn`／`console.error` 而不回報監控系統，其風險等同於沒有錯誤處理——因為使用者體驗完全正常、頁面不會顯示任何錯誤，故障只會停留在瀏覽器本機 console，永遠不會被任何人看見，可能無限期地留在正式環境而無人察覺（本次事故即為實例）。**優雅降級（Graceful Degradation）與可觀測性（Observability）必須同時具備**：`catch` 區塊在退回 fallback 資料前，除既有的 `console.warn`／`console.error` 之外，必須同時呼叫 `src/lib/sentry.ts` 之 `captureExceptionSafe(err, { source, fallback })`，兩者缺一不可。Code Review 時應將此列為檢查項：任何新增的 `catch` 區塊若接著設定 fallback/mock 資料卻未回報 Sentry，應視為缺陷退回。
 
 ## 4. 開放項目與階段開發狀態 (OPEN & STAGED DEVELOPMENTS)
 

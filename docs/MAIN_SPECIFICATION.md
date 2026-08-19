@@ -23,7 +23,7 @@
 - **金流服務 (第 2 階段)**：TapPay (Direct Pay SDK)
 - **物流服務**：ShipAny (Shopify App 整合，自建 API 備用)
 - **電子發票 (第 2 階段)**：光貿電子發票
-- **異常監控**：Sentry — **前端已接線**：`@sentry/react` 已安裝並於 `src/main.tsx` 初始化，掛載 `src/lib/sentry.ts` 之 `sanitizeEvent`/`sanitizeBreadcrumb` 脫敏 Hook，`vite.config.ts` 已配置 `@sentry/vite-plugin` 上傳 sourcemap 後刪除。**後端 `@sentry/node` 尚未安裝**，隨 Phase 2 API 層 (`api/*`) 一併落地。
+- **異常監控**：Sentry — **前端已接線**：`@sentry/react` 已安裝並於 `src/main.tsx` 初始化，掛載 `src/lib/sentry.ts` 之 `sanitizeEvent`/`sanitizeBreadcrumb` 脫敏 Hook，`vite.config.ts` 已配置 `@sentry/vite-plugin` 上傳 sourcemap 後刪除。**後端 `@sentry/node` 尚未安裝**，隨 Phase 2 API 層 (`api/*`) 一併落地。**治理規則（2026-08-19 新增，見 `00_DECISION_LOG.md` §1／§3.1）**：任何「抓取失敗 → 退回 mock/展示假資料」的 `catch` 區塊，一律須同時呼叫 `captureExceptionSafe(err, { source, fallback })`，僅寫 `console.warn`／`console.error` 不視為合規（曾因此發生正式站長期靜默顯示假商品卻無告警的事故）。
 
 ### 1.2 技術層架構與技術棧規格 (Technical Layer & Stack Architecture)
 

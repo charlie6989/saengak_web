@@ -9,6 +9,7 @@ import { useShopifyProductsByTag, COMMON_TAGS } from '../../hooks/useShopifyTags
 import { mockProducts, type Product } from '../../mocks/products';
 import { calculateSearchScore, deriveCatalogSignals, paginateItems } from '../../domain/algorithms';
 import { getShopifyProducts } from '../../lib/shopify';
+import { captureExceptionSafe } from '../../lib/sentry';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -136,6 +137,7 @@ export default function Search() {
         }
       } catch (error) {
         console.error('Error loading products:', error);
+        captureExceptionSafe(error, { source: 'SearchPage', fallback: 'mockProducts' });
         setProducts(getFallbackProducts());
       } finally {
         setLoading(false);

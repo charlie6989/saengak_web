@@ -44,7 +44,7 @@
 - [x] `vite.config.ts` 配置 `build.sourcemap: 'hidden'` 與 `@sentry/vite-plugin`。
 - [x] `beforeSend` / `beforeBreadcrumb` 掛上 `src/lib/sentry.ts` 之 `sanitizeEvent` / `sanitizeBreadcrumb`。
 - [ ] 部署後實測一筆錯誤事件成功上報且已脫敏。（需實際部署後驗證，程式碼複查無法確認）。
-- [ ] 商品／文章抓取失敗退回展示假資料時，目前僅 `console.warn`、不回報 Sentry，屬已知殘留風險（見 `00_DECISION_LOG.md` §3.1 末段）；待補上 `captureExceptionSafe()` 呼叫後方能於此類靜默降級發生時觸發告警。
+- [x] 商品／文章抓取失敗退回展示假資料之靜默降級路徑已補上 `captureExceptionSafe()` 回報（2026-08-19 修復，詳見 `00_DECISION_LOG.md` §3.1）：`ProductSection.tsx`、`SolutionSection.tsx`、`ReviewSection.tsx`、`search/page.tsx`、`product/page.tsx`、`shopify.ts` 之 `getShopifyArticles()` / `getShopifyArticleByHandle()`。`npm test`（147/147）通過。**部署後仍須實測一筆降級事件確實送達 Sentry**，見上一項。
 
 ## 6. 憑證與帳號安全
 

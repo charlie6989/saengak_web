@@ -4,6 +4,7 @@ import { useCart } from '../../../contexts/CartContext';
 import { getShopifyProducts } from '../../../lib/shopify';
 import { mockProducts } from '../../../mocks/products';
 import { rankEditorialProducts } from '../../../domain/algorithms';
+import { captureExceptionSafe } from '../../../lib/sentry';
 
 interface Product {
   id: string;
@@ -54,7 +55,8 @@ export default function SolutionSection() {
       }
 
       setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
-    } catch {
+    } catch (err) {
+      captureExceptionSafe(err, { source: 'SolutionSection', fallback: 'mockProducts' });
       setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
     } finally {
       setLoading(false);

@@ -1,4 +1,5 @@
 import { createStorefrontApiClient, type StorefrontApiClient } from '@shopify/storefront-api-client';
+import { captureExceptionSafe } from './sentry';
 
 /**
  * Shopify Storefront GraphQL API Client
@@ -509,6 +510,7 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
     }
   } catch (err) {
     console.warn('Storefront articles query failed, using curated fallback:', err);
+    captureExceptionSafe(err, { source: 'getShopifyArticles', fallback: 'curatedArticles' });
   }
 
   // 門市尚未發布文章時之精選文章展示備案
@@ -616,6 +618,7 @@ export async function getShopifyArticleByHandle(handle: string): Promise<Shopify
     if (found) return found;
   } catch (err) {
     console.warn('Storefront getShopifyArticleByHandle query failed:', err);
+    captureExceptionSafe(err, { source: 'getShopifyArticleByHandle', fallback: 'curatedArticles' });
   }
 
   // 若 Shopify 查不到，在 fallback 中查詢

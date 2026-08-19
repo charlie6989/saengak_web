@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { getShopifyProducts } from '../../../lib/shopify';
 import { mockProducts } from '../../../mocks/products';
 import { rankEditorialProducts } from '../../../domain/algorithms';
+import { captureExceptionSafe } from '../../../lib/sentry';
 
 const ReviewSection: React.FC = () => {
   const navigate = useNavigate();
@@ -51,7 +52,8 @@ const ReviewSection: React.FC = () => {
         }
 
         setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
-      } catch {
+      } catch (err) {
+        captureExceptionSafe(err, { source: 'ReviewSection', fallback: 'mockProducts' });
         setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
       } finally {
         setLoading(false);

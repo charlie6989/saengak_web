@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import ProductCard from '../../../components/feature/ProductCard';
 import { getShopifyProducts, getShopifyProductsByIds, type ShopifyProduct } from '../../../lib/shopify';
 import { mockProducts } from '../../../mocks/products';
+import { captureExceptionSafe } from '../../../lib/sentry';
 
 interface Product {
   id: string;
@@ -64,6 +65,7 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
       }
     } catch (err) {
       console.warn('Shopify Storefront direct fetch failed, fallback to mock:', err);
+      captureExceptionSafe(err, { source: 'ProductSection', fallback: 'mockProducts' });
       setAllProducts(mockProducts.slice(0, 4));
     } finally {
       setLoading(false);
