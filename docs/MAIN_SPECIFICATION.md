@@ -1,6 +1,6 @@
 # SAENGAK 正式主要規格書 (Main Specification)
 
-> 版本日期：2026-08-17 (架構簡化與階段聚焦修訂)
+> 版本日期：2026-08-19 (CSP 允許清單回歸事故修訂，見 §1.2.6 與 00_DECISION_LOG §3.1)
 > 專案網域：`https://saengak.com.tw`
 > 專案狀態：**第 1 階段商品展示完成並朝向 Vercel 部署上線推進；第 2 階段結帳金物流規格保留待續**
 > 權威索引：本文件與各子規格衝突時，以 `00_DECISION_LOG.md` 為最高權威。
@@ -64,13 +64,16 @@
 
 #### 6. CSP 網域放行對照表 (CSP Allowlist by Integration)
 
-CSP 為預設拒絕；每接入一個外部服務，必須依下表更新 `vercel.json` 並重新驗收。**禁止以放寬萬用字元的方式便宜行事。**
+CSP 為預設拒絕；每接入一個外部服務，必須依下表更新 `vercel.json`，**並同步更新 `scripts/production-surface-lib.mjs` 之 `REQUIRED_CSP_DIRECTIVES`** 使 `npm test` 與 `npm run verify:production` 能強制驗證，才可標記為「已放行」。**禁止以放寬萬用字元的方式便宜行事，亦禁止僅修改本表文字而不同步更新自動化驗證。**
+
+> ⚠️ **治理決策 (2026-08-19，詳見 [`00_DECISION_LOG.md` §3.1](00_DECISION_LOG.md#31-csp-允許清單回歸事故與強制驗證決策-2026-08-19))**：`vercel.json` 一度遺漏 Shopify 與 Sentry 網域，導致正式站前端請求被瀏覽器 CSP 封鎖後靜默退回展示假資料，且規格書當時仍標記「已放行」。事故起因是自動化測試未涵蓋這些網域，才使規格宣稱與實際部署脫鉤。本表所有「已放行」標記現已對應 `REQUIRED_CSP_DIRECTIVES` 之強制斷言，非僅文字宣告。
 
 | 整合服務 | 階段 | 需放行的 CSP 指令 |
 | --- | --- | --- |
 | Supabase (`tmqzkagkrzhioftvwbqo`) | Phase 1 | `connect-src https://tmqzkagkrzhioftvwbqo.supabase.co wss://tmqzkagkrzhioftvwbqo.supabase.co`（建議由 `*.supabase.co` 收斂為專案專屬網域，防止誤連他人專案） |
-| Shopify Storefront API | Phase 1 | `connect-src https://gh2xgs-zf.myshopify.com`（**已放行**） |
-| Sentry 事件上報 | Phase 1（已接線） | `connect-src https://*.ingest.sentry.io https://*.ingest.us.sentry.io`（**已放行**） |
+| Shopify Storefront API | Phase 1 | `connect-src https://gh2xgs-zf.myshopify.com`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**） |
+| Sentry 事件上報 | Phase 1（已接線） | `connect-src https://*.ingest.sentry.io https://*.ingest.us.sentry.io`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**） |
+| Remix Icon 圖示庫 (`index.html` CDN) | Phase 1 | `style-src`／`font-src https://cdn.jsdelivr.net`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**；`cdnjs.cloudflare.com` 為早期殘留放行、目前程式碼未實際引用，保留不影響安全性） |
 | TapPay Direct Pay SDK | Phase 2 | `script-src https://js.tappaysdk.com`、`frame-src https://js.tappaysdk.com`、`connect-src`（依 TapPay 官方文件之 sandbox/prod 網域）；3DS 為整頁跳轉不需 `frame-src` 放行銀行網域 |
 | ShipAny 門市地圖（若前端嵌入） | Phase 2 | 依屆時官方文件另訂，並回填本表 |
 

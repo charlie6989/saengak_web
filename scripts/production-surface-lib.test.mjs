@@ -9,7 +9,7 @@ import {
 } from './production-surface-lib.mjs';
 
 const secureHeaders = {
-  'content-security-policy': "default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; object-src 'none'; script-src 'self'; upgrade-insecure-requests",
+  'content-security-policy': "default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://gh2xgs-zf.myshopify.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; upgrade-insecure-requests",
   'content-type': 'text/html; charset=utf-8',
   'cross-origin-opener-policy': 'same-origin-allow-popups',
   'permissions-policy': 'camera=(), geolocation=(), microphone=(), payment=(self)',

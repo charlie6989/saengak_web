@@ -18,6 +18,10 @@ export const REQUIRED_CSP_DIRECTIVES = [
   "script-src 'self'",
   'https://*.supabase.co',
   'wss://*.supabase.co',
+  'https://gh2xgs-zf.myshopify.com',
+  'https://*.ingest.sentry.io',
+  'https://*.ingest.us.sentry.io',
+  'https://cdn.jsdelivr.net',
   'upgrade-insecure-requests',
 ];
 

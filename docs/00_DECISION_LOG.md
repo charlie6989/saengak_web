@@ -1,6 +1,6 @@
 # SAENGAK 決策狀態總表 (Authoritative Decision Log)
 
-> 更新日期：2026-08-17 (架構簡化與階段聚焦修訂)
+> 更新日期：2026-08-19 (CSP 允許清單治理事故與強制驗證修訂)
 > 本表為所有規格書的最高權威。任一子文件與本表衝突時，以本表為準。
 
 ## 1. 已定案架構決策 (2026-08-17)
@@ -17,6 +17,7 @@
 | 品牌文案常數 | 品牌資料集中於 `src/content/site.ts` | 散落於各頁面硬編碼 | MAIN_SPECIFICATION / site.ts |
 | 電子發票 | 光貿電子發票 [第 2 階段推進] | Waaship 發票 | LOGISTICS_INVOICE |
 | Storefront API 客戶端 | **全面純前端直連 Storefront GraphQL API** (官方 `@shopify/storefront-api-client` SDK，零中介、純前端安全公開憑證模式) | 經由 Supabase Edge Functions 中轉或自建原生 fetch 與私密憑證回退模式 | MAIN_SPECIFICATION / 00_DECISION_LOG |
+| CSP 允許清單治理 (2026-08-19 新增) | **`vercel.json` 為 CSP 唯一事實來源；新增/變更任一外部網域時，必須同步更新 `scripts/production-surface-lib.mjs` 之 `REQUIRED_CSP_DIRECTIVES`，使 `npm test`（讀取 `vercel.json`）與 `npm run verify:production`（線上實測）雙重強制驗證** | 僅憑規格書文字宣稱「已放行」／「已完成」，而未有自動化測試對照實際 `vercel.json` 內容 | 00_DECISION_LOG §3.1 / MAIN_SPECIFICATION §1.2.6 / `scripts/production-surface-lib.mjs` |
 
 ## 2. 權威資料源 (Source of Truth) 對照
 
@@ -42,6 +43,25 @@
 
 新增權威文件：**[上線切換清單 LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md)**，收斂測試閘門移除、SEO 解封、CSP/HSTS 定版、硬編碼清理與監控接線。
 **最新決策 (2026-08-17)**：第 1 階段目前採 **預覽部署 (Preview Deployment)**，維持測試存取閘門 (`middleware.js`) 與 SEO 封鎖 (`noindex`)，待內部團隊與特定客戶驗收後，再執行最終的「公開上線切換」以移除閘門。（目前僅剩「測試閘門移除」與「SEO 解封」兩大類尚未完成，見該文件）。
+
+### 3.1 CSP 允許清單回歸事故與強制驗證決策 (2026-08-19)
+
+**事故現象**：使用者反映 `localhost:3000`（本機開發）顯示真實 Shopify 商品，但正式站 `https://saengak.com.tw` 卻持續顯示展示用假資料（`src/mocks/products.ts`），且期間 Sentry 未收到任何相關錯誤事件。使用者已排除「Vercel／GitHub 專案設定錯誤」的可能性（曾重新刪除並建立兩邊專案，問題依舊存在）。
+
+**根本原因**：
+1. 正式站部署所用之 `vercel.json` 其 `Content-Security-Policy` 的 `connect-src` **未放行 `https://gh2xgs-zf.myshopify.com`**，導致瀏覽器封鎖所有 Shopify Storefront GraphQL 請求（`get-products` 前端直連查詢）。
+2. `src/pages/home/components/ProductSection.tsx` 與 `src/lib/shopify.ts` 的抓取失敗處理採**靜默降級**（`console.warn` 後退回 `mockProducts` / 精選文章 fallback），因此正式站外觀正常、無錯誤畫面，只是內容全數為假資料，故障被完全掩蓋。
+3. 同一份 CSP 之 `style-src` / `font-src` 僅放行 `cdnjs.cloudflare.com`，但 `index.html` 實際引用的 Remix Icon 圖示 CDN 為 `https://cdn.jsdelivr.net`（`cdnjs.cloudflare.com` 對該版本回傳 404），導致正式站圖示同樣長期未渲染。
+4. `docs/MAIN_SPECIFICATION.md` §1.2.6 與 `docs/LAUNCH_CHECKLIST.md` §3 皆已將「CSP 放行 Shopify／Sentry／HSTS」標記為「✅ 已完成」，但 `scripts/production-surface-lib.mjs` 的 `REQUIRED_CSP_DIRECTIVES` 當時**未包含這些網域**，導致 `npm test`（CI 於每次 push main 皆執行）與 `npm run verify:production`（線上實測腳本）均無法偵測此落差 —— **規格宣稱與自動化驗證之間出現斷鏈**，才使問題得以在未察覺的情況下留在正式站。
+
+**修復內容**：
+- `vercel.json`：`connect-src` 補回 `https://gh2xgs-zf.myshopify.com`、`https://*.ingest.sentry.io`、`https://*.ingest.us.sentry.io`；`style-src` / `font-src` 補 `https://cdn.jsdelivr.net`；同時補回文件宣稱已完成但實際遺失的 HSTS 標頭。
+- `scripts/production-surface-lib.mjs`：`REQUIRED_CSP_DIRECTIVES` 新增上述網域，使其成為 `npm test` 與 `npm run verify:production` 的**強制斷言項目**，而非僅止於文件敘述。
+- `.vercel/repo.json`：更正殘留之已刪除舊專案 ID，改為現行 `saengak-web-d2ux`（`prj_ZgDfZyy7zQB0ngJzCzsIhD88mw5E`）。
+
+**新增治理決策（見 §1 表）**：`vercel.json` 為 CSP 唯一事實來源；任何新增或變更的外部網域，**必須同步更新 `REQUIRED_CSP_DIRECTIVES` 並通過 `npm test`**，否則不得於規格書中標記「已完成」。規格書的「✅ 已完成」標記僅作狀態說明，實際合規性一律以自動化測試結果為準。
+
+**已知殘留風險（列入後續待辦，非本次阻擋項）**：`ProductSection.tsx`、`getShopifyArticles()` 等靜默 fallback 路徑目前仍只 `console.warn`、不回報 Sentry，代表**未來若再發生類似的外部依賴故障，正式站仍會無聲退回假資料而不會觸發任何告警**。已列為待辦（改為同時呼叫 `src/lib/sentry.ts` 之 `captureExceptionSafe()`），尚未執行。
 
 ## 4. 開放項目與階段開發狀態 (OPEN & STAGED DEVELOPMENTS)
 
