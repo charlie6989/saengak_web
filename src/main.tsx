@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import TestAccessGate from './TestAccessGate.tsx'
+import App from './App.tsx'
+import './index.css'
 import { sanitizeBreadcrumb, sanitizeEvent } from './lib/sentry'
 
 const sentryDsn = import.meta.env.VITE_PUBLIC_SENTRY_DSN
@@ -23,6 +24,6 @@ if (sentryDsn) {
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <TestAccessGate />
+        <App />
     </StrictMode>,
 )
