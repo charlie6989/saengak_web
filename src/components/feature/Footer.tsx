@@ -58,8 +58,15 @@ export default function Footer() {
                   一對一諮詢
                 </Link>
               </li>
-              <li className="text-base text-gray-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                {siteContent.supportStatus}
+              <li>
+                <a 
+                  href={`mailto:${siteContent.companyEmail}`}
+                  className="text-base text-gray-600 hover:text-teal-700 transition-colors flex items-center gap-1.5"
+                  style={{ fontFamily: "Noto Sans TC, sans-serif" }}
+                >
+                  <i className="ri-mail-line text-lg"></i>
+                  {siteContent.companyEmail}
+                </a>
               </li>
               <li className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {siteContent.supportSafetyNotice}
@@ -106,6 +113,9 @@ export default function Footer() {
               </p>
               <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 統一編號：{siteContent.taxId}
+              </p>
+              <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                電子郵件：<a href={`mailto:${siteContent.companyEmail}`} className="hover:text-gray-700 transition-colors">{siteContent.companyEmail}</a>
               </p>
               <p className="text-sm text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 登記地址：{siteContent.registeredAddress}

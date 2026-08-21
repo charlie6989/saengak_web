@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import React from 'react';
-import { PaymentForm, type PaymentFormHandle } from '../src/pages/checkout/PaymentForm';
-import { IdentityFlow } from '../src/pages/checkout/IdentityFlow';
+import { PaymentForm, type PaymentFormHandle } from '../src/pages/_deprecated_checkout/PaymentForm';
+import { IdentityFlow } from '../src/pages/_deprecated_checkout/IdentityFlow';
 import {
   CheckoutErrorFallback,
   CheckoutErrorBoundary,
-} from '../src/pages/checkout/CheckoutErrorFallback';
+} from '../src/pages/_deprecated_checkout/CheckoutErrorFallback';
 import { DENIED_KEYS, PII_KEYS, captureExceptionSafe } from '../src/lib/sentry';
 
 describe('1. PaymentForm (TapPay Hosted Fields & PCI-DSS SAQ A-EP)', () => {

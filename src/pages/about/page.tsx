@@ -41,6 +41,7 @@ export default function AboutPage() {
             <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-[9rem_1fr]">
               <dt className="text-gray-500">營運公司</dt><dd>{siteContent.legalName}</dd>
               <dt className="text-gray-500">統一編號</dt><dd>{siteContent.taxId}</dd>
+              <dt className="text-gray-500">公司信箱</dt><dd><a href={`mailto:${siteContent.companyEmail}`} className="text-teal-700 hover:underline">{siteContent.companyEmail}</a></dd>
               <dt className="text-gray-500">登記地址</dt><dd>{siteContent.registeredAddress}</dd>
               <dt className="text-gray-500">客服狀態</dt><dd>{siteContent.supportStatus}</dd>
               <dt className="text-gray-500">內容盤點</dt><dd>{siteContent.contentReviewedAt}</dd>

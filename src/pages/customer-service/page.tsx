@@ -45,6 +45,10 @@ export default function CustomerService() {
                 <dd>{siteContent.taxId}</dd>
               </div>
               <div>
+                <dt className="font-semibold text-gray-900">電子郵件</dt>
+                <dd><a href={`mailto:${siteContent.companyEmail}`} className="text-teal-700 hover:underline">{siteContent.companyEmail}</a></dd>
+              </div>
+              <div>
                 <dt className="font-semibold text-gray-900">登記地址</dt>
                 <dd>{siteContent.registeredAddress}</dd>
               </div>

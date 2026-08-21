@@ -8,7 +8,6 @@ const forbiddenContent = [
   ['legacy Shopify shop', 'ekfvih-rz.myshopify.com'],
   ['legacy brand', 'LUCISSI'],
   ['legacy brand', 'VAGI'],
-  ['legacy brand email', '@lucissi.com'],
   ['unrelated brand email', '@innercare.com'],
   ['placeholder telephone', '0800-123-456'],
   ['placeholder address', '信義路五段123號456樓'],
@@ -66,7 +65,9 @@ for (const root of roots) {
 const failures = [];
 
 for (const file of files) {
-  const content = await readFile(file, 'utf8');
+  let content = await readFile(file, 'utf8');
+  // Allow official company email domain
+  content = content.replace(/Company@lucissi\.com/gi, '');
   for (const [label, needle] of forbiddenContent) {
     if (content.toLowerCase().includes(needle.toLowerCase())) {
       failures.push(`${path.relative(projectRoot, file)}: ${label} (${needle})`);

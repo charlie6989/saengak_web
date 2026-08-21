@@ -1,4 +1,5 @@
 
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
@@ -6,6 +7,9 @@ import { sentryVitePlugin } from '@sentry/vite-plugin'
 export default defineConfig({
   appType: 'spa', // 👈 確保為單頁應用
   base: process.env.VITE_BASE || '/', // 👈 若未部署子路徑保持根目錄
+  test: {
+    exclude: ['**/node_modules/**', '**/.claude/**', '**/dist/**'],
+  },
   define: {
     // __BASE_PATH__ removed as it is no longer used
   },
