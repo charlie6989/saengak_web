@@ -4,23 +4,7 @@ import { isSupabaseConfigured, supabase } from './supabase';
 
 export const SAENGAK_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
 
-const checkoutSupabaseUrl = (
-  import.meta.env.VITE_PUBLIC_CHECKOUT_SUPABASE_URL ||
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL ||
-  ''
-).replace(/\/$/, '');
-
-const checkoutPublishableKey =
-  import.meta.env.VITE_PUBLIC_CHECKOUT_SUPABASE_KEY ||
-  import.meta.env.VITE_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY ||
-  '';
-
-const membershipSupabaseUrl = (import.meta.env.VITE_PUBLIC_SUPABASE_URL || '').replace(/\/$/, '');
-
-export const isShopifyCheckoutConfigured = Boolean(
-  checkoutSupabaseUrl && checkoutPublishableKey,
-);
+export const isShopifyCheckoutConfigured = true;
 
 interface ShopifyCheckoutResponse {
   checkoutUrl?: string;
@@ -82,11 +66,10 @@ export async function createShopifyCheckout(
   }
 
   const headers: Record<string, string> = {
-    apikey: checkoutPublishableKey,
     'Content-Type': 'application/json',
   };
 
-  if (isSupabaseConfigured && membershipSupabaseUrl === checkoutSupabaseUrl) {
+  if (isSupabaseConfigured) {
     const { data } = await supabase.auth.getSession();
     if (data.session?.access_token) {
       headers.Authorization = `Bearer ${data.session.access_token}`;
@@ -94,7 +77,7 @@ export async function createShopifyCheckout(
   }
 
   const response = await fetch(
-    `${checkoutSupabaseUrl}/functions/v1/create-shopify-cart`,
+    `/api/create-shopify-cart`,
     {
       method: 'POST',
       headers,

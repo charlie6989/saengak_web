@@ -4,7 +4,13 @@ import { isAuthorized } from './api/test-access.mjs'
 const PUBLIC_ENTRY_ASSET = /^\/assets\/index-[A-Za-z0-9_-]+\.(?:css|js)$/
 
 export default function middleware(request) {
-  const pathname = new URL(request.url).pathname
+  const url = new URL(request.url)
+  const pathname = url.pathname
+  const hostname = url.hostname
+
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+    return next()
+  }
 
   if (PUBLIC_ENTRY_ASSET.test(pathname)) {
     return next()

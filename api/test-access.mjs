@@ -127,9 +127,14 @@ export default {
     const config = getConfig()
     const configured = isStrongConfig(config)
 
+    const isLocal =
+      new URL(request.url).hostname === 'localhost' ||
+      new URL(request.url).hostname === '127.0.0.1' ||
+      new URL(request.url).hostname === '::1'
+
     if (request.method === 'GET') {
       return json({
-        authorized: configured && isAuthorized(request, config.sessionSecret),
+        authorized: isLocal || (configured && isAuthorized(request, config.sessionSecret)),
         configured,
       })
     }

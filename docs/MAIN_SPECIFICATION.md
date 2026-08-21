@@ -1,8 +1,8 @@
 # SAENGAK 正式主要規格書 (Main Specification)
 
-> 版本日期：2026-08-19 (CSP 允許清單回歸事故修訂，見 §1.2.6 與 00_DECISION_LOG §3.1)
+> 版本日期：2026-08-20 (Phase 2 後端中樞程式碼落地與稽核修正，見 §4.2 與 00_DECISION_LOG §3.2)
 > 專案網域：`https://saengak.com.tw`
-> 專案狀態：**第 1 階段商品展示完成並朝向 Vercel 部署上線推進；第 2 階段結帳金物流規格保留待續**
+> 專案狀態：**第 1 階段商品展示完成並朝向 Vercel 部署上線推進；第 2 階段結帳後端中樞程式碼已落地（待部署與沙盒驗收）**
 > 權威索引：本文件與各子規格衝突時，以 `00_DECISION_LOG.md` 為最高權威。
 
 ## 1. 專案背景與架構策略目標
@@ -36,14 +36,15 @@
 - **多國語言 (i18n)**：`i18next` + `react-i18next` + `i18next-browser-languagedetector`
 - **前端異常防護**：分層 Error Boundary (`ErrorBoundary.tsx` / `CheckoutErrorFallback.tsx`) 已落地；`@sentry/react` 上報**已接線**並掛載脫敏 Hook（`src/main.tsx`）
 
-#### 2. 後端中樞 API 層 (Backend Serverless API Layer — Phase 2)
+#### 2. 後端中樞 API 層 (Backend Serverless API Layer — Phase 2，程式碼已落地 2026-08-20)
 - **執行環境**：Vercel Serverless Functions (Node.js ES Modules, `type: module`)
-- **API 路由結構**：專案根目錄 `api/*.ts`（如 `api/checkout.ts`, `api/webhooks/shopify.ts`）
-- **伺服器端套件**：`@vercel/functions`
-- **核心防禦機制**：
-  - **HMAC 驗證**：Shopify / 金物流 Webhook SHA256 數位簽名檢查
-  - **冪等性 (Idempotency)**：`Idempotency-Key` (UUID v4) 防重複提交與連點
-  - **個資/卡號脫敏**：`@sentry/node` 洗淨器強制過濾 Prime 碼、卡號與金鑰 Secrets
+- **API 路由結構（已落地）**：`api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/webhooks/shopify.ts`、`api/invoice/guangmao.ts`、`api/cron/reconcile.ts`
+- **共用函式庫（已落地）**：`api/_lib/tappay.ts`（金流）、`api/_lib/shopify-admin.ts`（權威計價與建單）、`api/_lib/supabase-admin.ts`（狀態機與發票 Outbox RPC）、`api/_lib/ratelimit.ts`（滑動視窗限流）、`api/_lib/security.ts`（Origin/Hash/timing-safe 工具）
+- **核心防禦機制（已落地並有迴歸測試）**：
+  - **HMAC 驗證**：Shopify Webhook SHA256 數位簽名檢查（raw body + `timingSafeEqual`；密鑰缺失 Fail-Closed）
+  - **冪等性 (Idempotency)**：`Idempotency-Key` (UUID v4) + Payload SHA-256（含發票偏好）防重複提交與同 key 竄改重放
+  - **Fail-Closed 鐵則**：所有密鑰前提之安全檢查，密鑰未設定一律拒絕（見 CHECKOUT_PAYMENT_SPEC §7.8）
+  - **個資/卡號脫敏**：`@sentry/node` 洗淨器強制過濾 Prime 碼、卡號與金鑰 Secrets（後端 SDK 接線仍待安裝）
 
 #### 3. 資料庫與狀態機持久層 (Database & Persistence Layer)
 - **資料庫**：Supabase PostgreSQL 15 (正式專屬 Reference `tmqzkagkrzhioftvwbqo`)
@@ -74,7 +75,8 @@ CSP 為預設拒絕；每接入一個外部服務，必須依下表更新 `verce
 | Shopify Storefront API | Phase 1 | `connect-src https://gh2xgs-zf.myshopify.com`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**） |
 | Sentry 事件上報 | Phase 1（已接線） | `connect-src https://*.ingest.sentry.io https://*.ingest.us.sentry.io`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**） |
 | Remix Icon 圖示庫 (`index.html` CDN) | Phase 1 | `style-src`／`font-src https://cdn.jsdelivr.net`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**；`cdnjs.cloudflare.com` 為早期殘留放行、目前程式碼未實際引用，保留不影響安全性） |
-| TapPay Direct Pay SDK | Phase 2 | `script-src https://js.tappaysdk.com`、`frame-src https://js.tappaysdk.com`、`connect-src`（依 TapPay 官方文件之 sandbox/prod 網域）；3DS 為整頁跳轉不需 `frame-src` 放行銀行網域 |
+| TapPay Direct Pay SDK | Phase 2 | `script-src`／`frame-src https://js.tappaysdk.com`、`connect-src`／`frame-src https://sand-pay.tappaysdk.com https://pay.tappaysdk.com`；3DS 為整頁跳轉不需 `frame-src` 放行銀行網域（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證，2026-08-20**） |
+| Cloudflare Turnstile (CAPTCHA) | Phase 2 | `script-src`／`frame-src`／`connect-src https://challenges.cloudflare.com`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證，2026-08-20**） |
 | ShipAny 門市地圖（若前端嵌入） | Phase 2 | 依屆時官方文件另訂，並回填本表 |
 
 
@@ -133,17 +135,42 @@ flowchart TD
   - `vercel.json` 補 HSTS；CSP 放行 Shopify Storefront 與 Sentry 網域已完成。
   - 移除硬編碼之非授權 Supabase 與 Shopify URL 已完成。
 - [ ] **Phase 1 最終對外公開 (Cutover) 待辦（詳見 `LAUNCH_CHECKLIST.md`）**：
-  - 移除 TestAccessGate (`middleware.js`)、測試環境變數與測試登入 API。
+  - 移除 TestAccessGate (`middleware.js`)、測試環境變數與測試登入 API（註：目前機制為本地開發端 localhost 直通，僅發布至雲端的環境需要測試者帳密閘門）。
   - 解封 SEO：移除 `X-Robots-Tag: noindex`。
 
-### 4.2 第 2 階段：自建結帳與金物流串接 (Phase 2 — 規格保留待續)
-- [ ] **自建結帳中樞 (`api/checkout.ts`)**
-  - Idempotency Key 冪等性去重與 Supabase `transaction_logs` 交易狀態機。
-  - TapPay Prime 傳入、3DS callback 頁面 (`/checkout/3ds-callback`) 與後端授權扣款。
+### 4.2 第 2 階段：自建結帳與金物流串接 (Phase 2 — 後端程式碼已落地，待部署與驗收)
+
+> 依 00_DECISION_LOG §1 治理決策，「程式碼已落地」= 通過 `npm test` (360/360)、`typecheck` 與 `build` 之本地自動化驗證；**不等於**已部署或完成沙盒實單。2026-08-20 曾稽核發現首版實作有 Critical/High 缺陷（發票 Outbox 寫入路徑錯誤、多處 Fail-Open），已全數修正並補迴歸測試，詳見 00_DECISION_LOG §3.2。
+
+- [x] **自建結帳中樞程式碼 (`api/checkout.ts` 與 `api/_lib/*`)**
+  - Idempotency Key 冪等性去重（Payload SHA-256 含發票偏好）與 Supabase `transaction_logs` 交易狀態機（migration `20260820000001`）。
+  - TapPay Prime 後端授權扣款、金額權威重算、3DS 分支 (`api/checkout/confirm.ts`) 與建單失敗自動 Refund 補償。
+  - 對帳補償排程 `api/cron/reconcile.ts` + `vercel.json` crons、狀態輪詢 `api/checkout/status.ts`。
+- [x] **光貿電子發票 Outbox Worker 程式碼 (`api/invoice/guangmao.ts`)**
+  - 經 `public.enqueue_amego_invoice_job` RPC 寫入 `private.amego_invoice_jobs`（migration `20260820000003`），Worker 認領派送並回讀 `invoice_status=99` 投影 `order_invoices`。
+- [ ] **部署與環境配置**：Vercel 環境變數/Secrets（TapPay Partner Key、Shopify Admin Token、`SHOPIFY_WEBHOOK_SECRET`、`CRON_SECRET`、`AmegoDispatchToken`、Upstash Redis）、Supabase migration 套用與 `npm run test:db` 對真實 Postgres 驗證。
 - [ ] **Shopify 訂單與 ShipAny 物流 App 串接**
   - 結帳後自動建立 Shopify 訂單，觸發 ShipAny App 進行門市取貨標籤印製。
-- [ ] **光貿電子發票自動開立**
-  - 光貿電子發票 API 自動開立/作廢/折讓與 Supabase `order_invoices` 投影回讀。
-- [ ] **端到端商業驗收 (`verify:commerce`)**
+- [ ] **後端 `@sentry/node` 監控接線**（Serverless API 層異常上報）。
+- [ ] **端到端商業驗收 (`verify:commerce`)**：TapPay 沙盒實單 success／failed／cancelled 三案例跨系統一致性。
 
+## 5. 系統資安防護與信任邊界規範 (Security Invariants)
 
+本節收錄自全站統一的安全通報與防護政策，作為前後台與 API 開發的強制性防禦準則。漏洞通報流程請參閱同目錄下的 [`SECURITY.md`](SECURITY.md)。
+
+### 5.1 威脅模型與信任邊界 (Threat Model and Trust Boundaries)
+- **不可信輸入**：公開瀏覽器、公開 API body/header/route/query 與 deployment configuration 都視為不可信輸入。
+- **公鑰限制**：Supabase public/publishable key 並非 secret，**絕對不可**單獨授權任何敏感的資料庫 mutation（必須配合 RLS 與 Auth Token）。
+- **Webhook 驗證**：Shopify / TapPay webhook 必須在原始 body HMAC 簽名、shop domain、topic 及 payload 一致性全部通過後，才可視為可信。
+- **機密零落地**：Service-role、Shopify Admin token、Webhook secret 與 TapPay server credential 只能存在於受控的伺服器端環境變數 (Server-side Secrets) 中，**嚴禁進入前端 Bundle**。
+- **多權威系統對帳**：Shopify、TapPay、Supabase、物流及發票為不同的權威系統；前端的 `localStorage`、成功跳轉頁、Email、toast 或文件聲明**皆不代表交易真相**，一切以伺服器端驗證與回讀為準。
+
+### 5.2 安全不變量 (Security Invariants)
+任何開發與架構更動，必須維持下列防護性質：
+1. **預設封閉 (Fail-Closed)**：上線前或發生未預期錯誤時，結帳與狀態變更應直接拒絕；`CheckoutReleaseEnabled` 未精確設為 `true` 時不得建立交易。
+2. **後端強制驗證**：敏感資料的修改 (Mutation) 必須在可信後端 (Vercel API / Supabase) 完成授權，絕對不依賴 UI 隱藏按鈕或前端的 client-side gate 來防堵。
+3. **輸入防禦**：所有外部輸入必須有嚴格的格式、長度、數量與資源消耗上限（Rate Limiting）。
+4. **URL 與跳轉防護**：使用者可點擊的 URL 必須限制為可接受的公開 HTTPS 目的地；Checkout 必須固定跳轉至受控網域。
+5. **Webhook 防護**：必須具備驗簽、Idempotency 去重機制，並防止舊狀態覆蓋新狀態 (Race Condition 防禦)。
+6. **個資邊界 (RLS)**：Supabase Row Level Security 必須確保會員只能讀寫自己的資料，後台與參數操作必須透過權限標記 (`role: 'admin'`) 進行驗證。
+7. **機密防外洩**：原始碼、Build Assets、Sentry 日誌 (Logs) 與測試證據中，嚴禁包含 Secrets、個資或真實的付款卡號。

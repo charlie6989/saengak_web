@@ -1,7 +1,8 @@
 # 結帳與交易安全性規格書 (Checkout & Payment Spec)
 
-> 版本日期：2026-08-17 (架構簡化與 Phase 2 保留規格)
-> 本規格書為 **第 2 階段 (Phase 2)** 啟用自建結帳與線上支付時之權威規範。當前第 1 階段專注於商品展示與 Vercel 部署。
+> 版本日期：2026-08-20 (Phase 2 後端中樞程式碼落地 + 稽核修正定版；前版：2026-08-17 架構簡化)
+> 本規格書為 **第 2 階段 (Phase 2)** 啟用自建結帳與線上支付時之權威規範。
+> **落地狀態 (2026-08-20)**：本規格所述之後端中樞程式碼已落地於 `api/`（詳見 §9 實作對照表），並通過單元/整合測試 (`npm test` 360/360)、`npm run typecheck` 與 `npm run build`。**尚未完成**：Vercel 部署、環境變數/Secrets 配置、TapPay 沙盒實單與端到端商業驗收 (`verify:commerce`)。依 00_DECISION_LOG §1 治理決策，本文件之「已落地」標記僅作狀態說明，實際合規性一律以自動化測試結果為準。
 
 ## 1. 核心結帳流程與支付政策 (自建 Checkout - Phase 2)
 
@@ -38,7 +39,8 @@
   1. `api/checkout.ts` 先執行 **冪等性檢查**（見 §4）。
   2. 進行 TapPay 授權扣款（含 3DS，見 §3）。
   3. 扣款成功後立即呼叫 Shopify Admin API 建立訂單，Shopify 扣減庫存；SiteGiant Shopify App 自動接收訂單並扣減 ERP 實體庫存。
-  4. 若 Shopify 建單或開票失敗，觸發自動退款與補償機制（見 §5）。
+  4. **防誤出貨保護 (Anti-Fulfillment Guard)**：為防止測試環境建立的訂單觸發物流商出貨，當系統處於沙盒模式（`COMMERCE_SANDBOX_MODE=true`）時，建立的訂單必須自動注入 `TEST_ORDER, DO_NOT_SHIP, DO_NOT_FULFILL` 標籤，收件資訊與 note_attributes 也必須明確標示為測試訂單。
+  5. 若 Shopify 建單或開票失敗，觸發自動退款與補償機制（見 §5）。
 
 ## 3. 3D Secure (3DS) 流程
 
@@ -51,6 +53,7 @@ TapPay Direct Pay 走 3DS 驗證時：
 
 - 前端每次結帳產生唯一 `Idempotency-Key` (UUID v4)，隨 header 送出。
 - **Key 必須綁定 Payload**：`api/checkout.ts` 首次受理時，將請求 body 之 SHA-256 hash 與 key 一併寫入 `transaction_logs`。同一 key 再次進入時：
+  - **Hash 涵蓋範圍（2026-08-20 稽核修正定版）**：商品項目 (Variant ID + 數量)、顧客 Email、收件地址關鍵欄位、物流方式代碼、**發票偏好 (`invoicePreference`，含抬頭/統編/載具)**。發票偏好列入 hash 是為了防止同 key 竄改發票資訊重放（原實作遺漏此欄位，已修正並補測試）。
   - Payload hash 相同且為終態 → 直接回傳既有結果（防止重複扣款）。
   - Payload hash 相同且處理中 → 回傳 409 / 前端輪詢（輪詢一律經由後端查詢端點，前端不得直讀 `transaction_logs`，見 SUPABASE_DEPLOYMENT §3）。
   - **Payload hash 不同 → 一律拒絕 (422)**，防止同 key 挾帶不同內容重放。
@@ -66,6 +69,8 @@ TapPay Direct Pay 走 3DS 驗證時：
 ### 5.1 Transaction_Logs 資料表 (狀態機)
 
 於 Supabase 建立 `transaction_logs`，欄位含 `idempotency_key`, `payload_hash`, `status`, `tappay_rec_trade_id`, `shopify_order_id`, `invoice_id`, `amount`, `payload`, `updated_at`。
+
+> **已落地 (2026-08-20)**：migration `supabase/migrations/20260820000001_create_transaction_logs.sql`。資料表建於 `public` schema 以供 Service Role 經 PostgREST 直接存取；RLS 啟用且對 `public`/`anon`/`authenticated` 全數 revoke（Deny All），僅 `service_role` 可讀寫。pgTAP 測試：`supabase/tests/database/transaction_logs.test.sql`（已納入 `npm run test:db` 執行清單）。
 
 > **`payload` 欄位個資最小化（呼應 SUPABASE_DEPLOYMENT §5「不複製原則」）**：落庫前必須經欄位白名單過濾——僅保留 Variant ID、數量、金額、物流方式代碼、發票類型代碼與去識別化之必要對帳欄位；**不得**寫入完整收件人姓名、電話、地址、Email、載具號碼與任何 TapPay Prime/卡號資訊。收件資訊由 Shopify Order 為唯一權威。
 
@@ -84,11 +89,23 @@ TapPay Direct Pay 走 3DS 驗證時：
 
 ### 5.2 對帳排程 (Reconciliation Job)
 
-- 定期掃描 `transaction_logs` 中停留於中間態超過門檻（如 15 分鐘）的交易並補償。
+- 定期掃描 `transaction_logs` 中停留於中間態超過門檻（15 分鐘）的交易並補償。
+
+> **已落地 (2026-08-20)**：`api/cron/reconcile.ts` 掃描逾時之 `INITIATED` / `PAYMENT_CAPTURED` / `ORDER_FAILED` 交易——有扣款但無訂單者自動 TapPay Refund 並標記 `COMPENSATED`；無扣款之逾時交易標記 `PAYMENT_FAILED` 關閉。排程已寫入 `vercel.json` 之 `crons`：對帳 `/api/cron/reconcile` **每 15 分鐘**、發票 Outbox Worker `/api/invoice/guangmao` **每 5 分鐘**（此前僅有端點而無排程宣告，Vercel 不會自動呼叫，2026-08-20 稽核補上）。
+
 - ⚠️ **Vercel Free Tier 限制**：Cron 頻率與 function 最長執行時間（Free Tier 約 10 秒）可能不足以完成「扣款→建單→開票」串行外部呼叫。需評估：
   - 升級 Vercel 方案 (更長 timeout)，或
   - 拆分為非同步事件 + queue（扣款成功後以事件觸發 `api/invoice/guangmao.ts`），或
   - 引入外部 Cron（如 Supabase pg_cron / QStash）。
+
+### 5.3 發票 Outbox 寫入路徑 (2026-08-20 稽核修正定版)
+
+> **鐵則：`private.amego_invoice_jobs` 位於 `private` schema，未曝露於 PostgREST；任何後端程式碼嚴禁以 `.from('amego_invoice_jobs')` 直接存取，一律透過 RPC。**
+
+- **寫入 (Enqueue)**：結帳成功建單後（`api/checkout.ts` 直接扣款分支與 `api/checkout/confirm.ts` 3DS 分支），一律呼叫 `public.enqueue_amego_invoice_job` RPC（migration `20260820000003_add_enqueue_amego_invoice_job_rpc.sql`）寫入 Outbox；RPC 以 `shopify_order_gid` 為衝突鍵做冪等 upsert，終態工作（issued/voided/cancelled 等）不被覆寫。僅 `service_role` 具 EXECUTE 權限。pgTAP 測試：`supabase/tests/database/enqueue_amego_invoice_job.test.sql`。
+- **稽核背景**：原實作誤用 `.from('amego_invoice_jobs')` 直寫，因 `public` schema 不存在該表而必然失敗，且錯誤被靜默吞掉退回記憶體暫存——Serverless instance 回收後發票工作即遺失，發票實質不會開立。此為本次稽核之 Critical 發現，已修正。
+- **消化 (Claim/Complete)**：維持既有 `public.claim_amego_invoice_job` / `public.mark_amego_invoice_mutation_started` / `public.complete_amego_invoice_job` RPC 租約機制（見 LOGISTICS_INVOICE 與 migration `20260813045204`），由 `api/invoice/guangmao.ts` Worker 認領派送並嚴格回讀 `invoice_status=99`。
+- **雙寫來源並存**：Shopify Webhook 投影路徑 (`sync_shopify_order_webhook`) 亦會於 `paid` 訂單寫入同一 Outbox；兩路徑以 `shopify_order_gid` 冪等去重，不會重複開票。
 
 ## 6. 逆向流程 (退款 / 取消 / 發票作廢)
 
@@ -108,13 +125,12 @@ TapPay Direct Pay 走 3DS 驗證時：
 - 卡號與 TapPay Partner Key **不進入** 前端或 Supabase；Partner Key 僅存 Vercel 平台 secret。
 - PCI 合規：自建結帳 + TapPay Fields 屬 **SAQ A-EP** 範圍，需依此完成自評。
 - 金額一律後端重算（見 §1.4）；冪等 key 綁定 payload 與身分（見 §4）。
+- **公開環境變數規範**：前端 `PaymentForm` 載入 TapPay SDK 時，其 `appId` 與 `appKey` 必須相容並優先讀取 Vite 專用公開變數前綴（`VITE_PUBLIC_TAPPAY_APP_ID` 與 `VITE_PUBLIC_TAPPAY_APP_KEY`）。
 
-### 7.2 Rate Limit（盜刷測卡防護，實作前必須定案儲存方案）
-- `api/checkout.ts` 與 `api/checkout/confirm.ts` 為測卡高風險端點，必須有跨實例共享的計數儲存。Vercel Serverless 無狀態，**不得**以函式記憶體實作。候選方案（擇一定案後回填本節）：
-  1. Upstash Redis（`@upstash/ratelimit`，滑動視窗）— 建議首選；
-  2. Vercel WAF / Firewall 規則；
-  3. Supabase 資料表計數（成本低但延遲高，僅作備援）。
-- 建議初始閾值：同一 IP 每分鐘 ≤ 5 次結帳嘗試、同一會員每小時 ≤ 10 次；超限回 429 並記錄告警。
+### 7.2 Rate Limit（盜刷測卡防護）
+- **定案方案**：採用 **Upstash Redis REST + Lua Script 原子滑動視窗**（`ZREMRANGEBYSCORE` + `ZCARD` + `ZADD`），Redis 未配置或連線異常時平滑降級至 in-memory sliding window，**且每次降級必須呼叫 `captureExceptionSafe` 回報 Sentry**（呼應 00_DECISION_LOG「靜默降級可觀測性治理」）。
+- **唯一實作**：`api/_lib/ratelimit.ts`（測試：`tests/ratelimit.test.ts`）。**嚴禁另建平行的限流模組**——2026-08-20 稽核發現曾同時存在一支固定視窗、無 Sentry 回報的重複實作且被端點誤接，已刪除並統一接回本模組。
+- 已落地閾值：同一 IP 每分鐘 ≤ 5 次結帳 (`api/checkout.ts`)、3DS confirm 每分鐘 ≤ 10 次、狀態輪詢每分鐘 ≤ 20 次；會員層每小時 ≤ 10 次 (`checkUserRateLimit`)；超限回 429 並附 `Retry-After`。
 - 監控指標：單卡多筆小額、同 IP 多卡、高失敗率突升——任一觸發即進入 CAPTCHA 流程。
 
 ### 7.3 CAPTCHA 觸發條件
@@ -122,6 +138,7 @@ TapPay Direct Pay 走 3DS 驗證時：
 
 ### 7.4 來源與 CSRF 防護
 - 結帳相關 API 一律驗證 `Origin` header 必須等於 `https://saengak.com.tw`（比照 `api/test-access.mjs` 既有做法）；非白名單來源回 403。
+- **缺少 `Origin` header 一律拒絕 (403)**（2026-08-20 稽核修正）：原實作將「無 Origin」視為同源放行，等同讓非瀏覽器之伺服器對伺服器/腳本呼叫繞過整個白名單；已改為 Fail-Closed，並以迴歸測試鎖定（`tests/checkout-backend.test.ts` §9）。
 - 不設定寬鬆 CORS；結帳 API 僅供同源前端呼叫，不回應 `Access-Control-Allow-Origin: *`。
 - Session cookie（若有）一律 `HttpOnly; Secure; SameSite=Strict`。
 
@@ -130,11 +147,20 @@ TapPay Direct Pay 走 3DS 驗證時：
 
 ### 7.6 對帳排程端點防護
 - 若對帳 Job（§5.2）以 Vercel Cron 觸發，其 endpoint 為公開 URL：必須驗證 `Authorization: Bearer ${CRON_SECRET}`（Vercel Cron 自動附帶），驗證失敗回 401，且該 secret 納入 SECRET_HANDOFF_GUIDE 輪替清單。
+- **`CRON_SECRET` 未設定時一律回 500 拒絕**（2026-08-20 稽核修正）：原實作在密鑰未設定時跳過驗證直接放行，等同任何匿名呼叫者皆可觸發對帳與自動退款；已改為 Fail-Closed（見 §7.8）。發票 Worker (`api/invoice/guangmao.ts`) 之 `AmegoDispatchToken` / `CRON_SECRET` 同規則。
+- Token 比對一律使用 timing-safe 比較（`timingSafeStringEqual`），不得用 `===`。
 
-### 7.7 結帳身分政策（開放決策，Phase 2 開工前必須定案）
-- 選項 A（**建議首版採用**）：結帳強制登入會員——RLS 歸屬清晰、退款與訂單查詢有明確身分邊界。
-- 選項 B：開放訪客結帳——須另訂訪客訂單歸屬（email 綁定 + 簽名查詢連結）、`transaction_logs` 身分識別與事後轉會員機制，安全複雜度顯著較高。
-- 未定案前，所有規格以選項 A 為預設假定。定案後回填 `00_DECISION_LOG.md`。
+### 7.7 結帳身分政策（已定案）
+- **定案方案：混合模式 (Email OTP 歸戶)**。
+- 優先鼓勵會員登入結帳。同時開放訪客免登入結帳，並以「手機號碼」作為跨訂單關聯依據。
+- **資安防護 (交集比對)**：為防止惡意人士以他人手機號碼窮舉歷史訂單，訪客查詢訂單時需在畫面上同時輸入「手機號碼」與「Email」。系統確認兩者在過去訂單有交集後，將透過 Supabase 發送 Email 驗證碼 (OTP/Magic Link) 至該信箱。驗證通過後即可查看該歸戶之訂單並轉化為正式會員。
+
+### 7.8 密鑰缺失 Fail-Closed 鐵則 (2026-08-20 稽核新增)
+
+> **鐵則：任何以密鑰/秘密為前提的安全檢查（HMAC 簽章、Bearer Token、Origin 白名單環境變數），密鑰未設定時必須直接拒絕請求（500，附伺服器端告警日誌），嚴禁「有設定才驗證、沒設定就放行」。**
+
+- 稽核背景：Phase 2 首版實作在 `SHOPIFY_WEBHOOK_SECRET`、`CRON_SECRET`、`AmegoDispatchToken` 未設定時均採 `if (secret) { verify }` 模式靜默跳過驗證——一旦 Vercel 環境變數漏設，防護即隱性消失且不會報錯。此模式與 MAIN_SPECIFICATION §5.2 安全不變量第 1 條「預設封閉 (Fail-Closed)」直接牴觸，已全數修正。
+- 涵蓋端點與迴歸測試：`api/webhooks/shopify.ts`（HMAC）、`api/cron/reconcile.ts`（CRON_SECRET）、`api/invoice/guangmao.ts`（AmegoDispatchToken/CRON_SECRET）、`api/_lib/security.ts` 之 `isOriginAllowed`（缺 Origin 拒絕）。四項均以 `tests/checkout-backend.test.ts` §9「Fail-Closed 迴歸測試」鎖定，任何回退至 fail-open 的改動將使 `npm test` 失敗。
 
 ## 8. 前端異常防護與監控 (Sentry `@sentry/react` & Error Boundary)
 
@@ -161,3 +187,23 @@ TapPay Direct Pay 走 3DS 驗證時：
   - `DENIED_KEYS` 命中者強制替換為 `[REDACTED_SENSITIVE]`；`PII_KEYS` 命中者依型別做首尾遮蔽（如 `張*明`）或 `[REDACTED_PII]`。
   - 字串內容另以正則深掃卡號、JWT、Bearer Token 與 TapPay Prime。
   - SDK 設定 `sendDefaultPii: false`，確保 PCI-DSS SAQ A-EP 與個資防禦零漏洞。
+
+## 9. Phase 2 實作對照表 (2026-08-20)
+
+| 規格章節 | 實作檔案 | 測試 |
+| --- | --- | --- |
+| §1.3–1.4 結帳中樞、金額權威重算 | `api/checkout.ts`、`api/_lib/shopify-admin.ts` | `tests/checkout-backend.test.ts` 第 2–3 節（含 Happy Path 建單與補償退款整合測試） |
+| §3 / §7.5 3DS Callback 二次查核 | `api/checkout/confirm.ts`、`api/_lib/tappay.ts` | 同上第 1、4 節 |
+| §4 冪等性 | `api/checkout.ts` + `transaction_logs` | 同上第 3 節（422 竄改防護含發票偏好） |
+| §5.1 狀態機資料表 | `supabase/migrations/20260820000001` | `supabase/tests/database/transaction_logs.test.sql` |
+| §5.2 對帳補償排程 | `api/cron/reconcile.ts` + `vercel.json` crons | 同上第 8 節 |
+| §5.3 發票 Outbox | `api/_lib/supabase-admin.ts` (`enqueueAmegoInvoiceJob` → RPC)、`supabase/migrations/20260820000003` | `supabase/tests/database/enqueue_amego_invoice_job.test.sql` |
+| §6 逆向補償 | `api/_lib/tappay.ts` (`refundTransaction`) | 同上第 1、3、8 節 |
+| §7.2 Rate Limit | `api/_lib/ratelimit.ts` | `tests/ratelimit.test.ts` |
+| §7.4 / §7.6 / §7.8 Fail-Closed | `api/_lib/security.ts`、各端點 | 同上第 9 節「Fail-Closed 迴歸測試」 |
+| 狀態輪詢（前端不直讀 DB） | `api/checkout/status.ts` | 同上第 5 節 |
+| Webhook 投影 | `api/webhooks/shopify.ts` | 同上第 7 節 |
+| 發票 Worker | `api/invoice/guangmao.ts` | 同上第 6 節 |
+
+> **注意**：SQL migration 與 pgTAP 測試（`npm run test:db`）需本地 Supabase (Docker) 環境執行，2026-08-20 稽核當日環境無 Docker，尚未對真實 Postgres 驗證，部署前必須補跑。
+> **測試覆蓋已知缺口（如實記錄）**：`api/invoice/guangmao.ts` 之「派送並回讀 99」與 `api/webhooks/shopify.ts` 之「合法簽章→完整投影」兩條主線尚無整合測試，僅有授權/簽章/網域防護之單元測試；列為部署前補強項目。

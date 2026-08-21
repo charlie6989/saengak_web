@@ -30,6 +30,9 @@
 * **[Vercel Serverless 遷移規格書 (VERCEL_MIGRATION_SPEC.md)](file:///c:/Projects/saengak_web/docs/VERCEL_MIGRATION_SPEC.md)**
   * **路徑**: `docs/VERCEL_MIGRATION_SPEC.md`
   * **說明**: API 路由規範 (`api/checkout.ts`, `api/webhooks/shopify.ts`), HMAC 驗證與 Rate Limiting 策略。
+* **[安全與威脅模型政策 (SECURITY.md)](file:///c:/Projects/saengak_web/docs/SECURITY.md)**
+  * **路徑**: `docs/SECURITY.md`
+  * **說明**: 規範全站統一的安全通報與防護政策，以及威脅模型與信任邊界規範。
 * **[交接與金鑰管理指南 (SECRET_HANDOFF_GUIDE.md)](file:///c:/Projects/saengak_web/docs/SECRET_HANDOFF_GUIDE.md)**
   * **路徑**: `docs/SECRET_HANDOFF_GUIDE.md`
   * **說明**: 環境變數配置、Shopify API 憑證、TapPay Portal 密鑰、平台帳號安全基線與敏感資料交接規範。

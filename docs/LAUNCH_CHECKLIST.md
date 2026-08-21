@@ -6,7 +6,7 @@
 
 ## 1. 移除測試閘門與測試憑證
 
-- [ ] 移除 `middleware.js` TestAccessGate（`/assets/*` 資產閘門）。
+- [ ] 移除 `middleware.js` TestAccessGate（`/assets/*` 資產閘門；註：目前此閘門僅在雲端發布環境攔截，本地端 localhost 已直通放行）。
 - [ ] 移除 `api/test-access.mjs` 端點與前端測試登入 UI。
 - [ ] 自 Vercel 刪除 `SAENGAK_TEST_USERNAME`、`SAENGAK_TEST_PASSWORD`、`SAENGAK_TEST_SESSION_SECRET` 三個環境變數。
 - [ ] 確認移除後全站資產可公開存取（無 404 誤擋）。

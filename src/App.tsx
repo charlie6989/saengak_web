@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from './router';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
+import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import CartSidebar from './components/feature/CartSidebar';
 import ScrollToTop from './components/system/ScrollToTop';
@@ -12,17 +13,19 @@ function App() {
   return (
     <ErrorBoundary>
       <I18nextProvider i18n={i18n}>
-        <CartProvider>
-          <BrowserRouter>
-            <ScrollToTop />
-            <ErrorBoundary>
-              <Suspense fallback={<div style={{ padding: 20, fontSize: 24 }}>Loading...</div>}>
-                <AppRoutes />
-              </Suspense>
-            </ErrorBoundary>
-            <CartSidebar />
-          </BrowserRouter>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <BrowserRouter>
+              <ScrollToTop />
+              <ErrorBoundary>
+                <Suspense fallback={<div style={{ padding: 20, fontSize: 24 }}>Loading...</div>}>
+                  <AppRoutes />
+                </Suspense>
+              </ErrorBoundary>
+              <CartSidebar />
+            </BrowserRouter>
+          </CartProvider>
+        </AuthProvider>
       </I18nextProvider>
     </ErrorBoundary>
   );

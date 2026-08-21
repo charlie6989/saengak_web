@@ -219,7 +219,7 @@ flowchart LR
 
 ### P0-7　解除 Coming Soon 並完成 SEO／付款回跳
 
-- [ ] 將正式入口由 `TestAccessGate` 切換到完整站點；不要刪除測試機制前先確認是否仍需 Preview 使用。
+- [ ] 將正式入口由 `TestAccessGate` 切換到完整站點；不要刪除測試機制前先確認是否仍需 Preview 使用。（註：本地開發環境 localhost 預設已直通主站，測試閘門僅於雲端發布環境運作。）
 - [ ] 確認 middleware 不再阻擋正式公開 bundle。
 - [ ] 更新 title、description、Open Graph、favicon／品牌分享圖。
 - [ ] 移除 HTML meta 與 Vercel header 的 `noindex, nofollow, noarchive`。

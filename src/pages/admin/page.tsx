@@ -1,5 +1,5 @@
-import Header from '../../components/feature/Header';
-import Footer from '../../components/feature/Footer';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const modules = [
   ['商品目錄', '展示可用', 'Storefront Function 已到達專用 Shopify；Online Store 尚未解鎖'],
@@ -13,26 +13,36 @@ const modules = [
   ['法務內容', '已建立', '正式發布前仍需法務確認'],
 ];
 
-export default function Admin() {
+export default function AdminModulesPage() {
   return (
-    <div className="min-h-screen bg-[#F7F7F5]">
-      <Header />
-      <main className="mx-auto max-w-6xl px-4 pb-20 pt-36">
-        <h1 className="mb-4 text-4xl font-bold text-[#225B4F]">網站模塊狀態</h1>
-        <p className="mb-10 max-w-3xl leading-7 text-gray-600">
-          這裡只呈現可驗證的功能狀態，不顯示示範營收、假訂單或假會員數。正式營運後台必須在 Supabase Auth 以 <code>app_metadata.role</code> 驗證管理員後才可開放。
-        </p>
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-          {modules.map(([name, status, note]) => (
-            <div key={name} className="grid gap-2 border-b border-gray-100 p-5 last:border-0 md:grid-cols-[180px_140px_1fr]">
-              <strong>{name}</strong>
-              <span className="text-[#225B4F]">{status}</span>
-              <span className="text-gray-600">{note}</span>
-            </div>
-          ))}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#225B4F]">全站 9 大核心技術模組狀態</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            這裡只呈現可驗證的功能狀態，不顯示示範營收、假訂單或假會員數。正式營運後台在 Supabase Auth 以 <code>app_metadata.role = 'admin'</code> 嚴格驗證。
+          </p>
         </div>
-      </main>
-      <Footer />
+        <Link
+          to="/admin/dashboard"
+          className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-[#225B4F] shadow-xs hover:bg-gray-50"
+        >
+          ← 返回營運主控台
+        </Link>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
+        {modules.map(([name, status, note]) => (
+          <div
+            key={name}
+            className="grid gap-2 border-b border-gray-100 p-5 last:border-0 md:grid-cols-[180px_140px_1fr] text-xs hover:bg-gray-50/50 transition-colors"
+          >
+            <strong className="text-gray-900 text-sm">{name}</strong>
+            <span className="font-semibold text-[#225B4F]">{status}</span>
+            <span className="text-gray-600 leading-5">{note}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

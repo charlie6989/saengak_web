@@ -22,6 +22,10 @@ export const REQUIRED_CSP_DIRECTIVES = [
   'https://*.ingest.sentry.io',
   'https://*.ingest.us.sentry.io',
   'https://cdn.jsdelivr.net',
+  'https://js.tappaysdk.com',
+  'https://sand-pay.tappaysdk.com',
+  'https://pay.tappaysdk.com',
+  'https://challenges.cloudflare.com',
   'upgrade-insecure-requests',
 ];
 

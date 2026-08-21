@@ -5,15 +5,29 @@ const TestSite = lazy(() => import('./TestSite.tsx'))
 
 type AccessState = 'checking' | 'locked' | 'authorized'
 
+function isLocalHost() {
+  return (
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '[::1]' ||
+      window.location.hostname === '::1' ||
+      window.location.hostname === '0.0.0.0' ||
+      Boolean(import.meta.env.DEV))
+  )
+}
+
 function TestAccessGate() {
-  const [accessState, setAccessState] = useState<AccessState>('checking')
+  const [accessState, setAccessState] = useState<AccessState>(() =>
+    isLocalHost() ? 'authorized' : 'checking',
+  )
   const [showLogin, setShowLogin] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    // 本地開發環境 (localhost) 直接授權通行，免輸入站點密碼
-    if (import.meta.env.DEV) {
+    // 本地環境直接通行
+    if (isLocalHost()) {
       setAccessState('authorized')
       return
     }

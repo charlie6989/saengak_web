@@ -28,7 +28,7 @@
 - `VITE_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `VITE_PUBLIC_SUPABASE_URL`
 
-本次加密設定包會保存 Vercel production `env pull` 的快照，供帳戶持有人控制下的復原與比對。測試帳號密碼與 session secret 上線前應重新產生；公開 launch 後若移除 TestAccessGate，應一併移除不再需要的測試變數。
+本次加密設定包會保存 Vercel production `env pull` 的快照，供帳戶持有人控制下的復原與比對。測試帳號密碼與 session secret 上線前應重新產生；公開 launch 後若移除 TestAccessGate，應一併移除不再需要的測試變數（註：TestAccessGate 僅在雲端發布環境生效，本地開發環境 localhost 預設直通免驗證）。
 
 ### 2.2 本機 `.env.local`
 

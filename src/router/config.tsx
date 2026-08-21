@@ -17,6 +17,8 @@ const WelcomePage = lazy(() => import('../pages/welcome/page'));
 const ForgotPasswordPage = lazy(() => import('../pages/forgot-password/page'));
 const ResetPasswordPage = lazy(() => import('../pages/reset-password/page'));
 const AuthConfirmPage = lazy(() => import('../pages/auth/confirm/page'));
+// Checkout routes have been deprecated and moved to Shopify Checkout
+const SiteSettingsPage = lazy(() => import('../pages/admin/SiteSettings').then(m => ({ default: m.SiteSettings })));
 const OrderStatusPage = lazy(() => import('../pages/order-status/page'));
 const CustomerServicePage = lazy(() => import('../pages/customer-service/page'));
 const FAQPage = lazy(() => import('../pages/faq/page'));
@@ -97,6 +99,11 @@ const routes: RouteObject[] = [
   {
     path: '/auth/confirm',
     element: <AuthConfirmPage />,
+  },
+
+  {
+    path: '/admin/settings',
+    element: <SiteSettingsPage />,
   },
   {
     path: '/order-status',

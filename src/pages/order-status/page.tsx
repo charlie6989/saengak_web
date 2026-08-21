@@ -1,33 +1,48 @@
+import { useSearchParams, Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 
 export default function OrderStatusPage() {
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get('order_id');
+
   return (
     <div className="min-h-screen bg-[#F7F7F5]">
       <Header />
       <main className="mx-auto max-w-4xl px-4 pb-20 pt-36">
-        <section className="border-t border-[#D8DDD8] bg-white px-6 py-12 md:px-12 md:py-16">
-          <p className="mb-3 text-sm font-medium text-[#225B4F]">付款返回</p>
-          <h1 className="mb-6 text-4xl font-bold text-gray-900">已返回 SAENGAK</h1>
-          <p className="max-w-2xl leading-8 text-gray-600">
-            付款結果仍以 Shopify 訂單確認頁與訂單確認信為準。若交易已完成，系統會寄送確認信；請使用信中的「查看訂單」連結確認付款、出貨與物流狀態。
-          </p>
-          <div className="mt-8 border-l-4 border-[#225B4F] bg-[#EEF4F1] p-5 text-[#19483F]">
-            若尚未收到確認信，請稍候幾分鐘後再次檢查信箱。仍未收到時，請聯絡客服並提供下單姓名、電子郵件與大約下單時間；請勿傳送完整卡號或驗證碼。
+        <section className="rounded-2xl border border-stone-200 bg-white p-8 md:p-12 shadow-sm text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-teal-100 mb-6">
+            <svg className="h-8 w-8 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
           </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href="/"
-              className="inline-flex bg-[#225B4F] px-6 py-3 font-medium text-white hover:bg-[#19483f]"
+          <h1 className="mb-4 text-3xl font-bold text-stone-900">感謝您的訂購！</h1>
+          {orderId && (
+            <p className="mb-6 text-lg font-medium text-teal-800 bg-teal-50 inline-block px-4 py-2 rounded-lg">
+              訂單編號：{orderId.replace('gid://shopify/Order/', '#')}
+            </p>
+          )}
+          <p className="mx-auto max-w-2xl leading-7 text-stone-600">
+            您的付款已成功授權，訂單正在處理中。我們已發送確認信至您的電子郵件信箱。
+            {process.env.COMMERCE_SANDBOX_MODE === 'true' && (
+              <span className="block mt-2 font-bold text-amber-600">
+                [注意] 目前系統處於測試沙盒模式，此為測試訂單，不會進行真實物流派送。
+              </span>
+            )}
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              to="/products"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-teal-600 px-8 py-3.5 font-semibold text-white transition-colors hover:bg-teal-700 shadow-md"
             >
               繼續購物
-            </a>
-            <a
-              href="/customer-service"
-              className="inline-flex border border-[#225B4F] px-6 py-3 font-medium text-[#225B4F] hover:bg-[#EEF4F1]"
+            </Link>
+            <Link
+              to="/customer-service"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-stone-200 bg-white px-8 py-3.5 font-semibold text-stone-700 transition-colors hover:bg-stone-50"
             >
               聯絡客服
-            </a>
+            </Link>
           </div>
         </section>
       </main>

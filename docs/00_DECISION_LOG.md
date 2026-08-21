@@ -1,6 +1,6 @@
 # SAENGAK 決策狀態總表 (Authoritative Decision Log)
 
-> 更新日期：2026-08-19 (CSP 允許清單治理事故與強制驗證修訂)
+> 更新日期：2026-08-20 (Phase 2 後端中樞落地稽核與 Fail-Closed 修正，見 §3.2)
 > 本表為所有規格書的最高權威。任一子文件與本表衝突時，以本表為準。
 
 ## 1. 已定案架構決策 (2026-08-17)
@@ -10,10 +10,10 @@
 | 階段策略 | **第 1 階段聚焦「商品展示與部署上線」**，結帳交易保留至第 2 階段 | 全流程一次性混雜上線 | MAIN_SPECIFICATION |
 | 庫存權威與聯動 | **SiteGiant ERP 透過 Shopify App 聯動雙向同步**；Shopify 為前端即時庫存門戶 | Vercel API 直連 SiteGiant 進行 2PC (Reserve/Commit) 鎖定 | CHECKOUT_PAYMENT_SPEC |
 | 物流模式 | **Shopify 內建 ShipAny App 進行門市選單與履約** (自建物流 API 列為備用) | 自建複雜門市選單 API 與履約狀態機 | LOGISTICS_INVOICE |
-| 結帳方式 | 自建 React Checkout (Option B) [第 2 階段推進] | Shopify Checkout 跳轉 | CHECKOUT_PAYMENT_SPEC |
+| 結帳方式 | **Shopify Checkout 跳轉 (老闆指示由第2階段退回)** | 自建 React Checkout (Option B) [已廢棄] | CHECKOUT_PAYMENT_SPEC |
 | 後端中樞 | Vercel Serverless API (`api/*`) | Supabase Edge Functions | VERCEL_MIGRATION_SPEC |
-| 金流模式 | TapPay Direct Pay SDK (卡號零落地 Zero-Card-Storage) [第 2 階段推進] | TapPay Shopify Payment App / 後端卡號落地 | CHECKOUT_PAYMENT_SPEC |
-| 付款方式 | 首版禁用 COD (僅支援 TapPay 線上刷卡) [第 2 階段] | 貨到付款 (COD) | CHECKOUT_PAYMENT_SPEC |
+| 金流模式 | **TapPay Shopify Payment App (隨 Shopify Checkout 跳轉)** | TapPay Direct Pay SDK (已廢棄) | CHECKOUT_PAYMENT_SPEC |
+| 付款方式 | 僅支援線上刷卡 | 貨到付款 (COD) | CHECKOUT_PAYMENT_SPEC |
 | 品牌文案常數 | 品牌資料集中於 `src/content/site.ts` | 散落於各頁面硬編碼 | MAIN_SPECIFICATION / site.ts |
 | 電子發票 | 光貿電子發票 [第 2 階段推進] | Waaship 發票 | LOGISTICS_INVOICE |
 | Storefront API 客戶端 | **全面純前端直連 Storefront GraphQL API** (官方 `@shopify/storefront-api-client` SDK，零中介、純前端安全公開憑證模式) | 經由 Supabase Edge Functions 中轉或自建原生 fetch 與私密憑證回退模式 | MAIN_SPECIFICATION / 00_DECISION_LOG |
@@ -66,17 +66,39 @@
 
 **本次事故延伸出的通用除錯觀念（列入 §1 治理決策，往後所有新增降級路徑一律適用）**：任何「失敗後靜默退回展示/快取/假資料」的容錯設計，若只寫 `console.warn`／`console.error` 而不回報監控系統，其風險等同於沒有錯誤處理——因為使用者體驗完全正常、頁面不會顯示任何錯誤，故障只會停留在瀏覽器本機 console，永遠不會被任何人看見，可能無限期地留在正式環境而無人察覺（本次事故即為實例）。**優雅降級（Graceful Degradation）與可觀測性（Observability）必須同時具備**：`catch` 區塊在退回 fallback 資料前，除既有的 `console.warn`／`console.error` 之外，必須同時呼叫 `src/lib/sentry.ts` 之 `captureExceptionSafe(err, { source, fallback })`，兩者缺一不可。Code Review 時應將此列為檢查項：任何新增的 `catch` 區塊若接著設定 fallback/mock 資料卻未回報 Sentry，應視為缺陷退回。
 
+### 3.2 Phase 2 後端中樞落地稽核與修正 (2026-08-20)
+
+**背景**：Phase 2 後端中樞（結帳交易、TapPay 金流、發票 Outbox、Webhook 投影、對帳排程）程式碼首版落地後，以「報告聲稱 vs 實際程式碼」逐項稽核。表層指標（檔案存在、`npm test`/`typecheck`/`build` 通過）屬實，但發現以下缺陷並全數修正：
+
+| 嚴重度 | 發現 | 修正 |
+| --- | --- | --- |
+| Critical | `enqueueAmegoInvoiceJob` 以 `.from('amego_invoice_jobs')` 直寫，但該表位於 `private` schema（PostgREST 不曝露），寫入必然失敗且被 `catch {}` 靜默吞掉退回記憶體——Serverless instance 回收後發票工作遺失，**發票實質不會開立** | 新增 `public.enqueue_amego_invoice_job` RPC（migration `20260820000003`，冪等 upsert、僅 service_role），程式改走 RPC；pgTAP 測試 `enqueue_amego_invoice_job.test.sql` |
+| High | 三處安全檢查 Fail-Open：缺 `Origin` header 放行、`SHOPIFY_WEBHOOK_SECRET` 未設定跳過 HMAC、`CRON_SECRET`/`AmegoDispatchToken` 未設定放行任意呼叫者觸發退款 | 全數改 Fail-Closed（缺 Origin → 403；密鑰缺失 → 500 拒絕 + 告警日誌），新增 CHECKOUT_PAYMENT_SPEC §7.8 鐵則與 4 項迴歸測試 |
+| High | `api/cron/reconcile.ts` 僅有端點、`vercel.json` 無 `crons` 宣告，對帳排程從未真正被排程 | `vercel.json` 補 `crons`：reconcile 每 15 分鐘、guangmao 發票 Worker 每 5 分鐘 |
+| Medium | 存在兩套限流實作：端點誤接固定視窗、無 Sentry 回報的弱版；真滑動視窗版 (`api/_lib/ratelimit.ts`) 反而是死碼 | 刪除弱版，端點統一接回 `ratelimit.ts`（Upstash Lua 滑動視窗 + in-memory 降級 + Sentry 回報） |
+| Medium | 測試覆蓋誇大：`checkoutHandler` 主線（扣款成功→建單→補償）無整合測試；Supabase 整合層完全未被測試觸及 | 補 Happy Path 與補償退款整合測試、發票偏好竄改 422 測試；`run-db-tests.mjs` 補列 `transaction_logs.test.sql`（原先漏排從未執行）與新 RPC 測試 |
+| Low | 冪等 Payload Hash 未含 `invoicePreference`，同 key 換發票抬頭/統編不會觸發 422 | Hash 納入發票偏好，補測試 |
+
+**驗證數據 (2026-08-20 修正後)**：`npm test` 360/360、`npm run typecheck` 零錯誤、`npm run build` 通過。**未驗證**：SQL migration 與 pgTAP（本機無 Docker，`npm run test:db` 待補跑）；Vercel 部署與 TapPay 沙盒實單未執行。
+
+**新增治理決策（列入 §1 精神，與「靜默降級可觀測性治理」同源）**：
+1. **密鑰缺失 Fail-Closed 鐵則**：任何以密鑰為前提的安全檢查（HMAC、Bearer Token），密鑰未設定必須拒絕請求，嚴禁「有設定才驗證」——密鑰漏設是部署常態風險，防護不得隱性消失（權威：CHECKOUT_PAYMENT_SPEC §7.8）。
+2. **Private Schema 存取鐵則**：`private` schema 資料表一律經 `public.*` RPC 存取，後端程式嚴禁 `.from()` 直寫；新增 RPC 必須附 pgTAP 權限測試（權威：CHECKOUT_PAYMENT_SPEC §5.3）。
+3. **限流模組唯一性**：全站限流唯一實作為 `api/_lib/ratelimit.ts`，嚴禁另建平行模組（權威：CHECKOUT_PAYMENT_SPEC §7.2）。
+
 ## 4. 開放項目與階段開發狀態 (OPEN & STAGED DEVELOPMENTS)
 
 - [x] **第 1 階段 (商品展示與部署上線 — 當前聚焦)**：
   - 前端全站靜態與商品展示頁面、分類瀏覽 (Collections)、商品規格選擇 (Variants)、圖片 Gallery。
   - 多語系 (i18n)、微動畫體驗 (Framer Motion)、Web Vitals 效能優化。SEO 結構化標記已備妥，惟 `vercel.json` 現仍設定 `X-Robots-Tag: noindex, nofollow`（測試期防收錄），**正式上線須依 LAUNCH_CHECKLIST §2 解除**方能被搜尋引擎索引。
   - Vite 生產環境打包與 `vercel.json` 全域安全標頭 (CSP, COOP, HSTS) 通過測試，具備正式部署能力；HSTS 補齊與 Sentry 前端監控接線**已完成**（見上表），LAUNCH_CHECKLIST 僅剩測試閘門移除與 SEO 解封為上線阻擋項。
-- [ ] **第 2 階段 (結帳中樞、金物流與發票串接 — 待後續啟動)**：
-  - 自建結帳交易中樞 (`api/checkout.ts` 冪等性去重 + Supabase `transaction_logs` 狀態機)。
-  - TapPay Direct Pay SDK 後端授權扣款與 3DS callback 流程。
-  - Shopify 內建 ShipAny App 超商選店聯動 (自建 API 作為備用)。
-  - 光貿電子發票 API 自動開立/作廢/折讓與對帳排程。
+- [ ] **第 2 階段 (原自建結帳已廢棄，改由 Shopify Checkout 接管)**：
+  - [x] 原自建結帳交易中樞程式碼已廢棄 (2026-08-21 決策)。
+  - [x] 發票收集移至側邊欄 (Cart Drawer)，結帳全數跳轉回 Shopify Checkout。
+  - [x] 光貿電子發票 Outbox Worker 程式碼（`enqueue_amego_invoice_job` RPC + `api/invoice/guangmao.ts` 回讀 99）。
+  - [ ] Vercel 部署、環境變數/Secrets 配置、Supabase migration 套用與 `npm run test:db` 驗證。
+  - [ ] Shopify 內建 ShipAny App 超商選店聯動 (自建 API 作為備用)。
+  - [ ] 後端 `@sentry/node` 接線；TapPay 沙盒實單與端到端商業驗收 (`verify:commerce`)。
 
 ## 5. 分支管理與衝突隔離決策 (2026-08-18)
 
