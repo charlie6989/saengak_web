@@ -1,6 +1,6 @@
 # Vercel Serverless 遷移規格書 (Vercel Migration Spec)
 
-> 版本日期：2026-08-20 (Phase 2 API 層程式碼落地與稽核修正；前版：2026-08-17 補強 HMAC 實作細節)
+> 版本日期：2026-08-22 (對齊 00_DECISION_LOG §3.3：結帳架構回歸 Shopify Checkout，`api/checkout.ts` 系列自建交易中樞已廢棄；前版：2026-08-20 Phase 2 API 層程式碼落地與稽核修正)
 
 ## 1. 遷移背景與目標
 
@@ -10,18 +10,20 @@
 
 所有後端邏輯以 Node.js / TypeScript 改寫，置於專案根 `api/` 資料夾，由 Vercel 自動部署。
 
-| 舊架構 (Edge Functions) | 新架構 (Vercel API) | 職責與重構要點 | 落地狀態 (2026-08-20) |
+| 舊架構 / 前身 | 現行 Vercel API | 職責與重構要點 | 現況 (2026-08-22) |
 | --- | --- | --- | --- |
-| `create-shopify-cart` | `api/checkout.ts` | 大幅改寫：接收 TapPay Prime、金額權威重算、扣款、建單、發票 Outbox。不再只回 checkoutUrl。 | ✅ 程式碼已落地 |
-| (3DS 新增) | `api/checkout/confirm.ts` | 接收 3DS callback，後端二次向 TapPay Record API 查最終結果並續行建單。 | ✅ 程式碼已落地 |
-| (輪詢新增) | `api/checkout/status.ts` | 前端以 `idempotency_key` 輪詢交易進度（脫敏），取代前端直讀 `transaction_logs`。 | ✅ 程式碼已落地 |
-| `shopify-orders-webhook` | `api/webhooks/shopify.ts` | 驗證 HMAC，寫入 orders / order_items / order_fulfillments 投影。 | ✅ 程式碼已落地（雙軌期，Edge Function 尚未下線） |
-| (原交 Waaship) | `api/invoice/guangmao.ts` | 光貿 Amego 發票 Outbox Worker：Claim → 派送 f0401 → 回讀 99 → 投影 order_invoices。 | ✅ 程式碼已落地 |
-| (對帳新增) | `api/cron/reconcile.ts` | 掃描逾時中間態交易，自動 Refund 補償或關閉；`vercel.json` crons 每 15 分鐘觸發。 | ✅ 程式碼已落地 |
-| (共用函式庫) | `api/_lib/{tappay,shopify-admin,supabase-admin,ratelimit,security}.ts` | TapPay SDK、Shopify Admin/Storefront、Supabase Service Role、滑動視窗限流、Origin/Hash/timing-safe 工具。 | ✅ 程式碼已落地 |
+| `create-shopify-cart` (Supabase Edge Function) | `api/create-shopify-cart.ts` | ✅ **現行結帳入口**：建立 Shopify Cart、回傳 `checkoutUrl`，導向 Shopify Checkout；已登入會員驗證 Bearer session 並寫入 `shopify_checkout_links`。金額、庫存與扣款一律由 Shopify／TapPay Shopify Payment App 於其自有頁面權威處理，本函式不重算金額、不接觸卡號。 | ✅ 現行（git commit `79e6486`） |
+| (Phase 2 自建，已廢棄) | ~~`api/checkout.ts`~~ | ~~接收 TapPay Prime、金額權威重算、扣款、建單、發票 Outbox~~ | ❌ **已廢棄，不得部署**（2026-08-21，見 00_DECISION_LOG §3.3） |
+| (Phase 2 自建，已廢棄) | ~~`api/checkout/confirm.ts`~~ | ~~接收 3DS callback，後端二次向 TapPay Record API 查最終結果~~ | ❌ **已廢棄，不得部署** |
+| (Phase 2 自建，已廢棄) | ~~`api/checkout/status.ts`~~ | ~~前端以 `idempotency_key` 輪詢交易進度~~ | ❌ **已廢棄，不得部署** |
+| (Phase 2 自建，已廢棄) | ~~`api/cron/reconcile.ts`~~ | ~~掃描逾時中間態交易，自動 Refund 補償或關閉~~ | ❌ **已廢棄，不得部署** |
+| `shopify-orders-webhook` | `api/webhooks/shopify.ts` | 驗證 HMAC，寫入 orders / order_items / order_fulfillments 投影。不受結帳架構回歸影響。 | 程式碼存在（雙軌期，Shopify Webhook 訂閱實際指向哪個端點待現場確認） |
+| (原交 Waaship) | `api/invoice/guangmao.ts` | 光貿 Amego 發票 Outbox Worker：Claim → 派送 f0401 → 回讀 99 → 投影 order_invoices。不受結帳架構回歸影響。 | ✅ 程式碼已落地 |
+| (共用函式庫) | `api/_lib/{supabase-admin,security}.ts` | Supabase Service Role、Origin/Hash/timing-safe 工具，`api/create-shopify-cart.ts` 現行使用中。 | ✅ 現行 |
+| (共用函式庫，已廢棄) | ~~`api/_lib/{tappay,shopify-admin,ratelimit}.ts`~~ | ~~TapPay SDK、Shopify Admin 權威計價建單、滑動視窗限流~~，主要服務於已廢棄之 `api/checkout.ts` 系列 | ❌ 僅存於 Git 歷史 |
 | `get-products` 等 | `api/catalog/*.ts` | ~~遷移查詢邏輯~~ 已改採前端直連 Storefront API（見 00_DECISION_LOG §1），本項不再需要。 | — 已由架構決策取代 |
 
-> 「✅ 程式碼已落地」= 通過 `npm test` (360/360)、`npm run typecheck` 與 `npm run build`；**不代表**已部署 Vercel 或完成沙盒實單驗收。
+> 「✅ 現行」表示程式碼與 00_DECISION_LOG §3.3 之現行架構一致；**不代表**已完成 Vercel 環境變數/Secrets 全面配置或端到端商業驗收 (`verify:commerce`)。「❌ 已廢棄」項目之程式碼仍保留於 Git 歷史供追溯，但不得部署或視為現行系統行為。
 
 ## 3. Edge Functions 下線與切換計畫 (新增)
 
@@ -41,14 +43,14 @@
   - 額外驗證 `X-Shopify-Shop-Domain` header 等於本站唯一授權商店 `gh2xgs-zf.myshopify.com`，防止他店 webhook 或偽造請求誤植資料。
   - HMAC 驗證失敗一律回 401 並記錄告警，不得靜默丟棄。
   - **`SHOPIFY_WEBHOOK_SECRET` 未設定時一律回 500 拒絕**（2026-08-20 稽核修正）：原實作在密鑰缺失時整段跳過驗證、未簽章請求直接被當合法處理；已改為 Fail-Closed 並以迴歸測試鎖定（見 CHECKOUT_PAYMENT_SPEC §7.8）。
-- 交易端點 `api/checkout.ts`、`api/checkout/confirm.ts` 需 Rate Limit（唯一實作 `api/_lib/ratelimit.ts`，見 CHECKOUT_PAYMENT_SPEC §7.2）、idempotency（§4）、Origin 檢查與 CORS 限制（§7.4，缺 Origin 一律 403）。
+- ~~交易端點 `api/checkout.ts`、`api/checkout/confirm.ts` 需 Rate Limit...~~ 此段落原描述已廢棄之自建結帳中樞，不適用於現行架構。現行 `api/create-shopify-cart.ts` 具備 Origin 檢查（`api/_lib/security.ts`），Rate Limit 目前未見獨立實作。
 - `api/invoice/guangmao.ts` 對外暴露（Vercel Cron 觸發），須驗證 `Authorization: Bearer ${AmegoDispatchToken 或 CRON_SECRET}`；密鑰未設定一律 500 拒絕。
 
 ### 4.1.1 對帳排程端點授權與 Cron 排程
 - 見 CHECKOUT_PAYMENT_SPEC §7.6：Cron 觸發端點須驗證 `CRON_SECRET`（timing-safe 比對；密鑰未設定一律 500 拒絕）。
-- **排程已宣告於 `vercel.json` `crons`（2026-08-20 補上，此前僅有端點而無排程）**：
-  - `/api/cron/reconcile` — `*/15 * * * *`（每 15 分鐘對帳補償）
-  - `/api/invoice/guangmao` — `*/5 * * * *`（每 5 分鐘消化發票 Outbox）
+- **排程已宣告於 `vercel.json` `crons`**（2026-08-22 複查：因 Vercel Hobby 方案僅支援每日排程，實際頻率已由原規劃之每 15/5 分鐘下修為每日一次，見 git commit `27c11aa`）：
+  - `/api/cron/reconcile` — `0 0 * * *`（每日一次；⚠️ 呼叫已廢棄之自建結帳中樞對帳邏輯，`transaction_logs` 現行無資料寫入，此排程目前實質為 no-op，可評估自 `vercel.json` 移除）
+  - `/api/invoice/guangmao` — `0 1 * * *`（每日一次，消化光貿發票 Outbox；不受結帳架構回歸影響，仍為現行必要排程）
 
 ### 4.2 Cache-Control
 - `api/catalog/*` 商品查詢加 `Cache-Control: s-maxage` 利用 Vercel Edge Cache。

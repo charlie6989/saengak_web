@@ -3,6 +3,8 @@
 > 建立日期：2026-08-13
 > 決策目標：整合前端與後端部署流程，提升開發效率，確立 Vercel 作為系統唯一 API 中樞。
 
+> **⚠️ 2026-08-22 修正說明**：本文件「Vercel 作為系統唯一 API 中樞」之核心決策維持不變且已落地（`api/` 目錄現行承載 `create-shopify-cart.ts`、`webhooks/shopify.ts`、`invoice/guangmao.ts` 等實際運作中的路由）。但文中作為舉例之「自建結帳頁」、`api/checkout.ts` 已於 2026-08-21 隨結帳架構回歸 Shopify Checkout 而廢棄（見 `00_DECISION_LOG.md` §3.3），本文件保留原始論述作歷史決策脈絡紀錄，不再更新其論述內容。
+
 ## 1. 決策背景與核心挑戰
 
 在 SAENGAK 的早期架構中，前端由 Vercel 託管，而後端的商業邏輯（如購物車處理、Shopify Webhook 接收）則部署在 **Supabase Edge Functions** (基於 Deno 執行環境)。

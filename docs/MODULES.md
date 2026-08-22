@@ -1,18 +1,18 @@
 # SAENGAK 現階段模塊與架構基線
 
-> 更新日期：2026-08-20 (對齊 `MAIN_SPECIFICATION.md` 最新架構，已剔除舊版 Shopify Checkout 跳轉與 API 直連庫存鎖定機制)
+> 更新日期：2026-08-22 (對齊 `00_DECISION_LOG.md` §3.3：結帳架構第三度變動，回歸 Shopify Checkout 跳轉；自建 React Checkout／TapPay Direct Pay／`transaction_logs` 狀態機已廢棄；營運後台路由與 RLS 已接線)
 
 ## 模塊責任與狀態
 
 | 模塊 | 內容責任 | 對應架構與規則 | 階段狀態 |
 | --- | --- | --- | --- |
 | 商品目錄與庫存 | 展示名稱、價格、規格、即時庫存 | 實體庫存權威為 **SiteGiant ERP**，透過 Shopify App 自動雙向同步。前端一律直接查詢 Shopify Storefront API。**（已廢棄由 Vercel API 直連 SiteGiant 進行庫存鎖定與 2PC 的機制）**。 | Phase 1 就緒 |
-| 購物車／結帳 | 購物車狀態保存與結帳流程 | **自建 React Checkout (Option B)**，不跳轉 Shopify Checkout。結帳金額以伺服器端 (`api/checkout.ts`) 重算為唯一權威。前端結帳頁 (`src/pages/checkout/`：身分流程、TapPay 付款表單、3DS callback、Error Fallback) 與後端中樞均已落地。 | Phase 2 程式碼已落地（待部署與沙盒驗收） |
-| 結帳身分 | 會員登入與訪客購買 | 採用「混合模式」，優先鼓勵登入但支援訪客結帳，並以「手機號碼」作為跨訂單歸戶/歷史查詢的依據。 | Phase 2 前端流程已落地（OTP 歸戶查詢待建） |
-| 金流支付 | 信用卡授權扣款 | TapPay Direct Pay SDK (SAQ A-EP，卡號零落地)，由 Vercel API (`api/_lib/tappay.ts`) 進行伺服器端扣款、Record 二次查核、Refund 補償與 3DS callback 處理。 | Phase 2 程式碼已落地（待 TapPay 沙盒實單） |
-| 訂單中樞 | 交易防重複與訂單建立 | 透過 Supabase `transaction_logs` 實作冪等性防護與八態狀態機（migration `20260820000001`）。扣款成功後建立 Shopify 訂單；建單失敗自動 Refund；逾時交易由 `api/cron/reconcile.ts` 每 15 分鐘對帳補償。 | Phase 2 程式碼已落地（migration 待套用） |
-| 物流／發票 | 超商/宅配與電子發票 | Shopify 內建 ShipAny App 進行履行與門市選單；光貿電子發票經 `public.enqueue_amego_invoice_job` RPC 寫入 private Outbox，由 `api/invoice/guangmao.ts` Worker 每 5 分鐘派送並回讀 `invoice_status=99`。 | Phase 2 發票程式碼已落地；ShipAny 待安裝綁定 |
-| 營運後台 | 統一的營運監控與參數管理 | 在同一個 React 專案下建立 `/admin` 路由（`AdminLayout`/`Dashboard`/`OrderList`/`ProductList`/`SiteSettings`），透過 Supabase Auth 嚴格檢查 `app_metadata.role === 'admin'`（`src/router/AdminGuard.tsx`），搭配 RLS 保護參數設定（`site_settings`，migration `20260820000002`）。商品與訂單皆為唯讀模式以防衝突。 | Phase 3 程式碼已落地（待部署與管理員帳號授權） |
+| 購物車／結帳 | 購物車狀態保存與結帳流程 | **跳轉 Shopify Checkout**（2026-08-21 起現行架構，見 `00_DECISION_LOG.md` §3.3）。購物車側邊欄收集發票偏好後，呼叫 `api/create-shopify-cart.ts` 建立 Shopify Cart 並取得 `checkoutUrl`，導向 Shopify Checkout 完成後續流程。~~自建 React Checkout (Option B) 與 `api/checkout.ts` 金額重算中樞~~已廢棄，僅存於 Git 歷史。 | 現行（`CheckoutReleaseEnabled` 總開關現況未確認，見 `00_DECISION_LOG.md` §3.3） |
+| 結帳身分 | 會員登入與訪客購買 | 採用「混合模式」，優先鼓勵登入但支援訪客結帳；已登入會員建立 Cart 時由 `api/create-shopify-cart.ts` 驗證 session 並寫入 `shopify_checkout_links` 供訂單歸戶。「手機號碼」跨訂單查詢仍為規劃中之補充機制。 | 現行（OTP 歸戶查詢待建） |
+| 金流支付 | 信用卡授權扣款 | **TapPay Shopify Payment App**，於 Shopify Checkout 頁面內完成授權扣款；SAENGAK 前端與後端皆不經手卡號。~~TapPay Direct Pay SDK 前端整合與 `api/_lib/tappay.ts` 伺服器端扣款~~已廢棄。 | 現行（待 TapPay 沙盒實單驗收） |
+| 訂單中樞 | 訂單建立與投影 | Shopify 完成扣款後於 Shopify 端建立訂單，簽章 Webhook (`api/webhooks/shopify.ts`) 驗證後投影至 Supabase `orders`／`order_items`，供會員與後台唯讀查詢。~~Supabase `transaction_logs` 八態狀態機（migration `20260820000001`）與 `api/cron/reconcile.ts` 對帳補償~~屬已廢棄自建結帳中樞之殘留，未部署。 | 現行 |
+| 物流／發票 | 超商/宅配與電子發票 | Shopify 內建 ShipAny App 進行履行與門市選單；光貿電子發票經 `public.enqueue_amego_invoice_job` RPC 寫入 private Outbox，由 `api/invoice/guangmao.ts` Worker 每 5 分鐘派送並回讀 `invoice_status=99`。（此模組不受結帳架構回歸影響） | 發票程式碼已落地；ShipAny 待安裝綁定 |
+| 營運後台 | 統一的營運監控與參數管理 | `/admin` 路由（`AdminGuard` → `AdminLayout` → `Dashboard`/`ProductList`/`OrderList`/`SiteSettings`/`page`）已接上巢狀路由並強制檢查 `app_metadata.role === 'admin'`（`src/router/AdminGuard.tsx`）。`orders`／`order_items`／`order_invoices` 已補齊 admin 唯讀 RLS，`site_settings` 讀寫與 RLS 皆已套用正式庫（migration `20260822000001`，2026-08-22）。商品與訂單皆為唯讀模式以防與 ERP／Shopify 衝突。 | **已部署且已有授權管理員帳號** |
 
 ## 公開內容與安全守門
 

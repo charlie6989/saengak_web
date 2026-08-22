@@ -1,8 +1,8 @@
 # SAENGAK 正式主要規格書 (Main Specification)
 
-> 版本日期：2026-08-20 (Phase 2 後端中樞程式碼落地與稽核修正，見 §4.2 與 00_DECISION_LOG §3.2)
+> 版本日期：2026-08-22 (對齊 00_DECISION_LOG §3.3：結帳架構回歸 Shopify Checkout；後台管理系統路由與權限守衛已接線)
 > 專案網域：`https://saengak.com.tw`
-> 專案狀態：**第 1 階段商品展示完成並朝向 Vercel 部署上線推進；第 2 階段結帳後端中樞程式碼已落地（待部署與沙盒驗收）**
+> 專案狀態：**第 1 階段商品展示完成並朝向 Vercel 部署上線推進；結帳交易已改由 Shopify Checkout 全權處理（TapPay Shopify Payment App），原自建結帳中樞已廢棄**
 > 權威索引：本文件與各子規格衝突時，以 `00_DECISION_LOG.md` 為最高權威。
 
 ## 1. 專案背景與架構策略目標
@@ -13,7 +13,7 @@
 - **物流履約**：Shopify 內建之 ShipAny 應用程式進行超商選店與配送履行（自建物流 API 列為備用）。
 - **階段策略**：
   - **第 1 階段 (當前聚焦)**：高質感商品展示 (Catalog & Product Details)、多語系切換、SEO 結構化標記與 Vercel 部署上線。
-  - **第 2 階段 (後續推進)**：自建 React 結帳頁面 (Option B)、TapPay Direct Pay 線上刷卡、光貿電子發票與交易狀態機。
+  - **第 2 階段 (後續推進)**：跳轉 Shopify Checkout、TapPay Shopify Payment App 線上刷卡、光貿電子發票自動化開立（原自建 React 結帳頁面／TapPay Direct Pay SDK／交易狀態機已於 2026-08-21 廢棄，見 `00_DECISION_LOG.md` §3.3）。
 
 ### 1.1 系統與商店識別
 - **前端與 API 部署**：Vercel (`saengak-web-d2ux`)
@@ -36,26 +36,26 @@
 - **多國語言 (i18n)**：`i18next` + `react-i18next` + `i18next-browser-languagedetector`
 - **前端異常防護**：分層 Error Boundary (`ErrorBoundary.tsx` / `CheckoutErrorFallback.tsx`) 已落地；`@sentry/react` 上報**已接線**並掛載脫敏 Hook（`src/main.tsx`）
 
-#### 2. 後端中樞 API 層 (Backend Serverless API Layer — Phase 2，程式碼已落地 2026-08-20)
+#### 2. 後端中樞 API 層 (Backend Serverless API Layer)
 - **執行環境**：Vercel Serverless Functions (Node.js ES Modules, `type: module`)
-- **API 路由結構（已落地）**：`api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/webhooks/shopify.ts`、`api/invoice/guangmao.ts`、`api/cron/reconcile.ts`
-- **共用函式庫（已落地）**：`api/_lib/tappay.ts`（金流）、`api/_lib/shopify-admin.ts`（權威計價與建單）、`api/_lib/supabase-admin.ts`（狀態機與發票 Outbox RPC）、`api/_lib/ratelimit.ts`（滑動視窗限流）、`api/_lib/security.ts`（Origin/Hash/timing-safe 工具）
-- **核心防禦機制（已落地並有迴歸測試）**：
+- **現行 API 路由（結帳已改回 Shopify Checkout，見 00_DECISION_LOG §3.3）**：`api/create-shopify-cart.ts`（建立 Shopify Cart 並回傳 `checkoutUrl`，取代已廢棄之 `api/checkout.ts` 自建交易中樞）、`api/webhooks/shopify.ts`（訂單簽章 Webhook 投影至 `orders`／`order_items`）、`api/invoice/guangmao.ts`（光貿發票 Outbox Worker）
+- **已廢棄、僅存於 Git 歷史、不得部署**：`api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/cron/reconcile.ts`（原自建 TapPay Direct Pay + `transaction_logs` 交易狀態機中樞）
+- **共用函式庫**：`api/_lib/security.ts`（Origin/Hash/timing-safe 工具，現行 `api/create-shopify-cart.ts` 仍在用）、`api/_lib/supabase-admin.ts`（發票 Outbox RPC）；`api/_lib/tappay.ts`、`api/_lib/shopify-admin.ts`、`api/_lib/ratelimit.ts` 主要服務於已廢棄之自建結帳中樞
+- **核心防禦機制**：
   - **HMAC 驗證**：Shopify Webhook SHA256 數位簽名檢查（raw body + `timingSafeEqual`；密鑰缺失 Fail-Closed）
-  - **冪等性 (Idempotency)**：`Idempotency-Key` (UUID v4) + Payload SHA-256（含發票偏好）防重複提交與同 key 竄改重放
-  - **Fail-Closed 鐵則**：所有密鑰前提之安全檢查，密鑰未設定一律拒絕（見 CHECKOUT_PAYMENT_SPEC §7.8）
-  - **個資/卡號脫敏**：`@sentry/node` 洗淨器強制過濾 Prime 碼、卡號與金鑰 Secrets（後端 SDK 接線仍待安裝）
+  - **⚠️ 已知未解決風險**：舊版 Supabase Edge Function 之 `CheckoutReleaseEnabled` 結帳總開關檢查，遷移至 `api/create-shopify-cart.ts` 後**未見**對應邏輯，尚待工程確認（見 00_DECISION_LOG §3.3）
+  - **個資/卡號脫敏**：SAENGAK 前端與後端皆不經手完整卡號，TapPay 於 Shopify Checkout 頁面內獨立處理
 
 #### 3. 資料庫與狀態機持久層 (Database & Persistence Layer)
 - **資料庫**：Supabase PostgreSQL 15 (正式專屬 Reference `tmqzkagkrzhioftvwbqo`)
 - **個資防禦隔離**：全資料表啟用 Row Level Security (RLS)，強制以 `auth.uid()` 為存取邊界
-- **交易狀態機 (第 2 階段)**：`transaction_logs` 有限狀態機 (`INITIATED` → `PAYMENT_CAPTURED` → `ORDER_CREATED` → `INVOICE_ISSUED` → `COMPLETED`)
+- **訂單投影**：`orders`／`order_items` 由 Shopify 簽章 Webhook 投影寫入，為會員與後台唯讀查詢之資料來源；`transaction_logs` 有限狀態機 (migration `20260820000001`) 屬已廢棄自建結帳中樞之殘留，未部署至現行流程
 
 #### 4. 第三方服務整合層 (External Integration Layer)
 - **實體庫存與 ERP**：SiteGiant ERP (透過 Shopify App 與 Shopify 後台保持自動同步)
 - **商品型錄與即時可售**：**全面純前端直連 Shopify Storefront GraphQL API**（採用官方 `@shopify/storefront-api-client` SDK，零後端中介、純前端安全公開憑證模式，涵蓋商品目錄、分類 Collections、標籤 Tags、規格 Variants、即時庫存與部落格文章 Articles）
 - **超商物流**：Shopify 內建 ShipAny App (7-11 / 全家便利商店電子地圖選店與托運單；自建 API 備用)
-- **金流串接 (第 2 階段)**：TapPay Direct Pay SDK (Pay-by-Prime 零卡號落地 + 3DS Callback)
+- **金流串接**：TapPay Shopify Payment App，於 Shopify Checkout 頁面內完成授權扣款；原 TapPay Direct Pay SDK (Pay-by-Prime + 3DS Callback) 前端整合已廢棄
 - **電子發票 (第 2 階段)**：光貿電子發票 API (自動開立、作廢與折讓)
 
 #### 5. 部署與 DevOps 基建層 (Deployment & Infrastructure Layer)
@@ -75,7 +75,7 @@ CSP 為預設拒絕；每接入一個外部服務，必須依下表更新 `verce
 | Shopify Storefront API | Phase 1 | `connect-src https://gh2xgs-zf.myshopify.com`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**） |
 | Sentry 事件上報 | Phase 1（已接線） | `connect-src https://*.ingest.sentry.io https://*.ingest.us.sentry.io`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**） |
 | Remix Icon 圖示庫 (`index.html` CDN) | Phase 1 | `style-src`／`font-src https://cdn.jsdelivr.net`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**；`cdnjs.cloudflare.com` 為早期殘留放行、目前程式碼未實際引用，保留不影響安全性） |
-| TapPay Direct Pay SDK | Phase 2 | `script-src`／`frame-src https://js.tappaysdk.com`、`connect-src`／`frame-src https://sand-pay.tappaysdk.com https://pay.tappaysdk.com`；3DS 為整頁跳轉不需 `frame-src` 放行銀行網域（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證，2026-08-20**） |
+| TapPay SDK 網域 | 現行於 `vercel.json` | `script-src`／`frame-src https://js.tappaysdk.com`、`connect-src`／`frame-src https://sand-pay.tappaysdk.com https://pay.tappaysdk.com`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證**）。⚠️ 2026-08-21 結帳改回 Shopify Checkout 後，TapPay 已改為 Shopify Payment App、於 Shopify 網域內運作，本專案網域是否仍需放行這些指令待重新確認，本表暫不逕自移除 |
 | Cloudflare Turnstile (CAPTCHA) | Phase 2 | `script-src`／`frame-src`／`connect-src https://challenges.cloudflare.com`（**已放行，並已列入 `REQUIRED_CSP_DIRECTIVES` 強制驗證，2026-08-20**） |
 | ShipAny 門市地圖（若前端嵌入） | Phase 2 | 依屆時官方文件另訂，並回填本表 |
 
@@ -93,12 +93,13 @@ flowchart TD
         SF -->|回傳商品型錄、規格、價格與 availableForSale| UI
     end
 
-    subgraph 結帳與交易流程 (Phase 2 保留規格)
-        UI -.->|1. 顧客提交結帳與 Prime| VC["Vercel Serverless API (api/checkout)"]
-        VC -.->|2. 授權扣款| TP["TapPay Direct Pay SDK"]
-        VC -.->|3. 建立訂單| SP
-        VC -.->|4. 開立發票| GM["光貿電子發票 API"]
-        VC -.->|5. 交易狀態記錄| SB["Supabase (Transaction Logs)"]
+    subgraph 結帳與交易流程 (Phase 2 現行規格 - Shopify Checkout)
+        UI -.->|1. 顧客提交購物車| VC["Vercel API (api/create-shopify-cart)"]
+        VC -.->|2. 建立 Cart 取得 checkoutUrl| SP
+        VC -.->|3. 導向| SC["Shopify Checkout"]
+        SC -.->|4. 頁內授權扣款| TP["TapPay Shopify Payment App"]
+        SC -.->|5. 開立發票| GM["光貿電子發票 API"]
+        SP -.->|6. 簽章 Webhook 回寫| SB["Supabase (orders / order_items 投影)"]
     end
 
     subgraph 物流履行 (Logistics Fulfillment)
@@ -110,7 +111,8 @@ flowchart TD
 ## 3. 子規格書索引 (Sub-Specifications)
 
 0. **[決策狀態總表](00_DECISION_LOG.md)**：最高權威，記錄所有架構定案與開放項目。
-1. **[結帳與交易安全性規格書](CHECKOUT_PAYMENT_SPEC.md)**：自建 Checkout、TapPay SDK、Shopify App 庫存聯動、Transaction_Logs 狀態機 (Phase 2)。
+1. **[TapPay × Shopify 串接基線](TAPPAY_SHOPIFY.md)**：現行結帳流程權威文件——跳轉 Shopify Checkout、TapPay Shopify Payment App、`create-shopify-cart` 串接與管理端設定清單。
+1a. **[結帳與交易安全性規格書](CHECKOUT_PAYMENT_SPEC.md)** ⚠️ **已廢棄**：描述已於 2026-08-21 廢棄之自建 Checkout、TapPay Direct Pay SDK、Transaction_Logs 狀態機，僅供歷史參考。
 2. **[Vercel Serverless 遷移規格書](VERCEL_MIGRATION_SPEC.md)**：API 路由設計、HMAC 驗證、Edge Functions 下線計畫、Cache-Control 與 Rate Limit。
 3. **[物流與發票整合規格書](LOGISTICS_INVOICE.md)**：Shopify ShipAny App 物流（自建 API 備用）與光貿發票自動化開立。
 4. **[Supabase 資料庫部署與 RLS](SUPABASE_DEPLOYMENT.md)**：會員資料隔離與各項投影資料表存取控制。
@@ -138,21 +140,29 @@ flowchart TD
   - 移除 TestAccessGate (`middleware.js`)、測試環境變數與測試登入 API（註：目前機制為本地開發端 localhost 直通，僅發布至雲端的環境需要測試者帳密閘門）。
   - 解封 SEO：移除 `X-Robots-Tag: noindex`。
 
-### 4.2 第 2 階段：自建結帳與金物流串接 (Phase 2 — 後端程式碼已落地，待部署與驗收)
+### 4.2 第 2 階段：Shopify Checkout 結帳與金物流串接 (Phase 2)
 
-> 依 00_DECISION_LOG §1 治理決策，「程式碼已落地」= 通過 `npm test` (360/360)、`typecheck` 與 `build` 之本地自動化驗證；**不等於**已部署或完成沙盒實單。2026-08-20 曾稽核發現首版實作有 Critical/High 缺陷（發票 Outbox 寫入路徑錯誤、多處 Fail-Open），已全數修正並補迴歸測試，詳見 00_DECISION_LOG §3.2。
+> 2026-08-21 結帳架構第三次變動，改回跳轉 Shopify Checkout（詳見 `00_DECISION_LOG.md` §3.3）。原自建結帳中樞（`api/checkout.ts` 與 `transaction_logs` 狀態機等）之開發紀錄已移至下方「已廢棄」段落，不再列為本階段進行中工作。
 
-- [x] **自建結帳中樞程式碼 (`api/checkout.ts` 與 `api/_lib/*`)**
-  - Idempotency Key 冪等性去重（Payload SHA-256 含發票偏好）與 Supabase `transaction_logs` 交易狀態機（migration `20260820000001`）。
-  - TapPay Prime 後端授權扣款、金額權威重算、3DS 分支 (`api/checkout/confirm.ts`) 與建單失敗自動 Refund 補償。
-  - 對帳補償排程 `api/cron/reconcile.ts` + `vercel.json` crons、狀態輪詢 `api/checkout/status.ts`。
+- [x] **Shopify Checkout 結帳流程 (`api/create-shopify-cart.ts`)**
+  - 購物車側邊欄收集發票偏好，呼叫 Vercel API 建立 Shopify Cart 並取得 `checkoutUrl`，導向 Shopify Checkout；TapPay 以 Shopify Payment App 身分於該頁完成授權扣款。
+  - Origin 檢查、cart line 驗證、已登入會員 `cart_token -> user_id` 綁定（`shopify_checkout_links` 表）。
+  - ⚠️ `CheckoutReleaseEnabled` 總開關檢查現況未確認，見 `00_DECISION_LOG.md` §3.3 已知風險。
+- [x] **訂單投影 (`api/webhooks/shopify.ts`)**：Shopify 訂單簽章 Webhook 驗證後投影至 Supabase `orders`／`order_items`，供會員與後台唯讀查詢。
 - [x] **光貿電子發票 Outbox Worker 程式碼 (`api/invoice/guangmao.ts`)**
   - 經 `public.enqueue_amego_invoice_job` RPC 寫入 `private.amego_invoice_jobs`（migration `20260820000003`），Worker 認領派送並回讀 `invoice_status=99` 投影 `order_invoices`。
-- [ ] **部署與環境配置**：Vercel 環境變數/Secrets（TapPay Partner Key、Shopify Admin Token、`SHOPIFY_WEBHOOK_SECRET`、`CRON_SECRET`、`AmegoDispatchToken`、Upstash Redis）、Supabase migration 套用與 `npm run test:db` 對真實 Postgres 驗證。
+- [x] **營運後台 (`/admin/*`)**：路由已接上 `AdminGuard`／`AdminLayout`，Supabase RLS 已補齊 admin 對 `orders`／`order_items`／`order_invoices` 之唯讀權限與 `site_settings` 讀寫（2026-08-22，migration `20260822000001` 已套用正式庫）。
+- [ ] **部署與環境配置**：Vercel 環境變數/Secrets（TapPay Shopify 商家設定、`SHOPIFY_WEBHOOK_SECRET`、`AmegoDispatchToken`）、`npm run test:db` 對真實 Postgres 驗證。
 - [ ] **Shopify 訂單與 ShipAny 物流 App 串接**
   - 結帳後自動建立 Shopify 訂單，觸發 ShipAny App 進行門市取貨標籤印製。
 - [ ] **後端 `@sentry/node` 監控接線**（Serverless API 層異常上報）。
 - [ ] **端到端商業驗收 (`verify:commerce`)**：TapPay 沙盒實單 success／failed／cancelled 三案例跨系統一致性。
+
+#### 已廢棄（2026-08-21 起不得部署，僅存於 Git 歷史）
+
+- ~~自建結帳中樞程式碼 (`api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/cron/reconcile.ts` 與 `api/_lib/{tappay,shopify-admin,ratelimit}.ts`)~~
+- ~~Idempotency Key 冪等性去重與 Supabase `transaction_logs` 交易狀態機（migration `20260820000001`）~~
+- ~~TapPay Prime 前端 Direct Pay SDK 整合、3DS callback 頁面、對帳補償排程~~
 
 ## 5. 系統資安防護與信任邊界規範 (Security Invariants)
 

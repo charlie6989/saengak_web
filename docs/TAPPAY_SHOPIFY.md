@@ -1,6 +1,8 @@
 # TapPay × Shopify 串接基線
 
-更新日期：2026-08-13
+更新日期：2026-08-22（`create-shopify-cart` 已由 Supabase Edge Function 遷移至 Vercel `api/create-shopify-cart.ts`，見 `00_DECISION_LOG.md` §3.3；前版：2026-08-13）
+
+> 本文件為**現行**結帳流程權威文件。2026-08-17 至 2026-08-21 間曾短暫改為自建 React Checkout + TapPay Direct Pay SDK（見已廢棄之 [`CHECKOUT_PAYMENT_SPEC.md`](CHECKOUT_PAYMENT_SPEC.md)），已於 2026-08-21 回歸本文件所述之 Shopify Checkout 跳轉架構。
 
 ## 架構結論
 
@@ -8,7 +10,7 @@ TapPay 依教學文件安裝為 Shopify Payment App。SAENGAK 前端不直接處
 
 ```text
 SAENGAK 購物車
-  -> Supabase create-shopify-cart
+  -> Vercel API create-shopify-cart (api/create-shopify-cart.ts)
   -> Shopify Storefront API cartCreate
   -> Shopify checkoutUrl
   -> TapPay Payment App
@@ -22,8 +24,8 @@ SAENGAK 購物車
 
 - 購物車保存 Shopify `ProductVariant` ID；多規格但尚未選定規格時停止結帳。
 - `buildShopifyCheckoutLines` 驗證所有商品規格並合併相同 variant 數量。
-- `create-shopify-cart` Edge Function 驗證 Origin、商品行數、variant ID 與數量；server-side `CheckoutReleaseEnabled` 未精確設為 `true` 時一律拒絕建立 Cart。
-- Edge Function 關閉平台舊 JWT 驗證，改在函式內核對 `apikey`，同時支援 Supabase publishable key 與舊 anon key；公開 key 不放入 Bearer header。
+- `create-shopify-cart` 現為 Vercel Function (`api/create-shopify-cart.ts`)，驗證 Origin（`api/_lib/security.ts`）、商品行數、variant ID 與數量。⚠️ 舊版 Supabase Edge Function 具備 server-side `CheckoutReleaseEnabled` 結帳總開關檢查，遷移後**程式碼中未見對應邏輯**（2026-08-22 複查，見 `00_DECISION_LOG.md` §3.3，尚待工程確認）。
+- 已登入會員以 `Authorization: Bearer <token>` 呼叫時，函式呼叫 Supabase Auth `getUser()` 驗證 session；未帶 Bearer 視為訪客結帳，不強制登入。
 - 前端只接受 HTTPS `checkoutUrl`，缺少後端環境時不導向、不送出付款。
 - 正式商品價格、折扣、稅金與可售狀態以 Shopify Checkout 回讀為準，不信任 localStorage 合計。
 - 已登入會員建立 Cart 時，後端驗證 session 後保存 `cart_token -> user_id`；訪客結帳不會被猜測或用 email 自動掛到會員。
@@ -66,19 +68,15 @@ SHOPIFY_ADMIN_ACCESS_TOKEN=*** npm run shopify:webhooks -- --apply
 
 ## 後端環境設定
 
-部署 `create-shopify-cart` 的 Supabase 專案使用以下設定：
+> ⚠️ 2026-08-22 更新：`create-shopify-cart` 已遷移為 Vercel Serverless Function (`api/create-shopify-cart.ts`)，與前端共用同一個 Vercel 專案的環境變數，**不再是獨立的 Supabase Edge Function、不再讀取獨立的 Supabase Function Secret**。以下為現行實際使用之變數，取代本節先前描述的 Supabase Secret 清單：
 
-- `ShopifyDomain`：舊設定已不再決定目標商店；程式固定使用 SAENGAK 專用商店 `gh2xgs-zf.myshopify.com`，避免殘留 secret 造成跨店結帳。
-- `StorefrontAccessToken`：選填。Products／Collections／Search／Cart 可使用 Shopify 2026-07 tokenless access；若要讀取 tags、metafields、customers 等需權限欄位，再將 token 只存於 Supabase Secret。
-- `ShopifyStorefrontApiVersion=2026-07`：選填覆寫；未設定時使用此版本。
-- `CheckoutAllowedOrigins`：選填覆寫；預設精確允許 `https://saengak.com.tw` 與 `https://saengak-web-d2ux.vercel.app`。
-- `ShopifyWebhookSecret`：SAENGAK Shopify App 的 client secret，只能放 Supabase Secret，用於驗證 `X-Shopify-Hmac-Sha256`。
-- `CheckoutReleaseEnabled=false`：server-side 結帳總開關；sandbox 三情境與正式上線核准前保持關閉。只有精確值 `true` 會開啟。
+- `VITE_PUBLIC_SHOPIFY_STORE_DOMAIN`：目標商店網域，與前端商品目錄查詢共用同一組公開變數，固定指向 SAENGAK 專用商店 `gh2xgs-zf.myshopify.com`。
+- `VITE_PUBLIC_SHOPIFY_STOREFRONT_PUBLIC_TOKEN` / `VITE_PUBLIC_SHOPIFY_API_VERSION`：Storefront API 公開存取憑證與版本，與前端共用（見 `src/lib/shopify.ts`）。
+- `SUPABASE_URL` / `SUPABASE_ANON_KEY`（或對應之 `VITE_PUBLIC_SUPABASE_URL` / `VITE_PUBLIC_SUPABASE_ANON_KEY`）：僅用於驗證已登入會員的 Bearer Token 並寫入 `shopify_checkout_links`；service-role 金鑰另由 `api/_lib/supabase-admin.ts` 管理，不對外暴露。
+- Origin 允許清單：由 `api/_lib/security.ts` 之 `isOriginAllowed()` 判定，非本節先前所述之獨立 `CheckoutAllowedOrigins` Secret。
+- `ShopifyWebhookSecret`：SAENGAK Shopify App 的 client secret，供 `api/webhooks/shopify.ts` 驗證 `X-Shopify-Hmac-Sha256`，只放伺服器端環境變數。
 
-Vercel 只設定公開的函式入口：
-
-- `VITE_PUBLIC_CHECKOUT_SUPABASE_URL`
-- `VITE_PUBLIC_CHECKOUT_SUPABASE_KEY`
+⚠️ **已知缺口（尚待工程確認，見 `00_DECISION_LOG.md` §3.3）**：舊版 Supabase Edge Function 具備 `CheckoutReleaseEnabled=false` 之 server-side 結帳總開關（未精確設為 `true` 一律拒絕建立 Cart），遷移至 `api/create-shopify-cart.ts` 後**程式碼中未見此檢查**。在工程確認此總開關是否仍受控管、或改由其他機制（如 `site_settings.maintenance_mode`）取代之前，**不可假設現行結帳流程仍受此開關保護**。
 
 Storefront 前端另採兩個預設關閉的 release gate：
 
