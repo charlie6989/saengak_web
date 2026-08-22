@@ -132,6 +132,13 @@ scripts/backup-shopify-store.mjs
 scripts/test-api-keys.mjs
 scripts/test-shopify-backup.mjs
 
+# Contains hardcoded production admin credentials (plaintext password) - never commit
+supabase/DEPLOY_TO_PRODUCTION.sql
+supabase/FULL_DATABASE_SCHEMA.sql
+
+# Supabase CLI local link/session state
+supabase/.temp/
+
 # Excluded Docs from remote GitHub repository
 AGENTS.md
 CONTRIBUTING.md
