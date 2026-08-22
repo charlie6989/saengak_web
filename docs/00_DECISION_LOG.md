@@ -100,6 +100,16 @@
 
 **新增治理決策**：本次變動後，`MAIN_SPECIFICATION.md`、`MODULES.md`、`CHECKOUT_PAYMENT_SPEC.md`（已加頂端 DEPRECATED 警告）、`VERCEL_MIGRATION_SPEC.md`、`docs/agents/domain-docs.md` 已於 2026-08-22 同步修正，移除或標註已廢棄之自建結帳架構敘述；`docs/decisions/CHECKOUT_ARCHITECTURE_DECISION.md` 與 `docs/decisions/VERCEL_SERVERLESS_DECISION.md` 屬歷史決策紀錄，保留原始論述並僅追加修正附註，不覆寫歷史脈絡。
 
+### 3.4 Shopify Checkout 強制會員登入與可靠歸戶 (2026-08-23)
+
+**背景**：會員由 Supabase Auth 管理、訂單權威位於 Shopify。若允許訪客建立 Shopify Cart，付款完成後可能沒有可信的 Supabase `user_id` 可供 Webhook 歸戶，無法保證會員中心、ERP 與客服看到同一位顧客的完整訂單。
+
+**決策內容**：
+- 結帳前強制登入或註冊 Supabase 會員，不再提供訪客結帳。購物車仍保存在瀏覽器，登入流程不清空商品與發票偏好。
+- 前端登入閘門只負責操作體驗；`api/create-shopify-cart.ts` 才是權威安全邊界，必須以 Supabase Auth `getUser()` 驗證 Bearer session，未登入或 session 失效回 401。
+- 驗證會員後，後端先以 service role 將一次性 member link token 綁定至 `user_id`；寫入成功後才以同一 token 建立 Shopify Cart。會員歸戶不可用、寫入失敗或必要環境設定缺失一律 Fail-Closed，不回傳 `checkoutUrl`。
+- Shopify 簽章 Webhook 仍以 member link token 將付款完成的訂單投影至 Supabase；Email、電話或 Shopify Customer 資料不得取代已驗證的 `user_id` 作為自動歸戶依據。
+
 ## 4. 開放項目與階段開發狀態 (OPEN & STAGED DEVELOPMENTS)
 
 - [x] **第 1 階段 (商品展示與部署上線 — 當前聚焦)**：
@@ -118,5 +128,4 @@
 
 - **審查結論**：遠端分支 `origin/codex/saengak-recovery-security-review-20260813` 包含 Phase 2 後端微服務與 Migration，但其前端為早期骨架版本，直接 `git merge` 會產生 35+ 處嚴重衝突並破壞 Phase 1 前端穩定性。
 - **處置原則**：**嚴禁直接合併**。一律採 Selective Sync（挑選移植）方式將後端與 Migration 單向移植至 `main`，詳見 [分支整合備註 BRANCH_INTEGRATION_NOTES.md](BRANCH_INTEGRATION_NOTES.md)。
-
 

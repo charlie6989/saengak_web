@@ -118,29 +118,41 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     const authorization = request.headers.get('Authorization');
-    const bearerToken = authorization?.startsWith('Bearer ') ? authorization.slice(7) : undefined;
-    let checkoutUserId: string | undefined;
-
-    if (authorization && !bearerToken) {
-      return jsonResponse({ error: 'Invalid Authorization header' }, { status: 401, headers: corsHeaders });
+    if (!authorization) {
+      return jsonResponse({
+        error: 'Sign in before checkout',
+        code: 'MEMBER_LOGIN_REQUIRED',
+      }, { status: 401, headers: corsHeaders });
     }
 
-    if (bearerToken) {
-      const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_PUBLIC_SUPABASE_URL;
-      const publicKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
-      if (!supabaseUrl || !publicKey) {
-        return jsonResponse({ error: 'Membership authentication is unavailable' }, { status: 503, headers: corsHeaders });
-      }
-
-      const authClient = createClient(supabaseUrl, publicKey, {
-        auth: { persistSession: false, autoRefreshToken: false },
-      });
-      const { data, error } = await authClient.auth.getUser(bearerToken);
-      if (error || !data.user) {
-        return jsonResponse({ error: 'Invalid or expired member session' }, { status: 401, headers: corsHeaders });
-      }
-      checkoutUserId = data.user.id;
+    const bearerMatch = /^Bearer\s+(\S+)$/i.exec(authorization);
+    if (!bearerMatch) {
+      return jsonResponse({
+        error: 'Invalid Authorization header',
+        code: 'MEMBER_SESSION_INVALID',
+      }, { status: 401, headers: corsHeaders });
     }
+
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_PUBLIC_SUPABASE_URL;
+    const publicKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !publicKey) {
+      return jsonResponse({
+        error: 'Membership authentication is unavailable',
+        code: 'MEMBERSHIP_AUTH_UNAVAILABLE',
+      }, { status: 503, headers: corsHeaders });
+    }
+
+    const authClient = createClient(supabaseUrl, publicKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data, error } = await authClient.auth.getUser(bearerMatch[1]);
+    if (error || !data.user) {
+      return jsonResponse({
+        error: 'Invalid or expired member session',
+        code: 'MEMBER_SESSION_INVALID',
+      }, { status: 401, headers: corsHeaders });
+    }
+    const checkoutUserId = data.user.id;
 
     const body = await request.json().catch(() => null) as CreateCartRequestBody | null;
     const invoicePreference = parseInvoicePreference(body?.invoicePreference ?? {
@@ -167,11 +179,13 @@ export async function POST(request: Request): Promise<Response> {
     const hasSensitiveInvoicePreference = invoicePreference.kind === 'company' ||
       Boolean(invoicePreference.notificationEmail) ||
       (invoicePreference.kind === 'personal' && invoicePreference.carrier !== 'none');
-    if (hasSensitiveInvoicePreference && !checkoutUserId) {
+
+    const adminClient = getSupabaseAdminClient();
+    if (!adminClient) {
       return jsonResponse({
-        error: 'Sign in before saving invoice details',
-        code: 'INVOICE_PREFERENCE_REQUIRES_MEMBER',
-      }, { status: 401, headers: corsHeaders });
+        error: 'Member order tracking is unavailable',
+        code: 'MEMBER_ORDER_LINK_UNAVAILABLE',
+      }, { status: 503, headers: corsHeaders });
     }
 
     const query = `
@@ -196,11 +210,10 @@ export async function POST(request: Request): Promise<Response> {
       }
     `;
 
-    const checkoutLinkToken = checkoutUserId ? randomUUID() : undefined;
-    const attributes = [];
-    if (checkoutLinkToken) {
-      attributes.push({ key: '_saengak_member_link_token', value: checkoutLinkToken });
-    }
+    const checkoutLinkToken = randomUUID();
+    const attributes = [
+      { key: '_saengak_member_link_token', value: checkoutLinkToken },
+    ];
     if (invoicePreference.kind) {
       attributes.push({ key: '_invoice_kind', value: invoicePreference.kind });
     }
@@ -217,6 +230,45 @@ export async function POST(request: Request): Promise<Response> {
     } else {
       attributes.push({ key: '_invoice_tax_id', value: invoicePreference.taxId });
       attributes.push({ key: '_invoice_buyer_name', value: invoicePreference.buyerName });
+    }
+
+    if (hasSensitiveInvoicePreference) {
+      const { error: preferenceError } = await adminClient.rpc(
+        'save_checkout_invoice_preference',
+        {
+          p_shopify_store_domain: SHOPIFY_STORE_DOMAIN,
+          p_shopify_cart_token: checkoutLinkToken,
+          p_preference: invoicePreference,
+        },
+      );
+      if (preferenceError) {
+        console.error('Unable to persist invoice preference', {
+          code: preferenceError.code,
+        });
+        return jsonResponse({
+          error: 'Unable to secure invoice preference',
+          code: 'INVOICE_PREFERENCE_PERSISTENCE_FAILED',
+        }, { status: 502, headers: corsHeaders });
+      }
+    }
+
+    const { error: linkError } = await adminClient
+      .from('shopify_checkout_links')
+      .upsert({
+        shopify_store_domain: SHOPIFY_STORE_DOMAIN,
+        shopify_cart_token: checkoutLinkToken,
+        user_id: checkoutUserId,
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      }, { onConflict: 'shopify_store_domain,shopify_cart_token' });
+
+    if (linkError) {
+      console.error('Unable to persist checkout link', {
+        code: linkError.code,
+      });
+      return jsonResponse({
+        error: 'Unable to link checkout to member order history',
+        code: 'MEMBER_ORDER_LINK_FAILED',
+      }, { status: 502, headers: corsHeaders });
     }
 
     const shopifyResponse = await fetch(
@@ -290,64 +342,12 @@ export async function POST(request: Request): Promise<Response> {
       }, { status: 502, headers: corsHeaders });
     }
 
-    const requiresAdminPersistence = Boolean(checkoutUserId) || hasSensitiveInvoicePreference;
-    const adminClient = requiresAdminPersistence ? getSupabaseAdminClient() : null;
-    if (requiresAdminPersistence && !adminClient) {
-      return jsonResponse({
-        error: 'Member order tracking is unavailable',
-        code: 'MEMBER_ORDER_LINK_UNAVAILABLE',
-      }, { status: 503, headers: corsHeaders });
-    }
-
-    if (hasSensitiveInvoicePreference && adminClient) {
-      const { error: preferenceError } = await adminClient.rpc(
-        'save_checkout_invoice_preference',
-        {
-          p_shopify_store_domain: SHOPIFY_STORE_DOMAIN,
-          p_shopify_cart_token: checkoutLinkToken || cartToken,
-          p_preference: invoicePreference,
-        },
-      );
-      if (preferenceError) {
-        console.error('Unable to persist invoice preference', {
-          code: preferenceError.code,
-        });
-        return jsonResponse({
-          error: 'Unable to secure invoice preference',
-          code: 'INVOICE_PREFERENCE_PERSISTENCE_FAILED',
-        }, { status: 502, headers: corsHeaders });
-      }
-    }
-
-    let orderTrackingLinked = false;
-    if (checkoutUserId && adminClient) {
-      const { error: linkError } = await adminClient
-        .from('shopify_checkout_links')
-        .upsert({
-          shopify_store_domain: SHOPIFY_STORE_DOMAIN,
-          shopify_cart_token: checkoutLinkToken || cartToken,
-          user_id: checkoutUserId,
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        }, { onConflict: 'shopify_store_domain,shopify_cart_token' });
-
-      if (linkError) {
-        console.error('Unable to persist checkout link', {
-          code: linkError.code,
-        });
-        return jsonResponse({
-          error: 'Unable to link checkout to member order history',
-          code: 'MEMBER_ORDER_LINK_FAILED',
-        }, { status: 502, headers: corsHeaders });
-      }
-      orderTrackingLinked = true;
-    }
-
     return jsonResponse({
       checkoutUrl: payload.cart.checkoutUrl,
       cartId: payload.cart.id,
       totalQuantity: payload.cart.totalQuantity,
       warnings: payload.warnings ?? [],
-      orderTrackingLinked,
+      orderTrackingLinked: true,
     }, { status: 200, headers: corsHeaders });
 
   } catch (error) {

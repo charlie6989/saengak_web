@@ -156,6 +156,8 @@ TapPay Direct Pay 走 3DS 驗證時：
 - Token 比對一律使用 timing-safe 比較（`timingSafeStringEqual`），不得用 `===`。
 
 ### 7.7 結帳身分政策（已定案）
+> 本節屬已廢棄自建 Checkout 規格；2026-08-23 起已由 `00_DECISION_LOG.md` §3.4 與現行 `TAPPAY_SHOPIFY.md` 的「強制 Supabase 會員登入後才可建立 Shopify Cart」決策取代，不得再據此開放訪客結帳。
+
 - **定案方案：混合模式 (Email OTP 歸戶)**。
 - 優先鼓勵會員登入結帳。同時開放訪客免登入結帳，並以「手機號碼」作為跨訂單關聯依據。
 - **資安防護 (交集比對)**：為防止惡意人士以他人手機號碼窮舉歷史訂單，訪客查詢訂單時需在畫面上同時輸入「手機號碼」與「Email」。系統確認兩者在過去訂單有交集後，將透過 Supabase 發送 Email 驗證碼 (OTP/Magic Link) 至該信箱。驗證通過後即可查看該歸戶之訂單並轉化為正式會員。

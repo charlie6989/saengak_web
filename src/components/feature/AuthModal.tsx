@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 
@@ -8,9 +8,18 @@ interface AuthModalProps {
   onClose: () => void;
   mode?: 'login' | 'register';
   onSwitchMode?: (mode: 'login' | 'register') => void;
+  onAuthenticated?: () => void;
+  purpose?: 'default' | 'checkout';
 }
 
-export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMode }: AuthModalProps) {
+export default function AuthModal({
+  isOpen,
+  onClose,
+  mode = 'login',
+  onSwitchMode,
+  onAuthenticated,
+  purpose = 'default',
+}: AuthModalProps) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(mode === 'login');
   const [formData, setFormData] = useState({
@@ -21,6 +30,13 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsLogin(mode === 'login');
+      setMessage('');
+    }
+  }, [isOpen, mode]);
 
   if (!isOpen) return null;
 
@@ -50,19 +66,17 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
 
       if (isLogin) {
         // 登入
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
 
         if (error) {
-          setMessage(`登入失敗: ${error.message}`);
+          setMessage('登入失敗，請確認電子郵件與密碼後再試。');
         } else {
           setMessage('登入成功！');
-          setTimeout(() => {
-            onClose();
-            window.location.reload(); // 重新載入頁面以更新用戶狀態
-          }, 1000);
+          onAuthenticated?.();
+          onClose();
         }
       } else {
         // 註冊 - 使用正確的端口號
@@ -78,14 +92,13 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
         });
 
         if (error) {
-          setMessage(`註冊失敗: ${error.message}`);
+          setMessage('目前無法完成註冊，請確認資料後稍後再試。');
+        } else if (data.session) {
+          setMessage('註冊並登入成功！');
+          onAuthenticated?.();
+          onClose();
         } else {
-          setMessage('註冊成功！請檢查您的電子郵件以驗證帳號');
-          setTimeout(() => {
-            onClose();
-            // 註冊成功後跳轉到歡迎頁面
-            navigate('/welcome');
-          }, 2000);
+          setMessage('註冊資料已送出。請先完成電子郵件驗證，再回來登入後結帳。');
         }
       }
     } catch (error) {
@@ -108,7 +121,9 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/welcome`
+            redirectTo: purpose === 'checkout'
+              ? window.location.origin
+              : `${window.location.origin}/welcome`
         }
       });
 
@@ -139,15 +154,10 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
     try {
       const redirectUrl = `${window.location.origin}/reset-password`;
       
-      const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
+      await supabase.auth.resetPasswordForEmail(formData.email, {
         redirectTo: redirectUrl,
       });
-
-      if (error) {
-        setMessage(`重設密碼失敗: ${error.message}`);
-      } else {
-        setMessage('密碼重設連結已發送到您的電子郵件');
-      }
+      setMessage('若此電子郵件可重設密碼，系統將寄出操作連結。');
     } catch (error) {
       setMessage('發生錯誤，請稍後再試');
     } finally {
@@ -191,8 +201,8 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]" onClick={onClose}>
+      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 max-h-[calc(100vh-2rem)] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -200,14 +210,22 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
           </h2>
           <button
             onClick={onClose}
+            aria-label="關閉會員登入視窗"
             className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 cursor-pointer outline-none focus:outline-none"
           >
             <i className="ri-close-line text-xl"></i>
           </button>
         </div>
 
+        {purpose === 'checkout' && (
+          <div className="mb-6 p-4 bg-teal-50 border border-teal-200 rounded-md">
+            <p className="text-sm font-medium text-teal-900">結帳前請先登入會員</p>
+            <p className="mt-1 text-sm text-teal-800">訂單會綁定到您的會員 ID；登入或註冊過程不會清除購物車。</p>
+          </div>
+        )}
+
         {/* 導航到獨立頁面的提示 */}
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+        {purpose === 'default' && <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
           <div className="flex items-start">
             <i className="ri-information-line text-blue-600 mr-2 mt-0.5"></i>
             <div className="text-sm text-blue-800">
@@ -237,7 +255,7 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
               </div>
             </div>
           </div>
-        </div>
+        </div>}
 
         {/* Google Login Button - 暫時隱藏直到設定完成 */}
         <div style={{ display: 'none' }}>
@@ -262,7 +280,7 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
         </div>
 
         {/* 設定完成提示 */}
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md">
+        {purpose === 'default' && <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md">
           <div className="flex items-start">
             <i className="ri-information-line text-amber-600 mr-2 mt-0.5"></i>
             <div className="text-sm text-amber-800">
@@ -270,7 +288,7 @@ export default function AuthModal({ isOpen, onClose, mode = 'login', onSwitchMod
               <p>請先完成 Google Cloud Console 的 OAuth 設定，或使用電子郵件註冊登入</p>
             </div>
           </div>
-        </div>
+        </div>}
 
         {/* 提示訊息 */}
         <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-md">

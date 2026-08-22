@@ -1,6 +1,6 @@
 # Vercel Serverless 遷移規格書 (Vercel Migration Spec)
 
-> 版本日期：2026-08-22 (對齊 00_DECISION_LOG §3.3：結帳架構回歸 Shopify Checkout，`api/checkout.ts` 系列自建交易中樞已廢棄；前版：2026-08-20 Phase 2 API 層程式碼落地與稽核修正)
+> 版本日期：2026-08-23 (對齊 00_DECISION_LOG §3.4：Shopify Checkout 強制會員登入與可靠歸戶；`api/checkout.ts` 系列自建交易中樞已廢棄)
 
 ## 1. 遷移背景與目標
 
@@ -12,7 +12,7 @@
 
 | 舊架構 / 前身 | 現行 Vercel API | 職責與重構要點 | 現況 (2026-08-22) |
 | --- | --- | --- | --- |
-| `create-shopify-cart` (Supabase Edge Function) | `api/create-shopify-cart.ts` | ✅ **現行結帳入口**：建立 Shopify Cart、回傳 `checkoutUrl`，導向 Shopify Checkout；已登入會員驗證 Bearer session 並寫入 `shopify_checkout_links`。金額、庫存與扣款一律由 Shopify／TapPay Shopify Payment App 於其自有頁面權威處理，本函式不重算金額、不接觸卡號。 | ✅ 現行（git commit `79e6486`） |
+| `create-shopify-cart` (Supabase Edge Function) | `api/create-shopify-cart.ts` | ✅ **現行結帳入口**：強制驗證 Supabase Bearer session，先寫入 `shopify_checkout_links`，成功後才建立帶有會員綁定 token 的 Shopify Cart 並回傳 `checkoutUrl`；未登入、session 失效或歸戶不可用皆 Fail-Closed。金額、庫存與扣款一律由 Shopify／TapPay Shopify Payment App 於其自有頁面權威處理，本函式不重算金額、不接觸卡號。 | ✅ 現行（2026-08-23） |
 | (Phase 2 自建，已廢棄) | ~~`api/checkout.ts`~~ | ~~接收 TapPay Prime、金額權威重算、扣款、建單、發票 Outbox~~ | ❌ **已廢棄，不得部署**（2026-08-21，見 00_DECISION_LOG §3.3） |
 | (Phase 2 自建，已廢棄) | ~~`api/checkout/confirm.ts`~~ | ~~接收 3DS callback，後端二次向 TapPay Record API 查最終結果~~ | ❌ **已廢棄，不得部署** |
 | (Phase 2 自建，已廢棄) | ~~`api/checkout/status.ts`~~ | ~~前端以 `idempotency_key` 輪詢交易進度~~ | ❌ **已廢棄，不得部署** |

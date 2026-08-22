@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { formatTwd, getCartLineKey } from '../../domain/algorithms';
 import { 
   defaultInvoicePreference, 
@@ -8,13 +9,16 @@ import {
 } from '../../domain/invoice';
 import { createShopifyCheckout } from '../../lib/shopifyCheckout';
 import { captureExceptionSafe } from '../../lib/sentry';
+import AuthModal from './AuthModal';
 
 const FREE_SHIPPING_THRESHOLD = 1500;
 
 export default function CartSidebar() {
   const [checkoutMessage, setCheckoutMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [invoicePreference, setInvoicePreference] = useState<InvoicePreference>(defaultInvoicePreference);
+  const { user, isLoading: isAuthLoading } = useAuth();
 
   const { 
     items, 
@@ -30,19 +34,7 @@ export default function CartSidebar() {
   const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - totalPrice);
   const freeShippingProgress = Math.min(100, Math.round((totalPrice / FREE_SHIPPING_THRESHOLD) * 100));
 
-  const handleCheckout = async () => {
-    setCheckoutMessage('');
-    if (items.length === 0) {
-      setCheckoutMessage('購物車是空的，尚無法進行結帳。');
-      return;
-    }
-
-    const invoiceError = validateInvoicePreference(invoicePreference);
-    if (invoiceError) {
-      setCheckoutMessage(invoiceError);
-      return;
-    }
-
+  const submitCheckout = async () => {
     setIsSubmitting(true);
     try {
       const shopifyLines = items.map(item => {
@@ -56,10 +48,47 @@ export default function CartSidebar() {
     } catch (err: any) {
       const msg = err?.message || '建立結帳失敗，請稍後再試。';
       setCheckoutMessage(msg);
-      captureExceptionSafe(err, { source: 'CartSidebarCheckout' });
+      if (/登入|會員登入狀態/.test(msg)) {
+        setIsAuthModalOpen(true);
+      } else {
+        captureExceptionSafe(err, { source: 'CartSidebarCheckout' });
+      }
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCheckout = async () => {
+    setCheckoutMessage('');
+    if (items.length === 0) {
+      setCheckoutMessage('購物車是空的，尚無法進行結帳。');
+      return;
+    }
+
+    const invoiceError = validateInvoicePreference(invoicePreference);
+    if (invoiceError) {
+      setCheckoutMessage(invoiceError);
+      return;
+    }
+
+    if (isAuthLoading) {
+      setCheckoutMessage('正在確認會員登入狀態，請稍候。');
+      return;
+    }
+
+    if (!user) {
+      setCheckoutMessage('結帳前請先登入或註冊會員；購物車內容會保留。');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    await submitCheckout();
+  };
+
+  const handleAuthenticated = () => {
+    setIsAuthModalOpen(false);
+    setCheckoutMessage('登入成功，正在建立會員專屬結帳。');
+    void submitCheckout();
   };
 
   const handleProductClick = (item: any) => {
@@ -385,18 +414,18 @@ export default function CartSidebar() {
 
             <button
               onClick={handleCheckout}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isAuthLoading}
               data-testid="checkout-button"
               className="w-full bg-teal-700 text-white py-3 rounded font-semibold hover:bg-teal-800 active:bg-teal-900 transition-all cursor-pointer shadow-md shadow-teal-700/20 text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait"
               style={{ fontFamily: "Noto Sans TC, sans-serif" }}
             >
-              {isSubmitting ? (
+              {isSubmitting || isAuthLoading ? (
                  <>
                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                   <span>處理中...</span>
+                   <span>{isAuthLoading ? '確認會員狀態...' : '處理中...'}</span>
                  </>
               ) : (
-                 <span>前往 TapPay 安全結帳</span>
+                 <span>{user ? '前往 TapPay 安全結帳' : '登入會員後結帳'}</span>
               )}
             </button>
             
@@ -416,6 +445,12 @@ export default function CartSidebar() {
           </div>
         )}
       </div>
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthenticated={handleAuthenticated}
+        purpose="checkout"
+      />
     </>
   );
 }

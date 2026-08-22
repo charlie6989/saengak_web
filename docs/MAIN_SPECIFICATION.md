@@ -146,7 +146,7 @@ flowchart TD
 
 - [x] **Shopify Checkout 結帳流程 (`api/create-shopify-cart.ts`)**
   - 購物車側邊欄收集發票偏好，呼叫 Vercel API 建立 Shopify Cart 並取得 `checkoutUrl`，導向 Shopify Checkout；TapPay 以 Shopify Payment App 身分於該頁完成授權扣款。
-  - Origin 檢查、cart line 驗證、已登入會員 `cart_token -> user_id` 綁定（`shopify_checkout_links` 表）。
+  - 結帳強制 Supabase 會員登入；Origin、Bearer session 與 cart line 驗證通過後，後端必須先完成 `cart_token -> user_id` 綁定（`shopify_checkout_links` 表）才可建立 Shopify Cart。任一驗證或歸戶步驟失敗皆採 Fail-Closed，不回傳 `checkoutUrl`。
   - ⚠️ `CheckoutReleaseEnabled` 總開關檢查現況未確認，見 `00_DECISION_LOG.md` §3.3 已知風險。
 - [x] **訂單投影 (`api/webhooks/shopify.ts`)**：Shopify 訂單簽章 Webhook 驗證後投影至 Supabase `orders`／`order_items`，供會員與後台唯讀查詢。
 - [x] **光貿電子發票 Outbox Worker 程式碼 (`api/invoice/guangmao.ts`)**

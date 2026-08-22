@@ -38,10 +38,17 @@ export function getShopifyCheckoutErrorMessage(
   }
 
   if (status === 401) {
-    if (data.code === 'INVOICE_PREFERENCE_REQUIRES_MEMBER') {
-      return '使用統編、載具、捐贈碼或發票通知 Email 前，請先登入會員。';
+    if (data.code === 'MEMBER_LOGIN_REQUIRED') {
+      return '結帳前請先登入會員，登入後購物車內容會保留。';
+    }
+    if (data.code === 'MEMBER_SESSION_INVALID') {
+      return '會員登入狀態已失效，請重新登入後再結帳。';
     }
     return '結帳服務驗證失敗，請重新整理後再試。';
+  }
+
+  if (data.code === 'MEMBERSHIP_AUTH_UNAVAILABLE') {
+    return '會員驗證服務暫時無法使用，已停止結帳。請稍後再試。';
   }
 
   if (
@@ -86,18 +93,19 @@ export async function createShopifyCheckout(
     throw new Error('Shopify checkout 尚未設定');
   }
 
+  if (!isSupabaseConfigured) {
+    throw new Error('會員驗證服務尚未設定，暫時無法結帳。');
+  }
+
+  const { data: sessionData, error } = await supabase.auth.getSession();
+  if (error || !sessionData.session?.access_token) {
+    throw new Error('結帳前請先登入會員，登入後購物車內容會保留。');
+  }
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    Authorization: `Bearer ${sessionData.session.access_token}`,
   };
-  let hasMemberSession = false;
-
-  if (isSupabaseConfigured) {
-    const { data } = await supabase.auth.getSession();
-    if (data.session?.access_token) {
-      headers.Authorization = `Bearer ${data.session.access_token}`;
-      hasMemberSession = true;
-    }
-  }
 
   const response = await fetch(
     `/api/create-shopify-cart`,
@@ -117,7 +125,7 @@ export async function createShopifyCheckout(
     throw new Error('Shopify 未回傳 checkoutUrl');
   }
 
-  assertMemberOrderTracking(data, hasMemberSession);
+  assertMemberOrderTracking(data, true);
 
   return validateShopifyCheckoutUrl(data.checkoutUrl);
 }
