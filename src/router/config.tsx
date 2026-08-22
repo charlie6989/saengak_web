@@ -1,4 +1,5 @@
 import type { RouteObject } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { lazy } from 'react';
 
 // Lazy load components
@@ -18,7 +19,13 @@ const ForgotPasswordPage = lazy(() => import('../pages/forgot-password/page'));
 const ResetPasswordPage = lazy(() => import('../pages/reset-password/page'));
 const AuthConfirmPage = lazy(() => import('../pages/auth/confirm/page'));
 // Checkout routes have been deprecated and moved to Shopify Checkout
-const SiteSettingsPage = lazy(() => import('../pages/admin/SiteSettings').then(m => ({ default: m.SiteSettings })));
+const AdminGuard = lazy(() => import('./AdminGuard'));
+const AdminLayoutPage = lazy(() => import('../pages/admin/AdminLayout'));
+const AdminDashboardPage = lazy(() => import('../pages/admin/Dashboard'));
+const AdminProductListPage = lazy(() => import('../pages/admin/ProductList'));
+const AdminOrderListPage = lazy(() => import('../pages/admin/OrderList'));
+const AdminModulesPage = lazy(() => import('../pages/admin/page'));
+const SiteSettingsPage = lazy(() => import('../pages/admin/SiteSettings'));
 const OrderStatusPage = lazy(() => import('../pages/order-status/page'));
 const CustomerServicePage = lazy(() => import('../pages/customer-service/page'));
 const FAQPage = lazy(() => import('../pages/faq/page'));
@@ -102,8 +109,21 @@ const routes: RouteObject[] = [
   },
 
   {
-    path: '/admin/settings',
-    element: <SiteSettingsPage />,
+    path: '/admin',
+    element: <AdminGuard />,
+    children: [
+      {
+        element: <AdminLayoutPage />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: 'dashboard', element: <AdminDashboardPage /> },
+          { path: 'products', element: <AdminProductListPage /> },
+          { path: 'orders', element: <AdminOrderListPage /> },
+          { path: 'settings', element: <SiteSettingsPage /> },
+          { path: 'modules', element: <AdminModulesPage /> },
+        ],
+      },
+    ],
   },
   {
     path: '/order-status',

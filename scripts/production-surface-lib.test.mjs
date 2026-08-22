@@ -74,11 +74,16 @@ describe('production surface verifier', () => {
     }
   });
 
-  it('does not require or publicly register an admin route', async () => {
+  it('registers /admin behind AdminGuard, but keeps it out of the smoke-tested production route list', async () => {
+    // /admin is gated by Supabase auth + app_metadata.role === 'admin' (src/router/AdminGuard.tsx),
+    // so it must never be treated as an always-200 anonymous route by the production smoke test.
     expect(REQUIRED_PRODUCTION_ROUTES).not.toContain('/admin');
 
+    // The route itself must exist in the router (see tests/admin-router.test.tsx for the
+    // behavioral proof that AdminGuard actually blocks unauthenticated/non-admin visitors).
     const routerSource = await readFile(new URL('../src/router/config.tsx', import.meta.url), 'utf8');
-    expect(routerSource).not.toMatch(/path:\s*['"]\/admin['"]/);
+    expect(routerSource).toMatch(/path:\s*['"]\/admin['"]/);
+    expect(routerSource).toMatch(/element:\s*<AdminGuard/);
   });
 
   it('fails when a required route redirects to another pathname', async () => {

@@ -77,7 +77,7 @@ export const Dashboard: React.FC = () => {
             <p className="font-semibold">架構與資料源權威說明 (docs/00_DECISION_LOG.md)：</p>
             <p className="text-xs text-amber-800 leading-5">
               1. 實體商品售價與庫存權威源為 <strong>SiteGiant ERP</strong>，透過 Shopify App 自動雙向同步。<br />
-              2. 目前系統處於<strong>第 1 階段（商品展示與 Vercel 部署上線）</strong>；自建結帳與 TapPay 金物流對帳中樞列於第 2 階段。<br />
+              2. 結帳交易已由 <strong>Shopify Checkout</strong> 全權處理，TapPay 以 Shopify Payment App 身分於 Shopify 頁面內扣款；SAENGAK 前端與後台皆不經手卡號。<br />
               3. 本主控台嚴格依據真實系統回讀指標呈現，不顯示偽造的示範營收或假訂單數據。
             </p>
           </div>
@@ -186,31 +186,31 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* 訂單與交易狀態機指標 */}
+        {/* 結帳與發票狀態指標 */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-            <h2 className="font-semibold text-gray-800">交易日誌與對帳狀態機</h2>
+            <h2 className="font-semibold text-gray-800">結帳與發票狀態</h2>
             <Link
               to="/admin/orders"
               className="text-xs font-medium text-[#225B4F] hover:underline"
             >
-              檢視對帳 →
+              檢視訂單 →
             </Link>
           </div>
           <div className="mt-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">結帳中樞階段</span>
-              <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-700">
-                Phase 2 待建
+              <span className="text-sm text-gray-600">結帳方式</span>
+              <span className="rounded bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                Shopify Checkout（外部託管）
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">冪等性 Key 防重複機制</span>
-              <span className="font-semibold text-emerald-600">已就緒</span>
+              <span className="text-sm text-gray-600">金流服務</span>
+              <span className="font-semibold text-gray-700">TapPay Shopify Payment App</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">TapPay 扣款對帳防禦</span>
-              <span className="font-semibold text-gray-700">卡號零落地 SAQ A-EP</span>
+              <span className="text-sm text-gray-600">電子發票</span>
+              <span className="font-semibold text-gray-700">光貿 Amego · order_invoices 回讀</span>
             </div>
           </div>
         </div>
@@ -265,7 +265,7 @@ export const Dashboard: React.FC = () => {
             <span className="text-2xl">📑</span>
             <div>
               <div className="text-sm font-semibold text-gray-800">訂單與交易對帳</div>
-              <div className="text-xs text-gray-500">狀態機對帳與異常排查</div>
+              <div className="text-xs text-gray-500">Shopify 訂單投影與發票狀態</div>
             </div>
           </Link>
 
