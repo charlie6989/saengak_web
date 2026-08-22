@@ -1,6 +1,6 @@
 # SAENGAK 決策狀態總表 (Authoritative Decision Log)
 
-> 更新日期：2026-08-20 (Phase 2 後端中樞落地稽核與 Fail-Closed 修正，見 §3.2)
+> 更新日期：2026-08-22 (補記 2026-08-21 結帳架構第三次變動之決策記錄，見 §3.3；規格書全面對齊)
 > 本表為所有規格書的最高權威。任一子文件與本表衝突時，以本表為準。
 
 ## 1. 已定案架構決策 (2026-08-17)
@@ -27,7 +27,7 @@
 | 商品售價、規格、實體庫存 | **SiteGiant ERP** | 實體商品與庫存主檔，透過 SiteGiant Shopify App 與 Shopify 自動雙向同步 |
 | 前端商品目錄與即時可售量 | **Shopify Storefront** | 前端讀取商品、分類 (Collections)、規格 (Variants) 與即時 `availableForSale` 之直接門戶 |
 | 訂單主檔 (第 2 階段) | **Shopify Order** | 訂單主檔；由結帳流程建立後回讀並同步至 SiteGiant ERP |
-| 付款結果 (第 2 階段) | **TapPay + Transaction_Logs** | 以 Vercel 端交易日誌為對帳權威 |
+| 付款結果 | **Shopify Order + TapPay Shopify Payment App** | TapPay 於 Shopify Checkout 頁面內完成扣款，非自建 Vercel 交易中樞；付款結果隨 Shopify 簽章 Webhook 投影至 Supabase `orders`／`order_items`（見 §3.3） |
 | 發票狀態 (第 2 階段) | **光貿回讀事件** | 「已付款」不等於「已開立」；未回讀維持 `awaiting-provider` |
 | 會員/收藏/投影 | **Supabase** | RLS 以 `auth.uid()` 隔離 |
 
@@ -85,6 +85,20 @@
 1. **密鑰缺失 Fail-Closed 鐵則**：任何以密鑰為前提的安全檢查（HMAC、Bearer Token），密鑰未設定必須拒絕請求，嚴禁「有設定才驗證」——密鑰漏設是部署常態風險，防護不得隱性消失（權威：CHECKOUT_PAYMENT_SPEC §7.8）。
 2. **Private Schema 存取鐵則**：`private` schema 資料表一律經 `public.*` RPC 存取，後端程式嚴禁 `.from()` 直寫；新增 RPC 必須附 pgTAP 權限測試（權威：CHECKOUT_PAYMENT_SPEC §5.3）。
 3. **限流模組唯一性**：全站限流唯一實作為 `api/_lib/ratelimit.ts`，嚴禁另建平行模組（權威：CHECKOUT_PAYMENT_SPEC §7.2）。
+
+### 3.3 結帳架構第三次變動：回歸 Shopify Checkout (2026-08-21)
+
+**背景**：本專案結帳架構歷經三次變動：(1) 最初採跳轉 Shopify Checkout；(2) 2026-08-17 改為自建 React Checkout (Option B) + TapPay Direct Pay SDK + Vercel 交易中樞（`api/checkout.ts`），理由是唯有自建才能在扣款前鎖定 SiteGiant ERP 庫存；(3) **2026-08-21，經負責人指示，改回跳轉 Shopify Checkout**，TapPay 以 Shopify Payment App 身分於 Shopify 頁面內完成扣款。本節補記此決策，修正先前遺漏未獨立記錄的缺口。
+
+**決策內容**：
+- 自建結帳中樞全數廢棄：`api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/cron/reconcile.ts`、`transaction_logs` 交易狀態機（migration `20260820000001`）、TapPay Direct Pay SDK 前端整合、3DS callback 頁面。程式碼保留於 Git 歷史供追溯，**不得部署上線**。
+- 現行結帳流程權威文件改為 [`TAPPAY_SHOPIFY.md`](TAPPAY_SHOPIFY.md)：購物車在側邊欄 (Cart Drawer) 收集發票資訊後，呼叫 `create-shopify-cart` 建立 Shopify Cart 並取得 `checkoutUrl`，導向 Shopify Checkout；TapPay 以 Shopify Payment App 身分於該頁完成授權扣款；ShipAny 於同頁提供超商/宅配選擇；付款確認後由 Shopify 簽章 Webhook 回寫並投影至 Supabase `orders`／`order_items`。
+- `create-shopify-cart` 同期由 Supabase Edge Function 遷移至 Vercel `api/create-shopify-cart.ts`（git commit `79e6486`）。
+- **不受本次變動影響、仍為現行權威**：光貿 (Amego) 電子發票之 Outbox 派送模式（`enqueue_amego_invoice_job` RPC → `api/invoice/guangmao.ts` → 回讀 `invoice_status=99`）、SiteGiant ERP 透過 Shopify App 雙向同步、admin 角色一律以 `app_metadata.role='admin'` 判定之規則。
+
+**⚠️ 已知未解決風險（2026-08-22 複查發現，尚待工程確認）**：舊版 Supabase Edge Function 版本的 `create-shopify-cart` 具備 `CheckoutReleaseEnabled` 結帳總開關檢查（未精確設為 `true` 一律拒絕建立 Cart）；遷移至 `api/create-shopify-cart.ts` 後，程式碼中**未見**此檢查邏輯，但 `src/pages/admin/SiteSettings.tsx` 等前端介面仍引用此設定名稱。在工程確認此總開關是否仍受控管、或改以其他機制（如 `site_settings.maintenance_mode`）取代之前，**不可假設結帳可被此開關關閉**。
+
+**新增治理決策**：本次變動後，`MAIN_SPECIFICATION.md`、`MODULES.md`、`CHECKOUT_PAYMENT_SPEC.md`（已加頂端 DEPRECATED 警告）、`VERCEL_MIGRATION_SPEC.md`、`docs/agents/domain-docs.md` 已於 2026-08-22 同步修正，移除或標註已廢棄之自建結帳架構敘述；`docs/decisions/CHECKOUT_ARCHITECTURE_DECISION.md` 與 `docs/decisions/VERCEL_SERVERLESS_DECISION.md` 屬歷史決策紀錄，保留原始論述並僅追加修正附註，不覆寫歷史脈絡。
 
 ## 4. 開放項目與階段開發狀態 (OPEN & STAGED DEVELOPMENTS)
 

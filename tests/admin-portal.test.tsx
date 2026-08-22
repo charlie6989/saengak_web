@@ -228,7 +228,8 @@ describe('SAENGAK 後台管理系統與權限隔離測試 (Admin Portal & Role I
       expect(html).toContain('SiteGiant ERP');
       expect(html).toContain('Shopify Storefront');
       expect(html).toContain('tmqzkagkrzhioftvwbqo');
-      expect(html).toContain('第 1 階段');
+      expect(html).toContain('Shopify Checkout');
+      expect(html).not.toContain('Phase 2 待建');
     });
 
     it('ProductList 頁面包含唯讀看板宣告與防止 ERP 寫入衝突說明', () => {
@@ -245,7 +246,7 @@ describe('SAENGAK 後台管理系統與權限隔離測試 (Admin Portal & Role I
       expect(html).toContain('寫入衝突防護');
     });
 
-    it('OrderList 頁面包含 transaction_logs 交易狀態機與對帳規範', () => {
+    it('OrderList 頁面呈現 Shopify 訂單與光貿發票狀態權威規範，不再宣稱已廢棄的交易狀態機', () => {
       const html = renderToString(
         <AuthContext.Provider value={mockAdminContext}>
           <MemoryRouter>
@@ -254,13 +255,14 @@ describe('SAENGAK 後台管理系統與權限隔離測試 (Admin Portal & Role I
         </AuthContext.Provider>
       );
 
-      expect(html).toContain('訂單與交易狀態機對帳管理');
-      expect(html).toContain('Idempotency Key');
-      expect(html).toContain('TapPay 授權碼');
-      expect(html).toContain('狀態機流向');
+      expect(html).toContain('訂單與發票狀態管理');
+      expect(html).toContain('Shopify Checkout');
+      expect(html).toContain('光貿電子發票採 Outbox 模式派送');
+      expect(html).not.toContain('Idempotency Key');
+      expect(html).not.toContain('transaction_logs');
     });
 
-    it('SiteSettings 頁面包含 Fail-Closed 安全不變量與運費設定', () => {
+    it('SiteSettings 頁面呈現 Shopify Checkout 現況、真實運費設定，不再宣稱已失效的 CheckoutReleaseEnabled', () => {
       const html = renderToString(
         <AuthContext.Provider value={mockAdminContext}>
           <MemoryRouter>
@@ -270,9 +272,10 @@ describe('SAENGAK 後台管理系統與權限隔離測試 (Admin Portal & Role I
       );
 
       expect(html).toContain('全域營運參數與安全設定');
-      expect(html).toContain('Fail-Closed');
-      expect(html).toContain('CheckoutReleaseEnabled');
+      expect(html).toContain('Shopify Checkout');
+      expect(html).toContain('app_metadata.role = &#x27;admin&#x27;');
       expect(html).toContain('全館免運門檻');
+      expect(html).not.toContain('CheckoutReleaseEnabled');
     });
   });
 });
