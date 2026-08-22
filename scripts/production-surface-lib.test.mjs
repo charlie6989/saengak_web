@@ -27,11 +27,14 @@ function mockResponse(url, { status = 200, headers = {}, body = '' } = {}) {
   };
 }
 
-function makeFetch({ omitHeader, edgeStatus = 401, routeRedirects = {} } = {}) {
+function makeFetch({ omitHeader, edgeStatus = 401, apiStatus = 400, routeRedirects = {} } = {}) {
   return async (input) => {
     const url = new URL(input);
     if (url.href.startsWith(SUPABASE_FUNCTIONS_BASE_URL)) {
       return mockResponse(url, { status: edgeStatus, headers: { 'content-type': 'application/json' } });
+    }
+    if (url.pathname.startsWith('/api/')) {
+      return mockResponse(url, { status: apiStatus, headers: { 'content-type': 'application/json' } });
     }
     if (url.pathname.endsWith('.js')) {
       return mockResponse(url, { headers: { 'content-type': 'text/javascript' } });
@@ -107,8 +110,18 @@ describe('production surface verifier', () => {
     const report = await verifyProductionSurface({ fetchImpl: makeFetch({ edgeStatus: 200 }) });
     expect(report.ok).toBe(false);
     expect(report.checks).toContainEqual(expect.objectContaining({
-      id: 'edge-auth:create-shopify-cart',
+      id: 'edge-auth:get-products',
       passed: false,
+    }));
+  });
+
+  it('fails when a Vercel commerce API crashes', async () => {
+    const report = await verifyProductionSurface({ fetchImpl: makeFetch({ apiStatus: 500 }) });
+    expect(report.ok).toBe(false);
+    expect(report.checks).toContainEqual(expect.objectContaining({
+      id: 'vercel-api:/api/create-shopify-cart',
+      passed: false,
+      status: 500,
     }));
   });
 });

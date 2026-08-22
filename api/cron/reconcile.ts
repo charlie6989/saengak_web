@@ -6,12 +6,12 @@
  * - 查核 TapPay 真實狀態，必要時執行自動退款補償並標記 COMPENSATED
  */
 
-import { jsonResponse, timingSafeStringEqual } from '../_lib/security';
-import { getTradeRecord, refundTransaction } from '../_lib/tappay';
+import { jsonResponse, timingSafeStringEqual } from '../_lib/security.js';
+import { getTradeRecord, refundTransaction } from '../_lib/tappay.js';
 import {
   findStaleTransactions,
   updateTransactionLog,
-} from '../_lib/supabase-admin';
+} from '../_lib/supabase-admin.js';
 
 export async function GET(request: Request): Promise<Response> {
   return handler(request);
@@ -20,6 +20,8 @@ export async function GET(request: Request): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   return handler(request);
 }
+
+export default { fetch: handler };
 
 async function handler(request: Request): Promise<Response> {
   if (request.method !== 'POST' && request.method !== 'GET') {

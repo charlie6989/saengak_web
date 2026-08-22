@@ -7,15 +7,15 @@
  * - 扣款成功後進行 Shopify 建單與發票 Outbox 寫入；建單失敗自動執行 TapPay 退款補償
  */
 
-import { isOriginAllowed, jsonResponse, getClientIp, hashPayload } from '../_lib/security';
-import { checkRateLimit } from '../_lib/ratelimit';
-import { getTradeRecord, refundTransaction } from '../_lib/tappay';
-import { createShopifyOrder } from '../_lib/shopify-admin';
+import { isOriginAllowed, jsonResponse, getClientIp, hashPayload } from '../_lib/security.js';
+import { checkRateLimit } from '../_lib/ratelimit.js';
+import { getTradeRecord, refundTransaction } from '../_lib/tappay.js';
+import { createShopifyOrder } from '../_lib/shopify-admin.js';
 import {
   getTransactionLog,
   updateTransactionLog,
   enqueueAmegoInvoiceJob,
-} from '../_lib/supabase-admin';
+} from '../_lib/supabase-admin.js';
 
 export async function GET(request: Request): Promise<Response> {
   return handler(request);
@@ -24,6 +24,8 @@ export async function GET(request: Request): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   return handler(request);
 }
+
+export default { fetch: handler };
 
 export async function OPTIONS(request: Request): Promise<Response> {
   return handler(request);
@@ -61,7 +63,7 @@ async function handler(request: Request): Promise<Response> {
 
   if (request.method === 'POST') {
     try {
-      const body = await request.json();
+      const body = await request.json() as Record<string, unknown>;
       recTradeId = String(body.rec_trade_id || body.recTradeId || '').trim();
       if (!idempotencyKey && body.idempotencyKey) {
         idempotencyKey = String(body.idempotencyKey).trim();

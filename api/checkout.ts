@@ -16,16 +16,16 @@ import {
   hashPayload,
   getClientIp,
   sanitizeTransactionPayload,
-} from './_lib/security';
-import { checkRateLimit } from './_lib/ratelimit';
-import { payByPrime } from './_lib/tappay';
-import { recalculateCheckoutTotal, createShopifyOrder } from './_lib/shopify-admin';
+} from './_lib/security.js';
+import { checkRateLimit } from './_lib/ratelimit.js';
+import { payByPrime } from './_lib/tappay.js';
+import { recalculateCheckoutTotal, createShopifyOrder } from './_lib/shopify-admin.js';
 import {
   getTransactionLog,
   createTransactionLog,
   updateTransactionLog,
   enqueueAmegoInvoiceJob,
-} from './_lib/supabase-admin';
+} from './_lib/supabase-admin.js';
 
 export async function POST(request: Request): Promise<Response> {
   return handler(request);
@@ -98,7 +98,7 @@ async function handler(request: Request): Promise<Response> {
 
   let body: Record<string, any>;
   try {
-    body = await request.json();
+    body = await request.json() as Record<string, any>;
   } catch {
     return jsonResponse({ error: '無效的 JSON 請求內容' }, { status: 400 });
   }
@@ -298,7 +298,7 @@ async function handler(request: Request): Promise<Response> {
     });
 
     try {
-      const { refundTransaction } = await import('./_lib/tappay');
+      const { refundTransaction } = await import('./_lib/tappay.js');
       await refundTransaction(payResult.recTradeId, totalAmount);
       await updateTransactionLog(idempotencyKey, {
         status: 'COMPENSATED',
@@ -361,3 +361,5 @@ async function handler(request: Request): Promise<Response> {
     idempotencyKey,
   });
 }
+
+export default { fetch: handler };

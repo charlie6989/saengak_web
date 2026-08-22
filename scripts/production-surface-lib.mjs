@@ -1,4 +1,4 @@
-export const PRODUCTION_BASE_URL = 'https://saengak.com.tw';
+export const PRODUCTION_BASE_URL = 'https://www.saengak.com.tw';
 export const SUPABASE_FUNCTIONS_BASE_URL = 'https://tmqzkagkrzhioftvwbqo.supabase.co/functions/v1';
 
 export const REQUIRED_PRODUCTION_ROUTES = [
@@ -38,13 +38,16 @@ const requiredHeaders = new Map([
 
 const protectedFunctions = [
   ['amego-invoice-dispatch', 'POST'],
-  ['create-shopify-cart', 'POST'],
   ['get-articles', 'GET'],
   ['get-collections', 'GET'],
   ['get-products', 'GET'],
   ['get-products-by-tag', 'GET'],
-  ['shopify-orders-webhook', 'POST'],
   ['smart-search', 'GET'],
+];
+
+const vercelApiProbes = [
+  ['/api/create-shopify-cart', 'POST'],
+  ['/api/webhooks/shopify', 'POST'],
 ];
 
 function result(id, passed, message, details = {}) {
@@ -194,6 +197,33 @@ export async function verifyProductionSurface({
       ));
     } catch (error) {
       checks.push(result(`edge-auth:${slug}`, false, `${slug} 無法完成未授權探針`, {
+        error: error instanceof Error ? error.message : String(error),
+      }));
+    }
+  }
+
+  for (const [path, method] of vercelApiProbes) {
+    const url = new URL(path, baseUrl);
+    try {
+      const response = await fetchImpl(url, {
+        method,
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          origin: baseUrl,
+        },
+        body: '{}',
+      });
+      checks.push(result(
+        `vercel-api:${path}`,
+        response.status === 400,
+        response.status === 400
+          ? `${path} handler 可執行並拒絕無效 payload`
+          : `${path} 應以 400 拒絕無效 payload，不得發生 Function crash`,
+        { status: response.status },
+      ));
+    } catch (error) {
+      checks.push(result(`vercel-api:${path}`, false, `${path} 無法完成安全探針`, {
         error: error instanceof Error ? error.message : String(error),
       }));
     }

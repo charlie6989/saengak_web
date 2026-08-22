@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { hasAcceptedPublicKey } from '../create-shopify-cart/auth.ts'
+import { hasAcceptedPublicKey } from '../_shared/auth.ts'
 import {
   buildStorefrontHeaders,
   buildStorefrontUrl,

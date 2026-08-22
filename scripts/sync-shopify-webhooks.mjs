@@ -9,7 +9,6 @@ import {
 } from './shopify-webhooks-lib.mjs';
 
 const apply = process.argv.includes('--apply');
-const accessToken = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN?.trim();
 const config = validateWebhookConfiguration({
   shopDomain: process.env.SHOPIFY_SHOP_DOMAIN || SAENGAK_SHOPIFY_DOMAIN,
   apiVersion: process.env.SHOPIFY_API_VERSION || SAENGAK_SHOPIFY_API_VERSION,
@@ -17,6 +16,36 @@ const config = validateWebhookConfiguration({
 });
 
 const endpoint = `https://${config.shopDomain}/admin/api/${config.apiVersion}/graphql.json`;
+
+async function resolveAdminAccessToken() {
+  const configuredToken = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN?.trim();
+  if (configuredToken) return configuredToken;
+
+  const clientId = process.env.SHOPIFY_APP_CLIENT_ID?.trim();
+  const clientSecret = (
+    process.env.SHOPIFY_APP_CLIENT_SECRET ||
+    process.env.SHOPIFY_WEBHOOK_SECRET ||
+    process.env.ShopifyWebhookSecret
+  )?.trim();
+  if (!clientId || !clientSecret) return '';
+
+  const response = await fetch(`https://${config.shopDomain}/admin/oauth/access_token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: clientId,
+      client_secret: clientSecret,
+    }),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || !payload?.access_token) {
+    throw new Error(`Shopify client credentials exchange failed (${response.status})`);
+  }
+  return payload.access_token;
+}
+
+const accessToken = await resolveAdminAccessToken();
 
 async function shopifyGraphql(query, variables) {
   if (!accessToken) {
@@ -70,7 +99,7 @@ if (!accessToken) {
     apiVersion: config.apiVersion,
     webhookUri: config.webhookUri,
     requiredTopics: REQUIRED_ORDER_WEBHOOK_TOPICS,
-    next: '建立 SAENGAK custom app、授予 read_orders、安裝後以 SHOPIFY_ADMIN_ACCESS_TOKEN 執行 npm run shopify:webhooks -- --apply',
+    next: '設定 SHOPIFY_ADMIN_ACCESS_TOKEN，或設定 SHOPIFY_APP_CLIENT_ID 與 SHOPIFY_APP_CLIENT_SECRET，再執行 npm run shopify:webhooks -- --apply',
   }, null, 2));
   if (apply) process.exitCode = 1;
 } else {

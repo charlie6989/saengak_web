@@ -1,8 +1,5 @@
 project_id = "saengak_web"
 
-[functions.create-shopify-cart]
-verify_jwt = false
-
 [functions.get-articles]
 verify_jwt = false
 

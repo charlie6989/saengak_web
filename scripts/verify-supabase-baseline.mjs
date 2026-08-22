@@ -55,7 +55,6 @@ const requirePattern = (pattern, message) => {
 };
 
 const publicStorefrontFunctions = [
-  'create-shopify-cart',
   'get-articles',
   'get-collections',
   'get-products',

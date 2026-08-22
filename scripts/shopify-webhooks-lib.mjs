@@ -1,7 +1,7 @@
 export const SAENGAK_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
 export const SAENGAK_SHOPIFY_API_VERSION = '2026-07';
 export const SAENGAK_ORDER_WEBHOOK_URI =
-  'https://tmqzkagkrzhioftvwbqo.supabase.co/functions/v1/shopify-orders-webhook';
+  'https://www.saengak.com.tw/api/webhooks/shopify';
 
 export const REQUIRED_ORDER_WEBHOOK_TOPICS = [
   'ORDERS_CREATE',
@@ -33,8 +33,8 @@ export function validateWebhookConfiguration({ shopDomain, apiVersion, webhookUr
   }
   if (
     parsedUri.protocol !== 'https:' ||
-    parsedUri.hostname !== 'tmqzkagkrzhioftvwbqo.supabase.co' ||
-    parsedUri.pathname !== '/functions/v1/shopify-orders-webhook' ||
+    parsedUri.hostname !== 'www.saengak.com.tw' ||
+    parsedUri.pathname !== '/api/webhooks/shopify' ||
     parsedUri.username !== '' ||
     parsedUri.password !== '' ||
     parsedUri.search !== '' ||
@@ -42,7 +42,7 @@ export function validateWebhookConfiguration({ shopDomain, apiVersion, webhookUr
     parsedUri.port !== '' ||
     parsedUri.toString() !== SAENGAK_ORDER_WEBHOOK_URI
   ) {
-    throw new Error('Webhook URI 必須指向 SAENGAK Production 的 shopify-orders-webhook');
+    throw new Error('Webhook URI 必須指向 SAENGAK Production 的 Vercel Shopify webhook');
   }
 
   return {

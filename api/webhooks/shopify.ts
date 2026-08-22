@@ -8,14 +8,14 @@
  */
 
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { jsonResponse } from '../_lib/security';
-import { getSupabaseAdminClient } from '../_lib/supabase-admin';
+import { jsonResponse } from '../_lib/security.js';
+import { getSupabaseAdminClient } from '../_lib/supabase-admin.js';
 import {
   parseShopifyOrderWebhook,
   parseShopifyRefundWebhook,
   isAcceptedShopifyWebhookTopic,
   normalizeShopifyDomain,
-} from '../../supabase/functions/shopify-orders-webhook/webhook';
+} from '../../supabase/functions/shopify-orders-webhook/webhook.js';
 
 export const config = {
   api: {
@@ -39,9 +39,40 @@ export function verifyShopifyHmac(rawBody: string, hmacHeader: string, secret: s
   }
 }
 
+interface SupabaseRpcError {
+  code?: string;
+  message?: string;
+}
+
+interface SupabaseRpcClient {
+  rpc: (
+    functionName: string,
+    params: object,
+  ) => PromiseLike<{ data: unknown; error: SupabaseRpcError | null }>;
+}
+
+const isTransientFutureJwtError = (error: SupabaseRpcError | null): boolean =>
+  error?.code === 'PGRST303' && /JWT issued at future/i.test(error.message || '');
+
+export async function rpcWithTransientJwtRetry(
+  client: SupabaseRpcClient,
+  functionName: string,
+  params: object,
+  retryDelayMs = 1_250,
+): Promise<{ data: unknown; error: SupabaseRpcError | null }> {
+  let result = await client.rpc(functionName, params);
+  if (!isTransientFutureJwtError(result.error)) return result;
+
+  await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+  result = await client.rpc(functionName, params);
+  return result;
+}
+
 export async function POST(request: Request): Promise<Response> {
   return handler(request);
 }
+
+export default { fetch: handler };
 
 export async function OPTIONS(request: Request): Promise<Response> {
   return handler(request);
@@ -105,8 +136,11 @@ async function handler(request: Request): Promise<Response> {
 
   const admin = getSupabaseAdminClient();
   if (!admin) {
-    // 若無 Supabase 連線（例如單元測試環境），完成格式校驗後直接回傳成功
-    return jsonResponse({ ok: true, status: 'mock_applied', topic, webhookId });
+    console.error('Supabase server secret 未設定，拒絕確認 Shopify Webhook');
+    return jsonResponse({
+      error: '訂單同步資料庫未設定，暫時無法處理',
+      code: 'WEBHOOK_STORAGE_UNAVAILABLE',
+    }, { status: 503 });
   }
 
   // 5. 呼叫 Supabase RPC 執行去重、防倒退與投影寫入
@@ -117,7 +151,11 @@ async function handler(request: Request): Promise<Response> {
         return jsonResponse({ error: '無效的 Refund Webhook Payload' }, { status: 422 });
       }
 
-      const { data, error } = await admin.rpc('sync_shopify_refund_webhook', parsedRefund);
+      const { data, error } = await rpcWithTransientJwtRetry(
+        admin as unknown as SupabaseRpcClient,
+        'sync_shopify_refund_webhook',
+        parsedRefund,
+      );
       if (error) {
         console.error('sync_shopify_refund_webhook error', error);
         return jsonResponse({ error: '儲存退款投影失敗' }, { status: 500 });
@@ -130,7 +168,11 @@ async function handler(request: Request): Promise<Response> {
         return jsonResponse({ error: '無效的 Order Webhook Payload' }, { status: 422 });
       }
 
-      const { data, error } = await admin.rpc('sync_shopify_order_webhook', parsedOrder);
+      const { data, error } = await rpcWithTransientJwtRetry(
+        admin as unknown as SupabaseRpcClient,
+        'sync_shopify_order_webhook',
+        parsedOrder,
+      );
       if (error) {
         console.error('sync_shopify_order_webhook error', error);
         return jsonResponse({ error: '儲存訂單投影失敗' }, { status: 500 });

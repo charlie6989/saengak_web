@@ -10,7 +10,7 @@ import {
 } from './shopify-webhooks-lib.mjs';
 
 describe('Shopify webhook subscription plan', () => {
-  it('normalizes and locks configuration to the dedicated SAENGAK shop and function', () => {
+  it('normalizes and locks configuration to the dedicated SAENGAK shop and Vercel API', () => {
     expect(normalizeShopifyDomain('https://GH2XGS-ZF.myshopify.com/'))
       .toBe('gh2xgs-zf.myshopify.com');
     expect(validateWebhookConfiguration({
@@ -24,7 +24,7 @@ describe('Shopify webhook subscription plan', () => {
     expect(validateWebhookConfiguration({
       shopDomain: 'gh2xgs-zf.myshopify.com',
       apiVersion: '2026-07',
-      webhookUri: SAENGAK_ORDER_WEBHOOK_URI.replace('.co/', '.co:443/'),
+      webhookUri: SAENGAK_ORDER_WEBHOOK_URI.replace('www.saengak.com.tw/', 'www.saengak.com.tw:443/'),
     }).webhookUri).toBe(SAENGAK_ORDER_WEBHOOK_URI);
   });
 
@@ -46,7 +46,7 @@ describe('Shopify webhook subscription plan', () => {
     `https://user:secret@${new URL(SAENGAK_ORDER_WEBHOOK_URI).host}${new URL(SAENGAK_ORDER_WEBHOOK_URI).pathname}`,
     `${SAENGAK_ORDER_WEBHOOK_URI}?token=secret`,
     `${SAENGAK_ORDER_WEBHOOK_URI}#secret`,
-    SAENGAK_ORDER_WEBHOOK_URI.replace('.co/', '.co:444/'),
+    SAENGAK_ORDER_WEBHOOK_URI.replace('www.saengak.com.tw/', 'www.saengak.com.tw:444/'),
   ])('refuses sensitive or non-default URI components: %s', (webhookUri) => {
     expect(() => validateWebhookConfiguration({
       shopDomain: 'gh2xgs-zf.myshopify.com',

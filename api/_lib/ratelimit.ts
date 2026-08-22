@@ -6,7 +6,7 @@
  * 規範依據：docs/CHECKOUT_PAYMENT_SPEC.md §7.2
  */
 
-import { captureExceptionSafe } from '../../src/lib/sentry';
+import { captureExceptionSafe } from '../../src/lib/sentry.js';
 
 export interface RateLimitResult {
   success: boolean;

@@ -4,9 +4,9 @@
  * 依據 docs/CHECKOUT_PAYMENT_SPEC.md §4 規範：前端不得直讀 transaction_logs，一律經由後端端點
  */
 
-import { isOriginAllowed, jsonResponse, getClientIp } from '../_lib/security';
-import { checkRateLimit } from '../_lib/ratelimit';
-import { getTransactionLog } from '../_lib/supabase-admin';
+import { isOriginAllowed, jsonResponse, getClientIp } from '../_lib/security.js';
+import { checkRateLimit } from '../_lib/ratelimit.js';
+import { getTransactionLog } from '../_lib/supabase-admin.js';
 
 export async function GET(request: Request): Promise<Response> {
   return handler(request);
@@ -15,6 +15,8 @@ export async function GET(request: Request): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   return handler(request);
 }
+
+export default { fetch: handler };
 
 export async function OPTIONS(request: Request): Promise<Response> {
   return handler(request);
@@ -56,7 +58,7 @@ async function handler(request: Request): Promise<Response> {
     }
   } else if (request.method === 'POST') {
     try {
-      const body = await request.json();
+      const body = await request.json() as Record<string, unknown>;
       if (!idempotencyKey) {
         idempotencyKey = String(body.idempotency_key || body.idempotencyKey || '').trim();
       }

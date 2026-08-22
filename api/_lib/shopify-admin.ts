@@ -10,7 +10,7 @@ import {
   SHOPIFY_STORE_DOMAIN,
   SHOPIFY_STOREFRONT_PUBLIC_TOKEN,
   SHOPIFY_API_VERSION,
-} from '../../src/lib/shopify';
+} from './shopify-config.js';
 
 export interface CheckoutItemInput {
   variantId: string;
@@ -289,33 +289,42 @@ export async function recalculateCheckoutTotal(
 }
 
 let cachedAdminAccessToken = '';
+let cachedAdminAccessTokenExpiresAt = 0;
 
 async function fetchAdminAccessTokenWithClientCredentials(
   storeDomain: string,
   fetcher: typeof fetch
 ): Promise<string | null> {
-  if (cachedAdminAccessToken) return cachedAdminAccessToken;
+  if (cachedAdminAccessToken && Date.now() < cachedAdminAccessTokenExpiresAt) {
+    return cachedAdminAccessToken;
+  }
 
   const clientId = process.env.SHOPIFY_APP_CLIENT_ID;
-  const clientSecret = process.env.SHOPIFY_APP_CLIENT_SECRET;
+  const clientSecret =
+    process.env.SHOPIFY_APP_CLIENT_SECRET ||
+    process.env.SHOPIFY_WEBHOOK_SECRET ||
+    process.env.ShopifyWebhookSecret;
   
   if (!clientId || !clientSecret) return null;
 
   const url = `https://${storeDomain}/admin/oauth/access_token`;
   const res = await fetcher(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
       client_id: clientId,
       client_secret: clientSecret,
-      grant_type: 'client_credentials',
-    }),
+    }).toString(),
   });
 
   if (!res.ok) return null;
   const data = await res.json() as any;
   if (data.access_token) {
     cachedAdminAccessToken = data.access_token;
+    const expiresInSeconds = Number(data.expires_in) || 86_399;
+    cachedAdminAccessTokenExpiresAt =
+      Date.now() + Math.max(0, expiresInSeconds - 300) * 1_000;
     return cachedAdminAccessToken;
   }
   return null;
@@ -332,7 +341,10 @@ export async function createShopifyOrder(
   
   let accessToken = config.adminAccessToken;
   if (!accessToken) {
-    const fetchedToken = await fetchAdminAccessTokenWithClientCredentials(config.storeDomain, config.fetcher || fetch);
+    const fetchedToken = await fetchAdminAccessTokenWithClientCredentials(
+      config.storeDomain || SHOPIFY_STORE_DOMAIN,
+      config.fetcher || fetch,
+    );
     if (fetchedToken) {
       accessToken = fetchedToken;
     }

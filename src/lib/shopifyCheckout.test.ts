@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  assertMemberOrderTracking,
   getShopifyCheckoutErrorMessage,
   validateShopifyCheckoutUrl,
 } from './shopifyCheckout';
@@ -33,5 +34,17 @@ describe('Shopify checkout safeguards', () => {
       error: 'Sign in before saving invoice details',
       code: 'INVOICE_PREFERENCE_REQUIRES_MEMBER',
     }, 401)).toContain('請先登入會員');
+  });
+
+  it('stops a signed-in member before redirect when order tracking was not linked', () => {
+    expect(() => assertMemberOrderTracking({
+      checkoutUrl: 'https://gh2xgs-zf.myshopify.com/checkouts/cn/example',
+      orderTrackingLinked: false,
+    }, true)).toThrow('無法把 Shopify 訂單綁定到會員帳號');
+
+    expect(() => assertMemberOrderTracking({
+      checkoutUrl: 'https://gh2xgs-zf.myshopify.com/checkouts/cn/example',
+      orderTrackingLinked: true,
+    }, true)).not.toThrow();
   });
 });

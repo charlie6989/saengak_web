@@ -7,13 +7,13 @@
  * - 投影至 public.order_invoices 並標記 INVOICE_ISSUED
  */
 
-import { jsonResponse, timingSafeStringEqual } from '../_lib/security';
-import { getSupabaseAdminClient, updateTransactionLog } from '../_lib/supabase-admin';
+import { jsonResponse, timingSafeStringEqual } from '../_lib/security.js';
+import { getSupabaseAdminClient, updateTransactionLog } from '../_lib/supabase-admin.js';
 import {
   dispatchAmegoJob,
   type AmegoCredentials,
   type AmegoJob,
-} from '../../supabase/functions/amego-invoice-dispatch/amego';
+} from '../../supabase/functions/amego-invoice-dispatch/amego.js';
 
 export function getAmegoCredentials(): AmegoCredentials {
   const sellerTaxId = process.env.AmegoSellerTaxId || '12345678';
@@ -35,6 +35,8 @@ export function getAmegoCredentials(): AmegoCredentials {
 export async function GET(request: Request): Promise<Response> {
   return handler(request);
 }
+
+export default { fetch: handler };
 
 export async function POST(request: Request): Promise<Response> {
   return handler(request);
@@ -71,7 +73,7 @@ async function handler(
   let body: { shopifyOrderGid?: string } = {};
   if (request.method === 'POST') {
     try {
-      body = await request.json();
+      body = await request.json() as { shopifyOrderGid?: string };
     } catch {
       // ignore
     }

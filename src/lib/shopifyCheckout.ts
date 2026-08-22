@@ -8,6 +8,7 @@ export const isShopifyCheckoutConfigured = true;
 
 interface ShopifyCheckoutResponse {
   checkoutUrl?: string;
+  orderTrackingLinked?: boolean;
   error?: string;
   code?: string;
   details?: unknown;
@@ -43,7 +44,27 @@ export function getShopifyCheckoutErrorMessage(
     return '結帳服務驗證失敗，請重新整理後再試。';
   }
 
+  if (
+    data.code === 'MEMBER_ORDER_LINK_UNAVAILABLE' ||
+    data.code === 'MEMBER_ORDER_LINK_FAILED'
+  ) {
+    return '目前無法把 Shopify 訂單綁定到會員帳號，已停止結帳。請稍後再試。';
+  }
+
+  if (data.code === 'INVOICE_PREFERENCE_PERSISTENCE_FAILED') {
+    return '目前無法安全保存發票資料，已停止結帳。請稍後再試。';
+  }
+
   return details[0] || data.error || `建立 Shopify 購物車失敗 (${status})`;
+}
+
+export function assertMemberOrderTracking(
+  data: ShopifyCheckoutResponse,
+  hasMemberSession: boolean,
+): void {
+  if (hasMemberSession && data.orderTrackingLinked !== true) {
+    throw new Error('目前無法把 Shopify 訂單綁定到會員帳號，已停止結帳。請稍後再試。');
+  }
 }
 
 export function validateShopifyCheckoutUrl(rawCheckoutUrl: string): string {
@@ -68,11 +89,13 @@ export async function createShopifyCheckout(
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
+  let hasMemberSession = false;
 
   if (isSupabaseConfigured) {
     const { data } = await supabase.auth.getSession();
     if (data.session?.access_token) {
       headers.Authorization = `Bearer ${data.session.access_token}`;
+      hasMemberSession = true;
     }
   }
 
@@ -93,6 +116,8 @@ export async function createShopifyCheckout(
   if (!data.checkoutUrl) {
     throw new Error('Shopify 未回傳 checkoutUrl');
   }
+
+  assertMemberOrderTracking(data, hasMemberSession);
 
   return validateShopifyCheckoutUrl(data.checkoutUrl);
 }

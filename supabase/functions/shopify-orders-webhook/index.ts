@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
-import { getPreferredSecretKey } from '../create-shopify-cart/auth.ts';
+import { getPreferredSecretKey } from '../_shared/auth.ts';
 import {
   isAcceptedShopifyWebhookTopic,
   isValidWebhookId,

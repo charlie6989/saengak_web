@@ -2,14 +2,14 @@ import {
   isOriginAllowed,
   jsonResponse,
   getClientIp,
-} from './_lib/security';
-import { getSupabaseAdminClient } from './_lib/supabase-admin';
+} from './_lib/security.js';
+import { getSupabaseAdminClient } from './_lib/supabase-admin.js';
 import {
   SHOPIFY_STORE_DOMAIN,
   SHOPIFY_STOREFRONT_PUBLIC_TOKEN,
   SHOPIFY_API_VERSION,
-} from '../src/lib/shopify';
-import { InvoicePreference, isValidTaiwanTaxId } from '../src/domain/invoice';
+} from './_lib/shopify-config.js';
+import { isValidTaiwanTaxId, type InvoicePreference } from '../src/domain/invoice.js';
 import { createClient } from '@supabase/supabase-js';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,6 +58,22 @@ function parseInvoicePreference(value: unknown): InvoicePreference | undefined {
 interface CheckoutLine {
   merchandiseId: string;
   quantity: number;
+}
+
+interface CreateCartRequestBody {
+  lines?: unknown;
+  invoicePreference?: unknown;
+}
+
+interface ShopifyCartCreateResponse {
+  errors?: Array<{ message?: string }>;
+  data?: {
+    cartCreate?: {
+      cart?: { id?: string; checkoutUrl?: string; totalQuantity?: number };
+      userErrors?: unknown[];
+      warnings?: unknown[];
+    };
+  };
 }
 
 const isCheckoutLine = (value: unknown): value is CheckoutLine => {
@@ -125,7 +141,7 @@ export async function POST(request: Request): Promise<Response> {
       checkoutUserId = data.user.id;
     }
 
-    const body = await request.json().catch(() => null);
+    const body = await request.json().catch(() => null) as CreateCartRequestBody | null;
     const invoicePreference = parseInvoicePreference(body?.invoicePreference ?? {
       kind: 'personal',
       notificationEmail: '',
@@ -186,16 +202,15 @@ export async function POST(request: Request): Promise<Response> {
     if (invoicePreference.notificationEmail) {
       attributes.push({ key: '_invoice_notification_email', value: invoicePreference.notificationEmail });
     }
-    if (invoicePreference.carrier) {
-      attributes.push({ key: '_invoice_carrier', value: invoicePreference.carrier });
-    }
-    if (invoicePreference.carrierId) {
-      attributes.push({ key: '_invoice_carrier_id', value: invoicePreference.carrierId });
-    }
-    if (invoicePreference.taxId) {
+    if (invoicePreference.kind === 'personal') {
+      if (invoicePreference.carrier) {
+        attributes.push({ key: '_invoice_carrier', value: invoicePreference.carrier });
+      }
+      if (invoicePreference.carrierId) {
+        attributes.push({ key: '_invoice_carrier_id', value: invoicePreference.carrierId });
+      }
+    } else {
       attributes.push({ key: '_invoice_tax_id', value: invoicePreference.taxId });
-    }
-    if (invoicePreference.buyerName) {
       attributes.push({ key: '_invoice_buyer_name', value: invoicePreference.buyerName });
     }
 
@@ -215,7 +230,7 @@ export async function POST(request: Request): Promise<Response> {
       },
     );
 
-    const shopifyData = await shopifyResponse.json().catch(() => null);
+    const shopifyData = await shopifyResponse.json().catch(() => null) as ShopifyCartCreateResponse | null;
     if (!shopifyData) {
       return jsonResponse({
         error: 'Shopify Storefront API request failed',
@@ -226,7 +241,7 @@ export async function POST(request: Request): Promise<Response> {
     if (Array.isArray(shopifyData.errors) && shopifyData.errors.length > 0) {
       const details = shopifyData.errors
         .map((error: { message?: string }) => error.message)
-        .filter(Boolean);
+        .filter((message): message is string => Boolean(message));
       const storefrontLocked = details.some((message: string) =>
         /online store channel is locked/i.test(message)
       );
@@ -261,31 +276,65 @@ export async function POST(request: Request): Promise<Response> {
       return jsonResponse({ error: 'Shopify did not return checkoutUrl' }, { status: 502, headers: corsHeaders });
     }
 
-    const cartToken = payload.cart.id.split('/').pop()?.split('?')[0];
-    
-    let orderTrackingLinked = false;
-    if (checkoutUserId && cartToken) {
-      const adminClient = getSupabaseAdminClient();
-      if (adminClient) {
-        const { error: linkError } = await adminClient
-          .from('shopify_checkout_links')
-          .upsert({
-            shopify_store_domain: SHOPIFY_STORE_DOMAIN,
-            shopify_cart_token: cartToken,
-            user_id: checkoutUserId,
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          }, { onConflict: 'shopify_store_domain,shopify_cart_token' });
+    const cartId = String(payload.cart.id);
+    const cartToken = /^gid:\/\/shopify\/Cart\/([^?/#]{8,})(?:\?.*)?$/.exec(cartId)?.[1];
+    if (!cartToken) {
+      return jsonResponse({
+        error: 'Shopify returned an invalid cart identifier',
+        code: 'INVALID_SHOPIFY_CART_ID',
+      }, { status: 502, headers: corsHeaders });
+    }
 
-        if (linkError) {
-          console.error('Unable to persist checkout link', {
-            code: linkError.code,
-          });
-          return jsonResponse({
-            error: 'Unable to link checkout to member order history',
-          }, { status: 502, headers: corsHeaders });
-        }
-        orderTrackingLinked = true;
+    const requiresAdminPersistence = Boolean(checkoutUserId) || hasSensitiveInvoicePreference;
+    const adminClient = requiresAdminPersistence ? getSupabaseAdminClient() : null;
+    if (requiresAdminPersistence && !adminClient) {
+      return jsonResponse({
+        error: 'Member order tracking is unavailable',
+        code: 'MEMBER_ORDER_LINK_UNAVAILABLE',
+      }, { status: 503, headers: corsHeaders });
+    }
+
+    if (hasSensitiveInvoicePreference && adminClient) {
+      const { error: preferenceError } = await adminClient.rpc(
+        'save_checkout_invoice_preference',
+        {
+          p_shopify_store_domain: SHOPIFY_STORE_DOMAIN,
+          p_shopify_cart_token: cartToken,
+          p_preference: invoicePreference,
+        },
+      );
+      if (preferenceError) {
+        console.error('Unable to persist invoice preference', {
+          code: preferenceError.code,
+        });
+        return jsonResponse({
+          error: 'Unable to secure invoice preference',
+          code: 'INVOICE_PREFERENCE_PERSISTENCE_FAILED',
+        }, { status: 502, headers: corsHeaders });
       }
+    }
+
+    let orderTrackingLinked = false;
+    if (checkoutUserId && adminClient) {
+      const { error: linkError } = await adminClient
+        .from('shopify_checkout_links')
+        .upsert({
+          shopify_store_domain: SHOPIFY_STORE_DOMAIN,
+          shopify_cart_token: cartToken,
+          user_id: checkoutUserId,
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        }, { onConflict: 'shopify_store_domain,shopify_cart_token' });
+
+      if (linkError) {
+        console.error('Unable to persist checkout link', {
+          code: linkError.code,
+        });
+        return jsonResponse({
+          error: 'Unable to link checkout to member order history',
+          code: 'MEMBER_ORDER_LINK_FAILED',
+        }, { status: 502, headers: corsHeaders });
+      }
+      orderTrackingLinked = true;
     }
 
     return jsonResponse({
@@ -301,3 +350,14 @@ export async function POST(request: Request): Promise<Response> {
     return jsonResponse({ error: 'Unable to create checkout' }, { status: 500, headers: corsHeaders });
   }
 }
+
+async function handler(request: Request): Promise<Response> {
+  if (request.method === 'OPTIONS') return OPTIONS(request);
+  if (request.method === 'POST') return POST(request);
+  return jsonResponse(
+    { error: 'Method not allowed' },
+    { status: 405, headers: { Allow: 'POST, OPTIONS' } },
+  );
+}
+
+export default { fetch: handler };
