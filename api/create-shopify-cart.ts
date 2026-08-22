@@ -3,6 +3,7 @@ import {
   jsonResponse,
   getClientIp,
 } from './_lib/security.js';
+import { randomUUID } from 'node:crypto';
 import { getSupabaseAdminClient } from './_lib/supabase-admin.js';
 import {
   SHOPIFY_STORE_DOMAIN,
@@ -195,7 +196,11 @@ export async function POST(request: Request): Promise<Response> {
       }
     `;
 
+    const checkoutLinkToken = checkoutUserId ? randomUUID() : undefined;
     const attributes = [];
+    if (checkoutLinkToken) {
+      attributes.push({ key: '_saengak_member_link_token', value: checkoutLinkToken });
+    }
     if (invoicePreference.kind) {
       attributes.push({ key: '_invoice_kind', value: invoicePreference.kind });
     }
@@ -299,7 +304,7 @@ export async function POST(request: Request): Promise<Response> {
         'save_checkout_invoice_preference',
         {
           p_shopify_store_domain: SHOPIFY_STORE_DOMAIN,
-          p_shopify_cart_token: cartToken,
+          p_shopify_cart_token: checkoutLinkToken || cartToken,
           p_preference: invoicePreference,
         },
       );
@@ -320,7 +325,7 @@ export async function POST(request: Request): Promise<Response> {
         .from('shopify_checkout_links')
         .upsert({
           shopify_store_domain: SHOPIFY_STORE_DOMAIN,
-          shopify_cart_token: cartToken,
+          shopify_cart_token: checkoutLinkToken || cartToken,
           user_id: checkoutUserId,
           expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         }, { onConflict: 'shopify_store_domain,shopify_cart_token' });

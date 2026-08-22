@@ -109,11 +109,21 @@ describe('create-shopify-cart Vercel API', () => {
 
     expect(response.status).toBe(200);
     expect(data.orderTrackingLinked).toBe(true);
+
+    const storefrontRequest = vi.mocked(fetch).mock.calls[0]?.[1];
+    const storefrontBody = JSON.parse(String(storefrontRequest?.body)) as {
+      variables: { input: { attributes: Array<{ key: string; value: string }> } };
+    };
+    const memberLinkToken = storefrontBody.variables.input.attributes.find(
+      (attribute) => attribute.key === '_saengak_member_link_token',
+    )?.value;
+    expect(memberLinkToken).toMatch(/^[0-9a-f-]{36}$/i);
+
     expect(rpc).toHaveBeenCalledWith('save_checkout_invoice_preference', expect.objectContaining({
-      p_shopify_cart_token: 'test-cart-token-123',
+      p_shopify_cart_token: memberLinkToken,
     }));
     expect(upsert).toHaveBeenCalledWith(expect.objectContaining({
-      shopify_cart_token: 'test-cart-token-123',
+      shopify_cart_token: memberLinkToken,
       user_id: 'member-123',
     }), { onConflict: 'shopify_store_domain,shopify_cart_token' });
   });

@@ -91,6 +91,19 @@ describe('Shopify order webhook validation', () => {
     });
   });
 
+  it('prefers the stable member link token carried through Shopify order attributes', () => {
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      cart_token: 'shopify-replaced-cart-token',
+      note_attributes: [{
+        name: '_saengak_member_link_token',
+        value: 'e2e-member-link-token-123456',
+      }],
+    }, metadata)).toMatchObject({
+      p_shopify_cart_token: 'e2e-member-link-token-123456',
+    });
+  });
+
   it('normalizes provider-neutral tracking details from a fulfillment update', () => {
     const result = parseShopifyOrderWebhook({
       ...payload,

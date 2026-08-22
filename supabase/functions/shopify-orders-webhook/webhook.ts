@@ -325,6 +325,19 @@ function topicMatchesPayload(payload: UnknownRecord, topic: string): boolean {
   return true;
 }
 
+const memberLinkTokenFromOrderAttributes = (payload: UnknownRecord): string => {
+  const attributes = Array.isArray(payload.note_attributes) ? payload.note_attributes : [];
+  for (const rawAttribute of attributes) {
+    const attribute = asRecord(rawAttribute);
+    const name = boundedText(attribute?.name ?? attribute?.key, 80);
+    if (name !== '_saengak_member_link_token') continue;
+
+    const value = boundedText(attribute?.value, 128);
+    return /^[A-Za-z0-9_-]{16,128}$/.test(value) ? value : '';
+  }
+  return '';
+};
+
 export function parseShopifyOrderWebhook(
   rawPayload: unknown,
   metadata: {
@@ -341,7 +354,8 @@ export function parseShopifyOrderWebhook(
   ) return undefined;
 
   const orderId = identifier(payload.id);
-  const cartToken = typeof payload.cart_token === 'string' ? payload.cart_token.trim() : '';
+  const nativeCartToken = typeof payload.cart_token === 'string' ? payload.cart_token.trim() : '';
+  const cartToken = memberLinkTokenFromOrderAttributes(payload) || nativeCartToken;
   const orderNumber = typeof payload.name === 'string' && payload.name.trim()
     ? payload.name.trim()
     : identifier(payload.order_number);
