@@ -211,7 +211,7 @@ export async function POST(request: Request): Promise<Response> {
     `;
 
     const checkoutLinkToken = randomUUID();
-    const attributes = [
+    const attributes: Array<{ key: string; value: string }> = [
       { key: '_saengak_member_link_token', value: checkoutLinkToken },
     ];
     if (invoicePreference.kind) {
