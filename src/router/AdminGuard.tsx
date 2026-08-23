@@ -1,6 +1,7 @@
 import React from 'react';
-import { Navigate, useLocation, Outlet, Link } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { AdminLogin } from '../pages/admin/AdminLogin';
 
 interface AdminGuardProps {
   children?: React.ReactNode;
@@ -9,13 +10,12 @@ interface AdminGuardProps {
 /**
  * 後台管理員路由守衛組件 (AdminGuard)
  * 依據 docs/MAIN_SPECIFICATION.md §5.2 安全不變量：
- * 1. 未登入導向 /login
+ * 1. 未登入：直接呈現後台專屬管理員登入表單 (AdminLogin)
  * 2. 登入但非 admin 角色（嚴格檢查 user.app_metadata.role === 'admin'）阻擋並呈現 403 畫面
  * 3. 具備 admin 權限才可進入受保護路由
  */
 export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
   const { user, isAdmin, isLoading, signOut } = useAuth();
-  const location = useLocation();
 
   // 1. 驗證載入中狀態
   if (isLoading) {
@@ -32,9 +32,9 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
     );
   }
 
-  // 2. 未登入：導向登入頁面並保留原本嘗試進入的路徑
+  // 2. 未登入：呈現專屬管理員登入介面，可直接於 /admin 登入
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <AdminLogin />;
   }
 
   // 3. 已登入但無 admin 角色：呈現 403 權限不足頁面
@@ -84,7 +84,6 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
               type="button"
               onClick={async () => {
                 await signOut();
-                window.location.href = '/login';
               }}
               className="inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 cursor-pointer"
             >
@@ -101,3 +100,4 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
 };
 
 export default AdminGuard;
+

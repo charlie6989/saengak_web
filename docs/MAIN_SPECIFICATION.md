@@ -151,7 +151,7 @@ flowchart TD
 - [x] **訂單投影 (`api/webhooks/shopify.ts`)**：Shopify 訂單簽章 Webhook 驗證後投影至 Supabase `orders`／`order_items`，供會員與後台唯讀查詢。
 - [x] **光貿電子發票 Outbox Worker 程式碼 (`api/invoice/guangmao.ts`)**
   - 經 `public.enqueue_amego_invoice_job` RPC 寫入 `private.amego_invoice_jobs`（migration `20260820000003`），Worker 認領派送並回讀 `invoice_status=99` 投影 `order_invoices`。
-- [x] **營運後台 (`/admin/*`)**：路由已接上 `AdminGuard`／`AdminLayout`，Supabase RLS 已補齊 admin 對 `orders`／`order_items`／`order_invoices` 之唯讀權限與 `site_settings` 讀寫（2026-08-22，migration `20260822000001` 已套用正式庫）。
+- [x] **營運後台 (`/admin/*`)**：路由已接上 `AdminGuard`／`AdminLayout`，並完成 Dashboard、商品、訂單、系統參數 (`site_settings`)、前台會員管理 (`/admin/members`) 以及後台管理員管理 (`/admin/admins`) 模塊，已於第 1 層導覽列明確分流。Supabase RLS 已補齊 admin 對 `orders`／`order_items`／`order_invoices` 之唯讀權限、`site_settings` 之讀寫權限，以及 `profiles` 之管理權限。
 - [ ] **部署與環境配置**：Vercel 環境變數/Secrets（TapPay Shopify 商家設定、`SHOPIFY_WEBHOOK_SECRET`、`AmegoDispatchToken`）、`npm run test:db` 對真實 Postgres 驗證。
 - [ ] **Shopify 訂單與 ShipAny 物流 App 串接**
   - 結帳後自動建立 Shopify 訂單，觸發 ShipAny App 進行門市取貨標籤印製。

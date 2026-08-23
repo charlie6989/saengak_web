@@ -12,7 +12,7 @@
 | 金流支付 | 信用卡授權扣款 | **TapPay Shopify Payment App**，於 Shopify Checkout 頁面內完成授權扣款；SAENGAK 前端與後端皆不經手卡號。~~TapPay Direct Pay SDK 前端整合與 `api/_lib/tappay.ts` 伺服器端扣款~~已廢棄。 | 現行（待 TapPay 沙盒實單驗收） |
 | 訂單中樞 | 訂單建立與投影 | Shopify 完成扣款後於 Shopify 端建立訂單，簽章 Webhook (`api/webhooks/shopify.ts`) 驗證後投影至 Supabase `orders`／`order_items`，供會員與後台唯讀查詢。~~Supabase `transaction_logs` 八態狀態機（migration `20260820000001`）與 `api/cron/reconcile.ts` 對帳補償~~屬已廢棄自建結帳中樞之殘留，未部署。 | 現行 |
 | 物流／發票 | 超商/宅配與電子發票 | Shopify 內建 ShipAny App 進行履行與門市選單；光貿電子發票經 `public.enqueue_amego_invoice_job` RPC 寫入 private Outbox，由 `api/invoice/guangmao.ts` Worker 每 5 分鐘派送並回讀 `invoice_status=99`。（此模組不受結帳架構回歸影響） | 發票程式碼已落地；ShipAny 待安裝綁定 |
-| 營運後台 | 統一的營運監控與參數管理 | `/admin` 路由（`AdminGuard` → `AdminLayout` → `Dashboard`/`ProductList`/`OrderList`/`SiteSettings`/`page`）已接上巢狀路由並強制檢查 `app_metadata.role === 'admin'`（`src/router/AdminGuard.tsx`）。`orders`／`order_items`／`order_invoices` 已補齊 admin 唯讀 RLS，`site_settings` 讀寫與 RLS 皆已套用正式庫（migration `20260822000001`，2026-08-22）。商品與訂單皆為唯讀模式以防與 ERP／Shopify 衝突。 | **已部署且已有授權管理員帳號** |
+| 營運後台 | 統一的營運監控與參數管理 | `/admin` 路由（`AdminGuard` → `AdminLayout` → `Dashboard`/`ProductList`/`OrderList`/`AdminMembers`/`AdminStaff`/`SiteSettings`/`page`）已接上巢狀路由並強制檢查 `app_metadata.role === 'admin'`（`src/router/AdminGuard.tsx`）。已在第 1 層導覽列明確分流為「`👤 前台會員管理` (`/admin/members`)」與「`🛡️ 後台管理員管理` (`/admin/admins`)」。`orders`／`order_items`／`order_invoices` 已補齊 admin 唯讀 RLS，`site_settings` 讀寫與 RLS 皆已套用正式庫；`profiles` 支援會員資料維護與管理員權限名冊。商品與訂單皆為唯讀模式以防與 ERP／Shopify 衝突。 | **已部署且已有授權管理員帳號** |
 
 ## 公開內容與安全守門
 

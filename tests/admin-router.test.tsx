@@ -50,12 +50,14 @@ describe('SAENGAK /admin 路由接線驗證 (Admin Route Wiring)', () => {
       </AuthContext.Provider>
     );
 
-  it('未登入使用者存取 /admin/dashboard 時，路由層 AdminGuard 阻擋機密內容', () => {
+  it('未登入使用者存取 /admin/dashboard 時，路由層 AdminGuard 阻擋機密內容並顯示登入表單', () => {
     const html = renderAdminRouteTree(
       createMockAuthContext({ user: null, isAdmin: false }),
       '/admin/dashboard'
     );
 
+    expect(html).toContain('管理員安全登入');
+    expect(html).toContain('登入管理後台系統');
     expect(html).not.toContain('後台機密內容');
   });
 

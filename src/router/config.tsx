@@ -24,6 +24,8 @@ const AdminLayoutPage = lazy(() => import('../pages/admin/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('../pages/admin/Dashboard'));
 const AdminProductListPage = lazy(() => import('../pages/admin/ProductList'));
 const AdminOrderListPage = lazy(() => import('../pages/admin/OrderList'));
+const AdminMembersPage = lazy(() => import('../pages/admin/AdminMembers'));
+const AdminStaffPage = lazy(() => import('../pages/admin/AdminStaff'));
 const AdminModulesPage = lazy(() => import('../pages/admin/page'));
 const SiteSettingsPage = lazy(() => import('../pages/admin/SiteSettings'));
 const OrderStatusPage = lazy(() => import('../pages/order-status/page'));
@@ -119,6 +121,8 @@ const routes: RouteObject[] = [
           { path: 'dashboard', element: <AdminDashboardPage /> },
           { path: 'products', element: <AdminProductListPage /> },
           { path: 'orders', element: <AdminOrderListPage /> },
+          { path: 'members', element: <AdminMembersPage /> },
+          { path: 'admins', element: <AdminStaffPage /> },
           { path: 'settings', element: <SiteSettingsPage /> },
           { path: 'modules', element: <AdminModulesPage /> },
         ],

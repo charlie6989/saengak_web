@@ -107,7 +107,7 @@ describe('SAENGAK 後台管理系統與權限隔離測試 (Admin Portal & Role I
       expect(html).not.toContain('管理員機密頁面內容');
     });
 
-    it('未登入用戶 (user 為 null) 存取受保護路由時，重定向至 /login', () => {
+    it('未登入用戶 (user 為 null) 存取受保護路由時，渲染專屬管理員安全登入表單 (AdminLogin) 且不洩漏機密內容', () => {
       const mockContext = createMockAuthContext({
         isLoading: false,
         user: null,
@@ -117,22 +117,17 @@ describe('SAENGAK 後台管理系統與權限隔離測試 (Admin Portal & Role I
       const html = renderToString(
         <AuthContext.Provider value={mockContext}>
           <MemoryRouter initialEntries={['/admin/dashboard']}>
-            <Routes>
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <AdminGuard>
-                    <div data-testid="protected-secret">管理員機密頁面內容</div>
-                  </AdminGuard>
-                }
-              />
-              <Route path="/login" element={<div>登入頁面</div>} />
-            </Routes>
+            <AdminGuard>
+              <div data-testid="protected-secret">管理員機密頁面內容</div>
+            </AdminGuard>
           </MemoryRouter>
         </AuthContext.Provider>
       );
 
-      // Navigate to /login occurs, protected content is omitted
+      // 驗證直接呈現管理員專屬登入介面
+      expect(html).toContain('管理員安全登入');
+      expect(html).toContain('管理員電子郵件');
+      expect(html).toContain('登入管理後台系統');
       expect(html).not.toContain('管理員機密頁面內容');
     });
 

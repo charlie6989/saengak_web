@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { mockUsers, mockAuthState, simulateApiDelay } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
@@ -8,6 +8,8 @@ import Footer from '../../components/feature/Footer';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPath = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -45,7 +47,7 @@ export default function LoginPage() {
 
         setMessage('登入成功！');
         setTimeout(() => {
-          navigate('/');
+          navigate(fromPath);
         }, 1000);
       } else {
         setMessage('登入失敗：電子郵件或密碼不正確');
@@ -77,7 +79,7 @@ export default function LoginPage() {
       } else {
         setMessage('登入成功！');
         setTimeout(() => {
-          navigate('/');
+          navigate(fromPath);
         }, 1000);
       }
     } catch (error) {
