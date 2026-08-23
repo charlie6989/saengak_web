@@ -42,6 +42,9 @@
 * **[上線切換清單 (LAUNCH_CHECKLIST.md)](file:///c:/Projects/saengak_web/docs/LAUNCH_CHECKLIST.md)**
   * **路徑**: `docs/LAUNCH_CHECKLIST.md`
   * **說明**: 測試閘門移除、SEO 解封、CSP/HSTS 定版、硬編碼 URL 清理與 Sentry 接線之上線當日權威清單；任一項未完成不得宣稱正式上線。
+* **[分支整合與衝突風險備註 (BRANCH_INTEGRATION_NOTES.md)](file:///c:/Projects/saengak_web/docs/BRANCH_INTEGRATION_NOTES.md)**
+  * **路徑**: `docs/BRANCH_INTEGRATION_NOTES.md`
+  * **說明**: 記錄歷史安全審查分支之隔離策略、單向挑選移植 (Selective Sync) 現況與嚴禁直接合併之鐵則。
 
 ---
 

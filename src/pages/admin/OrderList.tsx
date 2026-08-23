@@ -54,6 +54,7 @@ export const OrderList: React.FC = () => {
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [statusFilter, setStatusFilter] = useState<'ALL' | OrderStatus>('ALL');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
@@ -87,10 +88,29 @@ export const OrderList: React.FC = () => {
     fetchOrders();
   }, [fetchOrders]);
 
+  const invoiceMetrics = useMemo(() => {
+    let issued = 0;
+    let awaiting = 0;
+    let failed = 0;
+    for (const order of orders) {
+      const invStatus = order.order_invoices?.[0]?.status;
+      if (invStatus === 'issued') issued++;
+      else if (invStatus === 'awaiting-provider') awaiting++;
+      else if (invStatus === 'failed') failed++;
+    }
+    return { issued, awaiting, failed };
+  }, [orders]);
+
   const filteredOrders = useMemo(() => {
-    if (statusFilter === 'ALL') return orders;
-    return orders.filter((order) => order.status === statusFilter);
-  }, [orders, statusFilter]);
+    return orders.filter((order) => {
+      const matchesStatus = statusFilter === 'ALL' || order.status === statusFilter;
+      const matchesSearch =
+        searchTerm === '' ||
+        order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (order.shopify_order_gid && order.shopify_order_gid.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesStatus && matchesSearch;
+    });
+  }, [orders, statusFilter, searchTerm]);
 
   const orderStatusBadge = (status: OrderStatus) => {
     switch (status) {
@@ -144,6 +164,26 @@ export const OrderList: React.FC = () => {
         </div>
       </div>
 
+      {/* 發票與訂單狀態總覽指標 */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+          <div className="text-[11px] font-medium text-gray-500">總訂單數</div>
+          <div className="mt-1 text-xl font-bold text-gray-900">{orders.length} 筆</div>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+          <div className="text-[11px] font-medium text-gray-500">發票已開立</div>
+          <div className="mt-1 text-xl font-bold text-emerald-600">{invoiceMetrics.issued} 筆</div>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+          <div className="text-[11px] font-medium text-gray-500">發票等待回讀 (Outbox)</div>
+          <div className="mt-1 text-xl font-bold text-amber-600">{invoiceMetrics.awaiting} 筆</div>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+          <div className="text-[11px] font-medium text-gray-500">發票開立失敗 / 需人工檢核</div>
+          <div className="mt-1 text-xl font-bold text-red-600">{invoiceMetrics.failed} 筆</div>
+        </div>
+      </div>
+
       {/* 資料權威提示 */}
       <div className="rounded-xl border border-purple-200 bg-purple-50/70 p-4 text-xs text-purple-900 leading-5">
         <div className="flex items-start space-x-3">
@@ -159,33 +199,46 @@ export const OrderList: React.FC = () => {
         </div>
       </div>
 
-      {/* 過濾工具列 */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-gray-500">狀態篩選：</span>
-          {(['ALL', ...Object.keys(ORDER_STATUS_LABEL)] as Array<'ALL' | OrderStatus>).map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              onClick={() => setStatusFilter(filter)}
-              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
-                statusFilter === filter
-                  ? 'bg-[#225B4F] text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {filter === 'ALL' ? '全部' : ORDER_STATUS_LABEL[filter]}
-            </button>
-          ))}
+      {/* 過濾與搜尋工具列 */}
+      <div className="space-y-3 rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-gray-500">狀態篩選：</span>
+            {(['ALL', ...Object.keys(ORDER_STATUS_LABEL)] as Array<'ALL' | OrderStatus>).map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => setStatusFilter(filter)}
+                className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
+                  statusFilter === filter
+                    ? 'bg-[#225B4F] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {filter === 'ALL' ? '全部' : ORDER_STATUS_LABEL[filter]}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={fetchOrders}
+            disabled={isLoading}
+            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+          >
+            {isLoading ? '同步中...' : '🔄 重新載入'}
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={fetchOrders}
-          disabled={isLoading}
-          className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
-        >
-          {isLoading ? '同步中...' : '🔄 重新載入'}
-        </button>
+
+        <div>
+          <input
+            type="text"
+            placeholder="搜尋訂單編號或 Shopify GID..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#225B4F] focus:outline-none"
+          />
+        </div>
       </div>
 
       {/* 訂單表格 */}

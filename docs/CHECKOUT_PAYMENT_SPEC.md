@@ -3,7 +3,7 @@
 > ## ⚠️ DEPRECATED（2026-08-21 起已廢棄，僅供歷史參考）
 > 本規格書所述之**自建 React Checkout (Option B) + TapPay Direct Pay SDK + Vercel 交易中樞**架構，已於 2026-08-21 經負責人指示廢棄，改回跳轉 Shopify Checkout（TapPay 以 Shopify Payment App 身分於 Shopify 頁面內扣款）。權威決策記錄見 [`00_DECISION_LOG.md` §3.3](00_DECISION_LOG.md#33-結帳架構第三次變動回歸-shopify-checkout-2026-08-21)；**現行結帳流程權威文件為 [`TAPPAY_SHOPIFY.md`](TAPPAY_SHOPIFY.md)**。
 >
-> 本文件下述之 `api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/cron/reconcile.ts`、`transaction_logs` 交易狀態機、Idempotency-Key 機制**皆已停止部署**，程式碼僅保留於 Git 歷史供追溯，**不得視為現行系統行為**。以下內容原樣保留（不逐段刪改），僅供理解當初的資安設計考量與日後若需重新評估自建結帳時的參考基準。
+> 本文件下述之 `api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/cron/reconcile.ts`、`transaction_logs` 交易狀態機、Idempotency-Key 機制**皆已停止部署**，**且已於 2026-08-23 從 repo 實際刪除**（含專屬支援函式庫 `api/_lib/{tappay,shopify-admin,ratelimit}.ts` 與前端 `src/pages/_deprecated_checkout/`），程式碼僅保留於 Git 歷史供追溯，**不得視為現行系統行為**。以下內容原樣保留（不逐段刪改），僅供理解當初的資安設計考量與日後若需重新評估自建結帳時的參考基準。
 >
 > 版本日期：2026-08-20 (Phase 2 後端中樞程式碼落地 + 稽核修正定版；前版：2026-08-17 架構簡化) —— **此版本日期後之架構已被 2026-08-21 決策取代**
 > 本規格書為 **第 2 階段 (Phase 2)** 啟用自建結帳與線上支付時之權威規範。

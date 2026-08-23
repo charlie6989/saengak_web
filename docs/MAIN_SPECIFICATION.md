@@ -20,7 +20,7 @@
 - **資料庫 (投影)**：Supabase (`tmqzkagkrzhioftvwbqo`)
 - **訂單與商品引擎**：Shopify (`gh2xgs-zf.myshopify.com`)
 - **ERP 與實體庫存權威**：SiteGiant (透過 Shopify App 與 Shopify 同步)
-- **金流服務 (第 2 階段)**：TapPay (Direct Pay SDK)
+- **金流服務 (第 2 階段)**：TapPay (Shopify Payment App)
 - **物流服務**：ShipAny (Shopify App 整合，自建 API 備用)
 - **電子發票 (第 2 階段)**：光貿電子發票
 - **異常監控**：Sentry — **前端已接線**：`@sentry/react` 已安裝並於 `src/main.tsx` 初始化，掛載 `src/lib/sentry.ts` 之 `sanitizeEvent`/`sanitizeBreadcrumb` 脫敏 Hook，`vite.config.ts` 已配置 `@sentry/vite-plugin` 上傳 sourcemap 後刪除。**後端 `@sentry/node` 尚未安裝**，隨 Phase 2 API 層 (`api/*`) 一併落地。**治理規則（2026-08-19 新增，見 `00_DECISION_LOG.md` §1／§3.1）**：任何「抓取失敗 → 退回 mock/展示假資料」的 `catch` 區塊，一律須同時呼叫 `captureExceptionSafe(err, { source, fallback })`，僅寫 `console.warn`／`console.error` 不視為合規（曾因此發生正式站長期靜默顯示假商品卻無告警的事故）。
@@ -39,11 +39,11 @@
 #### 2. 後端中樞 API 層 (Backend Serverless API Layer)
 - **執行環境**：Vercel Serverless Functions (Node.js ES Modules, `type: module`)
 - **現行 API 路由（結帳已改回 Shopify Checkout，見 00_DECISION_LOG §3.3）**：`api/create-shopify-cart.ts`（建立 Shopify Cart 並回傳 `checkoutUrl`，取代已廢棄之 `api/checkout.ts` 自建交易中樞）、`api/webhooks/shopify.ts`（訂單簽章 Webhook 投影至 `orders`／`order_items`）、`api/invoice/guangmao.ts`（光貿發票 Outbox Worker）
-- **已廢棄、僅存於 Git 歷史、不得部署**：`api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/cron/reconcile.ts`（原自建 TapPay Direct Pay + `transaction_logs` 交易狀態機中樞）
-- **共用函式庫**：`api/_lib/security.ts`（Origin/Hash/timing-safe 工具，現行 `api/create-shopify-cart.ts` 仍在用）、`api/_lib/supabase-admin.ts`（發票 Outbox RPC）；`api/_lib/tappay.ts`、`api/_lib/shopify-admin.ts`、`api/_lib/ratelimit.ts` 主要服務於已廢棄之自建結帳中樞
+- **已廢棄，2026-08-23 起已從 repo 實際刪除（僅存於 Git 歷史）**：`api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/cron/reconcile.ts`（原自建 TapPay Direct Pay + `transaction_logs` 交易狀態機中樞）；`src/pages/_deprecated_checkout/` 前端整包同步刪除。
+- **共用函式庫**：`api/_lib/security.ts`（Origin/Hash/timing-safe 工具，現行 `api/create-shopify-cart.ts` 仍在用）、`api/_lib/supabase-admin.ts`（發票 Outbox RPC 與 site_settings 查詢）；原僅服務於已廢棄自建結帳中樞的 `api/_lib/tappay.ts`、`api/_lib/shopify-admin.ts`、`api/_lib/ratelimit.ts` 已於 2026-08-23 一併刪除
 - **核心防禦機制**：
   - **HMAC 驗證**：Shopify Webhook SHA256 數位簽名檢查（raw body + `timingSafeEqual`；密鑰缺失 Fail-Closed）
-  - **⚠️ 已知未解決風險**：舊版 Supabase Edge Function 之 `CheckoutReleaseEnabled` 結帳總開關檢查，遷移至 `api/create-shopify-cart.ts` 後**未見**對應邏輯，尚待工程確認（見 00_DECISION_LOG §3.3）
+  - **全站維護模式防護**：`api/create-shopify-cart.ts` 已整合 `site_settings.maintenance_mode` 檢查，全站維護時回傳 503（見 00_DECISION_LOG §3.3）。原規劃之 `checkout_release_enabled` 上線閘門因無 UI/無預設值、且邏輯方向與 Fail-Closed 原則相反，已於 2026-08-23 判定形同虛設並直接移除，不再作為現行防護機制之一
   - **個資/卡號脫敏**：SAENGAK 前端與後端皆不經手完整卡號，TapPay 於 Shopify Checkout 頁面內獨立處理
 
 #### 3. 資料庫與狀態機持久層 (Database & Persistence Layer)

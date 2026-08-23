@@ -91,12 +91,14 @@
 **背景**：本專案結帳架構歷經三次變動：(1) 最初採跳轉 Shopify Checkout；(2) 2026-08-17 改為自建 React Checkout (Option B) + TapPay Direct Pay SDK + Vercel 交易中樞（`api/checkout.ts`），理由是唯有自建才能在扣款前鎖定 SiteGiant ERP 庫存；(3) **2026-08-21，經負責人指示，改回跳轉 Shopify Checkout**，TapPay 以 Shopify Payment App 身分於 Shopify 頁面內完成扣款。本節補記此決策，修正先前遺漏未獨立記錄的缺口。
 
 **決策內容**：
-- 自建結帳中樞全數廢棄：`api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/cron/reconcile.ts`、`transaction_logs` 交易狀態機（migration `20260820000001`）、TapPay Direct Pay SDK 前端整合、3DS callback 頁面。程式碼保留於 Git 歷史供追溯，**不得部署上線**。
+- 自建結帳中樞全數廢棄：`api/checkout.ts`、`api/checkout/confirm.ts`、`api/checkout/status.ts`、`api/cron/reconcile.ts`、`transaction_logs` 交易狀態機（migration `20260820000001`）、TapPay Direct Pay SDK 前端整合、3DS callback 頁面。**2026-08-23 更新**：上述檔案與其專屬支援函式庫（`api/_lib/tappay.ts`、`api/_lib/shopify-admin.ts`、`api/_lib/ratelimit.ts`）、對應測試（`tests/checkout-backend.test.ts`、`tests/checkout-frontend.test.tsx`、`tests/ratelimit.test.ts`）、前端 `src/pages/_deprecated_checkout/` 整包，以及 `vercel.json` 中呼叫 `api/cron/reconcile` 的 cron 排程，已**實際從 repo 中移除**（僅存於 Git 歷史可追溯，不再是「檔案仍在但不得部署」的狀態）。`api/_lib/supabase-admin.ts` 中僅供這批舊碼使用的 `createTransactionLog`／`findStaleTransactions` 亦一併移除；`getTransactionLog`／`updateTransactionLog` 因 `api/invoice/guangmao.ts` 仍在使用而保留。
 - 現行結帳流程權威文件改為 [`TAPPAY_SHOPIFY.md`](TAPPAY_SHOPIFY.md)：購物車在側邊欄 (Cart Drawer) 收集發票資訊後，呼叫 `create-shopify-cart` 建立 Shopify Cart 並取得 `checkoutUrl`，導向 Shopify Checkout；TapPay 以 Shopify Payment App 身分於該頁完成授權扣款；ShipAny 於同頁提供超商/宅配選擇；付款確認後由 Shopify 簽章 Webhook 回寫並投影至 Supabase `orders`／`order_items`。
 - `create-shopify-cart` 同期由 Supabase Edge Function 遷移至 Vercel `api/create-shopify-cart.ts`（git commit `79e6486`）。
 - **不受本次變動影響、仍為現行權威**：光貿 (Amego) 電子發票之 Outbox 派送模式（`enqueue_amego_invoice_job` RPC → `api/invoice/guangmao.ts` → 回讀 `invoice_status=99`）、SiteGiant ERP 透過 Shopify App 雙向同步、admin 角色一律以 `app_metadata.role='admin'` 判定之規則。
 
-**⚠️ 已知未解決風險（2026-08-22 複查發現，尚待工程確認）**：舊版 Supabase Edge Function 版本的 `create-shopify-cart` 具備 `CheckoutReleaseEnabled` 結帳總開關檢查（未精確設為 `true` 一律拒絕建立 Cart）；遷移至 `api/create-shopify-cart.ts` 後，程式碼中**未見**此檢查邏輯，但 `src/pages/admin/SiteSettings.tsx` 等前端介面仍引用此設定名稱。在工程確認此總開關是否仍受控管、或改以其他機制（如 `site_settings.maintenance_mode`）取代之前，**不可假設結帳可被此開關關閉**。
+**✅ 殘留風險已處置（2026-08-23 複查與修正）**：先前記錄的 `CheckoutReleaseEnabled` 結帳總開關風險已重新查證，結論分兩部分：
+- `maintenance_mode`：`api/create-shopify-cart.ts` 已正式補上 `site_settings.maintenance_mode`（含環境變數回退）檢查邏輯，全站維護時端點即時回傳 503 (`MAINTENANCE_MODE_ACTIVE`)；`20260820000002_create_site_settings.sql` 已 seed 預設值，`src/pages/admin/SiteSettings.tsx` 有對應 UI 可切換，`tests/create-shopify-cart.test.ts` 有測試覆蓋。此半部為端到端可用，視為已修復。
+- `checkout_release_enabled`：複查發現這個檢查**沒有 migration seed 預設值、`SiteSettings.tsx` 也沒有對應 UI**（該頁面明文寫「本頁不再管理結帳釋出開關」），且新邏輯是 fail-open（找不到設定值就放行結帳），與舊 Supabase Edge Function「未精確設為 `true` 一律拒絕」的 fail-closed 精神相反，形同虛設。既然結帳已正式回歸 Shopify Checkout 上線，不再需要這種上線前置閘門，**已於 2026-08-23 直接從 `api/create-shopify-cart.ts` 與 `tests/create-shopify-cart.test.ts` 移除這段檢查**，不再假裝它是可控管的防護機制。
 
 **新增治理決策**：本次變動後，`MAIN_SPECIFICATION.md`、`MODULES.md`、`CHECKOUT_PAYMENT_SPEC.md`（已加頂端 DEPRECATED 警告）、`VERCEL_MIGRATION_SPEC.md`、`docs/agents/domain-docs.md` 已於 2026-08-22 同步修正，移除或標註已廢棄之自建結帳架構敘述；`docs/decisions/CHECKOUT_ARCHITECTURE_DECISION.md` 與 `docs/decisions/VERCEL_SERVERLESS_DECISION.md` 屬歷史決策紀錄，保留原始論述並僅追加修正附註，不覆寫歷史脈絡。
 

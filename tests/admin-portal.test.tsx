@@ -258,6 +258,10 @@ describe('SAENGAK 後台管理系統與權限隔離測試 (Admin Portal & Role I
       expect(html).toContain('訂單與發票狀態管理');
       expect(html).toContain('Shopify Checkout');
       expect(html).toContain('光貿電子發票採 Outbox 模式派送');
+      expect(html).toContain('總訂單數');
+      expect(html).toContain('發票已開立');
+      expect(html).toContain('發票等待回讀 (Outbox)');
+      expect(html).toContain('搜尋訂單編號或 Shopify GID');
       expect(html).not.toContain('Idempotency Key');
       expect(html).not.toContain('transaction_logs');
     });

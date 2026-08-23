@@ -13,14 +13,14 @@
 | 舊架構 / 前身 | 現行 Vercel API | 職責與重構要點 | 現況 (2026-08-22) |
 | --- | --- | --- | --- |
 | `create-shopify-cart` (Supabase Edge Function) | `api/create-shopify-cart.ts` | ✅ **現行結帳入口**：建立 Shopify Cart、回傳 `checkoutUrl`，導向 Shopify Checkout；已登入會員驗證 Bearer session 並寫入 `shopify_checkout_links`。金額、庫存與扣款一律由 Shopify／TapPay Shopify Payment App 於其自有頁面權威處理，本函式不重算金額、不接觸卡號。 | ✅ 現行（git commit `79e6486`） |
-| (Phase 2 自建，已廢棄) | ~~`api/checkout.ts`~~ | ~~接收 TapPay Prime、金額權威重算、扣款、建單、發票 Outbox~~ | ❌ **已廢棄，不得部署**（2026-08-21，見 00_DECISION_LOG §3.3） |
-| (Phase 2 自建，已廢棄) | ~~`api/checkout/confirm.ts`~~ | ~~接收 3DS callback，後端二次向 TapPay Record API 查最終結果~~ | ❌ **已廢棄，不得部署** |
-| (Phase 2 自建，已廢棄) | ~~`api/checkout/status.ts`~~ | ~~前端以 `idempotency_key` 輪詢交易進度~~ | ❌ **已廢棄，不得部署** |
-| (Phase 2 自建，已廢棄) | ~~`api/cron/reconcile.ts`~~ | ~~掃描逾時中間態交易，自動 Refund 補償或關閉~~ | ❌ **已廢棄，不得部署** |
+| (Phase 2 自建，已廢棄) | ~~`api/checkout.ts`~~ | ~~接收 TapPay Prime、金額權威重算、扣款、建單、發票 Outbox~~ | ❌ **已刪除**（2026-08-21 廢棄，2026-08-23 從 repo 實際刪除，見 00_DECISION_LOG §3.3） |
+| (Phase 2 自建，已廢棄) | ~~`api/checkout/confirm.ts`~~ | ~~接收 3DS callback，後端二次向 TapPay Record API 查最終結果~~ | ❌ **已刪除**（2026-08-23） |
+| (Phase 2 自建，已廢棄) | ~~`api/checkout/status.ts`~~ | ~~前端以 `idempotency_key` 輪詢交易進度~~ | ❌ **已刪除**（2026-08-23） |
+| (Phase 2 自建，已廢棄) | ~~`api/cron/reconcile.ts`~~ | ~~掃描逾時中間態交易，自動 Refund 補償或關閉~~ | ❌ **已刪除**（2026-08-23，`vercel.json` 對應 cron 排程同步移除） |
 | `shopify-orders-webhook` | `api/webhooks/shopify.ts` | 驗證 HMAC，寫入 orders / order_items / order_fulfillments 投影。不受結帳架構回歸影響。 | 程式碼存在（雙軌期，Shopify Webhook 訂閱實際指向哪個端點待現場確認） |
 | (原交 Waaship) | `api/invoice/guangmao.ts` | 光貿 Amego 發票 Outbox Worker：Claim → 派送 f0401 → 回讀 99 → 投影 order_invoices。不受結帳架構回歸影響。 | ✅ 程式碼已落地 |
 | (共用函式庫) | `api/_lib/{supabase-admin,security}.ts` | Supabase Service Role、Origin/Hash/timing-safe 工具，`api/create-shopify-cart.ts` 現行使用中。 | ✅ 現行 |
-| (共用函式庫，已廢棄) | ~~`api/_lib/{tappay,shopify-admin,ratelimit}.ts`~~ | ~~TapPay SDK、Shopify Admin 權威計價建單、滑動視窗限流~~，主要服務於已廢棄之 `api/checkout.ts` 系列 | ❌ 僅存於 Git 歷史 |
+| (共用函式庫，已廢棄) | ~~`api/_lib/{tappay,shopify-admin,ratelimit}.ts`~~ | ~~TapPay SDK、Shopify Admin 權威計價建單、滑動視窗限流~~，僅服務於已刪除之 `api/checkout.ts` 系列 | ❌ **已刪除**（2026-08-23，僅存於 Git 歷史） |
 | `get-products` 等 | `api/catalog/*.ts` | ~~遷移查詢邏輯~~ 已改採前端直連 Storefront API（見 00_DECISION_LOG §1），本項不再需要。 | — 已由架構決策取代 |
 
 > 「✅ 現行」表示程式碼與 00_DECISION_LOG §3.3 之現行架構一致；**不代表**已完成 Vercel 環境變數/Secrets 全面配置或端到端商業驗收 (`verify:commerce`)。「❌ 已廢棄」項目之程式碼仍保留於 Git 歷史供追溯，但不得部署或視為現行系統行為。
@@ -49,7 +49,7 @@
 ### 4.1.1 對帳排程端點授權與 Cron 排程
 - 見 CHECKOUT_PAYMENT_SPEC §7.6：Cron 觸發端點須驗證 `CRON_SECRET`（timing-safe 比對；密鑰未設定一律 500 拒絕）。
 - **排程已宣告於 `vercel.json` `crons`**（2026-08-22 複查：因 Vercel Hobby 方案僅支援每日排程，實際頻率已由原規劃之每 15/5 分鐘下修為每日一次，見 git commit `27c11aa`）：
-  - `/api/cron/reconcile` — `0 0 * * *`（每日一次；⚠️ 呼叫已廢棄之自建結帳中樞對帳邏輯，`transaction_logs` 現行無資料寫入，此排程目前實質為 no-op，可評估自 `vercel.json` 移除）
+  - ~~`/api/cron/reconcile` — `0 0 * * *`~~：呼叫的 `api/cron/reconcile.ts` 已於 2026-08-23 刪除，本排程已同步自 `vercel.json` 移除。
   - `/api/invoice/guangmao` — `0 1 * * *`（每日一次，消化光貿發票 Outbox；不受結帳架構回歸影響，仍為現行必要排程）
 
 ### 4.2 Cache-Control

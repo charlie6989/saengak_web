@@ -4,7 +4,7 @@ import {
   getClientIp,
 } from './_lib/security.js';
 import { randomUUID } from 'node:crypto';
-import { getSupabaseAdminClient } from './_lib/supabase-admin.js';
+import { getSupabaseAdminClient, getSiteSetting } from './_lib/supabase-admin.js';
 import {
   SHOPIFY_STORE_DOMAIN,
   SHOPIFY_STOREFRONT_PUBLIC_TOKEN,
@@ -26,7 +26,8 @@ const text = (value: unknown, maximum: number): string | undefined => {
 function parseInvoicePreference(value: unknown): InvoicePreference | undefined {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
   const raw = value as Record<string, unknown>;
-  const notificationEmail = text(raw.notificationEmail, 254);
+  const rawEmail = raw.notificationEmail !== undefined ? raw.notificationEmail : '';
+  const notificationEmail = text(rawEmail, 254);
   if (notificationEmail === undefined || (notificationEmail && !emailPattern.test(notificationEmail))) {
     return undefined;
   }
@@ -39,10 +40,11 @@ function parseInvoicePreference(value: unknown): InvoicePreference | undefined {
   }
 
   if (raw.kind !== 'personal') return undefined;
-  const carrierValue = String(raw.carrier);
+  const carrierValue = String(raw.carrier || 'none');
   if (!['none', 'mobile', 'amego-email', 'donation'].includes(carrierValue)) return undefined;
   const carrier = carrierValue as 'none' | 'mobile' | 'amego-email' | 'donation';
-  const carrierId = text(raw.carrierId, 254);
+  const rawCarrierId = raw.carrierId !== undefined ? raw.carrierId : '';
+  const carrierId = text(rawCarrierId, 254);
   if (carrierId === undefined) return undefined;
   if (carrier === 'mobile' && !mobileBarcodePattern.test(carrierId.toUpperCase())) return undefined;
   if (carrier === 'amego-email' && !emailPattern.test(carrierId)) return undefined;
@@ -117,6 +119,15 @@ export async function POST(request: Request): Promise<Response> {
   };
 
   try {
+    // 檢查全站維護模式 (對齊 00_DECISION_LOG §3.3)
+    const maintenanceMode = await getSiteSetting<boolean>('maintenance_mode');
+    if (maintenanceMode === true || process.env.MAINTENANCE_MODE === 'true') {
+      return jsonResponse({
+        error: '全站維護中，暫停受理購物車結帳',
+        code: 'MAINTENANCE_MODE_ACTIVE',
+      }, { status: 503, headers: corsHeaders });
+    }
+
     const authorization = request.headers.get('Authorization');
     const bearerToken = authorization?.startsWith('Bearer ') ? authorization.slice(7) : undefined;
     let checkoutUserId: string | undefined;

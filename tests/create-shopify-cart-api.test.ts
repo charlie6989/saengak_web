@@ -2,11 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   getSupabaseAdminClient: vi.fn(),
+  getSiteSetting: vi.fn(),
   createClient: vi.fn(),
 }));
 
 vi.mock('../api/_lib/supabase-admin.js', () => ({
   getSupabaseAdminClient: mocks.getSupabaseAdminClient,
+  getSiteSetting: mocks.getSiteSetting,
 }));
 
 vi.mock('@supabase/supabase-js', () => ({
@@ -60,6 +62,7 @@ describe('create-shopify-cart Vercel API', () => {
     vi.clearAllMocks();
     vi.unstubAllGlobals();
     mocks.getSupabaseAdminClient.mockReturnValue(null);
+    mocks.getSiteSetting.mockResolvedValue(null);
     process.env.SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_ANON_KEY = 'test-publishable-key';
     mocks.createClient.mockReturnValue({

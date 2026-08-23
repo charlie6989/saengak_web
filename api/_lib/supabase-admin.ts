@@ -45,6 +45,7 @@ export interface InvoiceJobPayload {
 // 記憶體備援儲存庫 (當 Supabase 未連線或測試時)
 const memoryTransactionLogs = new Map<string, TransactionLogRecord>();
 const memoryInvoiceJobs = new Map<string, InvoiceJobPayload>();
+const memorySiteSettings = new Map<string, unknown>();
 
 export function getSupabaseAdminClient(): SupabaseClient | null {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_PUBLIC_SUPABASE_URL;
@@ -80,35 +81,6 @@ export async function getTransactionLog(idempotencyKey: string): Promise<Transac
   }
 
   return memoryTransactionLogs.get(idempotencyKey) || null;
-}
-
-/**
- * 建立 Transaction Log
- */
-export async function createTransactionLog(log: TransactionLogRecord): Promise<TransactionLogRecord> {
-  const now = new Date().toISOString();
-  const record: TransactionLogRecord = {
-    ...log,
-    currency_code: log.currency_code || 'TWD',
-    created_at: log.created_at || now,
-    updated_at: log.updated_at || now,
-  };
-
-  const admin = getSupabaseAdminClient();
-  if (admin) {
-    try {
-      const { error } = await admin.from('transaction_logs').insert(record);
-      if (!error) {
-        memoryTransactionLogs.set(log.idempotency_key, record);
-        return record;
-      }
-    } catch {
-      // fallback to memory
-    }
-  }
-
-  memoryTransactionLogs.set(log.idempotency_key, record);
-  return record;
 }
 
 /**
@@ -182,37 +154,37 @@ export async function enqueueAmegoInvoiceJob(job: InvoiceJobPayload): Promise<bo
 }
 
 /**
- * 查詢逾時或中間態之交易 (供對帳排程使用)
+ * 查詢系統設定 (site_settings)
  */
-export async function findStaleTransactions(thresholdMinutes = 15): Promise<TransactionLogRecord[]> {
-  const thresholdTime = new Date(Date.now() - thresholdMinutes * 60 * 1000).toISOString();
-  const staleStatuses: TransactionStatus[] = ['INITIATED', 'PAYMENT_CAPTURED', 'ORDER_FAILED'];
-
+export async function getSiteSetting<T = unknown>(key: string): Promise<T | null> {
   const admin = getSupabaseAdminClient();
   if (admin) {
     try {
       const { data, error } = await admin
-        .from('transaction_logs')
-        .select('*')
-        .in('status', staleStatuses)
-        .lte('updated_at', thresholdTime);
+        .from('site_settings')
+        .select('value')
+        .eq('key', key)
+        .maybeSingle();
 
-      if (!error && data) return data as TransactionLogRecord[];
+      if (!error && data) {
+        return data.value as T;
+      }
     } catch {
       // fallback to memory
     }
   }
 
-  const results: TransactionLogRecord[] = [];
-  for (const record of memoryTransactionLogs.values()) {
-    if (
-      staleStatuses.includes(record.status) &&
-      (!record.updated_at || record.updated_at <= thresholdTime)
-    ) {
-      results.push(record);
-    }
+  if (memorySiteSettings.has(key)) {
+    return memorySiteSettings.get(key) as T;
   }
-  return results;
+  return null;
+}
+
+/**
+ * 設定記憶體系統設定 (測試使用)
+ */
+export function setMemorySiteSetting(key: string, value: unknown): void {
+  memorySiteSettings.set(key, value);
 }
 
 /**
@@ -221,4 +193,5 @@ export async function findStaleTransactions(thresholdMinutes = 15): Promise<Tran
 export function resetMemoryDatabase(): void {
   memoryTransactionLogs.clear();
   memoryInvoiceJobs.clear();
+  memorySiteSettings.clear();
 }
