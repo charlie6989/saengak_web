@@ -75,6 +75,13 @@ TapPay 為 Shopify Payment App 流程，正式權限應透過 TapPay Portal 與 
 
 TapPay 金鑰不應放在 React/Vite 前端。若 Portal 不允許再次顯示舊值，請由 owner 產生新值並走輪替驗收，不要以截圖、聊天或 email 傳送。
 
+### 2.6 會員驗證信與機器人防護
+
+- Supabase Auth 正式環境必須設定自有 SMTP；SMTP host、port、username、password、寄件地址只保存於 Supabase Dashboard，不放入 Vercel 或 Git。正式啟用前需完成 SPF、DKIM、DMARC，並關閉供應商的連結追蹤，避免改寫一次性驗證連結。
+- Cloudflare Turnstile 的公開 Site Key 使用 `VITE_PUBLIC_TURNSTILE_SITE_KEY`，可放入 Vercel；Secret Key 只保存於 Supabase Auth → Attack Protection，不得使用 `VITE_*` 名稱或進入前端 bundle。
+- 只有在 Site Key、Secret Key、正式與 Preview 網域 allowlist 都完成後，才能於 Supabase 啟用 CAPTCHA。只啟用 Dashboard 而未部署前端 Site Key，會讓所有登入、註冊與密碼重設失敗。
+- Supabase「Prevent use of leaked passwords」目前只提供 Pro plan 以上；升級方案並取得負責人核准後才能啟用，不得為消除 Advisor 警告自行產生付費。
+
 ## 3. 接手者所需的建議角色
 
 | 平台 | 建議方式 | 不應移交 |

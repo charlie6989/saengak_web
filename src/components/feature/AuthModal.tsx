@@ -2,6 +2,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
+import { captureExceptionSafe } from '../../lib/sentry';
+import AuthCaptcha, {
+  captchaTokenOptions,
+  isAuthCaptchaReady,
+} from './AuthCaptcha';
+
+const RESEND_COOLDOWN_SECONDS = 60;
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -30,13 +37,29 @@ export default function AuthModal({
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState('');
+  const [resendCountdown, setResendCountdown] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
       setIsLogin(mode === 'login');
       setMessage('');
+      setPendingConfirmationEmail('');
+      setResendCountdown(0);
+      setCaptchaToken('');
+      setCaptchaResetKey((current) => current + 1);
     }
   }, [isOpen, mode]);
+
+  useEffect(() => {
+    if (resendCountdown <= 0) return;
+    const timer = window.setInterval(() => {
+      setResendCountdown((current) => Math.max(0, current - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [resendCountdown]);
 
   if (!isOpen) return null;
 
@@ -69,10 +92,13 @@ export default function AuthModal({
         const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
+          options: captchaTokenOptions(captchaToken),
         });
 
         if (error) {
           setMessage('登入失敗，請確認電子郵件與密碼後再試。');
+          setCaptchaToken('');
+          setCaptchaResetKey((current) => current + 1);
         } else {
           setMessage('登入成功！');
           onAuthenticated?.();
@@ -87,17 +113,25 @@ export default function AuthModal({
             data: {
               name: formData.name,
             },
-            emailRedirectTo: `${window.location.origin}/auth/confirm`
+            emailRedirectTo: `${window.location.origin}/auth/confirm`,
+            ...captchaTokenOptions(captchaToken),
           }
         });
 
         if (error) {
+          captureExceptionSafe(error, { source: 'AuthModal.signUp' });
           setMessage('目前無法完成註冊，請確認資料後稍後再試。');
+          setCaptchaToken('');
+          setCaptchaResetKey((current) => current + 1);
         } else if (data.session) {
           setMessage('註冊並登入成功！');
           onAuthenticated?.();
           onClose();
         } else {
+          setPendingConfirmationEmail(formData.email);
+          setResendCountdown(RESEND_COOLDOWN_SECONDS);
+          setCaptchaToken('');
+          setCaptchaResetKey((current) => current + 1);
           setMessage('註冊資料已送出。請先完成電子郵件驗證，再回來登入後結帳。');
         }
       }
@@ -154,13 +188,44 @@ export default function AuthModal({
     try {
       const redirectUrl = `${window.location.origin}/reset-password`;
       
-      await supabase.auth.resetPasswordForEmail(formData.email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
         redirectTo: redirectUrl,
+        ...captchaTokenOptions(captchaToken),
       });
+      if (error) captureExceptionSafe(error, { source: 'AuthModal.resetPassword' });
       setMessage('若此電子郵件可重設密碼，系統將寄出操作連結。');
     } catch (error) {
-      setMessage('發生錯誤，請稍後再試');
+      captureExceptionSafe(error, { source: 'AuthModal.resetPassword.catch' });
+      setMessage('若此電子郵件可重設密碼，系統將寄出操作連結。');
     } finally {
+      setCaptchaToken('');
+      setCaptchaResetKey((current) => current + 1);
+      setLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!pendingConfirmationEmail || resendCountdown > 0 || !isAuthCaptchaReady(captchaToken)) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: pendingConfirmationEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+          ...captchaTokenOptions(captchaToken),
+        },
+      });
+      if (error) captureExceptionSafe(error, { source: 'AuthModal.resendConfirmation' });
+      setMessage('若此電子郵件尚待驗證，系統會重新寄出驗證信，請稍後檢查信箱。');
+    } catch (error) {
+      captureExceptionSafe(error, { source: 'AuthModal.resendConfirmation.catch' });
+      setMessage('若此電子郵件尚待驗證，系統會重新寄出驗證信，請稍後檢查信箱。');
+    } finally {
+      setResendCountdown(RESEND_COOLDOWN_SECONDS);
+      setCaptchaToken('');
+      setCaptchaResetKey((current) => current + 1);
       setLoading(false);
     }
   };
@@ -173,6 +238,10 @@ export default function AuthModal({
       name: ''
     });
     setMessage('');
+    setPendingConfirmationEmail('');
+    setResendCountdown(0);
+    setCaptchaToken('');
+    setCaptchaResetKey((current) => current + 1);
   };
 
   const switchMode = () => {
@@ -328,6 +397,7 @@ export default function AuthModal({
               type="email"
               id="email"
               name="email"
+              autoComplete="email"
               value={formData.email}
               onChange={handleInputChange}
               required
@@ -344,12 +414,13 @@ export default function AuthModal({
               type="password"
               id="password"
               name="password"
+              autoComplete={isLogin ? 'current-password' : 'new-password'}
               value={formData.password}
               onChange={handleInputChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               placeholder="請輸入您的密碼"
-              minLength={12}
+              minLength={isLogin ? undefined : 12}
             />
           </div>
 
@@ -362,6 +433,7 @@ export default function AuthModal({
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
+                autoComplete="new-password"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required={!isLogin}
@@ -372,10 +444,15 @@ export default function AuthModal({
             </div>
           )}
 
+          <AuthCaptcha
+            onTokenChange={setCaptchaToken}
+            resetKey={captchaResetKey}
+          />
+
           {/* Message */}
           {message && (
             <div className={`p-3 rounded-md text-sm ${
-              message.includes('成功') || message.includes('已發送')
+              message.includes('成功') || message.includes('已發送') || message.includes('已送出') || message.includes('重新寄出')
                 ? 'bg-green-50 text-green-800 border border-green-200'
                 : 'bg-red-50 text-red-800 border border-red-200'
             }`}>
@@ -383,10 +460,21 @@ export default function AuthModal({
             </div>
           )}
 
+          {!isLogin && pendingConfirmationEmail && (
+            <button
+              type="button"
+              onClick={handleResendConfirmation}
+              disabled={loading || resendCountdown > 0 || !isAuthCaptchaReady(captchaToken)}
+              className="w-full py-2 border border-teal-200 text-teal-700 rounded-md text-sm font-medium hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {resendCountdown > 0 ? `${resendCountdown} 秒後可重新寄送` : '重新寄送驗證信'}
+            </button>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !isAuthCaptchaReady(captchaToken)}
             className="w-full py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
           >
             {loading ? (
@@ -405,7 +493,7 @@ export default function AuthModal({
           <div className="mt-4 text-center">
             <button 
               onClick={handleForgotPassword}
-              disabled={loading}
+              disabled={loading || !isAuthCaptchaReady(captchaToken)}
               className="text-sm text-teal-600 hover:text-teal-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
             >
               忘記密碼？

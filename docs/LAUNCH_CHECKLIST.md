@@ -58,3 +58,11 @@
 - [ ] 單元與整合測試全數通過。
 - [ ] 主要頁面 Web Vitals（LCP / CLS / INP）達標。
 - [ ] 跨帳號 RLS 測試 11/11 通過（見 SUPABASE_DEPLOYMENT §4）。
+
+## 8. 會員 Auth 正式化
+
+- [ ] Supabase Auth 改用自有 SMTP，完成 SPF／DKIM／DMARC，並以非組織成員信箱實測註冊驗證及密碼重設。
+- [ ] Vercel 設定 `VITE_PUBLIC_TURNSTILE_SITE_KEY`，Supabase Attack Protection 保存 Turnstile Secret Key，完成正式與 Preview 網域 allowlist 後才啟用 CAPTCHA。
+- [ ] 升級 Supabase Pro 經核准後，啟用「Prevent use of leaked passwords」並重新執行 Security Advisor。
+- [ ] 實測：短於 12 字元的既有會員仍可登入；新註冊與新密碼維持至少 12 字元。
+- [ ] 實測：註冊後可於 60 秒冷卻結束後重新寄送驗證信，忘記密碼頁不揭露該 Email 是否存在。
