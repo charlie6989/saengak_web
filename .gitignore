@@ -140,6 +140,7 @@ supabase/FULL_DATABASE_SCHEMA.sql
 supabase/.temp/
 
 # Excluded Docs from remote GitHub repository
+docs/
 AGENTS.md
 CONTRIBUTING.md
 README.md
