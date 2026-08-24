@@ -1,5 +1,13 @@
 project_id = "saengak_web"
 
+# Local Google OAuth configuration. Keep both values in the root .env file;
+# production credentials are managed separately in the Supabase dashboard.
+[auth.external.google]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET)"
+skip_nonce_check = false
+
 [functions.get-articles]
 verify_jwt = false
 
