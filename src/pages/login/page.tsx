@@ -5,6 +5,10 @@ import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { mockUsers, mockAuthState, simulateApiDelay } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import AuthCaptcha, {
+  captchaTokenOptions,
+  isAuthCaptchaReady,
+} from '../../components/feature/AuthCaptcha';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -16,6 +20,8 @@ export default function LoginPage() {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
   const [useMockData, setUseMockData] = useState(
     import.meta.env.DEV && localStorage.getItem('useMockAuth') === 'true'
   );
@@ -72,10 +78,13 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
+        options: captchaTokenOptions(captchaToken),
       });
 
       if (error) {
         setMessage('登入失敗：電子郵件、密碼不正確，或帳號尚未完成驗證');
+        setCaptchaToken('');
+        setCaptchaResetKey((current) => current + 1);
       } else {
         setMessage('登入成功！');
         setTimeout(() => {
@@ -193,10 +202,17 @@ export default function LoginPage() {
                 </div>
               )}
 
+              {!useMockData && (
+                <AuthCaptcha
+                  onTokenChange={setCaptchaToken}
+                  resetKey={captchaResetKey}
+                />
+              )}
+
               <div>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || (!useMockData && !isAuthCaptchaReady(captchaToken))}
                   className="w-full py-3 bg-teal-600 text-white rounded-md font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
                 >
                   {loading ? (

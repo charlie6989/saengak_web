@@ -4,12 +4,19 @@ import { Link } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import AuthCaptcha, {
+  captchaTokenOptions,
+  isAuthCaptchaReady,
+} from '../../components/feature/AuthCaptcha';
+import { captureExceptionSafe } from '../../lib/sentry';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,19 +33,19 @@ export default function ForgotPasswordPage() {
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
+        ...captchaTokenOptions(captchaToken),
       });
 
-      if (error) {
-        setMessage(`重設密碼失敗: ${error.message}`);
-        setIsSuccess(false);
-      } else {
-        setMessage('密碼重設連結已發送到您的電子郵件，請檢查您的信箱');
-        setIsSuccess(true);
-      }
+      if (error) captureExceptionSafe(error, { source: 'ForgotPasswordPage.resetPassword' });
+      setMessage('若此電子郵件可重設密碼，系統將寄出操作連結，請稍後檢查信箱');
+      setIsSuccess(true);
     } catch (error) {
-      setMessage('發生錯誤，請稍後再試');
-      setIsSuccess(false);
+      captureExceptionSafe(error, { source: 'ForgotPasswordPage.resetPassword.catch' });
+      setMessage('若此電子郵件可重設密碼，系統將寄出操作連結，請稍後檢查信箱');
+      setIsSuccess(true);
     } finally {
+      setCaptchaToken('');
+      setCaptchaResetKey((current) => current + 1);
       setLoading(false);
     }
   };
@@ -91,10 +98,15 @@ export default function ForgotPasswordPage() {
                   </div>
                 )}
 
+                <AuthCaptcha
+                  onTokenChange={setCaptchaToken}
+                  resetKey={captchaResetKey}
+                />
+
                 <div>
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || !isAuthCaptchaReady(captchaToken)}
                     className="w-full py-3 bg-teal-600 text-white rounded-md font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
                   >
                     {loading ? (

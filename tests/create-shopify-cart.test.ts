@@ -1,4 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+const mocks = vi.hoisted(() => ({
+  createClient: vi.fn(),
+  getSupabaseAdminClient: vi.fn(),
+}));
+
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: mocks.createClient,
+}));
+
+vi.mock('../api/_lib/supabase-admin.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../api/_lib/supabase-admin.js')>();
+  return {
+    ...actual,
+    getSupabaseAdminClient: mocks.getSupabaseAdminClient,
+  };
+});
+
 import { POST, OPTIONS } from '../api/create-shopify-cart.js';
 import {
   setMemorySiteSetting,
@@ -10,6 +28,22 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
     resetMemoryDatabase();
     delete process.env.MAINTENANCE_MODE;
     vi.restoreAllMocks();
+    process.env.SUPABASE_URL = 'https://example.supabase.co';
+    process.env.SUPABASE_ANON_KEY = 'test-publishable-key';
+    mocks.createClient.mockReturnValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: { id: 'member-123' } },
+          error: null,
+        }),
+      },
+    });
+    mocks.getSupabaseAdminClient.mockReturnValue({
+      rpc: vi.fn().mockResolvedValue({ error: null }),
+      from: vi.fn().mockReturnValue({
+        upsert: vi.fn().mockResolvedValue({ error: null }),
+      }),
+    });
   });
 
   describe('1. OPTIONS 與 CORS 權限檢查', () => {
@@ -42,6 +76,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
         headers: {
           Origin: 'https://saengak.com.tw',
           'Content-Type': 'application/json',
+          Authorization: 'Bearer valid-member-token',
         },
         body: JSON.stringify({
           lines: [
@@ -68,6 +103,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
         headers: {
           Origin: 'https://saengak.com.tw',
           'Content-Type': 'application/json',
+          Authorization: 'Bearer valid-member-token',
         },
         body: JSON.stringify({
           lines: [],
@@ -80,7 +116,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
       expect(data.error).toBe('Invalid checkout input');
     });
 
-    it('未登入用戶若填寫公司統編等敏感發票資訊，回傳 401 INVOICE_PREFERENCE_REQUIRES_MEMBER', async () => {
+    it('未登入用戶無論發票偏好為何皆回傳 401 MEMBER_LOGIN_REQUIRED', async () => {
       const request = new Request('http://localhost/api/create-shopify-cart', {
         method: 'POST',
         headers: {
@@ -106,7 +142,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
       const response = await POST(request);
       expect(response.status).toBe(401);
       const data = await response.json();
-      expect(data.code).toBe('INVOICE_PREFERENCE_REQUIRES_MEMBER');
+      expect(data.code).toBe('MEMBER_LOGIN_REQUIRED');
     });
   });
 
@@ -139,6 +175,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
         headers: {
           Origin: 'https://saengak.com.tw',
           'Content-Type': 'application/json',
+          Authorization: 'Bearer valid-member-token',
         },
         body: JSON.stringify({
           lines: [
@@ -181,6 +218,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
         headers: {
           Origin: 'https://saengak.com.tw',
           'Content-Type': 'application/json',
+          Authorization: 'Bearer valid-member-token',
         },
         body: JSON.stringify({
           lines: [

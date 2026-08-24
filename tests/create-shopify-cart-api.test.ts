@@ -76,13 +76,45 @@ describe('create-shopify-cart Vercel API', () => {
     mockShopifyCart();
   });
 
-  it('exposes a Vercel Web API default handler and creates a guest Shopify cart', async () => {
+  it('exposes a Vercel Web API default handler and blocks guest checkout', async () => {
     const response = await vercelHandler.fetch(request(checkoutBody()));
     const data = await response.json() as Record<string, unknown>;
 
-    expect(response.status).toBe(200);
-    expect(data.checkoutUrl).toBe(checkoutUrl);
-    expect(data.orderTrackingLinked).toBe(false);
+    expect(response.status).toBe(401);
+    expect(data.code).toBe('MEMBER_LOGIN_REQUIRED');
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('blocks an invalid or expired Supabase member session', async () => {
+    mocks.createClient.mockReturnValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: null },
+          error: { message: 'JWT expired' },
+        }),
+      },
+    });
+
+    const response = await POST(request(checkoutBody(), 'expired-member-token'));
+    const data = await response.json() as Record<string, unknown>;
+
+    expect(response.status).toBe(401);
+    expect(data.code).toBe('MEMBER_SESSION_INVALID');
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when membership authentication is not configured', async () => {
+    delete process.env.SUPABASE_URL;
+    delete process.env.SUPABASE_ANON_KEY;
+    delete process.env.VITE_PUBLIC_SUPABASE_URL;
+    delete process.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
+
+    const response = await POST(request(checkoutBody(), 'valid-member-token'));
+    const data = await response.json() as Record<string, unknown>;
+
+    expect(response.status).toBe(503);
+    expect(data.code).toBe('MEMBERSHIP_AUTH_UNAVAILABLE');
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('fails closed when a member cart cannot be persisted with the service role', async () => {
@@ -92,6 +124,7 @@ describe('create-shopify-cart Vercel API', () => {
     expect(response.status).toBe(503);
     expect(data.code).toBe('MEMBER_ORDER_LINK_UNAVAILABLE');
     expect(data.checkoutUrl).toBeUndefined();
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('persists invoice metadata and the member-to-Shopify cart link before redirecting', async () => {
@@ -129,5 +162,8 @@ describe('create-shopify-cart Vercel API', () => {
       shopify_cart_token: memberLinkToken,
       user_id: 'member-123',
     }), { onConflict: 'shopify_store_domain,shopify_cart_token' });
+    expect(upsert.mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(fetch).mock.invocationCallOrder[0],
+    );
   });
 });

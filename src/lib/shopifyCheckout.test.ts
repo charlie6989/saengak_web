@@ -29,11 +29,18 @@ describe('Shopify checkout safeguards', () => {
     }, 502)).toContain('Shopify 商店尚未解鎖');
   });
 
-  it('explains why sensitive invoice preferences require a member session', () => {
+  it('explains why checkout requires a member session', () => {
     expect(getShopifyCheckoutErrorMessage({
-      error: 'Sign in before saving invoice details',
-      code: 'INVOICE_PREFERENCE_REQUIRES_MEMBER',
+      error: 'Sign in before checkout',
+      code: 'MEMBER_LOGIN_REQUIRED',
     }, 401)).toContain('請先登入會員');
+  });
+
+  it('asks the customer to sign in again when the member session expired', () => {
+    expect(getShopifyCheckoutErrorMessage({
+      error: 'Invalid or expired member session',
+      code: 'MEMBER_SESSION_INVALID',
+    }, 401)).toContain('請重新登入');
   });
 
   it('stops a signed-in member before redirect when order tracking was not linked', () => {

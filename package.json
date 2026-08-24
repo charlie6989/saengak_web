@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@marsidev/react-turnstile": "1.6.0",
     "@sentry/react": "^10.70.0",
     "@shopify/storefront-api-client": "^2.0.0",
     "@supabase/supabase-js": "2.57.4",

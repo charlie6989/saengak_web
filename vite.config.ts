@@ -7,114 +7,50 @@ function devApiPlugin(): Plugin {
     name: 'dev-api-server',
     configureServer(server) {
       server.middlewares.use('/api/create-shopify-cart', async (req, res) => {
-        if (req.method === 'OPTIONS') {
-          res.writeHead(204, {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        try {
+          const method = req.method || 'GET';
+          const headers = new Headers();
+          Object.entries(req.headers).forEach(([name, value]) => {
+            if (Array.isArray(value)) {
+              value.forEach((item) => headers.append(name, item));
+            } else if (value) {
+              headers.set(name, value);
+            }
           });
-          res.end();
-          return;
+
+          const body = method === 'POST'
+            ? await new Promise<string>((resolve, reject) => {
+                let value = '';
+                req.on('data', (chunk) => { value += chunk; });
+                req.on('end', () => resolve(value));
+                req.on('error', reject);
+              })
+            : undefined;
+
+          const host = req.headers.host || 'localhost:3000';
+          const webRequest = new Request(`http://${host}/api/create-shopify-cart`, {
+            method,
+            headers,
+            body,
+          });
+          const api = await import('./api/create-shopify-cart.js');
+          const response = method === 'OPTIONS'
+            ? await api.OPTIONS(webRequest)
+            : method === 'POST'
+              ? await api.POST(webRequest)
+              : new Response(JSON.stringify({ error: 'Method not allowed' }), {
+                  status: 405,
+                  headers: { 'Content-Type': 'application/json', Allow: 'POST, OPTIONS' },
+                });
+
+          res.statusCode = response.status;
+          response.headers.forEach((value, name) => res.setHeader(name, value));
+          res.end(await response.text());
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Unable to create checkout';
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: message }));
         }
-        if (req.method !== 'POST') {
-          res.writeHead(405, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Method Not Allowed' }));
-          return;
-        }
-
-        let body = '';
-        req.on('data', (chunk) => { body += chunk; });
-        req.on('end', async () => {
-          try {
-            const parsed = JSON.parse(body || '{}');
-            const lines = parsed.lines || [];
-            const invoicePreference = parsed.invoicePreference || {};
-
-            const attributes: { key: string; value: string }[] = [];
-            if (invoicePreference.kind) attributes.push({ key: '_invoice_kind', value: invoicePreference.kind });
-            if (invoicePreference.notificationEmail) attributes.push({ key: '_invoice_notification_email', value: invoicePreference.notificationEmail });
-            if (invoicePreference.carrier) attributes.push({ key: '_invoice_carrier', value: invoicePreference.carrier });
-            if (invoicePreference.carrierId) attributes.push({ key: '_invoice_carrier_id', value: invoicePreference.carrierId });
-            if (invoicePreference.taxId) attributes.push({ key: '_invoice_tax_id', value: invoicePreference.taxId });
-            if (invoicePreference.buyerName) attributes.push({ key: '_invoice_buyer_name', value: invoicePreference.buyerName });
-
-            const query = `
-              mutation CreateCart($input: CartInput!) {
-                cartCreate(input: $input) {
-                  cart {
-                    id
-                    checkoutUrl
-                    totalQuantity
-                  }
-                  userErrors {
-                    field
-                    message
-                    code
-                  }
-                  warnings {
-                    code
-                    message
-                    target
-                  }
-                }
-              }
-            `;
-
-            const domain = process.env.VITE_PUBLIC_SHOPIFY_STORE_DOMAIN || process.env.VITE_SHOPIFY_DOMAIN || 'gh2xgs-zf.myshopify.com';
-            const token = process.env.VITE_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || '9862bdf1a7178bd589dd83a130a3e24b';
-            const version = process.env.VITE_PUBLIC_SHOPIFY_API_VERSION || '2026-07';
-
-            const shopifyResponse = await fetch(`https://${domain}/api/${version}/graphql.json`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token': token,
-              },
-              body: JSON.stringify({
-                query,
-                variables: { input: { lines, attributes } },
-              }),
-            });
-
-            const shopifyData = await shopifyResponse.json();
-            if (shopifyData.errors && shopifyData.errors.length > 0) {
-              res.writeHead(502, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({
-                error: 'Shopify GraphQL request failed',
-                details: shopifyData.errors.map((e: any) => e.message),
-              }));
-              return;
-            }
-
-            const payload = shopifyData.data?.cartCreate;
-            if (payload?.userErrors && payload.userErrors.length > 0) {
-              res.writeHead(422, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({
-                error: 'Shopify rejected the cart',
-                details: payload.userErrors,
-              }));
-              return;
-            }
-
-            if (!payload?.cart?.checkoutUrl) {
-              res.writeHead(502, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ error: 'Shopify did not return checkoutUrl' }));
-              return;
-            }
-
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({
-              checkoutUrl: payload.cart.checkoutUrl,
-              cartId: payload.cart.id,
-              totalQuantity: payload.cart.totalQuantity,
-              warnings: payload.warnings ?? [],
-              orderTrackingLinked: false,
-            }));
-          } catch (err: any) {
-            res.writeHead(500, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: err.message || 'Unable to create checkout' }));
-          }
-        });
       });
     },
   };

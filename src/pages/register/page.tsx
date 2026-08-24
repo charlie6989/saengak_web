@@ -1,10 +1,17 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import { mockUsers, mockAuthState, simulateApiDelay } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import AuthCaptcha, {
+  captchaTokenOptions,
+  isAuthCaptchaReady,
+} from '../../components/feature/AuthCaptcha';
+import { captureExceptionSafe } from '../../lib/sentry';
+
+const RESEND_COOLDOWN_SECONDS = 60;
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -16,9 +23,21 @@ export default function RegisterPage() {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState('');
+  const [resendCountdown, setResendCountdown] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
   const [useMockData, setUseMockData] = useState(
     import.meta.env.DEV && localStorage.getItem('useMockAuth') === 'true'
   );
+
+  useEffect(() => {
+    if (resendCountdown <= 0) return;
+    const timer = window.setInterval(() => {
+      setResendCountdown((current) => Math.max(0, current - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [resendCountdown]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -90,20 +109,55 @@ export default function RegisterPage() {
           data: {
             name: formData.name,
           },
-          emailRedirectTo: `${window.location.origin}/auth/confirm`
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+          ...captchaTokenOptions(captchaToken),
         }
       });
 
       if (error) {
-        setMessage(`註冊失敗: ${error.message}`);
+        captureExceptionSafe(error, { source: 'RegisterPage.signUp' });
+        setMessage('目前無法完成註冊，請確認資料後稍後再試');
+        setCaptchaToken('');
+        setCaptchaResetKey((current) => current + 1);
       } else if (data.session) {
         setMessage('註冊成功！正在前往會員歡迎頁面');
         window.setTimeout(() => navigate('/welcome'), 1200);
       } else {
+        setPendingConfirmationEmail(formData.email);
+        setResendCountdown(RESEND_COOLDOWN_SECONDS);
+        setCaptchaToken('');
+        setCaptchaResetKey((current) => current + 1);
         setMessage('註冊申請已送出，請先到電子郵件完成驗證，再回來登入');
       }
     } catch (error) {
       setMessage('發生錯誤，請稍後再試');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!pendingConfirmationEmail || resendCountdown > 0 || !isAuthCaptchaReady(captchaToken)) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: pendingConfirmationEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+          ...captchaTokenOptions(captchaToken),
+        },
+      });
+      if (error) captureExceptionSafe(error, { source: 'RegisterPage.resendConfirmation' });
+      setMessage('若此電子郵件尚待驗證，系統會重新寄出驗證信，請稍後檢查信箱');
+      setResendCountdown(RESEND_COOLDOWN_SECONDS);
+      setCaptchaToken('');
+      setCaptchaResetKey((current) => current + 1);
+    } catch (error) {
+      captureExceptionSafe(error, { source: 'RegisterPage.resendConfirmation.catch' });
+      setMessage('若此電子郵件尚待驗證，系統會重新寄出驗證信，請稍後檢查信箱');
+      setResendCountdown(RESEND_COOLDOWN_SECONDS);
     } finally {
       setLoading(false);
     }
@@ -230,7 +284,7 @@ export default function RegisterPage() {
 
               {message && (
                 <div className={`rounded-md p-3 text-sm ${
-                  message.includes('成功') 
+                  message.includes('成功') || message.includes('已送出') || message.includes('重新寄出')
                     ? 'bg-green-50 border border-green-200 text-green-800'
                     : 'bg-red-50 border border-red-200 text-red-800'
                 }`}>
@@ -238,10 +292,28 @@ export default function RegisterPage() {
                 </div>
               )}
 
+              {!useMockData && (
+                <AuthCaptcha
+                  onTokenChange={setCaptchaToken}
+                  resetKey={captchaResetKey}
+                />
+              )}
+
+              {pendingConfirmationEmail && (
+                <button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={loading || resendCountdown > 0 || !isAuthCaptchaReady(captchaToken)}
+                  className="w-full py-2 border border-teal-200 text-teal-700 rounded-md text-sm font-medium hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {resendCountdown > 0 ? `${resendCountdown} 秒後可重新寄送` : '重新寄送驗證信'}
+                </button>
+              )}
+
               <div>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || (!useMockData && !isAuthCaptchaReady(captchaToken))}
                   className="w-full py-3 bg-teal-600 text-white rounded-md font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
                 >
                   {loading ? (
