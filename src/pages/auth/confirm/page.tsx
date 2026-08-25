@@ -15,6 +15,23 @@ export default function AuthConfirmPage() {
 
     const handleAuthConfirm = async () => {
       try {
+        // 1. 檢查 URL Query 或 Hash 是否包含第三方 OAuth 錯誤訊息
+        const hashParams = new URLSearchParams(window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash);
+        const errorDesc = searchParams.get('error_description') || hashParams.get('error_description');
+        const errorMsg = searchParams.get('error') || hashParams.get('error');
+
+        if (errorMsg || errorDesc) {
+          console.error('Auth confirmation redirect error:', errorMsg, errorDesc);
+          if (errorDesc?.includes('Unable to exchange external code') || errorDesc?.includes('invalid_client')) {
+            setMessage('Google 登入驗證失敗：Supabase 後台尚未儲存有效的 Google Client Secret，請由專案擁有者 (Owner) 登入後台儲存金鑰。');
+          } else {
+            setMessage(`驗證失敗: ${errorDesc || errorMsg}`);
+          }
+          setLoading(false);
+          return;
+        }
+
+        // 2. PKCE code 交換或取得 Session
         const code = searchParams.get('code');
         const result = code
           ? await supabase.auth.exchangeCodeForSession(code)
@@ -23,7 +40,7 @@ export default function AuthConfirmPage() {
         
         if (error) {
           console.error('Auth confirmation error:', error);
-          setMessage('驗證失敗，請重新嘗試');
+          setMessage(`驗證失敗: ${error.message || '請重新嘗試'}`);
           setLoading(false);
           return;
         }
@@ -31,18 +48,19 @@ export default function AuthConfirmPage() {
         if (data.session) {
           setIsSuccess(true);
           setLoading(false);
-          setMessage('電子郵件驗證成功！正在跳轉...');
+          setMessage('會員登入驗證成功！正在跳轉...');
+          const fromCheckout = searchParams.get('from') === 'checkout';
           redirectTimer = window.setTimeout(() => {
-            // 驗證成功後跳轉到歡迎頁面
-            navigate('/welcome');
-          }, 2000);
+            // 驗證成功後跳轉
+            navigate(fromCheckout ? '/' : '/welcome');
+          }, 1500);
         } else {
-          setMessage('驗證連結無效或已過期');
+          setMessage('驗證連結無效或已過期，請重新登入');
           setLoading(false);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Confirmation error:', error);
-        setMessage('發生錯誤，請稍後再試');
+        setMessage(error?.message || '發生錯誤，請稍後再試');
         setLoading(false);
       }
     };
