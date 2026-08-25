@@ -163,6 +163,33 @@ export default function RegisterPage() {
     }
   };
 
+  const handleGoogleSignup = async () => {
+    if (!isSupabaseConfigured) {
+      setMessage('會員系統正在接線，現階段暫不開放註冊');
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/confirm`,
+        },
+      });
+
+      if (error) {
+        setMessage(`Google 註冊失敗: ${error.message}`);
+      }
+    } catch (error) {
+      setMessage('Google 註冊發生錯誤，請稍後再試');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -219,8 +246,26 @@ export default function RegisterPage() {
               </div>
             )}
 
-            <div className="mb-6 rounded-md border border-teal-100 bg-teal-50 p-3 text-sm text-teal-800">
-              目前只開放電子郵件註冊，送出後必須完成信箱驗證才可登入。
+            {/* Google 一鍵快速註冊按鈕 */}
+            <div className="mb-6">
+              <button
+                type="button"
+                onClick={handleGoogleSignup}
+                disabled={loading || (!useMockData && !isSupabaseConfigured)}
+                className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              >
+                <i className="ri-google-fill text-lg text-red-500"></i>
+                使用 Google 帳號快速註冊
+              </button>
+
+              <div className="relative mt-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">或使用電子郵件註冊</span>
+                </div>
+              </div>
             </div>
 
             {/* 註冊表單 */}

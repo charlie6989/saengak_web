@@ -152,22 +152,22 @@ export default function AuthModal({
     setMessage('');
 
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: purpose === 'checkout'
-              ? window.location.origin
-              : `${window.location.origin}/welcome`
+          redirectTo: purpose === 'checkout'
+            ? `${window.location.origin}/auth/confirm?from=checkout`
+            : `${window.location.origin}/auth/confirm`,
         }
       });
 
       if (error) {
         console.error('Google OAuth error:', error);
-        setMessage('Google 登入設定中，請稍後再試或使用電子郵件登入');
+        setMessage(`Google 登入失敗: ${error.message}`);
       }
     } catch (error) {
       console.error('Google login error:', error);
-      setMessage('Google 登入功能暫時無法使用，請使用電子郵件登入');
+      setMessage('Google 登入發生錯誤，請稍後再試');
     } finally {
       setLoading(false);
     }
@@ -326,46 +326,26 @@ export default function AuthModal({
           </div>
         </div>}
 
-        {/* Google Login Button - 暫時隱藏直到設定完成 */}
-        <div style={{ display: 'none' }}>
+        {/* Google 快速登入/註冊按鈕 */}
+        <div className="mb-6">
           <button
+            type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full mb-6 inline-flex justify-center items-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
+            className="w-full inline-flex justify-center items-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
           >
             <i className="ri-google-fill text-lg text-red-500 mr-3"></i>
             使用 Google {isLogin ? '登入' : '註冊'}
           </button>
 
           {/* Divider */}
-          <div className="relative mb-6">
+          <div className="relative mt-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-white text-gray-500">或使用電子郵件</span>
             </div>
-          </div>
-        </div>
-
-        {/* 設定完成提示 */}
-        {purpose === 'default' && <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md">
-          <div className="flex items-start">
-            <i className="ri-information-line text-amber-600 mr-2 mt-0.5"></i>
-            <div className="text-sm text-amber-800">
-              <p className="font-medium mb-1">Google 登入設定中</p>
-              <p>請先完成 Google Cloud Console 的 OAuth 設定，或使用電子郵件註冊登入</p>
-            </div>
-          </div>
-        </div>}
-
-        {/* 提示訊息 */}
-        <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-md">
-          <div className="flex items-center">
-            <i className="ri-information-line text-blue-600 mr-2"></i>
-            <span className="text-sm text-blue-800">
-              目前僅支援電子郵件註冊和登入
-            </span>
           </div>
         </div>
 
