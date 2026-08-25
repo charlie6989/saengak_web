@@ -9,6 +9,7 @@ import AuthCaptcha, {
   captchaTokenOptions,
   isAuthCaptchaReady,
 } from '../../components/feature/AuthCaptcha';
+import GoogleLoginButton from '../../components/feature/GoogleLoginButton';
 import { captureExceptionSafe } from '../../lib/sentry';
 
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -23,10 +24,10 @@ export default function RegisterPage() {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState('');
-  const [resendCountdown, setResendCountdown] = useState(0);
   const [captchaToken, setCaptchaToken] = useState('');
   const [captchaResetKey, setCaptchaResetKey] = useState(0);
+  const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState('');
+  const [resendCountdown, setResendCountdown] = useState(0);
   const [useMockData, setUseMockData] = useState(
     import.meta.env.DEV && localStorage.getItem('useMockAuth') === 'true'
   );
@@ -34,7 +35,7 @@ export default function RegisterPage() {
   useEffect(() => {
     if (resendCountdown <= 0) return;
     const timer = window.setInterval(() => {
-      setResendCountdown((current) => Math.max(0, current - 1));
+      setResendCountdown((current) => (current > 0 ? current - 1 : 0));
     }, 1000);
     return () => window.clearInterval(timer);
   }, [resendCountdown]);
@@ -51,42 +52,27 @@ export default function RegisterPage() {
     setMessage('');
 
     try {
-      await simulateApiDelay(2000);
+      await simulateApiDelay(1500);
 
-      // 檢查是否已存在相同電子郵件
-      const existingUser = mockUsers.find(u => u.email === formData.email);
-      if (existingUser) {
-        setMessage('此電子郵件已被註冊');
-        setLoading(false);
-        return;
-      }
-
-      // 創建新的假用戶
+      // 建立新的假用戶
       const newUser = {
-        id: `user-${Date.now()}`,
+        id: `mock-${Date.now()}`,
         email: formData.email,
-        password: formData.password,
         name: formData.name,
-        phone: '',
-        address: '',
-        birth_date: '',
-        gender: '',
-        created_at: new Date().toISOString(),
-        avatar: 'https://readdy.ai/api/search-image?query=friendly%20asian%20woman%20smiling%20professional%20portrait%20modern%20clean%20background&width=200&height=200&seq=newuser&orientation=squarish'
+        created_at: new Date().toISOString()
       };
 
-      // 模擬註冊成功並自動登入
+      // 儲存到 localStorage
       localStorage.setItem('mockCurrentUser', JSON.stringify(newUser));
       mockAuthState.isLoggedIn = true;
       mockAuthState.currentUser = newUser;
-      
-      setMessage('註冊成功！正在為您準備歡迎頁面...');
-      
+
+      setMessage('註冊成功！歡迎加入 SAENGAK');
       setTimeout(() => {
         navigate('/welcome');
-      }, 1500);
+      }, 1000);
     } catch (error) {
-      setMessage('註冊失敗，請稍後再試');
+      setMessage('註冊過程中發生錯誤');
     } finally {
       setLoading(false);
     }
@@ -95,6 +81,11 @@ export default function RegisterPage() {
   const handleRealRegister = async () => {
     if (!isSupabaseConfigured) {
       setMessage('會員系統正在接線，現階段暫不開放註冊');
+      return;
+    }
+
+    if (!isAuthCaptchaReady(captchaToken)) {
+      setMessage('請先完成真人安全驗證');
       return;
     }
 
@@ -116,7 +107,7 @@ export default function RegisterPage() {
 
       if (error) {
         captureExceptionSafe(error, { source: 'RegisterPage.signUp' });
-        setMessage('目前無法完成註冊，請確認資料後稍後再試');
+        setMessage('目前無法完成註冊，請確認資料後稍後再試。');
         setCaptchaToken('');
         setCaptchaResetKey((current) => current + 1);
       } else if (data.session) {
@@ -163,31 +154,11 @@ export default function RegisterPage() {
     }
   };
 
-  const handleGoogleSignup = async () => {
-    if (!isSupabaseConfigured) {
-      setMessage('會員系統正在接線，現階段暫不開放註冊');
-      return;
-    }
-
-    setLoading(true);
-    setMessage('');
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/confirm`,
-        },
-      });
-
-      if (error) {
-        setMessage(`Google 註冊失敗: ${error.message}`);
-      }
-    } catch (error) {
-      setMessage('Google 註冊發生錯誤，請稍後再試');
-    } finally {
-      setLoading(false);
-    }
+  const handleGoogleSuccess = () => {
+    setMessage('Google 帳號註冊成功！正在前往會員歡迎頁...');
+    setTimeout(() => {
+      navigate('/welcome');
+    }, 1000);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -246,17 +217,16 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* Google 一鍵快速註冊按鈕 */}
+            {/* Google 一鍵快速註冊 */}
             <div className="mb-6">
-              <button
-                type="button"
-                onClick={handleGoogleSignup}
+              <GoogleLoginButton
+                text="signup_with"
+                theme="outline"
+                size="large"
+                onSuccess={handleGoogleSuccess}
+                onError={(err) => setMessage(`Google 註冊失敗: ${err.message}`)}
                 disabled={loading || (!useMockData && !isSupabaseConfigured)}
-                className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
-              >
-                <i className="ri-google-fill text-lg text-red-500"></i>
-                使用 Google 帳號快速註冊
-              </button>
+              />
 
               <div className="relative mt-6">
                 <div className="absolute inset-0 flex items-center">

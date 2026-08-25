@@ -7,6 +7,7 @@ import AuthCaptcha, {
   captchaTokenOptions,
   isAuthCaptchaReady,
 } from './AuthCaptcha';
+import GoogleLoginButton from './GoogleLoginButton';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -142,34 +143,12 @@ export default function AuthModal({
     }
   };
 
-  const handleGoogleLogin = async () => {
-    if (!isSupabaseConfigured) {
-      setMessage('會員系統正在接線，Google 登入尚未開放');
-      return;
-    }
-
-    setLoading(true);
-    setMessage('');
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: purpose === 'checkout'
-            ? `${window.location.origin}/auth/confirm?from=checkout`
-            : `${window.location.origin}/auth/confirm`,
-        }
-      });
-
-      if (error) {
-        console.error('Google OAuth error:', error);
-        setMessage(`Google 登入失敗: ${error.message}`);
-      }
-    } catch (error) {
-      console.error('Google login error:', error);
-      setMessage('Google 登入發生錯誤，請稍後再試');
-    } finally {
-      setLoading(false);
+  const handleGoogleSuccess = () => {
+    setMessage('Google 帳號登入成功！正在跳轉...');
+    onAuthenticated?.();
+    onClose();
+    if (purpose !== 'checkout') {
+      navigate('/welcome');
     }
   };
 
@@ -326,17 +305,16 @@ export default function AuthModal({
           </div>
         </div>}
 
-        {/* Google 快速登入/註冊按鈕 */}
+        {/* Google 官方原生 SDK 一鍵登入/註冊 */}
         <div className="mb-6">
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
+          <GoogleLoginButton
+            text={isLogin ? 'signin_with' : 'signup_with'}
+            theme="outline"
+            size="large"
+            onSuccess={handleGoogleSuccess}
+            onError={(err) => setMessage(`Google 登入失敗: ${err.message}`)}
             disabled={loading}
-            className="w-full inline-flex justify-center items-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
-          >
-            <i className="ri-google-fill text-lg text-red-500 mr-3"></i>
-            使用 Google {isLogin ? '登入' : '註冊'}
-          </button>
+          />
 
           {/* Divider */}
           <div className="relative mt-6">
