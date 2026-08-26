@@ -9,6 +9,8 @@ import {
   getShopifyCollections,
   getShopifyCollectionByHandle,
   getShopifyArticles,
+  isPublicShopifyArticle,
+  isPublicShopifyProduct,
   SHOPIFY_STORE_DOMAIN,
   SHOPIFY_API_VERSION,
 } from '../src/lib/shopify';
@@ -105,6 +107,36 @@ describe('Shopify Storefront SDK Client', () => {
 
     it('should throw when passed null or undefined', () => {
       expect(() => formatShopifyProduct(null)).toThrow('Cannot format null product node');
+    });
+  });
+
+  describe('production catalog guards', () => {
+    const baseProduct = formatShopifyProduct({
+      id: 'gid://shopify/Product/123',
+      title: '深層修護私密清潔露',
+      handle: 'deep-repair-wash',
+      tags: ['女性護理'],
+    });
+
+    it('blocks payment-test products from every public catalog surface', () => {
+      expect(isPublicShopifyProduct(baseProduct)).toBe(true);
+      expect(isPublicShopifyProduct({
+        ...baseProduct,
+        title: '金流驗收測試－請勿購買',
+        handle: 'payment-test-do-not-buy',
+      })).toBe(false);
+    });
+
+    it('requires an explicit SAENGAK/public tag before exposing Shopify articles', () => {
+      const article = {
+        id: 'article-1',
+        title: '品牌文章',
+        handle: 'brand-article',
+        publishedAt: '2026-08-26T00:00:00Z',
+        tags: [],
+      };
+      expect(isPublicShopifyArticle(article)).toBe(false);
+      expect(isPublicShopifyArticle({ ...article, tags: ['SAENGAK'] })).toBe(true);
     });
   });
 

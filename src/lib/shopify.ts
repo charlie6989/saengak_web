@@ -162,6 +162,17 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
   };
 }
 
+const TEST_PRODUCT_PATTERN = /驗收測試|請勿購買|測試商品|payment\s*test|test\s*product/i;
+
+export function isPublicShopifyProduct(product: ShopifyProduct): boolean {
+  const searchable = [product.title, product.handle, product.vendor, ...product.tags].join(' ');
+  return !TEST_PRODUCT_PATTERN.test(searchable);
+}
+
+export function isPublicShopifyArticle(article: ShopifyArticle): boolean {
+  return article.tags.some((tag) => /^(saengak|公開|public)$/i.test(tag.trim()));
+}
+
 const PRODUCT_FRAGMENT = `
   id
   title
@@ -245,7 +256,9 @@ export async function getShopifyProducts(options: {
     variables: { first, query: query || null, sortKey, reverse },
   });
 
-  return (data.products?.edges || []).map((edge) => formatShopifyProduct(edge.node));
+  return (data.products?.edges || [])
+    .map((edge) => formatShopifyProduct(edge.node))
+    .filter(isPublicShopifyProduct);
 }
 
 /**
@@ -276,7 +289,8 @@ export async function getShopifyProduct(idOrHandle: string): Promise<ShopifyProd
       });
 
       if (data.node) {
-        return formatShopifyProduct(data.node);
+        const product = formatShopifyProduct(data.node);
+        return isPublicShopifyProduct(product) ? product : null;
       }
     } catch {
       // 若 ID 查詢未果，繼續嘗試 handle
@@ -307,7 +321,8 @@ export async function getShopifyProductByHandle(handle: string): Promise<Shopify
     });
 
     if (!data.product) return null;
-    return formatShopifyProduct(data.product);
+    const product = formatShopifyProduct(data.product);
+    return isPublicShopifyProduct(product) ? product : null;
   } catch {
     return null;
   }
@@ -338,7 +353,8 @@ export async function getShopifyProductsByIds(ids: string[]): Promise<ShopifyPro
 
   return (data.nodes || [])
     .filter((node) => node && node.id)
-    .map((node) => formatShopifyProduct(node));
+    .map((node) => formatShopifyProduct(node))
+    .filter(isPublicShopifyProduct);
 }
 
 /**
@@ -448,7 +464,7 @@ export async function getShopifyCollectionByHandle(
 
   const products = (data.collection.products?.edges || []).map((edge: any) =>
     formatShopifyProduct(edge.node)
-  );
+  ).filter(isPublicShopifyProduct);
 
   return { collection, products };
 }
@@ -503,7 +519,7 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
       blog: edge.node.blog ? { handle: edge.node.blog.handle, title: edge.node.blog.title } : null,
       author: edge.node.authorV2?.name || 'SAENGAK 編輯團隊',
       tags: edge.node.tags || [],
-    }));
+    })).filter(isPublicShopifyArticle);
 
     if (articles.length > 0) {
       return articles;
@@ -513,49 +529,50 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
     captureExceptionSafe(err, { source: 'getShopifyArticles', fallback: 'curatedArticles' });
   }
 
-  // 門市尚未發布文章時之精選文章展示備案
+  // Shopify 文章必須明確標記 SAENGAK／公開／public 才能進正式站。
+  // 沒有合格文章時使用已審視、不含身份或療效宣稱的站內內容。
   return [
     {
       id: 'fallback-article-1',
-      title: '私密日常清潔的 3 大關鍵心法：平衡、溫和與細緻防護',
+      title: '日常私密護理：先理解身體，再選擇產品',
       handle: 'daily-feminine-care-guide',
-      excerpt: '正確理解弱酸環境與清潔成分，為女性身體帶來最安心的每日舒適守護。',
-      publishedAt: '2026-08-15T08:00:00Z',
+      excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的照護原則。',
+      publishedAt: '2026-07-18T08:00:00Z',
       image: {
         url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800',
         altText: '日常清潔指南',
       },
       blog: { handle: 'care-talk', title: 'SAENGAK Talk' },
-      author: 'SAENGAK 專業護理專欄',
-      tags: ['專欄文章', '日常護理', '女性健康'],
+      author: 'SAENGAK 編輯',
+      tags: ['SAENGAK', '健康知識', '私密護理'],
     },
     {
       id: 'fallback-article-2',
-      title: '如何選擇適合敏感肌膚的無痕親膚內著？從織物結構說起',
+      title: '貼身衣物材質怎麼選？',
       handle: 'how-to-choose-seamless-underwear',
-      excerpt: '從透氣性、彈性與抑菌纖維技術出發，為妳打造整日無感自在的穿著體驗。',
-      publishedAt: '2026-08-10T08:00:00Z',
+      excerpt: '用透氣、摩擦與清潔頻率三個面向，整理日常挑選貼身衣物的重點。',
+      publishedAt: '2026-07-18T08:00:00Z',
       image: {
         url: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&q=80&w=800',
         altText: '內著選擇指南',
       },
       blog: { handle: 'lifestyle', title: '生活美學' },
-      author: 'SAENGAK 設計團隊',
-      tags: ['專欄文章', '舒適穿著', '材質解析'],
+      author: 'SAENGAK 編輯',
+      tags: ['SAENGAK', '選購指南'],
     },
     {
       id: 'fallback-article-3',
-      title: '生理期舒適指南：告別悶熱與異味，享受自在生活步調',
-      handle: 'period-care-comfort-routine',
-      excerpt: '掌握生理期的護理節奏與保養習慣，讓每一個特殊週期都溫柔度過。',
-      publishedAt: '2026-08-05T08:00:00Z',
+      title: '我們如何整理產品與內容',
+      handle: 'how-we-review-products-and-content',
+      excerpt: '所有推薦先說明資料來源；沒有即時評價時，就以編輯精選清楚標示。',
+      publishedAt: '2026-07-18T08:00:00Z',
       image: {
         url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800',
         altText: '生理期護理',
       },
-      blog: { handle: 'health', title: '健康生活' },
-      author: 'SAENGAK 婦科護理顧問',
-      tags: ['專欄文章', '生理護理', '自我關懷'],
+      blog: { handle: 'brand', title: '品牌方法' },
+      author: 'SAENGAK 編輯',
+      tags: ['SAENGAK', '品牌方法'],
     },
   ];
 }
@@ -612,7 +629,7 @@ export async function getShopifyArticleByHandle(handle: string): Promise<Shopify
       blog: edge.node.blog ? { handle: edge.node.blog.handle, title: edge.node.blog.title } : null,
       author: edge.node.authorV2?.name || 'SAENGAK 編輯團隊',
       tags: edge.node.tags || [],
-    }));
+    })).filter(isPublicShopifyArticle);
 
     const found = articles.find((a) => a.handle === handle || a.id === handle);
     if (found) return found;
