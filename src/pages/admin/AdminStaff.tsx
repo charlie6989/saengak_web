@@ -28,48 +28,66 @@ export const AdminStaff: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      // 1. 優先嘗試呼叫 RPC 取得包含 role 的資料
+      // 1. 優先嘗試呼叫專屬 API 端點 (包含伺服器端 auth.users 與 profiles 整合查詢)
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData?.session?.access_token;
+        if (token) {
+          const apiRes = await fetch(`/api/admin-users?token=${encodeURIComponent(token)}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (apiRes.ok) {
+            const json = await apiRes.json();
+            if (json.success && Array.isArray(json.admins)) {
+              setAdmins(json.admins);
+              return;
+            }
+          }
+        }
+      } catch (apiErr) {
+        console.warn('API /api/admin-users 呼叫失敗，嘗試資料庫 RPC / 表直查:', apiErr);
+      }
+
+      // 2. 次選嘗試呼叫 RPC 取得包含 role 的資料
       const { data, error: rpcError } = await supabase.rpc('get_admin_profiles');
 
-      if (rpcError) {
-        // RPC 尚未在資料庫建立時，採用相容模式
-        console.warn('RPC get_admin_profiles 未建立，降級讀取目前登入管理員資訊:', rpcError);
-
-        const { data: tableData, error: tableError } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (tableError) {
-          throw tableError;
-        }
-
-        // 過濾出目前已授權之管理員
-        const filtered = (tableData || [])
-          .filter((p: any) => p.id === user?.id || p.email === user?.email || p.role === 'admin')
-          .map((p: any) => ({
-            ...p,
-            role: 'admin',
-          }));
-
-        // 如果 profiles 中未找到當前登入者，以當前 session 建構
-        if (filtered.length === 0 && user) {
-          filtered.push({
-            id: user.id,
-            email: user.email || '',
-            name: (user.user_metadata?.name as string) || '系統管理員',
-            created_at: user.created_at,
-            role: 'admin',
-          });
-        }
-
-        setAdmins(filtered);
+      if (!rpcError && data) {
+        const adminList = (data || []).filter((u: AdminUser) => u.role === 'admin');
+        setAdmins(adminList);
         return;
       }
 
-      // 篩選出 role 為 admin 的使用者
-      const adminList = (data || []).filter((u: AdminUser) => u.role === 'admin');
-      setAdmins(adminList);
+      // 3. 降級讀取 profiles 表直查
+      const { data: tableData, error: tableError } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (tableError) {
+        throw tableError;
+      }
+
+      const KNOWN_ADMINS = ['worktester2019@gmail.com', 'charlie.liu6989@gmail.com', 'charlie.liu0809@gmail.com'];
+      const filtered = (tableData || [])
+        .filter((p: any) => p.id === user?.id || p.email === user?.email || p.role === 'admin' || KNOWN_ADMINS.includes(p.email?.toLowerCase()))
+        .map((p: any) => ({
+          ...p,
+          role: 'admin',
+        }));
+
+      if (filtered.length === 0 && user) {
+        filtered.push({
+          id: user.id,
+          email: user.email || '',
+          name: (user.user_metadata?.name as string) || '系統管理員',
+          created_at: user.created_at,
+          role: 'admin',
+        });
+      }
+
+      setAdmins(filtered);
     } catch (err: any) {
       captureExceptionSafe(err, { source: 'AdminStaff.fetchAdmins' });
       setError(err?.message || '讀取管理員名冊失敗');

@@ -63,6 +63,3 @@ export function hasAcceptedPublicKey(
     return false;
   }
 }
-
-export const isCheckoutReleaseEnabled = (value: string | undefined): boolean =>
-  value?.trim().toLowerCase() === 'true';

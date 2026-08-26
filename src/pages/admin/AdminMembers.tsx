@@ -30,32 +30,53 @@ export const AdminMembers: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      // 1. 優先嘗試呼叫 RPC 取得資料
+      // 1. 優先嘗試呼叫專屬 API 端點 (包含伺服器端 auth.users 與 profiles 整合查詢)
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData?.session?.access_token;
+        if (token) {
+          const apiRes = await fetch(`/api/admin-users?token=${encodeURIComponent(token)}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (apiRes.ok) {
+            const json = await apiRes.json();
+            if (json.success && Array.isArray(json.members)) {
+              setProfiles(json.members);
+              return;
+            }
+          }
+        }
+      } catch (apiErr) {
+        console.warn('API /api/admin-users 呼叫失敗，嘗試資料庫 RPC / 表直查:', apiErr);
+      }
+
+      // 2. 次選嘗試呼叫 RPC 取得資料
       const { data, error: rpcError } = await supabase.rpc('get_admin_profiles');
 
-      if (rpcError) {
-        // RPC 尚未部署時降級直查 profiles 表
-        const { data: tableData, error: tableError } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (tableError) {
-          throw tableError;
-        }
-
-        // 排除管理員，只保留一般會員
-        const membersOnly = (tableData || []).map((p: any) => ({
-          ...p,
-          role: (p.id === user?.id || p.email === user?.email) ? 'admin' : (p.role || 'member'),
-        })).filter((p: any) => p.role !== 'admin');
-
+      if (!rpcError && data) {
+        const membersOnly = (data || []).filter((p: UserProfile) => p.role !== 'admin');
         setProfiles(membersOnly);
         return;
       }
 
-      // 透過 RPC 篩選非 admin 的一般會員
-      const membersOnly = (data || []).filter((p: UserProfile) => p.role !== 'admin');
+      // 3. 降級直查 profiles 表
+      const { data: tableData, error: tableError } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (tableError) {
+        throw tableError;
+      }
+
+      const KNOWN_ADMINS = ['worktester2019@gmail.com', 'charlie.liu6989@gmail.com', 'charlie.liu0809@gmail.com'];
+      const membersOnly = (tableData || []).map((p: any) => ({
+        ...p,
+        role: (p.id === user?.id || p.email === user?.email || KNOWN_ADMINS.includes(p.email?.toLowerCase())) ? 'admin' : (p.role || 'member'),
+      })).filter((p: any) => p.role !== 'admin');
+
       setProfiles(membersOnly);
     } catch (err: any) {
       captureExceptionSafe(err, { source: 'AdminMembers.fetchProfiles' });

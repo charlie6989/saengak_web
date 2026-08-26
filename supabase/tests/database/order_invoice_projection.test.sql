@@ -42,7 +42,7 @@ select lives_ok(
        order_id, provider, provider_invoice_id, invoice_number, status,
        issued_at, provider_updated_at
      ) values (
-       '77777777-7777-4777-8777-777777777777', 'waaship', 'provider-doc-1001',
+       '77777777-7777-4777-8777-777777777777', 'amego', 'provider-doc-1001',
        'AA12345678', 'issued', '2026-07-20T00:00:00Z', '2026-07-20T00:00:00Z'
      ) $$,
   'trusted backend can project a provider-issued invoice'
@@ -52,7 +52,7 @@ select throws_ok(
   $$ insert into public.order_invoices (
        order_id, provider, provider_invoice_id, status, provider_updated_at
      ) values (
-       '77777777-7777-4777-8777-777777777777', 'waaship', 'provider-doc-invalid',
+       '77777777-7777-4777-8777-777777777777', 'amego', 'provider-doc-invalid',
        'issued', '2026-07-20T00:00:00Z'
      ) $$,
   '23514',
@@ -64,7 +64,7 @@ select throws_ok(
   $$ insert into public.order_invoices (
        order_id, provider, provider_invoice_id, status, provider_updated_at
      ) values (
-       '77777777-7777-4777-8777-777777777777', 'waaship', 'provider-doc-1001',
+       '77777777-7777-4777-8777-777777777777', 'amego', 'provider-doc-1001',
        'failed', '2026-07-20T01:00:00Z'
      ) $$,
   '23505',
