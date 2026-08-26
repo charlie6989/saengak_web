@@ -11,6 +11,7 @@ import {
   getShopifyArticles,
   isPublicShopifyArticle,
   isPublicShopifyProduct,
+  checkCartVariantsAvailability,
   SHOPIFY_STORE_DOMAIN,
   SHOPIFY_API_VERSION,
 } from '../src/lib/shopify';
@@ -103,6 +104,61 @@ describe('Shopify Storefront SDK Client', () => {
       expect(product.tags).toEqual([]);
       expect(product.variants).toEqual([]);
       expect(product.image).toContain('images.unsplash.com');
+    });
+
+    it('should correctly format multi-variant products with options and variant images', () => {
+      const multiVariantNode = {
+        id: 'gid://shopify/Product/7810527723587',
+        title: '雲朵純棉 透氣抗菌 女款中腰三角內褲',
+        handle: 'cloud-cotton-panties',
+        options: [
+          { id: 'opt-1', name: '顏色', values: ['霧光藍', '經典黑'] },
+          { id: 'opt-2', name: '尺寸', values: ['M', 'L', 'XL'] },
+        ],
+        variants: {
+          edges: [
+            {
+              node: {
+                id: 'gid://shopify/ProductVariant/11',
+                title: '霧光藍 / M',
+                price: { amount: '109.0' },
+                compareAtPrice: { amount: '139.0' },
+                availableForSale: true,
+                selectedOptions: [
+                  { name: '顏色', value: '霧光藍' },
+                  { name: '尺寸', value: 'M' },
+                ],
+                image: { url: 'https://example.com/blue.jpg', altText: '霧光藍' },
+              },
+            },
+            {
+              node: {
+                id: 'gid://shopify/ProductVariant/12',
+                title: '經典黑 / L',
+                price: { amount: '109.0' },
+                compareAtPrice: { amount: '139.0' },
+                availableForSale: false,
+                selectedOptions: [
+                  { name: '顏色', value: '經典黑' },
+                  { name: '尺寸', value: 'L' },
+                ],
+              },
+            },
+          ],
+        },
+      };
+
+      const product = formatShopifyProduct(multiVariantNode);
+      expect(product.options).toHaveLength(2);
+      expect(product.options?.[0].name).toBe('顏色');
+      expect(product.options?.[0].values).toEqual(['霧光藍', '經典黑']);
+      expect(product.variants).toHaveLength(2);
+      expect(product.variants[0].image?.url).toBe('https://example.com/blue.jpg');
+      expect(product.variants[0].selectedOptions).toEqual([
+        { name: '顏色', value: '霧光藍' },
+        { name: '尺寸', value: 'M' },
+      ]);
+      expect(product.variants[1].availableForSale).toBe(false);
     });
 
     it('should throw when passed null or undefined', () => {
@@ -218,6 +274,24 @@ describe('Shopify Storefront SDK Client', () => {
       expect(Array.isArray(articles)).toBe(true);
       expect(articles.length).toBeGreaterThan(0);
       expect(articles[0].title).toBeDefined();
+    });
+
+    it('checkCartVariantsAvailability should verify in-stock variants and filter out sold out ones', async () => {
+      const mockItems = [
+        {
+          id: 'product-1',
+          variantId: 'gid://shopify/ProductVariant/43639647502403',
+          variantTitle: 'Default Title',
+          name: '深層修護私密清潔露',
+          price: 680,
+          image: '',
+          quantity: 1,
+        },
+      ];
+
+      const result = await checkCartVariantsAvailability(mockItems);
+      expect(Array.isArray(result.validItems)).toBe(true);
+      expect(Array.isArray(result.removedItems)).toBe(true);
     });
   });
 });

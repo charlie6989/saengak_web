@@ -1,10 +1,12 @@
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { clampCartQuantity, getCartLineKey } from '../domain/algorithms';
+import { checkCartVariantsAvailability } from '../lib/shopify';
 
 export interface CartItem {
   id: string;
   variantId?: string;
+  variantTitle?: string;
   name: string;
   price: number;
   image: string;
@@ -22,6 +24,9 @@ interface CartContextType {
   getTotalPrice: () => number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
+  validateAndPruneCart: () => Promise<{ name: string; variantTitle?: string }[]>;
+  prunedNotice: string | null;
+  setPrunedNotice: (notice: string | null) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -40,7 +45,7 @@ function normalizeId(id: unknown): string {
 
 /**
  * 智慧去重與合併購物車項目
- * 若同款商品（名稱相同或 ID 相同），自動合併並將 variantId 升級為有效值，數量累加
+ * 若同款商品且規格相同，自動合併數量累加
  */
 function consolidateCartItems(rawItems: CartItem[]): CartItem[] {
   const consolidated: CartItem[] = [];
@@ -68,8 +73,9 @@ function consolidateCartItems(rawItems: CartItem[]): CartItem[] {
       const existing = consolidated[existingIndex];
       consolidated[existingIndex] = {
         ...existing,
-        // 優先保留有效的 variantId
+        // 優先保留有效的 variantId 與 variantTitle
         variantId: existing.variantId || raw.variantId,
+        variantTitle: existing.variantTitle || raw.variantTitle,
         quantity: clampCartQuantity(existing.quantity + (raw.quantity || 1)),
         price: existing.price || raw.price,
         image: existing.image || raw.image,
@@ -89,6 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [hasHydratedCart, setHasHydratedCart] = useState(false);
+  const [prunedNotice, setPrunedNotice] = useState<string | null>(null);
 
   // Load cart from localStorage on mount and automatically deduplicate
   useEffect(() => {
@@ -113,6 +120,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [hasHydratedCart, items]);
 
+  const validateAndPruneCart = useCallback(async () => {
+    if (items.length === 0) return [];
+    try {
+      const { validItems, removedItems } = await checkCartVariantsAvailability(items);
+      if (removedItems.length > 0) {
+        setItems(validItems);
+        const names = removedItems
+          .map((r) => (r.variantTitle && r.variantTitle !== 'Default Title' ? `「${r.name}（${r.variantTitle}）」` : `「${r.name}」`))
+          .join('、');
+        setPrunedNotice(`部分商品已售完，系統已自動為您自購物車移除：${names}。`);
+      }
+      return removedItems;
+    } catch (err) {
+      console.warn('validateAndPruneCart error:', err);
+      return [];
+    }
+  }, [items]);
+
   const addToCart = (product: any, quantity: number = 1) => {
     const safeQuantity = clampCartQuantity(quantity);
     const purchasableVariantIds = Array.isArray(product.variants)
@@ -126,12 +151,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       : purchasableVariantIds.length === 1
         ? purchasableVariantIds[0]
         : (product.variants?.[0]?.id || undefined);
+    const variantTitle = typeof product.variantTitle === 'string'
+      ? product.variantTitle
+      : (product.variants?.find((v: any) => v.id === variantId)?.title || undefined);
     const productId = String(product.id || '');
     const productName = String(product.name || product.title || '商品');
 
     const newItem: CartItem = {
       id: productId,
       variantId,
+      variantTitle,
       name: productName,
       price: typeof product.price === 'number' ? product.price : parseFloat(product.price || '0'),
       image: product.image || product.images?.[0]?.url || '',
@@ -181,7 +210,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       getTotalItems,
       getTotalPrice,
       isCartOpen,
-      setIsCartOpen
+      setIsCartOpen,
+      validateAndPruneCart,
+      prunedNotice,
+      setPrunedNotice
     }}>
       {children}
     </CartContext.Provider>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { formatTwd, getCartLineKey } from '../../domain/algorithms';
@@ -27,8 +27,18 @@ export default function CartSidebar() {
     clearCart, 
     getTotalPrice, 
     isCartOpen, 
-    setIsCartOpen 
+    setIsCartOpen,
+    validateAndPruneCart,
+    prunedNotice,
+    setPrunedNotice
   } = useCart();
+
+  // 當購物車開啟時，自動審查商品庫存是否依然有效
+  useEffect(() => {
+    if (isCartOpen && items.length > 0) {
+      void validateAndPruneCart();
+    }
+  }, [isCartOpen, validateAndPruneCart]);
 
   const totalPrice = getTotalPrice();
   const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - totalPrice);
@@ -147,6 +157,26 @@ export default function CartSidebar() {
           </div>
         )}
 
+        {/* 缺貨自動移除提醒橫幅 */}
+        {prunedNotice && (
+          <div className="bg-amber-50 border-b border-amber-200 px-6 py-3.5 flex items-start gap-3 animate-fade-in" role="alert" data-testid="cart-pruned-notice">
+            <div className="w-5 h-5 rounded-full bg-amber-200 flex items-center justify-center flex-shrink-0 text-amber-800 text-xs font-bold mt-0.5">
+              !
+            </div>
+            <div className="flex-1 text-xs text-amber-900 leading-relaxed font-medium">
+              {prunedNotice}
+            </div>
+            <button
+              type="button"
+              onClick={() => setPrunedNotice(null)}
+              className="text-amber-600 hover:text-amber-900 text-sm leading-none p-1 cursor-pointer"
+              aria-label="關閉提醒"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         {/* Cart Items List */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
           {items.length === 0 ? (
@@ -193,6 +223,12 @@ export default function CartSidebar() {
                       >
                         {item.name}
                       </h3>
+
+                      {item.variantTitle && item.variantTitle !== 'Default Title' && (
+                        <div className="inline-block bg-teal-50 text-teal-800 border border-teal-100 text-[10px] px-1.5 py-0.5 rounded font-medium mb-1.5">
+                          {item.variantTitle}
+                        </div>
+                      )}
                       
                       <div className="flex items-baseline gap-1.5 mb-2">
                         <span className="text-sm font-bold text-teal-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>

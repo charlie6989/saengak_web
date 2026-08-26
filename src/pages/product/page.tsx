@@ -1,12 +1,12 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
 import { getMockProductById } from '../../mocks/products';
-import { getShopifyProduct, getShopifyProducts } from '../../lib/shopify';
+import { getShopifyProduct, getShopifyProducts, type ShopifyProductVariant, type ShopifyProductOption } from '../../lib/shopify';
 import { captureExceptionSafe } from '../../lib/sentry';
 import { formatTwd } from '../../domain/algorithms';
 
@@ -19,18 +19,20 @@ interface Product {
   originalPrice?: number;
   image: string;
   hoverImage: string;
-  images?: { url: string }[];
-  variants?: any[];
+  images?: { url: string; altText?: string }[];
+  variants?: ShopifyProductVariant[];
+  options?: ShopifyProductOption[];
   reviews?: number;
   handle?: string;
   tags?: string[];
   productType?: string;
   vendor?: string;
+  availableForSale?: boolean;
 }
 
 /**
  * Product detail page.
- * Handles fetching product data, related products, and UI interactions.
+ * Handles fetching product data, related products, multi-variant selection, and UI interactions.
  */
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -39,6 +41,7 @@ export default function ProductPage() {
   const [selectedTab, setSelectedTab] = useState<'reviews' | 'details' | 'related' | 'qa'>('related');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { addToCart, setIsCartOpen } = useCart();
@@ -52,6 +55,22 @@ export default function ProductPage() {
       if (id) {
         const shopifyProduct = await getShopifyProduct(id);
         if (shopifyProduct) {
+          // 初始化規格選項 (Options)
+          let initialOptions: Record<string, string> = {};
+          const firstVariant = shopifyProduct.variants?.[0];
+          if (firstVariant?.selectedOptions && firstVariant.selectedOptions.length > 0) {
+            firstVariant.selectedOptions.forEach((opt: { name: string; value: string }) => {
+              initialOptions[opt.name] = opt.value;
+            });
+          } else if (shopifyProduct.options && shopifyProduct.options.length > 0) {
+            shopifyProduct.options.forEach((opt) => {
+              if (opt.values?.[0]) {
+                initialOptions[opt.name] = opt.values[0];
+              }
+            });
+          }
+
+          setSelectedOptions(initialOptions);
           setProduct({
             id: shopifyProduct.id,
             name: shopifyProduct.name || shopifyProduct.title,
@@ -63,10 +82,12 @@ export default function ProductPage() {
             hoverImage: shopifyProduct.hoverImage || shopifyProduct.image,
             images: shopifyProduct.images,
             variants: shopifyProduct.variants,
+            options: shopifyProduct.options,
             handle: shopifyProduct.handle,
             tags: shopifyProduct.tags,
             productType: shopifyProduct.productType,
             vendor: shopifyProduct.vendor,
+            availableForSale: shopifyProduct.availableForSale,
           });
 
           // Fetch related products
@@ -116,12 +137,100 @@ export default function ProductPage() {
   }, [id]);
 
   /** --------------------------------------------------------------------
+   *  Computed: Active Variant, Price, Stock & Options List
+   * ------------------------------------------------------------------- */
+  const optionsList = useMemo(() => {
+    if (product?.options && product.options.length > 0) {
+      return product.options.filter(
+        (opt) => opt.values.length > 0 && !(opt.name === 'Title' && opt.values[0] === 'Default Title')
+      );
+    }
+
+    // 若 options 未直接提供，自 variants.selectedOptions 動態萃取
+    if (product?.variants && product.variants.length > 0) {
+      const extracted: Record<string, Set<string>> = {};
+      for (const v of product.variants) {
+        if (v.selectedOptions) {
+          for (const so of v.selectedOptions) {
+            if (so.name === 'Title' && so.value === 'Default Title') continue;
+            if (!extracted[so.name]) extracted[so.name] = new Set();
+            extracted[so.name].add(so.value);
+          }
+        }
+      }
+      return Object.entries(extracted).map(([name, set]) => ({
+        name,
+        values: Array.from(set),
+      }));
+    }
+
+    return [];
+  }, [product]);
+
+  const selectedVariant = useMemo(() => {
+    if (!product?.variants || product.variants.length === 0) return null;
+    const matched = product.variants.find((v) => {
+      if (!v.selectedOptions || v.selectedOptions.length === 0) return false;
+      return v.selectedOptions.every((opt) => selectedOptions[opt.name] === opt.value);
+    });
+    return matched || product.variants[0] || null;
+  }, [product, selectedOptions]);
+
+  const currentPrice = selectedVariant ? selectedVariant.price : (product?.price ?? 0);
+  const currentCompareAtPrice = selectedVariant?.compareAtPrice ?? product?.originalPrice;
+  const isAvailableForSale = selectedVariant ? selectedVariant.availableForSale : (product?.availableForSale ?? true);
+
+  /**
+   * 多層級規格庫存可用性判定演算法 (Hierarchical Option Availability Check)
+   * - 第 1 層 (如顏色): 檢查該顏色底下是否有任一尺寸庫存為 true。若全缺貨則返回 false (灰階)。
+   * - 第 2 層 (如尺寸): 結合目前選取的第 1 層顏色，檢查 (當前顏色 + 該尺寸) 是否有庫存。
+   * - 第 N 層 (以此類推): 結合先前已選定之層級規格進行庫存檢查。
+   */
+  const checkOptionAvailability = (optionIndex: number, optionName: string, optionValue: string): boolean => {
+    if (!product?.variants || product.variants.length === 0) return true;
+
+    if (optionIndex === 0) {
+      // 第 1 層：檢查該選項值底下是否有任一可售規格
+      return product.variants.some((v) => {
+        const matchValue = v.selectedOptions?.some((so) => so.name === optionName && so.value === optionValue);
+        return matchValue && v.availableForSale !== false;
+      });
+    }
+
+    // 第 2 層及更深層：比對先前已選定之各層選項值
+    const precedingConditions: Record<string, string> = {};
+    for (let i = 0; i < optionIndex; i++) {
+      const prevOpt = optionsList[i];
+      if (prevOpt && selectedOptions[prevOpt.name]) {
+        precedingConditions[prevOpt.name] = selectedOptions[prevOpt.name];
+      }
+    }
+
+    const targetConditions = { ...precedingConditions, [optionName]: optionValue };
+
+    return product.variants.some((v) => {
+      if (!v.selectedOptions) return false;
+      const matchesAll = Object.entries(targetConditions).every(([name, val]) =>
+        v.selectedOptions?.some((so) => so.name === name && so.value === val)
+      );
+      return matchesAll && v.availableForSale !== false;
+    });
+  };
+
+  /** --------------------------------------------------------------------
    *  Handlers
    * ------------------------------------------------------------------- */
   const handleAddToCart = () => {
     if (product) {
       try {
-        addToCart(product, quantity);
+        addToCart({
+          ...product,
+          variantId: selectedVariant?.id,
+          variantTitle: selectedVariant?.title,
+          price: currentPrice,
+          originalPrice: currentCompareAtPrice,
+          image: selectedVariant?.image?.url || activeImage,
+        }, quantity);
       } catch (e) {
         console.error('Add to cart failed:', e);
       }
@@ -131,10 +240,35 @@ export default function ProductPage() {
   const handleBuyNow = () => {
     if (product) {
       try {
-        addToCart(product, quantity);
+        addToCart({
+          ...product,
+          variantId: selectedVariant?.id,
+          variantTitle: selectedVariant?.title,
+          price: currentPrice,
+          originalPrice: currentCompareAtPrice,
+          image: selectedVariant?.image?.url || activeImage,
+        }, quantity);
         setIsCartOpen(true);
       } catch (e) {
         console.error('Buy now failed:', e);
+      }
+    }
+  };
+
+  const handleOptionSelect = (optionName: string, optionValue: string) => {
+    const nextOptions = { ...selectedOptions, [optionName]: optionValue };
+    setSelectedOptions(nextOptions);
+
+    // 切換至該規格專屬圖片（若有）
+    if (product?.variants) {
+      const targetVariant = product.variants.find((v) =>
+        v.selectedOptions?.every((opt) => nextOptions[opt.name] === opt.value)
+      );
+      if (targetVariant?.image?.url) {
+        const foundIndex = productImages.findIndex((url) => url === targetVariant.image?.url);
+        if (foundIndex !== -1) {
+          setSelectedImage(foundIndex);
+        }
       }
     }
   };
@@ -162,8 +296,8 @@ export default function ProductPage() {
     : [];
   const activeImage = productImages[selectedImage] ?? product?.image ?? '';
 
-  const discountPercentage = product?.originalPrice && product.originalPrice > product.price
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const discountPercentage = currentCompareAtPrice && currentCompareAtPrice > currentPrice
+    ? Math.round(((currentCompareAtPrice - currentPrice) / currentCompareAtPrice) * 100)
     : 0;
 
   /** --------------------------------------------------------------------
@@ -289,8 +423,8 @@ export default function ProductPage() {
 
                 {/* Price */}
                 <div className="space-y-1">
-                  {product.originalPrice && product.originalPrice > product.price && (
-                    <div className="text-sm text-gray-400 line-through">{formatTwd(product.originalPrice)}</div>
+                  {currentCompareAtPrice && currentCompareAtPrice > currentPrice && (
+                    <div className="text-sm text-gray-400 line-through">{formatTwd(currentCompareAtPrice)}</div>
                   )}
                   <div className="flex items-baseline gap-2">
                     {discountPercentage > 0 && (
@@ -301,14 +435,75 @@ export default function ProductPage() {
                         -{discountPercentage}%
                       </span>
                     )}
-                    <span className="text-2xl font-bold text-gray-900">
-                      {formatTwd(product.price)}
+                    <span className="text-2xl font-bold text-gray-900" data-testid="product-price">
+                      {formatTwd(currentPrice)}
                     </span>
+                    {!isAvailableForSale && (
+                      <span className="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded ml-2">
+                        已售完 / 缺貨中
+                      </span>
+                    )}
                   </div>
                   <div className="text-sm text-gray-600">
                     最終售價、稅金與優惠以 Shopify Checkout 顯示為準。
                   </div>
                 </div>
+
+                {/* Multi-Variant / Options Selector */}
+                {optionsList.length > 0 && (
+                  <div className="space-y-4 rounded-xl border border-gray-200 bg-white/70 p-4 shadow-2xs" data-testid="variant-options">
+                    {optionsList.map((option, optIdx) => {
+                      const selectedVal = selectedOptions[option.name];
+                      return (
+                        <div key={option.name} className="space-y-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium text-gray-700" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+                              {option.name}：
+                              <strong className="text-teal-900 ml-1 font-semibold">
+                                {selectedVal || '請選擇'}
+                              </strong>
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {option.values.map((val) => {
+                              const isSelected = selectedVal === val;
+                              const isAvailable = checkOptionAvailability(optIdx, option.name, val);
+
+                              return (
+                                <button
+                                  key={val}
+                                  type="button"
+                                  onClick={() => handleOptionSelect(option.name, val)}
+                                  data-testid={`option-${option.name}-${val}`}
+                                  title={isAvailable ? `${option.name}: ${val}` : `${option.name}: ${val} (缺貨中)`}
+                                  className={`relative px-3.5 py-1.5 rounded-lg text-sm transition-all cursor-pointer ${
+                                    isSelected
+                                      ? isAvailable
+                                        ? 'bg-teal-700 text-white font-semibold shadow-xs ring-2 ring-teal-700 ring-offset-1'
+                                        : 'bg-gray-200 text-gray-500 font-semibold border border-gray-400 ring-2 ring-gray-400 ring-offset-1'
+                                      : isAvailable
+                                        ? 'bg-white text-gray-700 border border-gray-300 hover:border-teal-600 hover:bg-teal-50/50'
+                                        : 'bg-gray-100 text-gray-400 border border-dashed border-gray-300 opacity-65 hover:opacity-100 hover:bg-gray-200/60'
+                                  }`}
+                                  style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                                >
+                                  <span className={!isAvailable ? 'line-through decoration-gray-400' : ''}>
+                                    {val}
+                                  </span>
+                                  {!isAvailable && (
+                                    <span className="text-[11px] ml-1 opacity-75 font-normal">
+                                      (缺貨)
+                                    </span>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* Source status */}
                 <ul className="space-y-2 text-sm">
@@ -318,7 +513,7 @@ export default function ProductPage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <i className="ri-check-line text-green-500 mt-0.5 flex-shrink-0"></i>
-                    <span className="text-gray-700">結帳前必須取得有效 Shopify 規格 ID</span>
+                    <span className="text-gray-700">結帳前已對齊正式 Shopify 規格 ID</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <i className="ri-check-line text-green-500 mt-0.5 flex-shrink-0"></i>
@@ -333,14 +528,16 @@ export default function ProductPage() {
                     <div className="flex items-center border border-gray-300 rounded">
                       <button
                         onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900"
+                        disabled={!isAvailableForSale}
+                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 disabled:opacity-40 cursor-pointer"
                       >
                         -
                       </button>
                       <span className="w-12 text-center text-sm border-l border-r border-gray-300 py-2">{quantity}</span>
                       <button
                         onClick={() => setQuantity((q) => q + 1)}
-                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900"
+                        disabled={!isAvailableForSale}
+                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 disabled:opacity-40 cursor-pointer"
                       >
                         +
                       </button>
@@ -350,42 +547,50 @@ export default function ProductPage() {
                   <div className="flex gap-3">
                     <button
                       onClick={handleAddToCart}
-                      className="flex-1 h-12 border font-medium transition-colors"
+                      disabled={!isAvailableForSale}
+                      data-testid="add-to-cart-button"
+                      className="flex-1 h-12 border font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       style={{
-                        backgroundColor: '#ffffff',
-                        borderColor: '#245B50',
-                        color: '#245B50',
+                        backgroundColor: isAvailableForSale ? '#ffffff' : '#f3f4f6',
+                        borderColor: isAvailableForSale ? '#245B50' : '#d1d5db',
+                        color: isAvailableForSale ? '#245B50' : '#9ca3af',
                         fontFamily: "Noto Sans TC, sans-serif"
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f0fdf4';
+                        if (isAvailableForSale) e.currentTarget.style.backgroundColor = '#f0fdf4';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#ffffff';
+                        if (isAvailableForSale) e.currentTarget.style.backgroundColor = '#ffffff';
                       }}
                     >
-                      加入購物車
+                      {isAvailableForSale ? '加入購物車' : '此規格已售完'}
                     </button>
                     {/* Modified Buy Now button */}
                     <button
                       onClick={handleBuyNow}
-                      className="flex-1 h-12 border font-medium transition-colors"
+                      disabled={!isAvailableForSale}
+                      data-testid="buy-now-button"
+                      className="flex-1 h-12 border font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       style={{
-                        backgroundColor: '#245B50',
-                        borderColor: '#245B50',
+                        backgroundColor: isAvailableForSale ? '#245B50' : '#9ca3af',
+                        borderColor: isAvailableForSale ? '#245B50' : '#9ca3af',
                         color: '#ffffff',
                         fontFamily: "Noto Sans TC, sans-serif"
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#1a4239';
-                        e.currentTarget.style.borderColor = '#1a4239';
+                        if (isAvailableForSale) {
+                          e.currentTarget.style.backgroundColor = '#1a4239';
+                          e.currentTarget.style.borderColor = '#1a4239';
+                        }
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#245B50';
-                        e.currentTarget.style.borderColor = '#245B50';
+                        if (isAvailableForSale) {
+                          e.currentTarget.style.backgroundColor = '#245B50';
+                          e.currentTarget.style.borderColor = '#245B50';
+                        }
                       }}
                     >
-                      立即購買
+                      {isAvailableForSale ? '立即購買' : '暫無庫存'}
                     </button>
                   </div>
 

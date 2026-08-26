@@ -47,6 +47,13 @@ export interface ShopifyProductVariant {
   availableForSale: boolean;
   sku?: string;
   selectedOptions?: { name: string; value: string }[];
+  image?: { url: string; altText?: string };
+}
+
+export interface ShopifyProductOption {
+  id?: string;
+  name: string;
+  values: string[];
 }
 
 export interface ShopifyProduct {
@@ -67,6 +74,7 @@ export interface ShopifyProduct {
   createdAt: string;
   availableForSale: boolean;
   variants: ShopifyProductVariant[];
+  options?: ShopifyProductOption[];
 }
 
 export interface ShopifyCollection {
@@ -137,6 +145,13 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     availableForSale: e.node?.availableForSale ?? true,
     sku: e.node?.sku || '',
     selectedOptions: e.node?.selectedOptions || [],
+    image: e.node?.image?.url ? { url: e.node.image.url, altText: e.node.image.altText || '' } : undefined,
+  }));
+
+  const options: ShopifyProductOption[] = (node.options || []).map((opt: any) => ({
+    id: opt.id,
+    name: opt.name,
+    values: Array.isArray(opt.values) ? opt.values : [],
   }));
 
   const fallbackImage = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800';
@@ -159,6 +174,7 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     createdAt: node.createdAt || new Date().toISOString(),
     availableForSale: node.availableForSale ?? true,
     variants,
+    options,
   };
 }
 
@@ -184,6 +200,11 @@ const PRODUCT_FRAGMENT = `
   vendor
   tags
   createdAt
+  options {
+    id
+    name
+    values
+  }
   priceRange {
     minVariantPrice {
       amount
@@ -222,6 +243,10 @@ const PRODUCT_FRAGMENT = `
         selectedOptions {
           name
           value
+        }
+        image {
+          url
+          altText
         }
       }
     }
@@ -641,4 +666,101 @@ export async function getShopifyArticleByHandle(handle: string): Promise<Shopify
   // 若 Shopify 查不到，在 fallback 中查詢
   const fallbacks = await getShopifyArticles(10);
   return fallbacks.find((a) => a.handle === handle || a.id === handle) || null;
+}
+
+export interface CartVariantCheckItem {
+  id: string;
+  variantId?: string;
+  variantTitle?: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+  originalPrice?: number;
+}
+
+export interface CartStockCheckResult<T extends CartVariantCheckItem = CartVariantCheckItem> {
+  validItems: T[];
+  removedItems: { name: string; variantTitle?: string }[];
+}
+
+/**
+ * 批次查驗購物車中所有商品的即時可售庫存 (availableForSale)
+ * 若有規格已售完，自動分離出有效與被移除清單
+ */
+export async function checkCartVariantsAvailability<T extends CartVariantCheckItem>(
+  items: T[]
+): Promise<CartStockCheckResult<T>> {
+  if (!items || items.length === 0) {
+    return { validItems: [], removedItems: [] };
+  }
+
+  const variantIds = items
+    .map((item) => item.variantId)
+    .filter((id): id is string => Boolean(id));
+
+  if (variantIds.length === 0) {
+    return { validItems: items, removedItems: [] };
+  }
+
+  const gids = Array.from(
+    new Set(
+      variantIds.map((id) => (id.startsWith('gid://') ? id : `gid://shopify/ProductVariant/${id}`))
+    )
+  );
+
+  const gqlQuery = `
+    query CheckVariantsAvailability($ids: [ID!]!) {
+      nodes(ids: $ids) {
+        ... on ProductVariant {
+          id
+          availableForSale
+          title
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await shopifyFetch<{ nodes: any[] }>({
+      query: gqlQuery,
+      variables: { ids: gids },
+    });
+
+    const availabilityMap = new Map<string, boolean>();
+    (data.nodes || []).forEach((node) => {
+      if (node && node.id) {
+        availabilityMap.set(node.id, Boolean(node.availableForSale));
+      }
+    });
+
+    const validItems: T[] = [];
+    const removedItems: { name: string; variantTitle?: string }[] = [];
+
+    for (const item of items) {
+      if (!item.variantId) {
+        validItems.push(item);
+        continue;
+      }
+
+      const gid = item.variantId.startsWith('gid://')
+        ? item.variantId
+        : `gid://shopify/ProductVariant/${item.variantId}`;
+
+      if (availabilityMap.has(gid) && availabilityMap.get(gid) === false) {
+        removedItems.push({
+          name: item.name,
+          variantTitle: item.variantTitle,
+        });
+      } else {
+        validItems.push(item);
+      }
+    }
+
+    return { validItems, removedItems };
+  } catch (err) {
+    console.warn('Shopify Storefront checkCartVariantsAvailability failed:', err);
+    captureExceptionSafe(err, { source: 'checkCartVariantsAvailability' });
+    return { validItems: items, removedItems: [] };
+  }
 }
