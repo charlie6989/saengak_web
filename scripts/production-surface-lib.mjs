@@ -46,8 +46,19 @@ const protectedFunctions = [
 ];
 
 const vercelApiProbes = [
-  ['/api/create-shopify-cart', 'POST'],
-  ['/api/webhooks/shopify', 'POST'],
+  {
+    path: '/api/create-shopify-cart',
+    method: 'POST',
+    expectedStatus: 401,
+    expectedCode: 'MEMBER_LOGIN_REQUIRED',
+    successMessage: 'handler 可執行且正確要求會員登入',
+  },
+  {
+    path: '/api/webhooks/shopify',
+    method: 'POST',
+    expectedStatus: 400,
+    successMessage: 'handler 可執行並拒絕無效 payload',
+  },
 ];
 
 function result(id, passed, message, details = {}) {
@@ -137,6 +148,16 @@ export async function verifyProductionSurface({
       { actual: permissionsPolicy },
     ));
 
+    const robotsHeader = root.response.headers.get('x-robots-tag') || '';
+    const robotsMeta = /<meta\s+[^>]*name=["']robots["'][^>]*content=["']([^"']+)["']/i.exec(root.body)?.[1] || '';
+    const indexable = !/noindex|nofollow/i.test(robotsHeader) && /\bindex\b/i.test(robotsMeta) && /\bfollow\b/i.test(robotsMeta);
+    checks.push(result(
+      'seo:indexable',
+      indexable,
+      indexable ? '正式站允許搜尋引擎索引' : '正式站仍被 noindex / nofollow 封鎖',
+      { robotsHeader, robotsMeta },
+    ));
+
     const csp = root.response.headers.get('content-security-policy') || '';
     const missingCspDirectives = REQUIRED_CSP_DIRECTIVES.filter((directive) => !csp.includes(directive));
     checks.push(result(
@@ -202,7 +223,7 @@ export async function verifyProductionSurface({
     }
   }
 
-  for (const [path, method] of vercelApiProbes) {
+  for (const { path, method, expectedStatus, expectedCode, successMessage } of vercelApiProbes) {
     const url = new URL(path, baseUrl);
     try {
       const response = await fetchImpl(url, {
@@ -214,13 +235,22 @@ export async function verifyProductionSurface({
         },
         body: '{}',
       });
+      const body = await response.text();
+      const responseCode = (() => {
+        try {
+          return JSON.parse(body)?.code;
+        } catch {
+          return undefined;
+        }
+      })();
+      const passed = response.status === expectedStatus && (!expectedCode || responseCode === expectedCode);
       checks.push(result(
         `vercel-api:${path}`,
-        response.status === 400,
-        response.status === 400
-          ? `${path} handler 可執行並拒絕無效 payload`
-          : `${path} 應以 400 拒絕無效 payload，不得發生 Function crash`,
-        { status: response.status },
+        passed,
+        passed
+          ? `${path} ${successMessage}`
+          : `${path} 應回傳 ${expectedStatus}${expectedCode ? ` / ${expectedCode}` : ''}，不得發生 Function crash`,
+        { status: response.status, code: responseCode },
       ));
     } catch (error) {
       checks.push(result(`vercel-api:${path}`, false, `${path} 無法完成安全探針`, {

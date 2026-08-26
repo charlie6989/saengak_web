@@ -221,7 +221,7 @@ export default function WelcomePage() {
                 <div className="mt-8 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                   <p className="text-sm text-yellow-800">
                     <i className="ri-information-line mr-2"></i>
-                    TapPay 商家設定已完成；Shopify Online Store 與交易、物流 sandbox 尚未驗收前，本站不接受正式付款。
+                    Shopify Online Store 與 TapPay 正式金流已啟用；付款方式、運費與最終金額以 Shopify Checkout 顯示為準。
                   </p>
                 </div>
               </div>

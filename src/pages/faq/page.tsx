@@ -31,7 +31,7 @@ export default function FAQPage() {
       id: '1',
       category: 'order',
       question: '如何查詢我的訂單狀態？',
-      answer: '正式結帳啟用後，已登入會員可在個人頁查看與該帳號連結的 Shopify 訂單與物流追蹤。網站目前尚未開放正式結帳，因此不會顯示示範訂單；若日後需要人工核對，請只透過本站公告的官方客服管道提供訂單編號。'
+      answer: '完成正式結帳後，已登入會員可在個人頁查看與該帳號連結的 Shopify 訂單與物流追蹤。網站不會顯示示範訂單；若需要人工核對，請只透過本站公告的官方客服管道提供訂單編號。'
     },
     {
       id: '2',
@@ -67,7 +67,7 @@ export default function FAQPage() {
       id: '7',
       category: 'payment',
       question: '支援哪些付款方式？',
-      answer: '結帳將使用 Shopify Checkout 搭配 TapPay。TapPay 商家設定已完成，但 Shopify Online Store、真實商品規格與 sandbox 對帳尚待驗收，因此目前不宣稱 ATM、超商代碼、貨到付款或正式扣款已可使用。'
+      answer: '結帳使用 Shopify Checkout 搭配 TapPay 正式金流。實際可選的信用卡、行動支付或其他付款方式，以及最終金額，均以當次 Shopify Checkout 顯示為準。'
     },
     {
       id: '8',

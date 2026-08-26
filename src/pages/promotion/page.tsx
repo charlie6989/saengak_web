@@ -26,8 +26,8 @@ export default function Promotion() {
           <article className="border border-gray-200 bg-white p-7">
             <h2 className="mb-3 text-xl font-bold text-gray-900">現在可以確認的事</h2>
             <ul className="space-y-3 text-gray-600">
-              <li>• 展示目錄可瀏覽，但 Shopify Online Store 尚未解鎖。</li>
-              <li>• TapPay 商家設定已完成；交易、物流與發票尚未完成 sandbox 對帳。</li>
+              <li>• Shopify Online Store 已解鎖，正式商品價格與庫存以 Shopify 為準。</li>
+              <li>• TapPay 已啟用正式模式；付款方式與最終金額以 Shopify Checkout 顯示為準。</li>
               <li>• 未公告優惠時，購物車不會自行承諾折扣或免運。</li>
             </ul>
           </article>

@@ -478,7 +478,7 @@ export default function Community() {
                   <i className="ri-vip-crown-line text-xl" style={{ color: '#225B4F' }}></i>
                 </div>
                 <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">訂單連結基線</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">正式結帳啟用後，只顯示與已驗證會員 Cart 連結的 Shopify 訂單。</p>
+                <p className="text-sm text-gray-600 leading-relaxed">完成正式結帳後，只顯示與已驗證會員 Cart 連結的 Shopify 訂單。</p>
               </div>
             </div>
           </div>

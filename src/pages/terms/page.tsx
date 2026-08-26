@@ -10,9 +10,9 @@ export default function TermsPage() {
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
         <p className="mb-3 text-sm font-medium tracking-wide text-teal-700">內容盤點日期：{siteContent.contentReviewedAt}</p>
         <h1 className="mb-5 text-4xl font-bold text-gray-950">網站使用與訂購條款</h1>
-        <div className="mb-10 rounded-xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
-          <p className="font-semibold">正式交易條款確認中</p>
-          <p className="mt-2 text-sm leading-6">TapPay 商家設定已完成，但 Shopify Online Store 尚未解鎖，物流、發票、運費與三種交易 sandbox 對帳也未完成。因此本頁不宣稱尚未提供的付款或配送方式；完成驗收與法務審閱後才可作為正式交易條款。</p>
+        <div className="mb-10 rounded-xl border border-teal-200 bg-teal-50 p-5 text-teal-950">
+          <p className="font-semibold">正式結帳已啟用</p>
+          <p className="mt-2 text-sm leading-6">本站使用 Shopify Checkout 與 TapPay 正式金流；可用付款方式、運費、配送條件與最終金額以當次結帳頁面顯示為準。物流、發票、客服與本條款仍會依實際營運狀態持續更新。</p>
         </div>
 
         <div className="space-y-7">
@@ -32,7 +32,7 @@ export default function TermsPage() {
               <li>商品名稱、規格、價格、庫存與促銷，以實際商品頁及 Shopify 結帳畫面為準。</li>
               <li>購物車內容不等於訂單成立；只有 Shopify 接受結帳並回傳訂單後，才進入正式訂單流程。</li>
               <li>付款方式、運費、配送區域與預估時間，必須以正式結帳畫面及訂單通知為準。</li>
-              <li>目前網站展示資料不應視為已開放交易、保留庫存或付款成功的證明。</li>
+              <li>前端購物車與頁面提示不代表付款成功；付款與訂單狀態以 Shopify 訂單記錄為準。</li>
             </ul>
           </section>
 

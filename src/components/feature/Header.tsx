@@ -160,7 +160,7 @@ export default function Header() {
         style={{ height: '32px', fontFamily: "Noto Sans TC, sans-serif" }}
       >
         <div className="animate-marquee whitespace-nowrap flex items-center justify-center h-full text-sm">
-          SAENGAK 品牌展示目錄｜正式結帳、物流與客服管道啟用後將於本站公告
+          SAENGAK 正式商店｜結帳由 Shopify Checkout 與 TapPay 安全處理
         </div>
       </div>
 

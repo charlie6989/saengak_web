@@ -27,14 +27,19 @@ function mockResponse(url, { status = 200, headers = {}, body = '' } = {}) {
   };
 }
 
-function makeFetch({ omitHeader, edgeStatus = 401, apiStatus = 400, routeRedirects = {} } = {}) {
+function makeFetch({ omitHeader, edgeStatus = 401, apiStatus, routeRedirects = {} } = {}) {
   return async (input) => {
     const url = new URL(input);
     if (url.href.startsWith(SUPABASE_FUNCTIONS_BASE_URL)) {
       return mockResponse(url, { status: edgeStatus, headers: { 'content-type': 'application/json' } });
     }
     if (url.pathname.startsWith('/api/')) {
-      return mockResponse(url, { status: apiStatus, headers: { 'content-type': 'application/json' } });
+      const isCheckout = url.pathname === '/api/create-shopify-cart';
+      const status = apiStatus ?? (isCheckout ? 401 : 400);
+      const body = isCheckout && status === 401
+        ? JSON.stringify({ error: 'Sign in before checkout', code: 'MEMBER_LOGIN_REQUIRED' })
+        : '{}';
+      return mockResponse(url, { status, body, headers: { 'content-type': 'application/json' } });
     }
     if (url.pathname.endsWith('.js')) {
       return mockResponse(url, { headers: { 'content-type': 'text/javascript' } });
@@ -49,7 +54,7 @@ function makeFetch({ omitHeader, edgeStatus = 401, apiStatus = 400, routeRedirec
       : url;
     return mockResponse(responseUrl, {
       headers,
-      body: '<div id="root"></div><script src="/assets/index.js"></script><link href="/assets/index.css" rel="stylesheet">',
+      body: '<meta name="robots" content="index, follow"><div id="root"></div><script src="/assets/index.js"></script><link href="/assets/index.css" rel="stylesheet">',
     });
   };
 }

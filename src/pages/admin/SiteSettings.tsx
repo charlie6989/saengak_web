@@ -291,7 +291,7 @@ export const SiteSettings: React.FC = () => {
                     預覽部署測試閘門 (Preview Test Access Gate)
                   </div>
                   <div className="text-[11px] text-gray-500">
-                    由 <code>middleware.js</code> 執行的存取通行碼保護；正式公開切換時需依 LAUNCH_CHECKLIST 移除。
+                    正式站已公開；管理員頁面仍由 Supabase Auth 與角色權限保護，不使用舊版全站測試通行碼。
                   </div>
                 </div>
                 <span className="rounded-md bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">
