@@ -144,7 +144,7 @@ export const ProductList: React.FC = () => {
                   <th className="px-4 py-3">商品資訊</th>
                   <th className="px-4 py-3">Handle</th>
                   <th className="px-4 py-3">價格 (TWD)</th>
-                  <th className="px-4 py-3">供貨狀態</th>
+                  <th className="px-4 py-3">即時庫存與狀態</th>
                   <th className="px-4 py-3">規格 (Variants)</th>
                   <th className="px-4 py-3">標籤 (Tags)</th>
                   <th className="px-4 py-3 text-right">詳情</th>
@@ -182,15 +182,27 @@ export const ProductList: React.FC = () => {
                       )}
                     </td>
                     <td className="px-4 py-3.5">
-                      {product.availableForSale ? (
-                        <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
-                          ● 正常供貨中
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 border border-red-200">
-                          ● 已缺貨
-                        </span>
-                      )}
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-1.5">
+                          {product.availableForSale ? (
+                            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
+                              ● 正常供貨中
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 border border-red-200">
+                              ● 已缺貨
+                            </span>
+                          )}
+                        </div>
+                        {typeof product.totalInventory === 'number' && (
+                          <div className="text-[11px] font-medium text-gray-600">
+                            總庫存：
+                            <strong className={product.totalInventory > 0 ? 'text-emerald-700 font-semibold' : 'text-amber-600 font-semibold'}>
+                              {product.totalInventory}
+                            </strong> 件
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3.5">
                       <span className="rounded bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-700">
@@ -238,7 +250,14 @@ export const ProductList: React.FC = () => {
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">{selectedProduct.title}</h2>
-                <p className="text-xs text-gray-500">Handle: {selectedProduct.handle}</p>
+                <div className="flex items-center space-x-3 mt-1 text-xs text-gray-500">
+                  <span>Handle: <code className="font-mono text-gray-700">{selectedProduct.handle}</code></span>
+                  {typeof selectedProduct.totalInventory === 'number' && (
+                    <span className="rounded bg-teal-50 px-2 py-0.5 font-semibold text-teal-800 border border-teal-200">
+                      全品項總庫存: {selectedProduct.totalInventory} 件
+                    </span>
+                  )}
+                </div>
               </div>
               <button
                 type="button"
@@ -252,7 +271,7 @@ export const ProductList: React.FC = () => {
             <div className="mt-4 space-y-4">
               <div>
                 <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  規格清單 ({selectedProduct.variants.length} 個 Variant)
+                  規格清單與即時件數 ({selectedProduct.variants.length} 個 Variant)
                 </h3>
                 <div className="mt-2 divide-y divide-gray-100 rounded-lg border border-gray-200">
                   {selectedProduct.variants.map((v) => (
@@ -263,17 +282,30 @@ export const ProductList: React.FC = () => {
                           SKU: {v.sku || '無 SKU'} | GID: {v.id.split('/').pop()}
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right space-y-1">
                         <div className="font-bold text-gray-900">NT$ {v.price.toLocaleString()}</div>
-                        <span
-                          className={`inline-block rounded px-1.5 py-0.2 text-[10px] font-semibold ${
-                            v.availableForSale
-                              ? 'bg-emerald-50 text-emerald-700'
-                              : 'bg-red-50 text-red-700'
-                          }`}
-                        >
-                          {v.availableForSale ? '可販售' : '無庫存'}
-                        </span>
+                        <div className="flex items-center justify-end space-x-1.5">
+                          {typeof v.quantityAvailable === 'number' && (
+                            <span
+                              className={`font-mono text-[11px] font-semibold rounded px-1.5 py-0.5 border ${
+                                v.quantityAvailable > 0
+                                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                  : 'bg-red-50 text-red-700 border-red-200'
+                              }`}
+                            >
+                              庫存: {v.quantityAvailable} 件
+                            </span>
+                          )}
+                          <span
+                            className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold ${
+                              v.availableForSale
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : 'bg-red-50 text-red-700 border border-red-200'
+                            }`}
+                          >
+                            {v.availableForSale ? '可販售' : '無庫存'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))}

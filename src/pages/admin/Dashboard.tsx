@@ -8,6 +8,7 @@ export const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const [productCount, setProductCount] = useState<number | null>(null);
   const [inStockCount, setInStockCount] = useState<number | null>(null);
+  const [totalUnits, setTotalUnits] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [lastCheckTime, setLastCheckTime] = useState<string>('');
 
@@ -21,12 +22,15 @@ export const Dashboard: React.FC = () => {
         if (isMounted) {
           setProductCount(products.length);
           setInStockCount(products.filter((p) => p.availableForSale).length);
+          const totalStock = products.reduce((acc, p) => acc + (typeof p.totalInventory === 'number' ? Math.max(0, p.totalInventory) : 0), 0);
+          setTotalUnits(totalStock);
           setLastCheckTime(new Date().toLocaleTimeString('zh-TW'));
         }
       } catch (err) {
         if (isMounted) {
           setProductCount(0);
           setInStockCount(0);
+          setTotalUnits(0);
           setLastCheckTime(new Date().toLocaleTimeString('zh-TW'));
         }
       } finally {
@@ -172,14 +176,20 @@ export const Dashboard: React.FC = () => {
               </span>
             </div>
             <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">全站在庫總庫存</span>
+              <span className="font-bold text-emerald-700">
+                {isLoading ? '...' : `${totalUnits?.toLocaleString()} 件`}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">正常供貨中 (availableForSale)</span>
-              <span className="font-bold text-emerald-600">
+              <span className="font-semibold text-emerald-600">
                 {isLoading ? '...' : `${inStockCount} 項`}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">缺貨／未解鎖項目</span>
-              <span className="font-bold text-amber-600">
+              <span className="font-semibold text-amber-600">
                 {isLoading ? '...' : `${(productCount || 0) - (inStockCount || 0)} 項`}
               </span>
             </div>

@@ -45,6 +45,7 @@ export interface ShopifyProductVariant {
   price: number;
   compareAtPrice?: number;
   availableForSale: boolean;
+  quantityAvailable?: number;
   sku?: string;
   selectedOptions?: { name: string; value: string }[];
   image?: { url: string; altText?: string };
@@ -65,6 +66,7 @@ export interface ShopifyProduct {
   handle: string;
   price: number;
   originalPrice?: number;
+  totalInventory?: number;
   image: string;
   hoverImage: string;
   images: { url: string; altText?: string }[];
@@ -143,6 +145,7 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     price: parseFloat(e.node?.price?.amount || '0'),
     compareAtPrice: e.node?.compareAtPrice ? parseFloat(e.node.compareAtPrice.amount) : undefined,
     availableForSale: e.node?.availableForSale ?? true,
+    quantityAvailable: typeof e.node?.quantityAvailable === 'number' ? e.node.quantityAvailable : undefined,
     sku: e.node?.sku || '',
     selectedOptions: e.node?.selectedOptions || [],
     image: e.node?.image?.url ? { url: e.node.image.url, altText: e.node.image.altText || '' } : undefined,
@@ -165,6 +168,7 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     handle: node.handle || '',
     price: price,
     originalPrice: compareAtPrice > price ? compareAtPrice : undefined,
+    totalInventory: typeof node.totalInventory === 'number' ? node.totalInventory : undefined,
     image: images[0]?.url || fallbackImage,
     hoverImage: images[1]?.url || images[0]?.url || fallbackImage,
     images,
@@ -186,7 +190,7 @@ export function isPublicShopifyProduct(product: ShopifyProduct): boolean {
 }
 
 export function isPublicShopifyArticle(article: ShopifyArticle): boolean {
-  return article.tags.some((tag) => /^(saengak|公開|public)$/i.test(tag.trim()));
+  return (article.tags || []).some((tag) => /^(saengak|公開|public)$/i.test(tag.trim()));
 }
 
 const PRODUCT_FRAGMENT = `
@@ -196,6 +200,7 @@ const PRODUCT_FRAGMENT = `
   descriptionHtml
   handle
   availableForSale
+  totalInventory
   productType
   vendor
   tags
@@ -232,6 +237,7 @@ const PRODUCT_FRAGMENT = `
         title
         sku
         availableForSale
+        quantityAvailable
         price {
           amount
           currencyCode
@@ -254,14 +260,15 @@ const PRODUCT_FRAGMENT = `
 `;
 
 /**
- * 取得商品列表 (支援依標籤、關鍵字查詢或排序)
+ * 取得商品列表 (支援依標籤、關鍵字查詢、排序，或直接傳入數量數字)
  */
-export async function getShopifyProducts(options: {
+export async function getShopifyProducts(optionsOrFirst: number | {
   first?: number;
   query?: string;
   sortKey?: string;
   reverse?: boolean;
 } = {}): Promise<ShopifyProduct[]> {
+  const options = typeof optionsOrFirst === 'number' ? { first: optionsOrFirst } : optionsOrFirst;
   const { first = 24, query = '', sortKey = 'BEST_SELLING', reverse = false } = options;
 
   const gqlQuery = `
