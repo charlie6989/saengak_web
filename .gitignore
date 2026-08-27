@@ -149,10 +149,6 @@ SUPPORT.md
 .env*
 product/
 .agents/
-scripts/clean_product_images.py
-scripts/upload-shopify-product.mjs
-scripts/update-product-images.mjs
-scripts/update_inventory_csv.mjs
 __pycache__/
 */__pycache__/
 Lib/
