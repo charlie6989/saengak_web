@@ -90,7 +90,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
 
       const response = await POST(request);
       expect(response.status).toBe(503);
-      const data = await response.json();
+      const data = (await response.json()) as any;
       expect(data.code).toBe('MAINTENANCE_MODE_ACTIVE');
       expect(data.error).toContain('全站維護中');
     });
@@ -112,7 +112,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
 
       const response = await POST(request);
       expect(response.status).toBe(400);
-      const data = await response.json();
+      const data = (await response.json()) as any;
       expect(data.error).toBe('Invalid checkout input');
     });
 
@@ -141,7 +141,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
 
       const response = await POST(request);
       expect(response.status).toBe(401);
-      const data = await response.json();
+      const data = (await response.json()) as any;
       expect(data.code).toBe('MEMBER_LOGIN_REQUIRED');
     });
   });
@@ -194,7 +194,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
 
       const response = await POST(request);
       expect(response.status).toBe(200);
-      const data = await response.json();
+      const data = (await response.json()) as any;
       expect(data.checkoutUrl).toBe(mockCheckoutUrl);
       expect(data.cartId).toBe(mockCartId);
       expect(data.totalQuantity).toBe(2);
@@ -232,7 +232,7 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
 
       const response = await POST(request);
       expect(response.status).toBe(503);
-      const data = await response.json();
+      const data = (await response.json()) as any;
       expect(data.code).toBe('SHOPIFY_STOREFRONT_LOCKED');
     });
   });
