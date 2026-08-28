@@ -149,8 +149,7 @@ SECURITY.md
 SUPPORT.md
 .env*
 product/
-.agents/*
-!.agents/skills/
+.agents/
 __pycache__/
 /Lib/
 .venv/
