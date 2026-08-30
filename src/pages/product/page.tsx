@@ -1,11 +1,11 @@
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
-import { getMockProductById } from '../../mocks/products';
+import { getMockProductById, mockProducts } from '../../mocks/products';
 import { getShopifyProduct, getShopifyProducts, type ShopifyProductVariant, type ShopifyProductOption } from '../../lib/shopify';
 import { captureExceptionSafe } from '../../lib/sentry';
 import { formatTwd } from '../../domain/algorithms';
@@ -38,13 +38,21 @@ export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedTab, setSelectedTab] = useState<'reviews' | 'details' | 'related' | 'qa'>('related');
+  const [selectedTab, setSelectedTab] = useState<'details' | 'reviews' | 'related' | 'qa'>('details');
+  const [isDetailExpanded, setIsDetailExpanded] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const thumbnailListRef = useRef<HTMLUListElement>(null);
   const { addToCart, setIsCartOpen } = useCart();
+
+  // 焦點大圖手勢拖曳狀態 (支援手機滑動與滑鼠拖曳切換上一張/下一張)
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef<number | null>(null);
+  const hasDragged = useRef(false);
 
   /** --------------------------------------------------------------------
    *  Fetch product & related products
@@ -90,19 +98,26 @@ export default function ProductPage() {
             availableForSale: shopifyProduct.availableForSale,
           });
 
-          // Fetch related products
-          const related = await getShopifyProducts({ first: 5 });
-          const filtered = related.filter((p) => p.id !== shopifyProduct.id);
-          setRelatedProducts(filtered.slice(0, 4).map((p) => ({
-            id: p.id,
-            name: p.name || p.title,
-            description: p.description,
-            price: p.price,
-            originalPrice: p.originalPrice,
-            image: p.image,
-            hoverImage: p.hoverImage || p.image,
-            handle: p.handle,
-          })));
+          // Fetch related products from Shopify
+          try {
+            const related = await getShopifyProducts({ first: 5 });
+            const filtered = related.filter((p) => p.id !== shopifyProduct.id);
+            setRelatedProducts(filtered.slice(0, 4).map((p) => ({
+              id: p.id,
+              name: p.name || p.title,
+              description: p.description,
+              price: p.price,
+              originalPrice: p.originalPrice,
+              image: p.image,
+              hoverImage: p.hoverImage || p.image,
+              handle: p.handle,
+            })));
+          } catch (relErr) {
+            console.warn('Failed to load related Shopify products, fallback to mock:', relErr);
+            const allMocks = mockProducts.filter((p) => p.id !== (id || ''));
+            setRelatedProducts(allMocks.slice(0, 4));
+          }
+
           setLoading(false);
           return;
         }
@@ -112,6 +127,8 @@ export default function ProductPage() {
       const fallbackMock = getMockProductById(id || '');
       if (fallbackMock) {
         setProduct(fallbackMock);
+        const allMocks = mockProducts.filter((p) => p.id !== (id || ''));
+        setRelatedProducts(allMocks.slice(0, 4));
       }
     } catch (err) {
       console.error('Error fetching product data:', err);
@@ -119,6 +136,8 @@ export default function ProductPage() {
       const fallbackMock = getMockProductById(id || '');
       if (fallbackMock) {
         setProduct(fallbackMock);
+        const allMocks = mockProducts.filter((p) => p.id !== (id || ''));
+        setRelatedProducts(allMocks.slice(0, 4));
       }
     } finally {
       setLoading(false);
@@ -179,6 +198,22 @@ export default function ProductPage() {
   const currentPrice = selectedVariant ? selectedVariant.price : (product?.price ?? 0);
   const currentCompareAtPrice = selectedVariant?.compareAtPrice ?? product?.originalPrice;
   const isAvailableForSale = selectedVariant ? selectedVariant.availableForSale : (product?.availableForSale ?? true);
+
+  const productImages = product
+    ? Array.from(
+      new Set(
+        (product.images?.length
+          ? product.images.map((img) => img.url)
+          : [product.image, product.hoverImage]
+        ).filter((url): url is string => Boolean(url)),
+      ),
+    )
+    : [];
+  const activeImage = productImages[selectedImage] ?? product?.image ?? '';
+
+  const discountPercentage = currentCompareAtPrice && currentCompareAtPrice > currentPrice
+    ? Math.round(((currentCompareAtPrice - currentPrice) / currentCompareAtPrice) * 100)
+    : 0;
 
   /**
    * 多層級規格庫存可用性判定演算法 (Hierarchical Option Availability Check)
@@ -278,27 +313,93 @@ export default function ProductPage() {
     setIsImageModalOpen(true);
   };
 
-  const handleThumbnailClick = (index: number) => setSelectedImage(index);
+  const handleThumbnailClick = (index: number) => {
+    setSelectedImage(index);
+  };
+
+  // 焦點圖拖曳與滑動切換 Handlers
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    dragStartX.current = e.clientX;
+    hasDragged.current = false;
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || dragStartX.current === null) return;
+    const deltaX = e.clientX - dragStartX.current;
+    if (Math.abs(deltaX) > 8) {
+      hasDragged.current = true;
+    }
+    setDragOffset(deltaX);
+  };
+
+  const handlePointerUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    const threshold = 40; // 滑動切換門檻 40px
+    if (dragOffset < -threshold) {
+      // 向左滑動 -> 下一張
+      setSelectedImage((prev) => Math.min(productImages.length - 1, prev + 1));
+    } else if (dragOffset > threshold) {
+      // 向右滑動 -> 上一張
+      setSelectedImage((prev) => Math.max(0, prev - 1));
+    }
+    setDragOffset(0);
+    dragStartX.current = null;
+  };
+
+  const handlePointerCancel = () => {
+    setIsDragging(false);
+    setDragOffset(0);
+    dragStartX.current = null;
+  };
+
+  const handleMainImageClick = () => {
+    if (hasDragged.current) {
+      hasDragged.current = false;
+      return;
+    }
+    handleImageClick(selectedImage);
+  };
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedImage((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedImage((prev) => Math.min(productImages.length - 1, prev + 1));
+  };
+
+  // 自動聯動滾動：當選中縮圖時，自動調整縮圖捲軸位置（若選中第 7 張或以上，第 8 張自動進入視野，第 1 張向上滾出隱藏）
+  useEffect(() => {
+    if (!thumbnailListRef.current) return;
+    const container = thumbnailListRef.current;
+    const slotHeight = 76; // 68px item + 8px gap
+
+    // 當 selectedImage >= 6 (即第 7 張或以上)，調整頂部索引讓下一張 (第 8 張) 進入底部視野
+    const maxTopIndex = Math.max(0, productImages.length - 7);
+    const targetTopIndex = Math.min(maxTopIndex, Math.max(0, selectedImage - 5));
+
+    const targetScrollTop = targetTopIndex * slotHeight;
+    container.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+  }, [selectedImage, productImages.length]);
+
+  const handleScrollDownThumbnails = () => {
+    if (thumbnailListRef.current) {
+      thumbnailListRef.current.scrollBy({ top: 76, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollUpThumbnails = () => {
+    if (thumbnailListRef.current) {
+      thumbnailListRef.current.scrollBy({ top: -76, behavior: 'smooth' });
+    }
+  };
+
   const handleModalClose = () => setIsImageModalOpen(false);
-
-  /** --------------------------------------------------------------------
-   *  Render helpers
-   * ------------------------------------------------------------------- */
-  const productImages = product
-    ? Array.from(
-      new Set(
-        (product.images?.length
-          ? product.images.map((img) => img.url)
-          : [product.image, product.hoverImage]
-        ).filter((url): url is string => Boolean(url)),
-      ),
-    )
-    : [];
-  const activeImage = productImages[selectedImage] ?? product?.image ?? '';
-
-  const discountPercentage = currentCompareAtPrice && currentCompareAtPrice > currentPrice
-    ? Math.round(((currentCompareAtPrice - currentPrice) / currentCompareAtPrice) * 100)
-    : 0;
 
   /** --------------------------------------------------------------------
    *  Render
@@ -356,69 +457,164 @@ export default function ProductPage() {
             {/* Left group: thumbnails + main image (sticky as whole group) */}
             <div
               data-testid="product-gallery"
-              className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[88px_minmax(0,1fr)] lg:sticky lg:top-[124px]"
+              className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[82px_minmax(0,1fr)] md:grid-cols-[90px_minmax(0,1fr)] lg:grid-cols-[98px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[124px] items-stretch"
             >
-              {/* Thumbnails column */}
-              <aside className="order-2 min-w-0 sm:order-1">
-                <ul className="flex gap-2 overflow-x-auto pb-1 sm:block sm:space-y-3 sm:overflow-visible sm:pb-0">
-                  {productImages.map((url, idx) => (
-                    <li key={url} className="shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => handleThumbnailClick(idx)}
-                        aria-label={`選擇第 ${idx + 1} 張商品圖片`}
-                        aria-pressed={selectedImage === idx}
-                        data-testid={`product-thumbnail-${idx}`}
-                        className={`block aspect-[2/3] w-20 overflow-hidden rounded border sm:w-[88px] ${selectedImage === idx ? 'border-emerald-600' : 'border-transparent'
-                          }`}
-                      >
-                        <img
-                          src={url}
-                          alt={`${product.name}-縮圖${idx + 1}`}
-                          className="block h-full w-full object-cover object-top"
-                        />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+              {/* Thumbnails column (7 compact slots: 7 * 68px + 6 * 8px = 524px) */}
+              <aside className="order-2 min-w-0 sm:order-1 relative select-none">
+                <div className="relative flex flex-col items-center">
+                  {/* Top scroll arrow if > 7 images */}
+                  {productImages.length > 7 && (
+                    <button
+                      type="button"
+                      onClick={handleScrollUpThumbnails}
+                      aria-label="向上瀏覽縮圖"
+                      className="hidden sm:flex w-full py-1 items-center justify-center text-gray-500 hover:text-gray-900 bg-white/90 hover:bg-white border border-gray-200 rounded-md text-xs mb-1.5 transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
+                    >
+                      <i className="ri-arrow-up-s-line text-sm"></i>
+                    </button>
+                  )}
+
+                  {/* Thumbnail List */}
+                  <ul
+                    ref={thumbnailListRef}
+                    className="flex gap-2 overflow-x-auto pb-1 sm:flex-col sm:gap-2 sm:overflow-y-auto sm:pb-0 scroll-smooth no-scrollbar"
+                    style={{
+                      height: productImages.length >= 7 ? '524px' : 'auto',
+                      maxHeight: productImages.length >= 7 ? '524px' : 'auto',
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                    }}
+                  >
+                    {productImages.map((url, idx) => {
+                      const isSelected = selectedImage === idx;
+                      return (
+                        <li
+                          key={`${url}-${idx}`}
+                          className="shrink-0 sm:flex-shrink-0 sm:w-full overflow-hidden"
+                          style={{
+                            height: '68px',
+                            minHeight: '68px',
+                          }}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleThumbnailClick(idx)}
+                            aria-label={`選擇第 ${idx + 1} 張商品圖片`}
+                            aria-pressed={isSelected}
+                            data-testid={`product-thumbnail-${idx}`}
+                            className={`block w-20 sm:w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer ${
+                              isSelected
+                                ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-2xs'
+                                : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
+                            }`}
+                          >
+                            <img
+                              src={url}
+                              alt={`${product.name}-縮圖${idx + 1}`}
+                              className="block h-full w-full object-cover object-center"
+                              loading="lazy"
+                            />
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                  {/* Bottom scroll arrow if > 7 images */}
+                  {productImages.length > 7 && (
+                    <button
+                      type="button"
+                      onClick={handleScrollDownThumbnails}
+                      aria-label="向下瀏覽更多縮圖"
+                      className="hidden sm:flex w-full py-1 items-center justify-center text-gray-500 hover:text-gray-900 bg-white/90 hover:bg-white border border-gray-200 rounded-md text-xs mt-1.5 transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
+                    >
+                      <i className="ri-arrow-down-s-line text-sm"></i>
+                    </button>
+                  )}
+                </div>
               </aside>
 
-              {/* Main image */}
-              <section id="main-product-image" className="order-1 min-w-0 sm:order-2">
-                <button
-                  type="button"
-                  onClick={() => handleImageClick(selectedImage)}
-                  aria-label="放大商品圖片"
-                  className="block aspect-square w-full overflow-hidden bg-white"
+              {/* Main focal image (支援左右拖曳/滑動手勢切換圖片) */}
+              <section id="main-product-image" className="order-1 min-w-0 sm:order-2 h-full">
+                <div
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  onPointerCancel={handlePointerCancel}
+                  onClick={handleMainImageClick}
+                  className="relative w-full aspect-square sm:aspect-[4/5] max-h-[580px] bg-white rounded-xl overflow-hidden border border-gray-200/80 shadow-2xs group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
                 >
-                  <img
-                    src={activeImage}
-                    alt={product.name}
-                    data-testid="product-main-image"
-                    className="block h-full w-full object-contain object-center"
-                  />
-                </button>
+                  {/* Left navigation arrow button */}
+                  {selectedImage > 0 && (
+                    <button
+                      type="button"
+                      onClick={handlePrevImage}
+                      aria-label="上一張圖片"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-800 shadow-md flex items-center justify-center z-10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
+                    >
+                      <i className="ri-arrow-left-s-line text-lg"></i>
+                    </button>
+                  )}
+
+                  {/* Right navigation arrow button */}
+                  {selectedImage < productImages.length - 1 && (
+                    <button
+                      type="button"
+                      onClick={handleNextImage}
+                      aria-label="下一張圖片"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-800 shadow-md flex items-center justify-center z-10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
+                    >
+                      <i className="ri-arrow-right-s-line text-lg"></i>
+                    </button>
+                  )}
+
+                  {/* Image with real-time drag translation */}
+                  <div
+                    className="w-full h-full flex items-center justify-center p-3"
+                    style={{
+                      transform: `translateX(${dragOffset}px)`,
+                      transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                    }}
+                  >
+                    <img
+                      src={activeImage}
+                      alt={product.name}
+                      data-testid="product-main-image"
+                      draggable={false}
+                      className="block max-h-full max-w-full object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.02]"
+                    />
+                  </div>
+
+                  {/* Image counter indicator */}
+                  <div className="absolute bottom-3 left-3 bg-black/55 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 pointer-events-none">
+                    <span>{selectedImage + 1} / {productImages.length}</span>
+                  </div>
+
+                  <span className="absolute bottom-3 right-3 bg-black/55 hover:bg-black/75 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 pointer-events-none transition-colors">
+                    <i className="ri-zoom-in-line"></i> 點擊放大
+                  </span>
+                </div>
               </section>
             </div>
 
-            {/* Right side content (regular scroll) */}
+            {/* Right side content (compact purchase flow) */}
             <aside id="right-product-content" data-testid="product-info" className="min-w-0 w-full">
               <div className="space-y-5">
                 {/* Tag */}
                 <div>
-                  <span className="inline-block bg-teal-100 text-teal-700 px-2 py-1 text-xs font-medium rounded">
+                  <span className="inline-block bg-teal-100 text-teal-700 px-2.5 py-1 text-xs font-medium rounded-md">
                     {product.productType || product.tags?.[0] || '展示商品'}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h1 className="text-2xl font-semibold leading-snug" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+                <h1 className="text-2xl font-semibold leading-snug text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                   {product.name}
                 </h1>
 
                 {/* Brand */}
-                <div className="text-sm text-gray-600" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                  {product.vendor || '展示目錄'}
+                <div className="text-sm text-gray-600 font-medium" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+                  {product.vendor || 'SAENGAK'}
                 </div>
 
                 {/* Price */}
@@ -429,13 +625,13 @@ export default function ProductPage() {
                   <div className="flex items-baseline gap-2">
                     {discountPercentage > 0 && (
                       <span
-                        className="text-lg font-bold"
+                        className="text-xl font-bold"
                         style={{ fontFamily: 'Noto Sans TC, sans-serif', color: '#225B4F' }}
                       >
                         -{discountPercentage}%
                       </span>
                     )}
-                    <span className="text-2xl font-bold text-gray-900" data-testid="product-price">
+                    <span className="text-3xl font-bold text-gray-900" data-testid="product-price">
                       {formatTwd(currentPrice)}
                     </span>
                     {!isAvailableForSale && (
@@ -444,7 +640,7 @@ export default function ProductPage() {
                       </span>
                     )}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-xs text-gray-500">
                     最終售價、稅金與優惠以 Shopify Checkout 顯示為準。
                   </div>
                 </div>
@@ -505,39 +701,35 @@ export default function ProductPage() {
                   </div>
                 )}
 
-                {/* Source status */}
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-start gap-2">
-                    <i className="ri-check-line text-green-500 mt-0.5 flex-shrink-0"></i>
-                    <span className="text-gray-700">商品名稱與展示價格來自目前目錄資料</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <i className="ri-check-line text-green-500 mt-0.5 flex-shrink-0"></i>
-                    <span className="text-gray-700">結帳前已對齊正式 Shopify 規格 ID</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <i className="ri-check-line text-green-500 mt-0.5 flex-shrink-0"></i>
-                    <span className="text-gray-700">未接入的成分、容量與認證資訊不在此推定</span>
-                  </li>
-                </ul>
+                {/* Compact Source / Service Badges */}
+                <div className="rounded-lg bg-gray-50/80 border border-gray-200/70 p-3 space-y-1.5 text-xs text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <i className="ri-shield-check-line text-[#245B50] flex-shrink-0 text-sm"></i>
+                    <span>官方直營 正品保證與即時庫存同步</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <i className="ri-truck-line text-[#245B50] flex-shrink-0 text-sm"></i>
+                    <span>支援超商取貨與宅配到府（結帳頁面選擇）</span>
+                  </div>
+                </div>
 
                 {/* Quantity & buttons */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-1">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium text-gray-900">數量</span>
-                    <div className="flex items-center border border-gray-300 rounded">
+                    <div className="flex items-center border border-gray-300 rounded-lg bg-white overflow-hidden">
                       <button
                         onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                         disabled={!isAvailableForSale}
-                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 disabled:opacity-40 cursor-pointer"
+                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 disabled:opacity-40 cursor-pointer hover:bg-gray-50"
                       >
                         -
                       </button>
-                      <span className="w-12 text-center text-sm border-l border-r border-gray-300 py-2">{quantity}</span>
+                      <span className="w-12 text-center text-sm font-medium border-l border-r border-gray-200 py-2">{quantity}</span>
                       <button
                         onClick={() => setQuantity((q) => q + 1)}
                         disabled={!isAvailableForSale}
-                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 disabled:opacity-40 cursor-pointer"
+                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 disabled:opacity-40 cursor-pointer hover:bg-gray-50"
                       >
                         +
                       </button>
@@ -549,7 +741,7 @@ export default function ProductPage() {
                       onClick={handleAddToCart}
                       disabled={!isAvailableForSale}
                       data-testid="add-to-cart-button"
-                      className="flex-1 h-12 border font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="flex-1 h-12 border font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-lg shadow-2xs"
                       style={{
                         backgroundColor: isAvailableForSale ? '#ffffff' : '#f3f4f6',
                         borderColor: isAvailableForSale ? '#245B50' : '#d1d5db',
@@ -565,12 +757,11 @@ export default function ProductPage() {
                     >
                       {isAvailableForSale ? '加入購物車' : '此規格已售完'}
                     </button>
-                    {/* Modified Buy Now button */}
                     <button
                       onClick={handleBuyNow}
                       disabled={!isAvailableForSale}
                       data-testid="buy-now-button"
-                      className="flex-1 h-12 border font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      className="flex-1 h-12 border font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer rounded-lg shadow-xs"
                       style={{
                         backgroundColor: isAvailableForSale ? '#245B50' : '#9ca3af',
                         borderColor: isAvailableForSale ? '#245B50' : '#9ca3af',
@@ -593,144 +784,247 @@ export default function ProductPage() {
                       {isAvailableForSale ? '立即購買' : '暫無庫存'}
                     </button>
                   </div>
-
-                  {/* Source-backed product information */}
-                  <div className="text-sm text-gray-700 space-y-8">
-                    <div className="border-t pt-6">
-                      <h4 className="font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                        商品說明
-                      </h4>
-                      <p className="leading-7">{product.description}</p>
-                    </div>
-
-                    <div className="border-t pt-6">
-                      <h4 className="font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                        資料狀態
-                      </h4>
-                      <p className="leading-7">
-                        目前頁面包含展示目錄內容。容量、完整成分、製造資訊與認證，須以正式 Shopify 商品欄位及實際包裝標示為準；尚未接入的欄位不在此推定。
-                      </p>
-                    </div>
-
-                    <div className="border-t pt-6">
-                      <h4 className="font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                        使用與購買提醒
-                      </h4>
-                      <div className="space-y-3">
-                        <p>• 使用方式與注意事項請依商品包裝標示。</p>
-                        <p>• 若出現不適請停止使用；孕期或有特殊健康狀況時，先諮詢合格專業人員。</p>
-                        <p>• 付款、稅金、運送與最終售價以 Shopify Checkout 顯示為準。</p>
-                        <p>• 退換貨條件請參閱 <a className="underline" href="/return-policy">退換貨說明</a>。</p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </aside>
           </section>
 
-          {/* 下方內容與主區塊距離：固定用 mt-12，避免空白異常 */}
-          <section id="product-details" className="mt-12">
-            {/* Image modal */}
-            {isImageModalOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-                <div className="relative max-w-4xl max-h-full">
-                  <button
-                    onClick={handleModalClose}
-                    className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 z-10"
-                  >
-                    <i className="ri-close-line text-xl"></i>
-                  </button>
-                  <img
-                    src={activeImage}
-                    alt={product.name}
-                    className="max-w-full max-h-full object-contain"
-                  />
-                </div>
+          {/* Modal for image zoom */}
+          {isImageModalOpen && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-xs">
+              <div className="relative max-w-4xl max-h-full">
+                <button
+                  onClick={handleModalClose}
+                  className="absolute top-4 right-4 text-white bg-black/60 hover:bg-black/80 rounded-full p-2.5 z-10 transition-colors cursor-pointer"
+                >
+                  <i className="ri-close-line text-xl"></i>
+                </button>
+                <img
+                  src={activeImage}
+                  alt={product.name}
+                  className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                />
               </div>
-            )}
-          </section>
+            </div>
+          )}
         </div>
 
-        {/* --------- Full-width white section (tabs) --------- */}
-        <div className="w-full bg-white py-16">
-          <div className="max-w-7xl mx-auto px-4">
+        {/* --------- Full-width white section (Tabs & Detailed Content) --------- */}
+        <div className="w-full bg-white py-16 mt-16 rounded-2xl shadow-2xs border border-gray-100">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6">
             {/* Tab navigation */}
-            <div className="mb-12">
-              <div className="flex gap-0 justify-center">
-                <button
-                  onClick={() => setSelectedTab('reviews')}
-                  className={`text-base font-normal transition-all duration-300 ${selectedTab === 'reviews' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  style={{
-                    fontFamily: 'Noto Sans TC, sans-serif',
-                    width: '355px',
-                    height: '50px',
-                    fontSize: '16px',
-                    backgroundColor: selectedTab === 'reviews' ? '#D8D6CA' : '#EBF3EC',
-                    border: 'none',
-                    borderRadius: '0',
-                  }}
-                >
-                  評論
-                </button>
-
-                <button
-                  onClick={() => setSelectedTab('details')}
-                  className={`text-base font-normal transition-all duration-300 ${selectedTab === 'details' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  style={{
-                    fontFamily: 'Noto Sans TC, sans-serif',
-                    width: '355px',
-                    height: '50px',
-                    fontSize: '16px',
-                    backgroundColor: selectedTab === 'details' ? '#D8D6CA' : '#EBF3EC',
-                    border: 'none',
-                    borderRadius: '0',
-                  }}
-                >
-                  細節
-                </button>
-
-                <button
-                  onClick={() => setSelectedTab('related')}
-                  className={`text-base font-normal transition-all duration-300 ${selectedTab === 'related' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  style={{
-                    fontFamily: 'Noto Sans TC, sans-serif',
-                    width: '355px',
-                    height: '50px',
-                    fontSize: '16px',
-                    backgroundColor: selectedTab === 'related' ? '#D8D6CA' : '#EBF3EC',
-                    border: 'none',
-                    borderRadius: '0',
-                  }}
-                >
-                  相關產品
-                </button>
-
-                <button
-                  onClick={() => setSelectedTab('qa')}
-                  className={`text-base font-normal transition-all duration-300 ${selectedTab === 'qa' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  style={{
-                    fontFamily: 'Noto Sans TC, sans-serif',
-                    width: '355px',
-                    height: '50px',
-                    fontSize: '16px',
-                    backgroundColor: selectedTab === 'qa' ? '#D8D6CA' : '#EBF3EC',
-                    border: 'none',
-                    borderRadius: '0',
-                  }}
-                >
-                  詢問
-                </button>
+            <div className="mb-12 border-b border-gray-200">
+              <div className="flex flex-wrap sm:flex-nowrap justify-center max-w-3xl mx-auto">
+                {[
+                  { id: 'details', label: '商品詳情' },
+                  { id: 'reviews', label: '顧客評價' },
+                  { id: 'related', label: '相關推薦' },
+                  { id: 'qa', label: '常見問題' },
+                ].map((tab) => {
+                  const isActive = selectedTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setSelectedTab(tab.id as any)}
+                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[52px] text-base font-medium transition-all duration-200 border-b-2 cursor-pointer ${
+                        isActive
+                          ? 'border-[#245B50] text-[#245B50] bg-emerald-50/30'
+                          : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                      }`}
+                      style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Tab panels */}
             <div className="min-h-[400px]">
-              {/* Reviews */}
+              {/* Tab 1: Details (Detailed Images First + Specs & Content Below) */}
+              {selectedTab === 'details' && (
+                <div className="space-y-12">
+                  {/* Section 1: Detailed Images (先展示圖片) */}
+                  <div className="space-y-6">
+                    <div className="text-center pb-4 border-b border-gray-100">
+                      <h3
+                        className="text-xl font-bold text-gray-900 tracking-wide"
+                        style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                      >
+                        商品詳細展示
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1 uppercase tracking-widest">DETAILED IMAGES</p>
+                    </div>
+
+                    {/* Detail Images Stack with Show More collapse */}
+                    <div className="relative">
+                      <div
+                        className={`space-y-4 transition-all duration-500 ease-in-out ${
+                          !isDetailExpanded && productImages.length > 2
+                            ? 'max-h-[850px] overflow-hidden'
+                            : 'max-h-none'
+                        }`}
+                      >
+                        {productImages.map((url, idx) => (
+                          <div
+                            key={`detail-img-${idx}`}
+                            className="w-full bg-white rounded-xl overflow-hidden shadow-2xs border border-gray-100"
+                          >
+                            <img
+                              src={url}
+                              alt={`${product.name} - 詳細展示 ${idx + 1}`}
+                              className="w-full h-auto object-cover object-center block"
+                              loading={idx === 0 ? 'eager' : 'lazy'}
+                            />
+                          </div>
+                        ))}
+
+                        {/* Rich HTML Content from Shopify if available */}
+                        {product.descriptionHtml && (
+                          <div
+                            className="prose max-w-none text-gray-700 py-4"
+                            dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+                          />
+                        )}
+                      </div>
+
+                      {/* Musinsa-style Expand Button (Show More) */}
+                      {!isDetailExpanded && productImages.length > 2 && (
+                        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white via-white/90 to-transparent flex items-end justify-center pb-6">
+                          <button
+                            type="button"
+                            onClick={() => setIsDetailExpanded(true)}
+                            className="px-8 py-3 bg-white border border-gray-300 hover:border-[#245B50] text-[#245B50] hover:bg-emerald-50/40 rounded-full font-medium text-sm shadow-md transition-all flex items-center gap-2 cursor-pointer group"
+                            style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                          >
+                            <span>展開完整商品圖片與說明</span>
+                            <i className="ri-arrow-down-s-line text-lg group-hover:translate-y-0.5 transition-transform"></i>
+                          </button>
+                        </div>
+                      )}
+
+                      {isDetailExpanded && productImages.length > 2 && (
+                        <div className="flex justify-center pt-6">
+                          <button
+                            type="button"
+                            onClick={() => setIsDetailExpanded(false)}
+                            className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+                            style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                          >
+                            <span>收起商品大圖</span>
+                            <i className="ri-arrow-up-s-line text-base"></i>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Section 2: Product Description, Specs & Notice (再顯示內容) */}
+                  <div className="space-y-8 pt-8 border-t border-gray-200">
+                    {/* 1. 商品說明 */}
+                    {product.description && (
+                      <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-6 sm:p-8 shadow-2xs">
+                        <h4
+                          className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"
+                          style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                        >
+                          <i className="ri-file-text-line text-[#245B50]"></i>
+                          商品說明
+                        </h4>
+                        <p className="leading-8 text-gray-700 whitespace-pre-line text-base">
+                          {product.description}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* 2. 規格細節 */}
+                    <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-6 sm:p-8 shadow-2xs">
+                      <h4
+                        className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
+                        style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                      >
+                        <i className="ri-list-check-2 text-[#245B50]"></i>
+                        產品詳細規格與資訊
+                      </h4>
+                      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm border-t border-gray-200/60 pt-4">
+                        <div className="flex flex-col sm:flex-row sm:justify-between py-1 border-b border-gray-100">
+                          <dt className="text-gray-500">產品名稱</dt>
+                          <dd className="font-medium text-gray-900">{product.name}</dd>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:justify-between py-1 border-b border-gray-100">
+                          <dt className="text-gray-500">目錄分類</dt>
+                          <dd className="font-medium text-gray-900">{product.productType || product.tags?.[0] || '展示商品'}</dd>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:justify-between py-1 border-b border-gray-100">
+                          <dt className="text-gray-500">品牌／供應商</dt>
+                          <dd className="font-medium text-gray-900">{product.vendor || 'SAENGAK'}</dd>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:justify-between py-1 border-b border-gray-100">
+                          <dt className="text-gray-500">規格樣式</dt>
+                          <dd className="font-medium text-gray-900">
+                            {selectedVariant?.title && selectedVariant.title !== 'Default Title'
+                              ? selectedVariant.title
+                              : '標準規格'}
+                          </dd>
+                        </div>
+                      </dl>
+                    </div>
+
+                    {/* 3. 資料狀態聲明 */}
+                    <div className="rounded-xl border border-teal-100 bg-teal-50/50 p-6 sm:p-7">
+                      <h4
+                        className="text-base font-semibold text-teal-900 mb-2 flex items-center gap-2"
+                        style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                      >
+                        <i className="ri-information-line text-teal-700"></i>
+                        資料狀態說明
+                      </h4>
+                      <p className="leading-7 text-sm text-teal-800">
+                        目前頁面包含展示目錄內容。容量、完整成分、製造資訊與認證，須以正式 Shopify 商品欄位及實際包裝標示為準；尚未接入的欄位不在此推定。
+                      </p>
+                    </div>
+
+                    {/* 4. 使用與購買提醒 */}
+                    <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-6 sm:p-8 shadow-2xs">
+                      <h4
+                        className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
+                        style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                      >
+                        <i className="ri-shield-check-line text-[#245B50]"></i>
+                        使用與購買提醒
+                      </h4>
+                      <ul className="space-y-3 text-sm text-gray-700 leading-relaxed">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#245B50] font-bold">•</span>
+                          <span>使用方式與注意事項請依商品包裝標示。</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#245B50] font-bold">•</span>
+                          <span>若出現不適請停止使用；孕期或有特殊健康狀況時，先諮詢合格專業人員。</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#245B50] font-bold">•</span>
+                          <span>付款、稅金、運送與最終售價以 Shopify Checkout 顯示為準。</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#245B50] font-bold">•</span>
+                          <span>
+                            退換貨條件請參閱{' '}
+                            <a className="text-[#245B50] underline font-medium hover:text-[#1a4239]" href="/return-policy">
+                              退換貨說明
+                            </a>
+                            。
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: Reviews */}
               {selectedTab === 'reviews' && (
                 <div className="mx-auto max-w-2xl rounded-xl border border-gray-200 bg-gray-50 p-8 text-center">
                   <h3 className="text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
@@ -742,38 +1036,7 @@ export default function ProductPage() {
                 </div>
               )}
 
-              {/* Details */}
-              {selectedTab === 'details' && (
-                <div className="space-y-8">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                      產品詳細資訊
-                    </h3>
-
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
-                      <dl className="space-y-4">
-                        <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
-                          <dt className="text-gray-600">產品名稱</dt>
-                          <dd className="font-medium text-gray-900">{product.name}</dd>
-                        </div>
-                        <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
-                          <dt className="text-gray-600">目錄分類</dt>
-                          <dd className="font-medium text-gray-900">{product.productType || product.tags?.[0] || '尚未提供'}</dd>
-                        </div>
-                        <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
-                          <dt className="text-gray-600">品牌／供應商</dt>
-                          <dd className="font-medium text-gray-900">{product.vendor || '尚未提供'}</dd>
-                        </div>
-                      </dl>
-                      <p className="mt-6 leading-7 text-gray-600">
-                        其餘規格、完整成分、保存方式與使用方法尚未從正式商品欄位取得，請以實際包裝標示為準。
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Related */}
+              {/* Tab 3: Related */}
               {selectedTab === 'related' && (
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-6 text-center" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
@@ -793,7 +1056,7 @@ export default function ProductPage() {
                 </div>
               )}
 
-              {/* Q&A */}
+              {/* Tab 4: Q&A */}
               {selectedTab === 'qa' && (
                 <div className="mx-auto max-w-2xl rounded-xl border border-gray-200 bg-gray-50 p-8 text-center">
                   <h3 className="text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
@@ -804,7 +1067,7 @@ export default function ProductPage() {
                   </p>
                   <a
                     href="/customer-service"
-                    className="inline-flex items-center justify-center rounded-lg bg-emerald-700 px-6 py-3 font-medium text-white hover:bg-emerald-800"
+                    className="inline-flex items-center justify-center rounded-lg bg-[#245B50] px-6 py-3 font-medium text-white hover:bg-[#1a4239] transition-colors"
                   >
                     聯絡客服
                   </a>

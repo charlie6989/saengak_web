@@ -148,11 +148,13 @@ README.md
 SECURITY.md
 SUPPORT.md
 .env*
-product/
+/product/
 .agents/
 __pycache__/
 /Lib/
 .venv/
+tmp/
+scripts/clean_organized_materials.cjs
+scripts/organize_nas_materials.cjs
+scripts/unzip_helper.ps1
 *.exe
-
-

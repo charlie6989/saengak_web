@@ -222,7 +222,7 @@ const PRODUCT_FRAGMENT = `
       currencyCode
     }
   }
-  images(first: 10) {
+  images(first: 20) {
     edges {
       node {
         url

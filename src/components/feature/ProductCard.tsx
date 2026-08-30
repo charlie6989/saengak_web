@@ -22,9 +22,13 @@ interface ProductCardProps {
   product: Product;
 }
 
+const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800';
+
 export default function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate();
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [imageSrc, setImageSrc] = useState(product.image || FALLBACK_PRODUCT_IMAGE);
+  const [hoverSrc, setHoverSrc] = useState(product.hoverImage || product.image || FALLBACK_PRODUCT_IMAGE);
   const { addToCart } = useCart();
   const discountPercentage = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -58,19 +62,21 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group cursor-pointer flex flex-col h-full" onClick={handleCardClick}>
-      {/* Product Image - Standardized 2:3 portrait ratio for search/home cards */}
-      <div className="aspect-[2/3] bg-gray-50 overflow-hidden mb-3 relative">
+    <div className="group cursor-pointer flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-2xs border border-gray-100/80 hover:shadow-md transition-shadow" onClick={handleCardClick}>
+      {/* Product Image - Standardized square (1:1) ratio */}
+      <div className="aspect-square bg-gray-50 overflow-hidden mb-3 relative flex items-center justify-center">
         <img
-          src={product.image}
+          src={imageSrc}
           alt={product.name}
-          className="w-full h-full object-cover object-top group-hover:opacity-0 transition-opacity duration-300"
+          onError={() => setImageSrc(FALLBACK_PRODUCT_IMAGE)}
+          className="w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300"
         />
-        {product.hoverImage && (
+        {hoverSrc && (
           <img
-            src={product.hoverImage}
+            src={hoverSrc}
             alt={product.name}
-            className="w-full h-full object-cover object-top absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            onError={() => setHoverSrc(FALLBACK_PRODUCT_IMAGE)}
+            className="w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           />
         )}
 

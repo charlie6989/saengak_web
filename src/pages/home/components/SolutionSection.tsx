@@ -150,18 +150,18 @@ export default function SolutionSection() {
                         data-product-shop
                         onClick={() => handleProductClick(product)}
                       >
-                        {/* Product Image */}
-                        <div className="aspect-[2/3] bg-gray-50 overflow-hidden mb-3 relative">
+                        {/* Product Image - Standardized square (1:1) ratio */}
+                        <div className="aspect-square bg-gray-50 overflow-hidden mb-3 relative flex items-center justify-center">
                           <img
                             src={product.image}
                             alt={product.name}
-                            className="w-full h-full object-cover object-top group-hover:opacity-0 transition-opacity duration-300"
+                            className="w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300"
                           />
                           {product.hoverImage && (
                             <img
                               src={product.hoverImage}
                               alt={product.name}
-                              className="w-full h-full object-cover object-top absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                              className="w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                             />
                           )}
                           {/* Labels */}

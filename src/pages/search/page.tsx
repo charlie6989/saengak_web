@@ -59,6 +59,7 @@ export default function Search() {
     '女性護理',
     '每日清潔',
     '深層修護',
+    '舒適穿著',
     '生理褲',
     '抗菌無痕內褲',
     '超薄無痕內褲',
@@ -284,83 +285,71 @@ export default function Search() {
   const filteredProducts = products.filter(product => {
     const matchesSearch = !searchQuery || calculateSearchScore(product, searchQuery) > 0;
 
-    // 改進分類匹配邏輯 - 更寬鬆的匹配規則
+    // 精準分類比對邏輯 (避免單字拆解導致全品項誤判)
     const matchesCategory = selectedCategories.length === 0 ||
-      selectedCategories.some(category => {
-        const productText = `${product.name} ${product.description}`.toLowerCase();
-        const categoryLower = category.toLowerCase();
+      selectedCategories.some(catName => {
+        const catNorm = catName.trim().toLowerCase();
+        const pType = (product.productType || '').trim().toLowerCase();
+        const pName = (product.name || '').toLowerCase();
+        const pTags = (product.tags || []).map(t => t.toLowerCase());
 
-        // 直接關鍵字匹配
-        if (productText.includes(categoryLower)) {
+        // 1. 若 productType 完全相符，或 tags 包含該分類字串
+        if (pType === catNorm || pTags.includes(catNorm)) {
           return true;
         }
 
-        // 檢查 Shopify 標籤
-        if (product.tags && Array.isArray(product.tags)) {
-          const hasTagMatch = product.tags.some(tag =>
-            tag.toLowerCase().includes(categoryLower) ||
-            categoryLower.includes(tag.toLowerCase())
-          );
-          if (hasTagMatch) return true;
-        }
-
-        // 檢查產品類型
-        if (product.productType) {
-          const productTypeLower = product.productType.toLowerCase();
-          if (productTypeLower.includes(categoryLower) ||
-            categoryLower.includes(productTypeLower)) {
-            return true;
-          }
-        }
-
-        // 更寬鬆的關鍵字匹配規則
-        switch (category) {
-          case '女性護理':
-            return productText.includes('女性') ||
-              productText.includes('護理') ||
-              productText.includes('私密') ||
-              productText.includes('凝膠') ||
-              productText.includes('清潔') ||
-              productText.includes('益生菌') ||
-              productText.includes('舒緩') ||
-              productText.includes('feminine') ||
-              productText.includes('intimate');
-          case '每日清潔':
-            return productText.includes('清潔') ||
-              productText.includes('洗') ||
-              productText.includes('日常') ||
-              productText.includes('每日') ||
-              productText.includes('清洗') ||
-              productText.includes('wash') ||
-              productText.includes('clean');
-          case '深層修護':
-            return productText.includes('修護') ||
-              productText.includes('深層') ||
-              productText.includes('精華') ||
-              productText.includes('修復') ||
-              productText.includes('滋養') ||
-              productText.includes('repair') ||
-              productText.includes('treatment');
+        // 2. 依具體業務分類進行精確關鍵詞/類型比對 (若商品具備明確的互斥主要 productType 則優先排除)
+        switch (catName) {
+          case '舒適穿著':
           case '生理褲':
           case '抗菌無痕內褲':
           case '超薄無痕內褲':
           case '無痕收腹內褲':
-          case '舒適純棉內褲':
-            return productText.includes('內褲') ||
-              productText.includes('褲') ||
-              productText.includes('穿著') ||
-              productText.includes('生理') ||
-              productText.includes('無痕') ||
-              productText.includes('抗菌') ||
-              productText.includes('純棉') ||
-              productText.includes('收腹') ||
-              productText.includes('underwear') ||
-              productText.includes('panties');
+          case '舒適純棉內褲': {
+            if (pType && pType !== '舒適穿著' && ['每日清潔', '女性護理', '深層修護'].includes(pType)) return false;
+            const wearTypes = ['舒適穿著', '內褲', '生理褲', '純棉內褲', '無痕內褲', '收腹內褲', '內著'];
+            const wearKeywords = ['內褲', '生理褲', '防漏褲', '安全褲', '純棉內褲', '無痕內褲', '收腹內褲', '生理內褲', '平口褲', '三角褲', 'underwear', 'panties'];
+            if (wearTypes.some(wt => pType.includes(wt.toLowerCase()))) return true;
+            if (pTags.some(tag => wearKeywords.some(kw => tag.includes(kw)))) return true;
+            if (wearKeywords.some(kw => pName.includes(kw))) return true;
+            return false;
+          }
+          case '每日清潔': {
+            if (pType && pType !== '每日清潔' && ['舒適穿著', '女性護理', '深層修護'].includes(pType)) return false;
+            const cleanTypes = ['每日清潔', '清潔用品', '清潔護理', '清潔'];
+            const cleanKeywords = ['清洗護衣袋', '護衣袋', '除毛刀', '清潔液', '洗劑', '潔面', '清洗劑', '沐浴露', 'cleanser', 'wash'];
+            if (cleanTypes.some(ct => pType.includes(ct.toLowerCase()))) return true;
+            if (pTags.some(tag => cleanKeywords.some(kw => tag.includes(kw)))) return true;
+            if (cleanKeywords.some(kw => pName.includes(kw))) return true;
+            return false;
+          }
+          case '女性護理':
+          case '益生菌私密舒緩凝膠': {
+            if (pType && pType !== '女性護理' && ['舒適穿著', '每日清潔', '深層修護'].includes(pType)) return false;
+            const careTypes = ['女性護理', '私密護理', '凝膠'];
+            const careKeywords = ['舒緩修護凝膠', '護理凝膠', '私密凝膠', '女性凝膠', '益生菌凝膠', '私密保養', '私密舒緩', 'feminine'];
+            if (careTypes.some(ct => pType.includes(ct.toLowerCase()))) return true;
+            if (pTags.some(tag => careKeywords.some(kw => tag.includes(kw)))) return true;
+            if (careKeywords.some(kw => pName.includes(kw))) return true;
+            return false;
+          }
+          case '深層修護': {
+            if (pType && pType !== '深層修護' && ['舒適穿著', '每日清潔', '女性護理'].includes(pType)) return false;
+            const repairTypes = ['深層修護', '精華修護', '修復'];
+            const repairKeywords = ['深層修護', '修護精華', '修復精華', '滋養修護', '清潔露', 'repair', 'treatment'];
+            if (repairTypes.some(rt => pType.includes(rt.toLowerCase()))) return true;
+            if (pTags.some(tag => repairKeywords.some(kw => tag.includes(kw)))) return true;
+            if (repairKeywords.some(kw => pName.includes(kw))) return true;
+            return false;
+          }
           default:
-            const categoryWords = category.split('');
-            return categoryWords.some(word =>
-              word.length > 0 && productText.includes(word)
-            );
+            // 完整詞彙匹配（長度 >= 2，絕不單字拆解）
+            if (catNorm.length >= 2) {
+              if (pType.includes(catNorm) || pTags.some(t => t.includes(catNorm)) || pName.includes(catNorm)) {
+                return true;
+              }
+            }
+            return false;
         }
       });
 
