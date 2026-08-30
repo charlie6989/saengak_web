@@ -30,6 +30,8 @@ interface Product {
   availableForSale?: boolean;
 }
 
+const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800';
+
 /**
  * Product detail page.
  * Handles fetching product data, related products, multi-variant selection, and UI interactions.
@@ -511,6 +513,9 @@ export default function ProductPage() {
                             <img
                               src={url}
                               alt={`${product.name}-縮圖${idx + 1}`}
+                              onError={(e) => {
+                                e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
+                              }}
                               className="block h-full w-full object-cover object-center"
                               loading="lazy"
                             />
@@ -579,6 +584,9 @@ export default function ProductPage() {
                     <img
                       src={activeImage}
                       alt={product.name}
+                      onError={(e) => {
+                        e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
+                      }}
                       data-testid="product-main-image"
                       draggable={false}
                       className="block max-h-full max-w-full object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.02]"
@@ -1077,6 +1085,33 @@ export default function ProductPage() {
           </div>
         </div>
       </main>
+
+      {/* Zoom Modal */}
+      {isImageModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-xs"
+          onClick={handleModalClose}
+        >
+          <div className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-xl bg-white p-2" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={handleModalClose}
+              aria-label="關閉放大圖"
+              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black transition-colors cursor-pointer"
+            >
+              <i className="ri-close-line text-xl"></i>
+            </button>
+            <img
+              src={activeImage}
+              alt={product.name}
+              onError={(e) => {
+                e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
+              }}
+              className="max-h-[85vh] max-w-[85vw] object-contain rounded-lg"
+            />
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
