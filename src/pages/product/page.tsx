@@ -541,7 +541,7 @@ export default function ProductPage() {
                         type="button"
                         onClick={handleScrollLeftThumbnails}
                         aria-label="向左瀏覽上一組縮圖"
-                        className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 bg-white/95 hover:bg-white border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
+                        className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
                       >
                         <i className="ri-arrow-left-s-line text-base"></i>
                       </button>
@@ -560,7 +560,7 @@ export default function ProductPage() {
                     )}
 
                     {/* Thumbnail List */}
-                    <div className="flex-1 min-w-0 overflow-hidden sm:overflow-visible w-full">
+                    <div className="flex-1 min-w-0 overflow-hidden sm:overflow-visible sm:w-full">
                       <ul
                         ref={thumbnailListRef}
                         onPointerDown={handleThumbPointerDown}
@@ -619,7 +619,7 @@ export default function ProductPage() {
                         type="button"
                         onClick={handleScrollRightThumbnails}
                         aria-label="向右瀏覽下一組縮圖"
-                        className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 bg-white/95 hover:bg-white border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
+                        className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
                       >
                         <i className="ri-arrow-right-s-line text-base"></i>
                       </button>
