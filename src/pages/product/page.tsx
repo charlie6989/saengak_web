@@ -56,6 +56,12 @@ export default function ProductPage() {
   const dragStartX = useRef<number | null>(null);
   const hasDragged = useRef(false);
 
+  // 縮圖列手勢拖曳狀態 (支援手機觸控滑動與滑鼠直接拖曳)
+  const thumbDragStartX = useRef<number | null>(null);
+  const thumbScrollStartX = useRef<number>(0);
+  const isThumbDragging = useRef(false);
+  const hasThumbDragged = useRef(false);
+
   /** --------------------------------------------------------------------
    *  Fetch product & related products
    * ------------------------------------------------------------------- */
@@ -316,7 +322,43 @@ export default function ProductPage() {
   };
 
   const handleThumbnailClick = (index: number) => {
+    if (hasThumbDragged.current) {
+      return;
+    }
     setSelectedImage(index);
+  };
+
+  // 縮圖列拖曳與觸控滑動 Handlers
+  const handleThumbPointerDown = (e: React.PointerEvent<HTMLUListElement>) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    if (!thumbnailListRef.current) return;
+    thumbDragStartX.current = e.clientX;
+    thumbScrollStartX.current = thumbnailListRef.current.scrollLeft;
+    isThumbDragging.current = true;
+    hasThumbDragged.current = false;
+  };
+
+  const handleThumbPointerMove = (e: React.PointerEvent<HTMLUListElement>) => {
+    if (!isThumbDragging.current || thumbDragStartX.current === null || !thumbnailListRef.current) return;
+    const deltaX = e.clientX - thumbDragStartX.current;
+    if (Math.abs(deltaX) > 6) {
+      hasThumbDragged.current = true;
+    }
+    thumbnailListRef.current.scrollLeft = thumbScrollStartX.current - deltaX;
+  };
+
+  const handleThumbPointerUp = () => {
+    isThumbDragging.current = false;
+    thumbDragStartX.current = null;
+    setTimeout(() => {
+      hasThumbDragged.current = false;
+    }, 60);
+  };
+
+  const handleThumbPointerCancel = () => {
+    isThumbDragging.current = false;
+    thumbDragStartX.current = null;
+    hasThumbDragged.current = false;
   };
 
   // 焦點圖拖曳與滑動切換 Handlers
@@ -375,18 +417,26 @@ export default function ProductPage() {
     setSelectedImage((prev) => Math.min(productImages.length - 1, prev + 1));
   };
 
-  // 自動聯動滾動：當選中縮圖時，自動調整縮圖捲軸位置（若選中第 7 張或以上，第 8 張自動進入視野，第 1 張向上滾出隱藏）
+  // 自動聯動滾動：當選中縮圖時，自動調整縮圖捲軸位置（若選中超過當前視野，自動滾動讓選中縮圖可見）
   useEffect(() => {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
-    const slotHeight = 76; // 68px item + 8px gap
 
-    // 當 selectedImage >= 6 (即第 7 張或以上)，調整頂部索引讓下一張 (第 8 張) 進入底部視野
-    const maxTopIndex = Math.max(0, productImages.length - 7);
-    const targetTopIndex = Math.min(maxTopIndex, Math.max(0, selectedImage - 5));
-
-    const targetScrollTop = targetTopIndex * slotHeight;
-    container.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+    if (window.innerWidth >= 640) {
+      // 桌機版直向滾動 (顯示 7 格)
+      const slotHeight = 76; // 68px item + 8px gap
+      const maxTopIndex = Math.max(0, productImages.length - 7);
+      const targetTopIndex = Math.min(maxTopIndex, Math.max(0, selectedImage - 5));
+      const targetScrollTop = targetTopIndex * slotHeight;
+      container.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+    } else {
+      // 手機版橫向滾動 (一次顯示 5 格)
+      const slotWidth = container.clientWidth / 5;
+      const maxLeftIndex = Math.max(0, productImages.length - 5);
+      const targetLeftIndex = Math.min(maxLeftIndex, Math.max(0, selectedImage - 4));
+      const targetScrollLeft = targetLeftIndex * slotWidth;
+      container.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+    }
   }, [selectedImage, productImages.length]);
 
   const handleScrollDownThumbnails = () => {
@@ -398,6 +448,22 @@ export default function ProductPage() {
   const handleScrollUpThumbnails = () => {
     if (thumbnailListRef.current) {
       thumbnailListRef.current.scrollBy({ top: -76, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollLeftThumbnails = () => {
+    if (thumbnailListRef.current) {
+      const container = thumbnailListRef.current;
+      const scrollStep = container.clientWidth;
+      container.scrollBy({ left: -scrollStep, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollRightThumbnails = () => {
+    if (thumbnailListRef.current) {
+      const container = thumbnailListRef.current;
+      const scrollStep = container.clientWidth;
+      container.scrollBy({ left: scrollStep, behavior: 'smooth' });
     }
   };
 
@@ -459,85 +525,120 @@ export default function ProductPage() {
             {/* Left group: thumbnails + main image (sticky as whole group) */}
             <div
               data-testid="product-gallery"
-              className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[82px_minmax(0,1fr)] md:grid-cols-[90px_minmax(0,1fr)] lg:grid-cols-[98px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[124px] items-stretch"
+              className={`grid min-w-0 grid-cols-1 gap-3 ${
+                productImages.length > 1
+                  ? 'sm:grid-cols-[82px_minmax(0,1fr)] md:grid-cols-[90px_minmax(0,1fr)] lg:grid-cols-[98px_minmax(0,1fr)] sm:gap-3.5'
+                  : ''
+              } lg:sticky lg:top-[124px] items-stretch`}
             >
-              {/* Thumbnails column (7 compact slots: 7 * 68px + 6 * 8px = 524px) */}
-              <aside className="order-2 min-w-0 sm:order-1 relative select-none">
-                <div className="relative flex flex-col items-center">
-                  {/* Top scroll arrow if > 7 images */}
-                  {productImages.length > 7 && (
-                    <button
-                      type="button"
-                      onClick={handleScrollUpThumbnails}
-                      aria-label="向上瀏覽縮圖"
-                      className="hidden sm:flex w-full py-1 items-center justify-center text-gray-500 hover:text-gray-900 bg-white/90 hover:bg-white border border-gray-200 rounded-md text-xs mb-1.5 transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
-                    >
-                      <i className="ri-arrow-up-s-line text-sm"></i>
-                    </button>
-                  )}
+              {/* Thumbnails column / row */}
+              {productImages.length > 1 && (
+                <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full">
+                  <div className="relative flex items-center sm:flex-col w-full gap-1.5 sm:gap-0">
+                    {/* Mobile Left Arrow (超過 5 張時顯示) */}
+                    {productImages.length > 5 && (
+                      <button
+                        type="button"
+                        onClick={handleScrollLeftThumbnails}
+                        aria-label="向左瀏覽上一組縮圖"
+                        className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 bg-white/95 hover:bg-white border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
+                      >
+                        <i className="ri-arrow-left-s-line text-base"></i>
+                      </button>
+                    )}
 
-                  {/* Thumbnail List */}
-                  <ul
-                    ref={thumbnailListRef}
-                    className="flex gap-2 overflow-x-auto pb-1 sm:flex-col sm:gap-2 sm:overflow-y-auto sm:pb-0 scroll-smooth no-scrollbar"
-                    style={{
-                      height: productImages.length >= 7 ? '524px' : 'auto',
-                      maxHeight: productImages.length >= 7 ? '524px' : 'auto',
-                      scrollbarWidth: 'none',
-                      msOverflowStyle: 'none',
-                    }}
-                  >
-                    {productImages.map((url, idx) => {
-                      const isSelected = selectedImage === idx;
-                      return (
-                        <li
-                          key={`${url}-${idx}`}
-                          className="shrink-0 sm:flex-shrink-0 sm:w-full overflow-hidden"
-                          style={{
-                            height: '68px',
-                            minHeight: '68px',
-                          }}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => handleThumbnailClick(idx)}
-                            aria-label={`選擇第 ${idx + 1} 張商品圖片`}
-                            aria-pressed={isSelected}
-                            data-testid={`product-thumbnail-${idx}`}
-                            className={`block w-20 sm:w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer ${
-                              isSelected
-                                ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-2xs'
-                                : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
-                            }`}
-                          >
-                            <img
-                              src={url}
-                              alt={`${product.name}-縮圖${idx + 1}`}
-                              onError={(e) => {
-                                e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
-                              }}
-                              className="block h-full w-full object-cover object-center"
-                              loading="lazy"
-                            />
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                    {/* Desktop Top scroll arrow if > 7 images */}
+                    {productImages.length > 7 && (
+                      <button
+                        type="button"
+                        onClick={handleScrollUpThumbnails}
+                        aria-label="向上瀏覽縮圖"
+                        className="hidden sm:flex w-full py-1 items-center justify-center text-gray-500 hover:text-gray-900 bg-white/90 hover:bg-white border border-gray-200 rounded-md text-xs mb-1.5 transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
+                      >
+                        <i className="ri-arrow-up-s-line text-sm"></i>
+                      </button>
+                    )}
 
-                  {/* Bottom scroll arrow if > 7 images */}
-                  {productImages.length > 7 && (
-                    <button
-                      type="button"
-                      onClick={handleScrollDownThumbnails}
-                      aria-label="向下瀏覽更多縮圖"
-                      className="hidden sm:flex w-full py-1 items-center justify-center text-gray-500 hover:text-gray-900 bg-white/90 hover:bg-white border border-gray-200 rounded-md text-xs mt-1.5 transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
-                    >
-                      <i className="ri-arrow-down-s-line text-sm"></i>
-                    </button>
-                  )}
-                </div>
-              </aside>
+                    {/* Thumbnail List */}
+                    <div className="flex-1 min-w-0 overflow-hidden sm:overflow-visible w-full">
+                      <ul
+                        ref={thumbnailListRef}
+                        onPointerDown={handleThumbPointerDown}
+                        onPointerMove={handleThumbPointerMove}
+                        onPointerUp={handleThumbPointerUp}
+                        onPointerCancel={handleThumbPointerCancel}
+                        className="w-full flex gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-[524px] sm:max-h-[524px] scroll-smooth no-scrollbar snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none touch-pan-y"
+                        style={{
+                          scrollbarWidth: 'none',
+                          msOverflowStyle: 'none',
+                        }}
+                      >
+                        {productImages.map((url, idx) => {
+                          const isSelected = selectedImage === idx;
+                          return (
+                            <li
+                              key={`${url}-${idx}`}
+                              className={`${
+                                productImages.length > 5
+                                  ? 'w-[calc((100%-24px)/5)] flex-shrink-0 snap-start'
+                                  : 'flex-1 min-w-0'
+                              } sm:w-full sm:flex-shrink-0 overflow-hidden`}
+                            >
+                              <button
+                                type="button"
+                                onClick={() => handleThumbnailClick(idx)}
+                                aria-label={`選擇第 ${idx + 1} 張商品圖片`}
+                                aria-pressed={isSelected}
+                                data-testid={`product-thumbnail-${idx}`}
+                                className={`block w-full aspect-square sm:aspect-auto sm:h-[68px] overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer ${
+                                  isSelected
+                                    ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-2xs'
+                                    : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
+                                }`}
+                              >
+                                <img
+                                  src={url}
+                                  alt={`${product.name}-縮圖${idx + 1}`}
+                                  onError={(e) => {
+                                    e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
+                                  }}
+                                  draggable={false}
+                                  className="block h-full w-full object-cover object-center pointer-events-none"
+                                  loading="lazy"
+                                />
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+
+                    {/* Mobile Right Arrow (超過 5 張時顯示) */}
+                    {productImages.length > 5 && (
+                      <button
+                        type="button"
+                        onClick={handleScrollRightThumbnails}
+                        aria-label="向右瀏覽下一組縮圖"
+                        className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 bg-white/95 hover:bg-white border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
+                      >
+                        <i className="ri-arrow-right-s-line text-base"></i>
+                      </button>
+                    )}
+
+                    {/* Desktop Bottom scroll arrow if > 7 images */}
+                    {productImages.length > 7 && (
+                      <button
+                        type="button"
+                        onClick={handleScrollDownThumbnails}
+                        aria-label="向下瀏覽更多縮圖"
+                        className="hidden sm:flex w-full py-1 items-center justify-center text-gray-500 hover:text-gray-900 bg-white/90 hover:bg-white border border-gray-200 rounded-md text-xs mt-1.5 transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
+                      >
+                        <i className="ri-arrow-down-s-line text-sm"></i>
+                      </button>
+                    )}
+                  </div>
+                </aside>
+              )}
 
               {/* Main focal image (支援左右拖曳/滑動手勢切換圖片) */}
               <section id="main-product-image" className="order-1 min-w-0 sm:order-2 h-full">
