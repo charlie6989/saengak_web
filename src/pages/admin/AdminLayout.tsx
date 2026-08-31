@@ -41,7 +41,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <div className="flex items-center space-x-4">
             <div className="hidden text-right sm:block">
               <div className="text-xs font-medium text-gray-500">已授權管理員</div>
-              <div className="text-xs font-semibold text-gray-800">{user?.email || 'Admin'}</div>
+              <div className="text-xs font-semibold text-gray-800 max-w-[200px] truncate" title={user?.email || 'Admin'}>
+                {user?.email || 'Admin'}
+              </div>
             </div>
             <Link
               to="/"

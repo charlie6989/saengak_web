@@ -60,7 +60,7 @@ export const Dashboard: React.FC = () => {
               </span>
             </div>
             <p className="mt-1 text-sm text-gray-500">
-              管理員：<span className="font-medium text-gray-800">{user?.email}</span> | 角色：
+              管理員：<span className="font-medium text-gray-800 truncate inline-block max-w-[240px] align-bottom" title={user?.email}>{user?.email}</span> | 角色：
               <span className="font-semibold text-[#225B4F]">
                 {String(user?.app_metadata?.role || 'admin')}
               </span>

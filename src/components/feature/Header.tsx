@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 import { mockUsers, mockAuthState } from '../../mocks/userData';
@@ -15,9 +15,13 @@ export default function Header() {
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [user, setUser] = useState<any>(null);
   const [useMockData, setUseMockData] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const { getTotalItems, setIsCartOpen } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const userDisplayName = (user?.name || user?.user_metadata?.name || user?.user_metadata?.full_name || '').trim();
+  const hasDistinctName = Boolean(userDisplayName && userDisplayName !== user?.email);
 
   // 檢查用戶登入狀態
   useEffect(() => {
@@ -71,6 +75,27 @@ export default function Header() {
       return () => subscription?.unsubscribe();
     }
   }, [useMockData]);
+
+  // 點擊外部與換頁自動關閉用戶選單
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    if (isUserMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isUserMenuOpen]);
+
+  useEffect(() => {
+    setIsUserMenuOpen(false);
+    setIsMobileMenuOpen(false);
+  }, [location.pathname, location.search]);
 
   // 關閉手機選單
   useEffect(() => {
@@ -374,7 +399,7 @@ export default function Header() {
                 </button>
 
                 {/* 用戶選單 - 桌面版 */}
-                <div className="hidden lg:block relative">
+                <div className="hidden lg:block relative" ref={userMenuRef}>
                   <button
                     onClick={handleUserIconClick}
                     aria-label={user ? '開啟會員選單' : '前往會員登入'}
@@ -397,21 +422,35 @@ export default function Header() {
 
                   {/* 用戶下拉選單 */}
                   {isUserMenuOpen && user && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                      <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-                        <div className="font-medium">
-                          {user.name || user.user_metadata?.name || user.email}
+                    <div className="absolute right-0 mt-2 w-60 sm:w-64 bg-white rounded-lg shadow-xl py-1.5 z-50 border border-gray-200">
+                      <div className="px-4 py-2.5 border-b border-gray-100">
+                        <div
+                          className="font-medium text-sm text-gray-900 truncate"
+                          title={hasDistinctName ? userDisplayName : (user.email || '會員')}
+                        >
+                          {hasDistinctName ? userDisplayName : (user.email || '會員')}
                         </div>
-                        <div className="text-gray-500 text-xs">{user.email}</div>
+                        {hasDistinctName ? (
+                          <div
+                            className="text-gray-500 text-xs truncate mt-0.5"
+                            title={user.email}
+                          >
+                            {user.email}
+                          </div>
+                        ) : (
+                          <div className="text-gray-400 text-xs mt-0.5">
+                            一般會員
+                          </div>
+                        )}
                       </div>
                       <button
                         onClick={() => {
                           setIsUserMenuOpen(false);
                           navigate('/profile');
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors cursor-pointer"
                       >
-                        <i className="ri-user-line mr-2"></i>
+                        <i className="ri-user-line mr-2 text-teal-600"></i>
                         會員中心
                       </button>
                       <button
@@ -419,9 +458,9 @@ export default function Header() {
                           setIsUserMenuOpen(false);
                           navigate('/profile?tab=orders');
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors cursor-pointer"
                       >
-                        <i className="ri-shopping-bag-line mr-2"></i>
+                        <i className="ri-shopping-bag-line mr-2 text-teal-600"></i>
                         訂單查詢
                       </button>
                       <button
@@ -429,17 +468,17 @@ export default function Header() {
                           setIsUserMenuOpen(false);
                           navigate('/profile?tab=favorites');
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors cursor-pointer"
                       >
-                        <i className="ri-heart-line mr-2"></i>
+                        <i className="ri-heart-line mr-2 text-teal-600"></i>
                         我的收藏
                       </button>
                       <div className="border-t border-gray-100 mt-1">
                         <button
                           onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                         >
-                          <i className="ri-logout-box-line mr-2"></i>
+                          <i className="ri-logout-box-line mr-2 text-red-500"></i>
                           登出
                         </button>
                       </div>
@@ -658,10 +697,22 @@ export default function Header() {
                 {user ? (
                   <>
                     <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                      <div className="font-semibold text-base text-gray-800">
-                        {user.name || user.user_metadata?.name || user.email}
+                      <div
+                        className="font-semibold text-base text-gray-800 truncate"
+                        title={hasDistinctName ? userDisplayName : (user.email || '會員')}
+                      >
+                        {hasDistinctName ? userDisplayName : (user.email || '會員')}
                       </div>
-                      <div className="text-sm text-gray-500 mt-1">{user.email}</div>
+                      {hasDistinctName ? (
+                        <div
+                          className="text-sm text-gray-500 mt-1 truncate"
+                          title={user.email}
+                        >
+                          {user.email}
+                        </div>
+                      ) : (
+                        <div className="text-sm text-teal-600 mt-1 font-medium">一般會員</div>
+                      )}
                     </div>
                     <Link
                       to="/profile"
