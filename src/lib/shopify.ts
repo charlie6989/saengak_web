@@ -77,6 +77,9 @@ export interface ShopifyProduct {
   availableForSale: boolean;
   variants: ShopifyProductVariant[];
   options?: ShopifyProductOption[];
+  highlights?: string[];
+  subtitle?: string;
+  promotionBadge?: string;
 }
 
 export interface ShopifyCollection {
@@ -98,6 +101,59 @@ export interface ShopifyArticle {
   blog?: { handle: string; title?: string } | null;
   author?: string;
   tags?: string[];
+}
+
+/**
+ * 智慧解析商品重點亮點 (Highlights / Bullet Points)
+ * 優先讀取 Shopify Metafield (custom.highlights)，若無則自 descriptionHtml 萃取商品特色清單
+ */
+function parseProductHighlights(metafieldValue: any, descriptionHtml: string): string[] | undefined {
+  if (metafieldValue) {
+    if (typeof metafieldValue === 'string') {
+      try {
+        const parsed = JSON.parse(metafieldValue);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const list = parsed.map((item: any) => String(item).trim()).filter(Boolean);
+          if (list.length > 0) return list;
+        }
+      } catch {
+        const split = metafieldValue.split(/[\n\r|]+/).map((s: string) => s.trim()).filter(Boolean);
+        if (split.length > 0) return split;
+      }
+    } else if (Array.isArray(metafieldValue) && metafieldValue.length > 0) {
+      return metafieldValue.map((item: any) => String(item).trim()).filter(Boolean);
+    }
+  }
+
+  // 智慧 Fallback：從 HTML 描述中的 <li> 標籤萃取特色重點
+  if (descriptionHtml) {
+    const liMatches = descriptionHtml.match(/<li>[\s\S]*?<\/li>/gi);
+    if (liMatches && liMatches.length > 0) {
+      const extracted: string[] = [];
+      for (const li of liMatches) {
+        const clean = li
+          .replace(/<\/?(?:li|strong|b|span|p|em)[^>]*>/gi, '')
+          .replace(/^[\s\n\r\t•\-✓✔\u2022]+/g, '')
+          .trim();
+        if (clean && clean.length > 2 && clean.length < 90) {
+          if (
+            !clean.startsWith('商品品類') &&
+            !clean.startsWith('包裝規格') &&
+            !clean.startsWith('適用對象') &&
+            !clean.startsWith('商品規格') &&
+            !clean.startsWith('商品材質')
+          ) {
+            extracted.push(clean);
+          }
+        }
+      }
+      if (extracted.length > 0) {
+        return extracted.slice(0, 5);
+      }
+    }
+  }
+
+  return undefined;
 }
 
 /**
@@ -159,6 +215,10 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
 
   const fallbackImage = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800';
 
+  const highlights = parseProductHighlights(node.highlights?.value, node.descriptionHtml || '');
+  const subtitle = node.subtitle?.value?.trim() || undefined;
+  const promotionBadge = node.promotionBadge?.value?.trim() || undefined;
+
   return {
     id: node.id || '',
     name: node.title || '',
@@ -179,6 +239,9 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     availableForSale: node.availableForSale ?? true,
     variants,
     options,
+    highlights,
+    subtitle,
+    promotionBadge,
   };
 }
 
@@ -205,6 +268,18 @@ const PRODUCT_FRAGMENT = `
   vendor
   tags
   createdAt
+  highlights: metafield(namespace: "custom", key: "highlights") {
+    value
+    type
+  }
+  subtitle: metafield(namespace: "custom", key: "subtitle") {
+    value
+    type
+  }
+  promotionBadge: metafield(namespace: "custom", key: "promotion_badge") {
+    value
+    type
+  }
   options {
     id
     name

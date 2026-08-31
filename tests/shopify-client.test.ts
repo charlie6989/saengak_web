@@ -100,10 +100,71 @@ describe('Shopify Storefront SDK Client', () => {
       expect(product.name).toBe('基本商品');
       expect(product.price).toBe(0);
       expect(product.originalPrice).toBeUndefined();
+      expect(product.highlights).toBeUndefined();
+      expect(product.subtitle).toBeUndefined();
       expect(product.images).toEqual([]);
       expect(product.tags).toEqual([]);
       expect(product.variants).toEqual([]);
       expect(product.image).toContain('images.unsplash.com');
+    });
+
+    it('should correctly parse metafield highlights, subtitle, and promotionBadge', () => {
+      const nodeWithMetafields = {
+        id: 'gid://shopify/Product/7811130785859',
+        title: '益生菌女性私密舒緩修護凝膠',
+        handle: 'probiotic-gel',
+        highlights: {
+          value: JSON.stringify([
+            '不含 21 種有害成分',
+            '使用植物性萃取成分',
+            'pH 4.5~5.5 弱酸性配方',
+            '醫學等級皮膚測試認證',
+          ]),
+          type: 'list.single_line_text_field',
+        },
+        subtitle: {
+          value: '韓國 | 韓國 Dermatest | 女性清潔劑',
+          type: 'single_line_text_field',
+        },
+        promotionBadge: {
+          value: '2+1 促銷價，享受驚喜折扣！',
+          type: 'single_line_text_field',
+        },
+      };
+
+      const product = formatShopifyProduct(nodeWithMetafields);
+
+      expect(product.highlights).toEqual([
+        '不含 21 種有害成分',
+        '使用植物性萃取成分',
+        'pH 4.5~5.5 弱酸性配方',
+        '醫學等級皮膚測試認證',
+      ]);
+      expect(product.subtitle).toBe('韓國 | 韓國 Dermatest | 女性清潔劑');
+      expect(product.promotionBadge).toBe('2+1 促銷價，享受驚喜折扣！');
+    });
+
+    it('should fallback to extracting highlights from descriptionHtml when metafield is absent', () => {
+      const nodeWithHtml = {
+        id: 'gid://shopify/Product/999',
+        title: '純棉女款內褲',
+        handle: 'cotton-panties',
+        descriptionHtml: `
+          <p>優雅純棉女款內著。</p>
+          <h3>商品特色</h3>
+          <ul>
+            <li><strong>親膚透氣</strong>：優質親膚面料，柔軟細緻。</li>
+            <li><strong>精緻工藝</strong>：立體剪裁與細膩車縫，服貼不勒肉。</li>
+          </ul>
+        `,
+      };
+
+      const product = formatShopifyProduct(nodeWithHtml);
+
+      expect(product.highlights).toBeDefined();
+      expect(product.highlights?.length).toBe(2);
+      expect(product.highlights?.[0]).toContain('親膚透氣');
+      expect(product.highlights?.[1]).toContain('精緻工藝');
     });
 
     it('should correctly format multi-variant products with options and variant images', () => {

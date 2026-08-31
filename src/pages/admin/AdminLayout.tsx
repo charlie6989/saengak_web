@@ -13,6 +13,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { to: '/admin/dashboard', label: '📊 營運主控台', end: true },
     { to: '/admin/products', label: '📦 商品庫存看板' },
     { to: '/admin/orders', label: '📑 訂單與交易對帳' },
+    { to: '/admin/reviews', label: '⭐ 商品評價審核' },
+    { to: '/admin/qa', label: '💬 商品問答客服' },
     { to: '/admin/members', label: '👤 前台會員管理' },
     { to: '/admin/admins', label: '🛡️ 後台管理員管理' },
     { to: '/admin/settings', label: '⚙️ 全域營運參數' },

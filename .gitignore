@@ -157,4 +157,5 @@ tmp/
 scripts/clean_organized_materials.cjs
 scripts/organize_nas_materials.cjs
 scripts/unzip_helper.ps1
+check-db.mjs
 *.exe

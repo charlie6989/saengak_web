@@ -6,6 +6,8 @@ import { mockUsers, mockOrders, mockFavorites, mockAuthState, simulateApiDelay }
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { safePublicHttpsUrl } from '../../lib/publicUrl';
+import { fetchMemberReviews, submitProductReview, isOrderDelivered } from '../../lib/reviews-qa';
+import type { ProductReview } from '../../types/reviews-qa';
 
 interface UserProfile {
   id: string;
@@ -35,6 +37,7 @@ interface Order {
 
 interface OrderItem {
   id: string;
+  product_id?: string;
   product_name: string;
   quantity: number;
   price: number;
@@ -83,6 +86,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [memberReviews, setMemberReviews] = useState<ProductReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile');
   const [isEditing, setIsEditing] = useState(false);
@@ -97,10 +101,20 @@ export default function ProfilePage() {
   });
   const [message, setMessage] = useState('');
   const [useMockData, setUseMockData] = useState(
-    import.meta.env.DEV && localStorage.getItem('useMockAuth') === 'true'
+    import.meta.env.DEV && typeof window !== 'undefined' && typeof localStorage !== 'undefined' && localStorage.getItem('useMockAuth') === 'true'
   );
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 評價彈窗狀態
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [activeReviewTarget, setActiveReviewTarget] = useState<{ orderId: string; item: OrderItem } | null>(null);
+  const [ratingInput, setRatingInput] = useState<number>(5);
+  const [hoverRating, setHoverRating] = useState<number>(0);
+  const [commentInput, setCommentInput] = useState<string>('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState<boolean>(false);
+  const [reviewError, setReviewError] = useState<string>('');
+  const [reviewToast, setReviewToast] = useState<string>('');
 
   useEffect(() => {
     const getUser = async () => {
@@ -123,6 +137,7 @@ export default function ProfilePage() {
             loadProfile(user.id, user),
             loadOrders(user.id),
             loadFavorites(user.id),
+            loadMemberReviews(user.id),
           ]);
         } else {
           navigate('/login');
@@ -169,8 +184,78 @@ export default function ProfilePage() {
       // 載入假收藏資料
       const userFavorites = mockFavorites.filter(fav => fav.user_id === userId);
       setFavorites(userFavorites);
+
+      // 載入評價
+      await loadMemberReviews(userId);
     } catch (error) {
       console.error('載入假數據失敗:', error);
+    }
+  };
+
+  const loadMemberReviews = async (userId: string) => {
+    try {
+      const reviews = await fetchMemberReviews(userId);
+      setMemberReviews(reviews || []);
+    } catch (error) {
+      console.error('載入會員評價失敗:', error);
+    }
+  };
+
+  const handleOpenReviewModal = (orderId: string, item: OrderItem) => {
+    setActiveReviewTarget({ orderId, item });
+    setRatingInput(5);
+    setHoverRating(0);
+    setCommentInput('');
+    setReviewError('');
+    setIsReviewModalOpen(true);
+  };
+
+  const handleCloseReviewModal = () => {
+    setIsReviewModalOpen(false);
+    setActiveReviewTarget(null);
+    setReviewError('');
+  };
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !activeReviewTarget) return;
+
+    if (!commentInput.trim()) {
+      setReviewError('請填寫評價心得');
+      return;
+    }
+
+    setIsSubmittingReview(true);
+    setReviewError('');
+
+    try {
+      const shopifyProductId = activeReviewTarget.item.product_id || activeReviewTarget.item.id;
+      const res = await submitProductReview({
+        user_id: user.id,
+        order_id: activeReviewTarget.orderId,
+        order_item_id: activeReviewTarget.item.id,
+        shopify_product_id: shopifyProductId,
+        rating: ratingInput,
+        comment: commentInput.trim(),
+      });
+
+      if (res.error) {
+        setReviewError(res.error.message || '評價提交失敗，請稍後再試');
+      } else {
+        if (res.data) {
+          setMemberReviews((prev) => [
+            res.data!,
+            ...prev.filter((r) => r.order_item_id !== activeReviewTarget.item.id),
+          ]);
+        }
+        handleCloseReviewModal();
+        setReviewToast('評價已送出，待管理員審核後發布');
+        setTimeout(() => setReviewToast(''), 4000);
+      }
+    } catch (err: any) {
+      setReviewError(err?.message || '評價提交失敗，請稍後再試');
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -223,6 +308,7 @@ export default function ProfilePage() {
           *,
           order_items (
             id,
+            product_id,
             product_name,
             quantity,
             price,
@@ -713,6 +799,16 @@ export default function ProfilePage() {
             <div className="bg-white shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">訂單歷史</h2>
 
+              {reviewToast && (
+                <div
+                  data-testid="review-toast"
+                  className="mb-6 p-4 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-sm font-medium flex items-center gap-2"
+                >
+                  <i className="ri-checkbox-circle-line text-emerald-600 text-base"></i>
+                  <span>{reviewToast}</span>
+                </div>
+              )}
+
               {orders.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 flex items-center justify-center">
@@ -751,27 +847,58 @@ export default function ProfilePage() {
                       </div>
 
                       <div className="space-y-3">
-                        {order.items.map((item) => (
-                          <div key={item.id} className="flex items-center space-x-4">
-                            <div className="w-16 h-16 bg-gray-100 flex items-center justify-center">
-                              {item.image_url ? (
-                                <img
-                                  src={item.image_url}
-                                  alt={item.product_name}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <i className="ri-image-line text-gray-400"></i>
-                              )}
+                        {order.items.map((item) => {
+                          const existingReview = memberReviews.find((r) => r.order_item_id === item.id);
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-gray-50/60 rounded-lg border border-gray-100"
+                            >
+                              <div className="flex items-center space-x-4">
+                                <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden flex items-center justify-center flex-shrink-0">
+                                  {item.image_url ? (
+                                    <img
+                                      src={item.image_url}
+                                      alt={item.product_name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <i className="ri-image-line text-gray-400"></i>
+                                  )}
+                                </div>
+                                <div>
+                                  <h4 className="font-medium text-gray-900">{item.product_name}</h4>
+                                  <p className="text-sm text-gray-500">
+                                    數量：{item.quantity} × NT$ {item.price.toLocaleString()}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center self-end sm:self-center">
+                                {existingReview ? (
+                                  <div
+                                    data-testid={`reviewed-badge-${item.id}`}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200/80 rounded-full"
+                                  >
+                                    <span>
+                                      ⭐ 已評價 ({existingReview.status === 'published' ? '已發布' : '審核中'})
+                                    </span>
+                                    <span className="font-bold text-amber-900">{existingReview.rating}★</span>
+                                  </div>
+                                ) : isOrderDelivered(order) ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenReviewModal(order.id, item)}
+                                    data-testid={`write-review-btn-${item.id}`}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#225B4F] bg-white border border-[#225B4F]/40 hover:bg-emerald-50 rounded-md shadow-2xs transition-colors cursor-pointer"
+                                  >
+                                    <span>✍️</span> 撰寫評價
+                                  </button>
+                                ) : null}
+                              </div>
                             </div>
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900">{item.product_name}</h4>
-                              <p className="text-sm text-gray-500">
-                                數量：{item.quantity} × NT$ {item.price.toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
 
                       {(order.shipping_method || (order.fulfillments?.length ?? 0) > 0) && (
@@ -895,6 +1022,142 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+
+      {/* 評價互動彈窗 (Review Modal) */}
+      {isReviewModalOpen && activeReviewTarget && (
+        <div
+          data-testid="review-modal"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+        >
+          <div
+            className="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <span>✍️</span> 撰寫商品評價
+              </h3>
+              <button
+                type="button"
+                onClick={handleCloseReviewModal}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg transition-colors cursor-pointer"
+              >
+                <i className="ri-close-line text-xl"></i>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleSubmitReview} className="p-6 space-y-6">
+              {/* Product Info Preview */}
+              <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl border border-gray-200/70">
+                <div className="w-14 h-14 bg-white rounded-lg border border-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                  {activeReviewTarget.item.image_url ? (
+                    <img
+                      src={activeReviewTarget.item.image_url}
+                      alt={activeReviewTarget.item.product_name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <i className="ri-image-line text-gray-400 text-xl"></i>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-semibold text-sm text-gray-900 truncate">
+                    {activeReviewTarget.item.product_name}
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    已購數量：{activeReviewTarget.item.quantity} 件
+                  </p>
+                </div>
+              </div>
+
+              {/* Star Rating Selection (1-5 stars with hover and click) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  整體評分 <span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center gap-2" data-testid="star-rating-selector">
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const isFilled = (hoverRating || ratingInput) >= star;
+                    return (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRatingInput(star)}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        aria-label={`給予 ${star} 顆星`}
+                        data-testid={`star-${star}`}
+                        className="p-1 text-2xl transition-transform hover:scale-110 focus:outline-none cursor-pointer"
+                        style={{ color: isFilled ? '#F59E0B' : '#D1D5DB' }}
+                      >
+                        <i className={isFilled ? 'ri-star-fill' : 'ri-star-line'}></i>
+                      </button>
+                    );
+                  })}
+                  <span className="ml-2 text-xs font-medium text-gray-500">
+                    {ratingInput === 5 && '5 星 - 非常滿意'}
+                    {ratingInput === 4 && '4 星 - 滿意'}
+                    {ratingInput === 3 && '3 星 - 普通'}
+                    {ratingInput === 2 && '2 星 - 不滿意'}
+                    {ratingInput === 1 && '1 星 - 非常不滿意'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Comment Textarea */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  心得評論 <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  rows={4}
+                  value={commentInput}
+                  onChange={(e) => setCommentInput(e.target.value)}
+                  placeholder="請分享您對此商品的實際穿著體驗、材質觸感或尺寸剪裁感受..."
+                  data-testid="review-comment-input"
+                  className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:border-[#225B4F] focus:ring-1 focus:ring-[#225B4F] focus:outline-none placeholder-gray-400"
+                />
+                <p className="mt-1 text-xs text-gray-400 text-right">
+                  {commentInput.length} 字
+                </p>
+              </div>
+
+              {/* Error Message */}
+              {reviewError && (
+                <div
+                  data-testid="review-error-message"
+                  className="p-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg flex items-center gap-1.5"
+                >
+                  <i className="ri-error-warning-line text-red-500 text-sm"></i>
+                  <span>{reviewError}</span>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={handleCloseReviewModal}
+                  disabled={isSubmittingReview}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  取消
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingReview || !commentInput.trim()}
+                  data-testid="submit-review-button"
+                  className="px-5 py-2 text-sm font-medium text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmittingReview ? '提交中...' : '送出評價'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

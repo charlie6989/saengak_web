@@ -18,12 +18,16 @@ export interface Product {
     productType?: string;
     vendor?: string;
     handle?: string;
+    highlights?: string[];
+    subtitle?: string;
+    promotionBadge?: string;
 }
 
 export const mockProducts: Product[] = [
     {
         id: '1',
         name: '益生菌私密舒緩凝膠',
+        subtitle: '韓國 | 韓國 Dermatest | 女性清潔劑',
         description: '展示品項；完整成分、敏感肌適用性與使用方式待正式商品資料確認',
         image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800',
         hoverImage: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=800',
@@ -32,6 +36,13 @@ export const mockProducts: Product[] = [
         isBest: true,
         isNew: false,
         tags: ['女性護理', '私密護理', '舒緩', '凝膠'],
+        promotionBadge: '2+1 促銷價，享受驚喜折扣！',
+        highlights: [
+            '不含 21 種有害成分',
+            '使用植物性萃取成分',
+            'pH 4.5~5.5 弱酸性配方',
+            '醫學等級皮膚測試認證'
+        ],
         images: [
             { url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800' },
             { url: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=800' },
@@ -46,6 +57,7 @@ export const mockProducts: Product[] = [
     {
         id: '2',
         name: '抗菌無痕內褲 - 舒適款',
+        subtitle: '親膚純棉 | 無痕透氣 | 每日舒適首選',
         description: '展示款式；纖維成分、抗菌測試與剪裁規格待正式商品資料確認',
         image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800',
         hoverImage: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800',
@@ -54,6 +66,12 @@ export const mockProducts: Product[] = [
         isBest: false,
         isNew: true,
         tags: ['抗菌', '無痕', '內褲', '舒適'],
+        highlights: [
+            '100% 純棉親膚透氣雙層底襠',
+            '超細細膩彈力纖維，貼身不緊繃',
+            '立體美型剪裁，服貼無痕零著感',
+            '嚴選安心染料，親膚不易褪色'
+        ],
         images: [
             { url: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800' },
             { url: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800' }

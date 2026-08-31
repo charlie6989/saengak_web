@@ -11,6 +11,8 @@ interface OperationalSettings {
   maintenanceMode: boolean;
   contactEmail: string;
   supportPhone: string;
+  allowProductQa: boolean;
+  lineOaUrl: string;
 }
 
 const DEFAULT_SETTINGS: OperationalSettings = {
@@ -20,6 +22,8 @@ const DEFAULT_SETTINGS: OperationalSettings = {
   maintenanceMode: false,
   contactEmail: 'service@saengak.com.tw',
   supportPhone: '尚待營運確認',
+  allowProductQa: true,
+  lineOaUrl: 'https://line.me/R/ti/p/@saengak',
 };
 
 // 對應 public.site_settings 表之 key（見 supabase/migrations/20260820000002、20260822000001）
@@ -30,6 +34,8 @@ const SETTINGS_KEY_MAP: Record<keyof OperationalSettings, string> = {
   maintenanceMode: 'maintenance_mode',
   contactEmail: 'contact_email',
   supportPhone: 'support_phone',
+  allowProductQa: 'allow_product_qa',
+  lineOaUrl: 'line_oa_url',
 };
 
 const SETTINGS_FIELDS = Object.keys(SETTINGS_KEY_MAP) as Array<keyof OperationalSettings>;
@@ -259,7 +265,51 @@ export const SiteSettings: React.FC = () => {
             </div>
           </div>
 
-          {/* 3. 全站防護與維護模式 */}
+          {/* 3. 商品問答與即時客服設定 */}
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+            <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-3">
+              💬 商品問答與即時客服設定
+            </h2>
+            <div className="mt-4 space-y-4">
+              {/* 前台商品問答表單開放開關 */}
+              <div className="flex items-center justify-between rounded-lg border border-gray-100 p-4 bg-gray-50/50">
+                <div>
+                  <div className="text-xs font-bold text-gray-900">開放前台商品問答表單 (allow_product_qa)</div>
+                  <div className="text-[11px] text-gray-500">
+                    開啟後，前台商品詳情頁將開放顧客提出商品相關問題與客服諮詢；關閉時則隱藏發問表單。
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.allowProductQa}
+                    onChange={(e) => handleChange('allowProductQa', e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#225B4F]"></div>
+                </label>
+              </div>
+
+              {/* 官方 LINE 客服連結 */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-700">
+                  官方 LINE 客服連結 (line_oa_url)
+                </label>
+                <input
+                  type="url"
+                  value={settings.lineOaUrl}
+                  onChange={(e) => handleChange('lineOaUrl', e.target.value)}
+                  placeholder="https://line.me/R/ti/p/@saengak"
+                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#225B4F] focus:outline-none font-mono"
+                />
+                <p className="mt-1 text-[11px] text-gray-400">
+                  前台商品頁、客服中心與頁尾導引之官方 LINE OA 連結網址。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. 全站防護與維護模式 */}
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
             <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-3">
               🔒 全站防護與維護模式
