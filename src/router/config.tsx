@@ -80,6 +80,10 @@ const routes: RouteObject[] = [
     element: <BlogPage />,
   },
   {
+    path: '/blog/:handle',
+    element: <BlogPage />,
+  },
+  {
     path: '/community',
     element: <CommunityPage />,
   },

@@ -1,131 +1,155 @@
-
-import { useState, useEffect } from 'react';
-import { motion } from "framer-motion";
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { mockProducts } from '../../mocks/products';
-import { formatTwd } from '../../domain/algorithms';
+import { formatTwd, estimateReadingMinutes } from '../../domain/algorithms';
+import { getShopifyArticles, getShopifyArticleByHandle, type ShopifyArticle } from '../../lib/shopify';
+
+interface TocItem {
+  id: string;
+  text: string;
+  level: number;
+}
 
 export default function BlogArticle() {
+  const { handle } = useParams<{ handle?: string }>();
   const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [article, setArticle] = useState<ShopifyArticle | null>(null);
+  const [relatedArticles, setRelatedArticles] = useState<ShopifyArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTocId, setActiveTocId] = useState<string>('');
+  const [readingProgress, setReadingProgress] = useState(0);
 
-  // Local editorial draft shown while the verified CMS source is not connected.
-  const article = {
-    id: 1,
-    title: '日常私密護理整理：理解身體與基本照護原則',
-    content: `
-      <p class="mb-8 text-lg leading-relaxed">女性私密護理是日常健康的一部分。本文整理一般清潔原則與需要留意的身體變化，協助建立適合自己的照護習慣。</p>
+  const activeHandle = handle || 'daily-feminine-care-guide';
 
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">為什麼私密護理如此重要？</h2>
-      <p class="mb-6 leading-relaxed">女性私密部位具有獨特的生理結構和微環境，需要特別的護理方式。正常情況下，陰道內的pH值應維持在3.8-4.5之間，這種弱酸性環境有助於抑制有害細菌的生長，維護健康的菌群平衡。</p>
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    let isMounted = true;
 
-      <p class="mb-4 leading-relaxed">然而，許多因素都可能影響這種平衡，包括：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• 荷爾蒙變化（月經週期、懷孕、更年期）</li>
-        <li class="leading-relaxed">• 不當的清潔習慣</li>
-        <li class="leading-relaxed">• 緊身衣物的長期穿著</li>
-        <li class="leading-relaxed">• 壓力和生活方式</li>
-        <li class="leading-relaxed">• 某些藥物的使用</li>
-      </ul>
+    async function loadArticleData() {
+      setLoading(true);
+      try {
+        const fetched = await getShopifyArticleByHandle(activeHandle);
+        if (isMounted && fetched) {
+          setArticle(fetched);
+        }
 
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">正確的私密護理步驟</h2>
-      
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">1. 選擇合適的清潔產品</h3>
-      <p class="mb-4 leading-relaxed">選擇專為私密部位設計的溫和清潔產品，避免使用含有強烈香料、酒精或刺激性化學成分的產品。理想的私密護理產品應該：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• pH值接近私密部位的自然酸性環境</li>
-        <li class="leading-relaxed">• 含有溫和的天然成分</li>
-        <li class="leading-relaxed">• 無香料或使用天然香料</li>
-        <li class="leading-relaxed">• 若標示通過相關測試，可進一步確認測試機構與適用範圍</li>
-      </ul>
-
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">2. 正確的清潔方式</h3>
-      <p class="mb-4 leading-relaxed">每日清潔是必要的，但過度清潔可能會破壞自然的菌群平衡。建議的清潔方式包括：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• 使用溫水輕柔清洗外陰部</li>
-        <li class="leading-relaxed">• 從前往後的方向清潔，避免細菌感染</li>
-        <li class="leading-relaxed">• 避免過度搓洗或使用粗糙的毛巾</li>
-        <li class="leading-relaxed">• 清潔後用乾淨的毛巾輕拍乾燥</li>
-      </ul>
-
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">3. 內衣的選擇與護理</h3>
-      <p class="mb-4 leading-relaxed">內衣的選擇對私密健康有重要影響：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• 選擇透氣性好的棉質內衣</li>
-        <li class="leading-relaxed">• 避免過緊的內衣，確保空氣流通</li>
-        <li class="leading-relaxed">• 每日更換乾淨的內衣</li>
-        <li class="leading-relaxed">• 使用溫和的洗衣劑清洗內衣</li>
-      </ul>
-
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">常見的護理誤區</h2>
-      
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">誤區一：頻繁使用陰道沖洗液</h3>
-      <p class="mb-8 leading-relaxed">許多女性認為使用陰道沖洗液能保持清潔，但實際上這可能會破壞陰道內的自然菌群平衡，增加感染風險。</p>
-
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">誤區二：使用普通肥皂清洗</h3>
-      <p class="mb-8 leading-relaxed">普通肥皂的pH值通常偏鹼性，與私密部位的酸性環境不符，長期使用可能導致乾燥和刺激。</p>
-
-      <h3 class="text-xl font-semibold mb-4 mt-10" style="color: #225B4F;">誤區三：忽視月經期間的特殊護理</h3>
-      <p class="mb-8 leading-relaxed">月經期間需要更頻繁的清潔和衛生用品更換，同時要注意選擇透氣性好的衛生用品。</p>
-
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">何時需要尋求專業幫助</h2>
-      <p class="mb-4 leading-relaxed">如果出現以下症狀，建議及時諮詢醫療專業人員：</p>
-      <ul class="mb-8 ml-6 space-y-2">
-        <li class="leading-relaxed">• 異常分泌物（顏色、氣味、質地改變）</li>
-        <li class="leading-relaxed">• 持續的瘙癢或灼熱感</li>
-        <li class="leading-relaxed">• 排尿時疼痛或不適</li>
-        <li class="leading-relaxed">• 異常出血</li>
-        <li class="leading-relaxed">• 骨盆疼痛</li>
-      </ul>
-
-      <h2 class="text-2xl font-bold mb-6 mt-12" style="color: #000000;">結語</h2>
-      <p class="mb-8 leading-relaxed">正確的私密護理是維護女性健康的重要環節。通過選擇合適的產品、採用正確的護理方式，並避免常見誤區，每位女性都能維護自己的私密健康。記住，每個人的身體狀況不同，如有疑問，請諮詢專業的醫療人員。</p>
-    `,
-    category: '私密護理',
-    author: 'SAENGAK 編輯',
-    authorBio: '本篇為編輯整理稿，尚待合格醫療專業人員審閱；內容僅供一般知識參考，不能取代診斷或個別醫療建議。',
-    date: '2026年7月18日',
-    readTime: '8分鐘',
-    image: 'https://readdy.ai/api/search-image?query=Professional%20female%20healthcare%20expert%20explaining%20feminine%20health%20care%20importance%2C%20clean%20medical%20consultation%20room%2C%20educational%20materials%20about%20womens%20health%2C%20professional%20healthcare%20setting%2C%20Korean%20medical%20expert&width=1200&height=600&seq=article-detail&orientation=landscape',
-    tags: ['私密護理', '健康知識', '編輯整理'],
-  };
-
-  const relatedArticles = [
-    {
-      id: 2,
-      title: '選擇私密護理產品的5個關鍵要素',
-      excerpt: '市面上私密護理產品眾多，如何選擇最適合自己的產品？',
-      image: 'https://readdy.ai/api/search-image?query=Various%20feminine%20care%20products%20arranged%20beautifully%2C%20natural%20ingredients%2C%20product%20selection%20guide%2C%20clean%20white%20background%2C%20professional%20product%20photography&width=400&height=250&seq=related1&orientation=landscape',
-      readTime: '7分鐘',
-      category: '產品介紹'
-    },
-    {
-      id: 3,
-      title: '常見的私密護理誤區：避免這些錯誤觀念',
-      excerpt: '許多女性在私密護理上存在誤區，這些錯誤的觀念可能會影響健康',
-      image: 'https://readdy.ai/api/search-image?query=Educational%20infographic%20about%20feminine%20care%20myths%20and%20facts%2C%20medical%20illustration%2C%20healthcare%20education%20materials%2C%20professional%20medical%20design&width=400&height=250&seq=related2&orientation=landscape',
-      readTime: '6分鐘',
-      category: '健康知識'
-    },
-    {
-      id: 4,
-      title: '月經期間的特殊護理：讓您更舒適度過生理期',
-      excerpt: '月經期間需要特別的護理方式，了解正確的護理方法讓您更舒適',
-      image: 'https://readdy.ai/api/search-image?query=Menstrual%20care%20products%20and%20comfort%20items%2C%20soft%20feminine%20colors%2C%20period%20care%20essentials%2C%20gentle%20and%20caring%20atmosphere&width=400&height=250&seq=related3&orientation=landscape',
-      readTime: '8分鐘',
-      category: '私密護理'
+        const allArticles = await getShopifyArticles(6);
+        if (isMounted) {
+          const others = allArticles.filter(
+            (a) => a.handle !== activeHandle && a.id !== activeHandle
+          );
+          setRelatedArticles(others.slice(0, 3));
+        }
+      } catch (err) {
+        console.error('Error fetching blog article:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     }
-  ];
 
-  const recommendedProducts = mockProducts.slice(0, 4);
+    loadArticleData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeHandle]);
+
+  // 監聽閱讀滾動進度與當前可見標題 (ScrollSpy)
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        const currentProgress = (window.scrollY / totalScroll) * 100;
+        setReadingProgress(Math.min(100, Math.max(0, currentProgress)));
+      }
+
+      // 偵測當前標題位置
+      const headings = document.querySelectorAll('.article-content h2, .article-content h3');
+      let currentActive = '';
+      headings.forEach((h) => {
+        const rect = h.getBoundingClientRect();
+        if (rect.top <= 160) {
+          currentActive = h.id;
+        }
+      });
+      if (currentActive) {
+        setActiveTocId(currentActive);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [article]);
+
+  // 解析文章 HTML 並自動注入 ID 以便目錄跳轉
+  const { processedHtml, toc } = useMemo(() => {
+    const rawHtml = article?.contentHtml || article?.excerpt || '';
+    if (!rawHtml || typeof window === 'undefined') {
+      return { processedHtml: rawHtml, toc: [] };
+    }
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(rawHtml, 'text/html');
+      const headings = doc.querySelectorAll('h2, h3');
+      const tocList: TocItem[] = [];
+
+      headings.forEach((heading, idx) => {
+        const text = heading.textContent?.trim() || '';
+        const safeId = `section-${idx + 1}-${text.slice(0, 15).replace(/[\s\W]+/g, '-')}`;
+        heading.setAttribute('id', safeId);
+        tocList.push({
+          id: safeId,
+          text,
+          level: heading.tagName === 'H2' ? 2 : 3,
+        });
+      });
+
+      return {
+        processedHtml: doc.body.innerHTML,
+        toc: tocList,
+      };
+    } catch {
+      return { processedHtml: rawHtml, toc: [] };
+    }
+  }, [article]);
+
+  // 核心重點摘要清單（依不同文章自動適配）
+  const keyHighlights = useMemo(() => {
+    if (activeHandle.includes('care') || activeHandle.includes('daily')) {
+      return [
+        { icon: 'ri-drop-line', title: '微生態平衡', desc: '弱酸環境 (pH 3.5~4.5)，乳酸菌天然自淨。' },
+        { icon: 'ri-shield-check-line', title: '分區清潔守則', desc: '內陰切勿灌洗，外陰以溫水或溫和潔膚露清洗。' },
+        { icon: 'ri-temp-cold-line', title: '水溫與擦拭', desc: '37~40℃ 溫水拍乾，如廁由前往後擦拭。' },
+        { icon: 'ri-hospital-line', title: '異常及早就醫', desc: '分泌物異狀或搔癢請諮詢合格婦產科專科醫師。' }
+      ];
+    } else if (activeHandle.includes('underwear') || activeHandle.includes('fabric')) {
+      return [
+        { icon: 'ri-t-shirt-line', title: '天然純棉親膚', desc: '吸濕柔軟，適合日常休閒與敏感肌膚。' },
+        { icon: 'ri-windy-line', title: '莫代爾與天絲', desc: '透氣涼爽垂墜佳，久坐辦公不悶熱。' },
+        { icon: 'ri-focus-3-line', title: '底襠雙層防護', desc: '接觸面優先選擇純棉或透氣抑菌纖維。' },
+        { icon: 'ri-refresh-line', title: '定期汰換週期', desc: '專用洗劑單獨洗滌，建議 3~6 個月定期更換。' }
+      ];
+    } else {
+      return [
+        { icon: 'ri-search-eye-line', title: '成分來源透明', desc: '所有原料與檢測如實呈現，拒絕隱匿與誇大。' },
+        { icon: 'ri-heart-pulse-line', title: '守法無醫療宣稱', desc: '回歸日常舒適潔淨，不以醫療療效作為宣傳。' },
+        { icon: 'ri-star-smile-line', title: '真實評價原則', desc: '未獲真實授權訂單前，一律清楚標記編輯精選。' },
+        { icon: 'ri-hand-heart-line', title: '溫柔陪伴日常', desc: '以科學與細膩質感，陪伴每一位女性的日常。' }
+      ];
+    }
+  }, [activeHandle]);
+
+  const recommendedProducts = mockProducts.slice(0, 3);
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
-    const title = article.title;
-    
+    const title = article?.title || 'SAENGAK 專欄文章';
+
     switch (platform) {
       case 'facebook':
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
@@ -144,362 +168,405 @@ export default function BlogArticle() {
     setShowShareMenu(false);
   };
 
-  const handleProductClick = (productId: number) => {
-    navigate(`/product/${productId}`);
+  const handleTocClick = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveTocId(id);
+    }
   };
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+        <Header />
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <div className="inline-block animate-spin h-10 w-10 border-4 border-[#225B4F] border-t-transparent rounded-full mb-4"></div>
+          <p className="text-gray-600 font-medium">專欄文章載入中...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!article) {
+    return (
+      <div className="min-h-screen bg-white" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+        <Header />
+        <div className="max-w-4xl mx-auto px-6 py-24 text-center">
+          <i className="ri-file-warning-line text-6xl text-gray-300 mb-4 inline-block"></i>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">找不到該專欄文章</h2>
+          <p className="text-gray-600 mb-8">此文章可能已被移動或尚未發布，請瀏覽其他精選文章。</p>
+          <button
+            onClick={() => navigate('/community')}
+            className="px-8 py-3 bg-[#225B4F] text-white rounded-lg hover:opacity-90 transition-opacity cursor-pointer font-medium"
+          >
+            返回文章列表
+          </button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const readMinutes = estimateReadingMinutes(article.contentHtml || article.excerpt || '');
+  const displayDate = article.publishedAt
+    ? new Date(article.publishedAt).toLocaleDateString()
+    : '2026/9/1';
+  const categoryName = article.blog?.title || (article.tags && article.tags.length > 0 ? article.tags[0] : '專欄文章');
+  const coverImage = article.image?.url || '/images/blog/daily-feminine-care-guide.jpg';
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+      {/* 頂部閱讀進度條 */}
+      <div
+        className="fixed top-0 left-0 h-1 bg-[#225B4F] z-50 transition-all duration-150 ease-out"
+        style={{ width: `${readingProgress}%` }}
+      />
+
       <Header />
-      
-      {/* Article Hero Section */}
-      <div className="relative w-full overflow-hidden">
-        <div className="w-full h-96">
+
+      {/* Hero Banner Section */}
+      <div className="relative w-full overflow-hidden bg-[#182C27]">
+        <div className="w-full h-80 sm:h-96 md:h-[440px] lg:h-[480px]">
           <img
-            src={article.image}
-            alt={article.title}
-            className="w-full h-full object-cover"
+            src={coverImage}
+            alt={article.image?.altText || article.title}
+            className="w-full h-full object-cover opacity-80"
           />
         </div>
 
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end">
-          <div className="w-full max-w-6xl mx-auto px-6 pb-8">
-            <div className="text-white">
-              <div className="flex items-center gap-4 mb-4">
-                <span className="px-3 py-1 text-sm font-medium bg-white/20 backdrop-blur-sm">
-                  {article.category}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#112420] via-[#112420]/50 to-transparent flex items-end">
+          <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 pb-10 md:pb-14">
+            <div className="max-w-4xl text-white">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <span className="px-3.5 py-1 text-xs font-semibold bg-[#225B4F] text-white rounded-full tracking-wide">
+                  {categoryName}
                 </span>
-                <span className="text-sm opacity-90">{article.readTime}</span>
-                <span className="text-sm opacity-90">{article.date}</span>
+                <span className="text-sm opacity-90">{readMinutes} 分鐘閱讀</span>
+                <span className="text-sm opacity-60">•</span>
+                <span className="text-sm opacity-90">{displayDate}</span>
               </div>
-              
-              <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-bold mb-5 leading-[1.3] tracking-tight">
                 {article.title}
               </h1>
-              
-              <div className="flex flex-wrap items-center justify-between gap-3 text-sm opacity-90">
-                <span>作者：{article.author}</span>
-                <span>編輯整理｜專業審閱待完成</span>
+
+              <div className="flex flex-wrap items-center justify-between gap-4 text-sm opacity-90 pt-2 border-t border-white/15">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs">
+                    <i className="ri-user-3-line"></i>
+                  </div>
+                  <span className="font-medium">{article.author || 'SAENGAK 編輯團隊'}</span>
+                </div>
+                <span className="text-xs bg-white/15 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-white/90">
+                  SAENGAK 官方專欄
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <main className="page-content">
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          {/* Breadcrumb */}
-          <nav className="flex items-center space-x-2 text-sm mb-12" style={{ color: '#747775' }}>
-            <button onClick={() => navigate('/')} className="cursor-pointer" style={{ color: '#747775' }}>
+      {/* Main Content Area */}
+      <main className="page-content bg-[#FBFBFA]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+          {/* Breadcrumb Navigation */}
+          <nav className="flex items-center space-x-2 text-sm mb-10 text-gray-500">
+            <button onClick={() => navigate('/')} className="cursor-pointer hover:text-[#225B4F] transition-colors">
               首頁
             </button>
-            <i className="ri-arrow-right-s-line"></i>
-            <button onClick={() => navigate('/community')} className="cursor-pointer" style={{ color: '#747775' }}>
-              健康知識
+            <i className="ri-arrow-right-s-line text-gray-400"></i>
+            <button onClick={() => navigate('/community')} className="cursor-pointer hover:text-[#225B4F] transition-colors">
+              健康知識分享
             </button>
-            <i className="ri-arrow-right-s-line"></i>
-            <span style={{ color: '#000000' }}>文章詳情</span>
+            <i className="ri-arrow-right-s-line text-gray-400"></i>
+            <span className="text-gray-900 font-medium truncate max-w-[200px] sm:max-w-md">{article.title}</span>
           </nav>
 
-          <div className="flex flex-col lg:flex-row gap-12">
-            {/* Main Content */}
-            <article className="flex-1">
-              {/* Article Actions */}
-              <div className="flex items-center justify-between mb-12 pb-8 border-b" style={{ borderColor: '#CDCDCD' }}>
-                <div className="flex items-center space-x-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-14 items-start">
+            {/* 左側主文章內容 (8 欄) */}
+            <article className="lg:col-span-8 bg-white p-6 sm:p-10 md:p-12 rounded-2xl shadow-sm border border-gray-100/80">
+              {/* Article Top Actions */}
+              <div className="flex items-center justify-between pb-6 mb-8 border-b border-gray-100">
+                <div className="flex items-center space-x-3">
                   <button
                     onClick={() => setIsBookmarked(!isBookmarked)}
-                    className={`flex items-center space-x-2 px-6 py-3 border transition-colors cursor-pointer ${
-                      isBookmarked 
-                        ? 'text-white' 
-                        : 'hover:text-white'
+                    className={`flex items-center space-x-2 px-4 py-2 text-sm rounded-lg transition-all cursor-pointer font-medium ${
+                      isBookmarked
+                        ? 'bg-[#225B4F] text-white'
+                        : 'bg-gray-50 text-gray-700 hover:bg-[#EBF3EC] hover:text-[#225B4F]'
                     }`}
-                    style={{
-                      backgroundColor: isBookmarked ? '#225B4F' : undefined,
-                      borderColor: isBookmarked ? '#225B4F' : '#CDCDCD'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isBookmarked) {
-                        e.currentTarget.style.backgroundColor = '#225B4F';
-                        e.currentTarget.style.borderColor = '#225B4F';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isBookmarked) {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                        e.currentTarget.style.borderColor = '#CDCDCD';
-                        e.currentTarget.style.color = '#555555';
-                      }
-                    }}
                   >
-                    <i className={`${isBookmarked ? 'ri-bookmark-fill' : 'ri-bookmark-line'}`}></i>
-                    <span className="text-sm font-medium">收藏</span>
+                    <i className={isBookmarked ? 'ri-bookmark-fill' : 'ri-bookmark-line'}></i>
+                    <span>{isBookmarked ? '已收藏' : '收藏'}</span>
                   </button>
                 </div>
 
                 <div className="relative">
                   <button
                     onClick={() => setShowShareMenu(!showShareMenu)}
-                    className="flex items-center space-x-2 px-6 py-3 border transition-colors cursor-pointer"
-                    style={{ borderColor: '#CDCDCD', color: '#555555' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#225B4F';
-                      e.currentTarget.style.borderColor = '#225B4F';
-                      e.currentTarget.style.color = '#FFFFFF';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.borderColor = '#CDCDCD';
-                      e.currentTarget.style.color = '#555555';
-                    }}
+                    className="flex items-center space-x-2 px-4 py-2 text-sm rounded-lg bg-gray-50 text-gray-700 hover:bg-[#EBF3EC] hover:text-[#225B4F] transition-all cursor-pointer font-medium"
                   >
-                    <i className="ri-share-line"></i>
-                    <span className="text-sm font-medium">分享</span>
+                    <i className="ri-share-forward-line"></i>
+                    <span>分享</span>
                   </button>
 
                   {showShareMenu && (
-                    <div className="absolute right-0 top-full mt-2 bg-white border shadow-lg z-10 min-w-48" style={{ borderColor: '#CDCDCD' }}>
+                    <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-30 min-w-48 overflow-hidden py-1">
                       <button
                         onClick={() => handleShare('facebook')}
-                        className="w-full flex items-center px-4 py-3 text-sm hover:bg-gray-50 cursor-pointer"
-                        style={{ color: '#555555' }}
+                        className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
                       >
-                        <i className="ri-facebook-fill mr-3 text-blue-600"></i>
+                        <i className="ri-facebook-circle-fill mr-3 text-blue-600 text-lg"></i>
                         分享到 Facebook
                       </button>
                       <button
                         onClick={() => handleShare('line')}
-                        className="w-full flex items-center px-4 py-3 text-sm hover:bg-gray-50 cursor-pointer"
-                        style={{ color: '#555555' }}
+                        className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
                       >
-                        <i className="ri-line-fill mr-3 text-green-500"></i>
+                        <i className="ri-line-fill mr-3 text-green-500 text-lg"></i>
                         分享到 LINE
                       </button>
                       <button
                         onClick={() => handleShare('twitter')}
-                        className="w-full flex items-center px-4 py-3 text-sm hover:bg-gray-50 cursor-pointer"
-                        style={{ color: '#555555' }}
+                        className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
                       >
-                        <i className="ri-twitter-fill mr-3 text-blue-400"></i>
-                        分享到 Twitter
+                        <i className="ri-twitter-x-line mr-3 text-gray-900 text-lg"></i>
+                        分享到 X (Twitter)
                       </button>
                       <button
                         onClick={() => handleShare('copy')}
-                        className="w-full flex items-center px-4 py-3 text-sm hover:bg-gray-50 cursor-pointer"
-                        style={{ color: '#555555' }}
+                        className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer border-t border-gray-100"
                       >
-                        <i className="ri-file-copy-line mr-3"></i>
-                        複製連結
+                        <i className="ri-file-copy-line mr-3 text-gray-500 text-lg"></i>
+                        複製文章連結
                       </button>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="mb-10 border border-amber-300 bg-amber-50 px-5 py-4 text-sm leading-relaxed text-amber-900">
-                <strong>內容狀態：</strong>本篇為編輯整理稿，尚未完成醫療專業審閱；如有症狀或個別健康疑問，請諮詢合格醫療人員。
-              </div>
-
-              {/* Article Content */}
-              <div 
-                className="prose prose-lg max-w-none"
-                style={{
-                  '--tw-prose-body': '#555555',
-                  '--tw-prose-headings': '#000000',
-                  '--tw-prose-links': '#225B4F',
-                  '--tw-prose-bold': '#000000',
-                  '--tw-prose-counters': '#747775',
-                  '--tw-prose-bullets': '#CDCDCD',
-                  '--tw-prose-hr': '#CDCDCD',
-                  '--tw-prose-quotes': '#000000',
-                  '--tw-prose-quote-borders': '#CDCDCD',
-                  '--tw-prose-captions': '#747775',
-                  '--tw-prose-code': '#000000',
-                  '--tw-prose-pre-code': '#CDCDCD',
-                  '--tw-prose-pre-bg': '#1F1F1F',
-                  '--tw-prose-th-borders': '#CDCDCD',
-                  '--tw-prose-td-borders': '#CDCDCD'
-                } as any}
-                dangerouslySetInnerHTML={{ __html: article.content }}
-              />
-
-              {/* Tags */}
-              <div className="mt-16 pt-8 border-t" style={{ borderColor: '#CDCDCD' }}>
-                <h3 className="text-lg font-semibold mb-6" style={{ color: '#000000' }}>相關標籤</h3>
-                <div className="flex flex-wrap gap-3">
-                  {article.tags.map((tag, index) => (
-                    <span 
-                      key={index}
-                      className="px-4 py-2 text-sm cursor-pointer hover:text-white transition-colors"
-                      style={{ 
-                        backgroundColor: '#F7F7F5',
-                        color: '#555555'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#225B4F';
-                        e.currentTarget.style.color = '#FFFFFF';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#F7F7F5';
-                        e.currentTarget.style.color = '#555555';
-                      }}
-                      onClick={() => navigate('/community')}
-                    >
-                      #{tag}
-                    </span>
-                  ))}
+              {/* 嚴格法規與非醫療宣稱免責警語 */}
+              <div className="mb-10 p-5 rounded-xl border border-emerald-200/80 bg-emerald-50/50 text-sm leading-relaxed text-emerald-950 flex items-start space-x-3.5">
+                <i className="ri-information-line text-emerald-700 text-xl flex-shrink-0 mt-0.5"></i>
+                <div>
+                  <strong className="text-emerald-900 font-semibold block mb-0.5">日常衛教與生活保養說明</strong>
+                  本專欄內容為日常衛生清潔習慣與一般生活保養分享，不具備任何醫療與診斷意圖。如有任何個人健康或身體不適疑慮，請儘速諮詢合格婦產科專科醫師。
                 </div>
               </div>
 
-              {/* Author Info */}
-              <div className="mt-16 p-8 border" style={{ backgroundColor: '#F7F7F5', borderColor: '#CDCDCD' }}>
-                <div className="flex items-start space-x-6">
-                  <div className="w-20 h-20 flex items-center justify-center" style={{ backgroundColor: '#BBBBBB' }}>
-                    <i className="ri-user-line text-3xl" style={{ color: '#555555' }}></i>
+              {/* 文章正文內容 (注入專屬排版系統) */}
+              <div
+                className="article-content"
+                dangerouslySetInnerHTML={{ __html: processedHtml }}
+              />
+
+              {/* 專欄標籤 */}
+              {article.tags && article.tags.length > 0 && (
+                <div className="mt-14 pt-8 border-t border-gray-100">
+                  <h4 className="text-sm font-bold text-gray-900 mb-3.5">相關主題標籤</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {article.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-3.5 py-1.5 text-xs font-medium bg-[#F2F5F3] text-[#225B4F] rounded-full hover:bg-[#225B4F] hover:text-white transition-all cursor-pointer"
+                        onClick={() => navigate('/community')}
+                      >
+                        #{tag}
+                      </span>
+                    ))}
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-3" style={{ color: '#000000' }}>{article.author}</h3>
-                    <p className="mb-6 leading-relaxed" style={{ color: '#555555' }}>{article.authorBio}</p>
-                    <button
-                      onClick={() => navigate('/community')}
-                      className="text-sm font-medium cursor-pointer hover:opacity-80"
-                      style={{ color: '#225B4F' }}
-                    >
-                      返回內容列表
-                    </button>
+                </div>
+              )}
+
+              {/* 作者與編輯承諾區塊 */}
+              <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-[#F7F9F8] border border-emerald-900/10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                <div className="w-14 h-14 rounded-2xl bg-[#225B4F] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <i className="ri-leaf-line text-2xl"></i>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <h4 className="text-base font-bold text-gray-900">{article.author || 'SAENGAK 編輯團隊'}</h4>
+                    <span className="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-medium">
+                      內容審核
+                    </span>
                   </div>
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                    SAENGAK 編輯團隊致力於提供成分透明、不誇大療效的日常女性生活保養指引。以溫柔而科學的視角，陪伴妳探索更舒適的自己。
+                  </p>
                 </div>
               </div>
             </article>
 
-            {/* Sidebar */}
-            <aside className="lg:w-80">
-              {/* Table of Contents */}
-              <div className="bg-white border p-6 mb-8" style={{ borderColor: '#CDCDCD' }}>
-                <h3 className="text-lg font-semibold mb-6" style={{ color: '#000000' }}>文章目錄</h3>
-                <nav className="space-y-3">
-                  <a href="#" className="block text-sm cursor-pointer transition-colors" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>為什麼私密護理如此重要？</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>正確的私密護理步驟</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors pl-4" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>1. 選擇合適的清潔產品</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors pl-4" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>2. 正確的清潔方式</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors pl-4" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>3. 內衣的選擇與護理</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>常見的護理誤區</a>
-                  <a href="#" className="block text-sm cursor-pointer transition-colors" style={{ color: '#555555' }} onMouseEnter={(e) => e.currentTarget.style.color = '#225B4F'} onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}>何時需要尋求專業幫助</a>
-                </nav>
-              </div>
-
-              {/* Recommended Products */}
-              <div className="bg-white border p-6 mb-8" style={{ borderColor: '#CDCDCD' }}>
-                <h3 className="text-lg font-semibold mb-6" style={{ color: '#000000' }}>推薦相關產品</h3>
-                <div className="space-y-6">
-                  {recommendedProducts.map((product) => (
-                    <div 
-                      key={product.id}
-                      className="cursor-pointer group"
-                      onClick={() => handleProductClick(product.id)}
-                    >
-                      <div className="aspect-square overflow-hidden mb-3">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+            {/* 右側重點摘要與互動目錄側邊欄 (4 欄 - Sticky) */}
+            <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+              {/* 卡片 1: 📌 本文核心摘要與速讀 (Key Highlights) */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/90">
+                <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-100">
+                  <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                    <i className="ri-flashlight-line text-[#225B4F] text-lg"></i>
+                    本篇核心速讀
+                  </h3>
+                  <span className="text-xs text-[#225B4F] bg-[#EBF3EC] px-2.5 py-1 rounded-full font-medium">
+                    重點整理
+                  </span>
+                </div>
+                <div className="space-y-3.5">
+                  {keyHighlights.map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-gray-50/80 transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-[#EBF3EC] text-[#225B4F] flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i className={`${item.icon} text-base`}></i>
                       </div>
-                      <div className="space-y-2">
-                        <h4 className="font-medium text-sm line-clamp-2 group-hover:text-teal-600 transition-colors" style={{ color: '#000000' }}>
-                          {product.name}
-                        </h4>
-                        <div className="flex items-center space-x-2">
-                          <span className="font-bold text-sm" style={{ color: '#225B4F' }}>{formatTwd(product.price)}</span>
-                          {product.originalPrice && product.originalPrice > product.price && (
-                            <span className="text-xs line-through" style={{ color: '#BBBBBB' }}>{formatTwd(product.originalPrice)}</span>
-                          )}
-                          {product.originalPrice && product.originalPrice > product.price && (
-                            <span className="text-xs px-2 py-1 bg-red-100 text-red-600">特價</span>
-                          )}
-                        </div>
-                        <span className="text-xs" style={{ color: '#747775' }}>展示目錄</span>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-xs font-bold text-gray-900 mb-0.5">{item.title}</h4>
+                        <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Related Articles */}
-              <div className="bg-white border p-6" style={{ borderColor: '#CDCDCD' }}>
-                <h3 className="text-lg font-semibold mb-6" style={{ color: '#000000' }}>相關文章</h3>
-                <div className="space-y-6">
-                  {relatedArticles.map((relatedArticle) => (
-                    <article 
-                      key={relatedArticle.id}
-                      className="cursor-pointer group"
-                      onClick={() => navigate('/blog')}
+              {/* 卡片 2: 📑 文章目錄導覽 (Interactive Table of Contents) */}
+              {toc.length > 0 && (
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/90">
+                  <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-100">
+                    <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                      <i className="ri-list-check text-[#225B4F] text-lg"></i>
+                      文章章節目錄
+                    </h3>
+                    <span className="text-xs text-gray-400 font-normal">
+                      {Math.round(readingProgress)}% 進度
+                    </span>
+                  </div>
+                  <nav className="space-y-1.5">
+                    {toc.map((item) => {
+                      const isActive = activeTocId === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => handleTocClick(item.id)}
+                          className={`w-full text-left transition-all cursor-pointer rounded-lg py-2 px-3 flex items-center gap-2.5 text-xs ${
+                            item.level === 3 ? 'pl-6 text-gray-500' : 'font-medium text-gray-700'
+                          } ${
+                            isActive
+                              ? 'bg-[#EBF3EC] text-[#225B4F] font-bold border-l-2 border-[#225B4F]'
+                              : 'hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          <i
+                            className={`text-xs ${
+                              isActive
+                                ? 'ri-arrow-right-s-fill text-[#225B4F]'
+                                : 'ri-checkbox-blank-circle-line text-gray-300'
+                            }`}
+                          ></i>
+                          <span className="truncate">{item.text}</span>
+                        </button>
+                      );
+                    })}
+                  </nav>
+                </div>
+              )}
+
+              {/* 卡片 3: 🌿 推薦日常護理品 (Recommended Products) */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/90">
+                <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-100">
+                  <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                    <i className="ri-heart-3-line text-[#225B4F] text-lg"></i>
+                    推薦日常護理
+                  </h3>
+                  <span className="text-xs text-gray-400 font-normal">編輯推薦</span>
+                </div>
+                <div className="space-y-3.5">
+                  {recommendedProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      className="cursor-pointer group flex items-center gap-3.5 p-2 rounded-xl hover:bg-gray-50 transition-colors"
+                      onClick={() => navigate(`/product/${product.id}`)}
                     >
-                      <div className="aspect-[16/10] overflow-hidden mb-3">
+                      <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
                         <img
-                          src={relatedArticle.image}
-                          alt={relatedArticle.title}
+                          src={product.image}
+                          alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-white px-2 py-1" style={{ backgroundColor: '#225B4F' }}>
-                          {relatedArticle.category}
-                        </span>
-                        <span className="text-xs" style={{ color: '#747775' }}>{relatedArticle.readTime}</span>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-[#225B4F] transition-colors mb-1">
+                          {product.name}
+                        </h4>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-xs text-[#225B4F]">{formatTwd(product.price)}</span>
+                          {product.originalPrice && product.originalPrice > product.price && (
+                            <span className="text-[10px] line-through text-gray-400">{formatTwd(product.originalPrice)}</span>
+                          )}
+                        </div>
                       </div>
-                      <h4 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors" style={{ color: '#000000' }}>
-                        {relatedArticle.title}
-                      </h4>
-                      <p className="text-xs line-clamp-2" style={{ color: '#555555' }}>
-                        {relatedArticle.excerpt}
-                      </p>
-                    </article>
+                    </div>
                   ))}
                 </div>
               </div>
+
+              {/* 卡片 4: 📖 更多專欄 (Related Articles) */}
+              {relatedArticles.length > 0 && (
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/90">
+                  <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-100">
+                    <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                      <i className="ri-book-open-line text-[#225B4F] text-lg"></i>
+                      更多精選專欄
+                    </h3>
+                  </div>
+                  <div className="space-y-4">
+                    {relatedArticles.map((related) => (
+                      <article
+                        key={related.id}
+                        className="cursor-pointer group flex gap-3.5 items-center p-1.5 rounded-xl hover:bg-gray-50 transition-colors"
+                        onClick={() => navigate(`/blog/${related.handle}`)}
+                      >
+                        <div className="w-16 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                          <img
+                            src={related.image?.url || '/images/blog/daily-feminine-care-guide.jpg'}
+                            alt={related.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[10px] font-bold text-[#225B4F] uppercase tracking-wider block mb-0.5">
+                            {related.tags && related.tags.length > 0 ? related.tags[0] : '專欄'}
+                          </span>
+                          <h4 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-[#225B4F] transition-colors">
+                            {related.title}
+                          </h4>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
             </aside>
           </div>
 
-          {/* Navigation */}
-          <div className="flex items-center mt-20 pt-8 border-t" style={{ borderColor: '#CDCDCD' }}>
-            <button 
+          {/* 底部導覽與返回按鈕 */}
+          <div className="flex items-center justify-between mt-14 pt-8 border-t border-gray-200">
+            <button
               onClick={() => navigate('/community')}
-              className="flex items-center cursor-pointer transition-colors"
-              style={{ color: '#555555' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#000000'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#555555'}
+              className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-[#225B4F] transition-colors cursor-pointer bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:shadow"
             >
-              <i className="ri-arrow-left-line mr-2"></i>
-              返回文章列表
+              <i className="ri-arrow-left-line mr-2 text-base"></i>
+              返回健康知識社群
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-[#225B4F] transition-colors cursor-pointer bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:shadow"
+            >
+              回首頁探索目錄
+              <i className="ri-arrow-right-line ml-2 text-base"></i>
             </button>
           </div>
         </div>
-
-        {/* Comments Section */}
-        <section className="py-20 px-6" style={{ backgroundColor: '#F7F7F5' }}>
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold mb-8" style={{ color: '#000000' }}>讀者留言</h2>
-            <div className="bg-white border p-8" style={{ borderColor: '#CDCDCD' }}>
-              <p className="mb-5 leading-relaxed" style={{ color: '#555555' }}>
-                留言後端與審核機制尚未接入，因此目前不收集姓名，也不顯示示範留言。
-              </p>
-              <button
-                onClick={() => navigate('/customer-service')}
-                className="font-medium cursor-pointer hover:opacity-80"
-                style={{ color: '#225B4F' }}
-              >
-                聯絡客服
-              </button>
-            </div>
-          </div>
-        </section>
       </main>
-      
+
       <Footer />
     </div>
   );

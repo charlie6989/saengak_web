@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
-import { buildShopifyArticleUrl } from '../../lib/shopifyNavigation';
 import HeroSection from './components/HeroSection';
 import ProductSection from './components/ProductSection';
 import BrandSection from './components/BrandSection';
@@ -10,12 +10,40 @@ import ReviewSection from './components/ReviewSection';
 import { getShopifyArticles } from '../../lib/shopify';
 
 const fallbackArticles = [
-  { id: 'care-guide', title: '日常私密護理：先理解身體，再選擇產品', excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的照護原則。', contentHtml: '', tags: ['健康知識'], publishedAt: '2026-07-18', url: '/blog', image: null },
-  { id: 'fabric-guide', title: '貼身衣物材質怎麼選？', excerpt: '用透氣、摩擦與清潔頻率三個面向，整理日常挑選貼身衣物的重點。', contentHtml: '', tags: ['選購指南'], publishedAt: '2026-07-18', url: '/faq', image: null },
-  { id: 'brand-method', title: '我們如何整理產品與內容', excerpt: '所有推薦先說明資料來源；沒有即時評價時，就以編輯精選清楚標示。', contentHtml: '', tags: ['品牌方法'], publishedAt: '2026-07-18', url: '/brand-story', image: null },
+  {
+    id: 'fallback-article-1',
+    handle: 'daily-feminine-care-guide',
+    title: '日常私密護理：先理解身體，再選擇產品',
+    excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的溫和照護原則。',
+    contentHtml: '',
+    tags: ['健康知識', '私密護理'],
+    publishedAt: '2026-09-01T10:37:30Z',
+    image: { url: '/images/blog/daily-feminine-care-guide.jpg', altText: '日常私密護理指南' }
+  },
+  {
+    id: 'fallback-article-2',
+    handle: 'how-to-choose-seamless-underwear',
+    title: '貼身衣物材質怎麼選？透氣、摩擦與清潔頻率的日常指南',
+    excerpt: '用透氣度、摩擦感與清潔頻率三個面向，整理日常挑選貼身衣物的實用重點。',
+    contentHtml: '',
+    tags: ['生活美學', '選購指南'],
+    publishedAt: '2026-09-01T10:37:33Z',
+    image: { url: '/images/blog/how-to-choose-seamless-underwear.jpg', altText: '貼身衣物材質指南' }
+  },
+  {
+    id: 'fallback-article-3',
+    handle: 'how-we-review-products-and-content',
+    title: '我們如何整理產品與內容：SAENGAK 編輯團隊的透明度承諾',
+    excerpt: '所有產品資訊堅持來源透明與成分公開；沒有即時評價時，就以編輯精選清楚標示。',
+    contentHtml: '',
+    tags: ['品牌方法', '透明原則'],
+    publishedAt: '2026-09-01T10:37:36Z',
+    image: { url: '/images/blog/how-we-review-products-and-content.jpg', altText: 'SAENGAK 品牌編輯標準' }
+  },
 ];
 
 export default function Home() {
+  const navigate = useNavigate();
   const [articles, setArticles] = useState<any[]>([]);
 
   useEffect(() => {
@@ -25,12 +53,12 @@ export default function Home() {
         if (items && items.length > 0) {
           setArticles(items.map((a) => ({
             id: a.id,
+            handle: a.handle,
             title: a.title,
             excerpt: a.excerpt || '',
             contentHtml: a.contentHtml || '',
             tags: a.tags || [],
             publishedAt: a.publishedAt,
-            url: buildShopifyArticleUrl(a.handle, a.blog?.handle),
             image: a.image || null,
           })));
         } else {
@@ -192,8 +220,8 @@ export default function Home() {
                       className="bg-white shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:transform hover:scale-105 cursor-pointer flex flex-col h-full"
                       style={{ borderRadius: '16px' }}
                       onClick={() => {
-                        const articleUrl = buildShopifyArticleUrl(article.blog?.handle, article.handle);
-                        if (articleUrl) window.open(articleUrl, '_blank', 'noopener,noreferrer');
+                        const target = article.handle || article.id;
+                        navigate(`/blog/${target}`);
                       }}
                     >
                       <div className="aspect-[4/3] overflow-hidden">

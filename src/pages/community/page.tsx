@@ -25,9 +25,48 @@ interface CommunityArticle {
 const editorialFallbackImage = 'https://readdy.ai/api/search-image?query=calm%20minimal%20women%20wellness%20editorial%20still%20life%20soft%20natural%20light%20green%20and%20white%20palette&width=800&height=600&seq=saengak-editorial-fallback&orientation=landscape';
 
 const localArticles: CommunityArticle[] = [
-  { id: 'care-guide', title: '日常私密護理：先理解身體，再選擇產品', excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的照護原則。', category: '健康知識', author: 'SAENGAK 編輯', date: '2026/7/18', readTime: '1 分鐘', image: editorialFallbackImage, tags: ['健康知識', '私密護理'], url: '/blog' },
-  { id: 'fabric-guide', title: '貼身衣物材質怎麼選？', excerpt: '用透氣、摩擦與清潔頻率三個面向，整理日常挑選貼身衣物的重點。', category: '選購指南', author: 'SAENGAK 編輯', date: '2026/7/18', readTime: '1 分鐘', image: editorialFallbackImage, tags: ['選購指南'], url: '/faq' },
-  { id: 'brand-method', title: '我們如何整理產品與內容', excerpt: '所有推薦先說明資料來源；沒有即時評價時，就以編輯精選清楚標示。', category: '品牌方法', author: 'SAENGAK 編輯', date: '2026/7/18', readTime: '1 分鐘', image: editorialFallbackImage, tags: ['品牌方法'], url: '/brand-story' },
+  {
+    id: 'fallback-article-1',
+    handle: 'daily-feminine-care-guide',
+    blogHandle: 'care-talk',
+    title: '日常私密護理：先理解身體，再選擇產品',
+    excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的溫和照護原則。',
+    category: '健康知識',
+    author: 'SAENGAK 編輯團隊',
+    date: '2026/9/1',
+    readTime: '3 分鐘',
+    image: '/images/blog/daily-feminine-care-guide.jpg',
+    tags: ['健康知識', '私密護理', '日常保養'],
+    url: '/blog/daily-feminine-care-guide'
+  },
+  {
+    id: 'fallback-article-2',
+    handle: 'how-to-choose-seamless-underwear',
+    blogHandle: 'lifestyle',
+    title: '貼身衣物材質怎麼選？透氣、摩擦與清潔頻率的日常指南',
+    excerpt: '用透氣度、摩擦感與清潔頻率三個面向，整理日常挑選貼身衣物的實用重點。',
+    category: '生活美學',
+    author: 'SAENGAK 編輯團隊',
+    date: '2026/9/1',
+    readTime: '3 分鐘',
+    image: '/images/blog/how-to-choose-seamless-underwear.jpg',
+    tags: ['生活美學', '選購指南', '親膚材質'],
+    url: '/blog/how-to-choose-seamless-underwear'
+  },
+  {
+    id: 'fallback-article-3',
+    handle: 'how-we-review-products-and-content',
+    blogHandle: 'brand',
+    title: '我們如何整理產品與內容：SAENGAK 編輯團隊的透明度承諾',
+    excerpt: '所有產品資訊堅持來源透明與成分公開；沒有即時評價時，就以編輯精選清楚標示。',
+    category: '品牌方法',
+    author: 'SAENGAK 編輯團隊',
+    date: '2026/9/1',
+    readTime: '3 分鐘',
+    image: '/images/blog/how-we-review-products-and-content.jpg',
+    tags: ['品牌方法', '透明原則', '編輯守則'],
+    url: '/blog/how-we-review-products-and-content'
+  },
 ];
 
 export default function Community() {
@@ -36,7 +75,7 @@ export default function Community() {
   const [selectedTag, setSelectedTag] = useState('');
   const [activeTab, setActiveTab] = useState('blog'); // 'blog' or 'instagram'
 
-  const tags = ['全部', '私密護理', '健康知識', '產品介紹', '使用心得', '專家建議', '生理期', '懷孕', '運動', '夏季護理'];
+  const tags = ['全部', '私密護理', '健康知識', '生活美學', '選購指南', '品牌方法', '日常保養'];
 
   const [articles, setArticles] = useState<CommunityArticle[]>([]);
 
@@ -52,15 +91,15 @@ export default function Community() {
           id: article.id,
           title: article.title,
           excerpt: article.excerpt || article.contentHtml?.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...',
-          category: article.blog?.title || '精彩文章',
-          author: article.author || 'SAENGAK 編輯',
+          category: article.blog?.title || (article.tags && article.tags.length > 0 ? article.tags[0] : '精彩文章'),
+          author: article.author || 'SAENGAK 編輯團隊',
           date: new Date(article.publishedAt).toLocaleDateString(),
           readTime: `${estimateReadingMinutes(article.contentHtml || article.excerpt || '')} 分鐘`,
-          image: article.image?.url || editorialFallbackImage,
+          image: article.image?.url || '/images/blog/daily-feminine-care-guide.jpg',
           tags: article.tags || [],
           handle: article.handle,
           blogHandle: article.blog?.handle,
-          url: buildShopifyArticleUrl(article.handle, article.blog?.handle),
+          url: `/blog/${article.handle}`,
         }));
         setArticles(mappedArticles);
         return;
@@ -105,7 +144,8 @@ export default function Community() {
   ];
 
   const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = searchTerm === '' ||
+      article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
       article.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -121,8 +161,8 @@ export default function Community() {
   };
 
   const handleArticleOpen = (article: any) => {
-    const articleUrl = buildShopifyArticleUrl(article.blogHandle, article.handle);
-    if (articleUrl) window.open(articleUrl, '_blank', 'noopener,noreferrer');
+    const handle = article.handle || article.id;
+    navigate(`/blog/${handle}`);
   };
 
   return (

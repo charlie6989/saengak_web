@@ -739,3 +739,122 @@ a:focus {
 .shadow-2xl {
   box-shadow: none !important;
 }
+
+/* ==========================================================================
+   文章專屬排版系統 (Article Typography & Spacing System)
+   ========================================================================== */
+.article-content {
+  font-family: var(--font-sans);
+  color: #374151;
+  font-size: 1.0625rem; /* ~17px */
+  line-height: 2;
+  letter-spacing: 0.015em;
+}
+
+.article-content p {
+  margin-bottom: 1.75rem;
+  line-height: 2;
+  color: #374151;
+}
+
+.article-content h2 {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #1a4d42;
+  margin-top: 3.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #EBF3EC;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  scroll-margin-top: 7rem;
+}
+
+.article-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 2.25rem;
+  margin-bottom: 0.875rem;
+  position: relative;
+  padding-left: 0.875rem;
+  scroll-margin-top: 7rem;
+}
+
+.article-content h3::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  width: 3.5px;
+  background-color: #225B4F;
+  border-radius: 2px;
+}
+
+.article-content ul {
+  list-style-type: none;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  padding-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.article-content ul li {
+  position: relative;
+  padding-left: 1.75rem;
+  line-height: 1.85;
+  color: #4b5563;
+}
+
+.article-content ul li::before {
+  content: '•';
+  position: absolute;
+  left: 0.5rem;
+  top: -0.1rem;
+  color: #225B4F;
+  font-size: 1.35rem;
+  font-weight: bold;
+}
+
+.article-content ol {
+  list-style-type: decimal;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  padding-left: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.article-content ol li {
+  line-height: 1.85;
+  color: #4b5563;
+  padding-left: 0.25rem;
+}
+
+.article-content .lead {
+  font-size: 1.125rem;
+  line-height: 1.9;
+  color: #173f36;
+  background-color: #f2f7f4;
+  padding: 1.5rem 1.75rem;
+  border-radius: 12px;
+  border-left: 4px solid #225B4F;
+  margin-bottom: 2.5rem;
+  font-weight: 500;
+}
+
+.article-content .disclaimer-box {
+  background-color: #fcf8f2;
+  border: 1px solid #f6e6cd;
+  color: #78350f;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  margin-top: 3rem;
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
