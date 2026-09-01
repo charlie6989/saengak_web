@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from "framer-motion";
 import Header from '../../components/feature/Header';
@@ -13,6 +13,7 @@ import { captureExceptionSafe } from '../../lib/sentry';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
+  const productListRef = useRef<HTMLDivElement>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -439,6 +440,27 @@ export default function Search() {
     return '專業女性護理產品，呵護您的健康';
   };
 
+  const scrollToProductListTop = () => {
+    if (productListRef.current) {
+      const rect = productListRef.current.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const targetY = rect.top + scrollTop - 80;
+      window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+    } else {
+      const el = document.getElementById('product-list-top');
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        window.scrollTo({ top: Math.max(0, rect.top + scrollTop - 80), behavior: 'smooth' });
+      }
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    scrollToProductListTop();
+  };
+
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
       <Header />
@@ -467,7 +489,7 @@ export default function Search() {
         </div>
       </div>
 
-      <main className="page-content">
+      <main className="page-content" ref={productListRef} id="product-list-top">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="py-4 sm:py-6">
             {/* Product Count and Controls - 手機版優化 */}
@@ -890,7 +912,7 @@ export default function Search() {
                 type="button"
                 aria-label="上一頁"
                 disabled={paginatedProducts.page === 1}
-                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                onClick={() => handlePageChange(Math.max(1, paginatedProducts.page - 1))}
                 className="p-2 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer rounded-lg hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <i className="ri-arrow-left-s-line text-lg"></i>
@@ -900,7 +922,7 @@ export default function Search() {
                   type="button"
                   key={page}
                   aria-current={page === paginatedProducts.page ? 'page' : undefined}
-                  onClick={() => setCurrentPage(page)}
+                  onClick={() => handlePageChange(page)}
                   className={`px-3 py-1.5 sm:px-4 sm:py-2 font-medium cursor-pointer rounded-lg text-sm ${page === paginatedProducts.page
                     ? 'bg-teal-600 text-white'
                     : 'text-gray-600 hover:bg-gray-100'}`}
@@ -912,7 +934,7 @@ export default function Search() {
                 type="button"
                 aria-label="下一頁"
                 disabled={paginatedProducts.page === paginatedProducts.pageCount}
-                onClick={() => setCurrentPage((page) => Math.min(paginatedProducts.pageCount, page + 1))}
+                onClick={() => handlePageChange(Math.min(paginatedProducts.pageCount, paginatedProducts.page + 1))}
                 className="p-2 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer rounded-lg hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <i className="ri-arrow-right-s-line text-lg"></i>
