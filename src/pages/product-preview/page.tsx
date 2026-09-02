@@ -326,15 +326,15 @@ export default function ProductPreviewPage() {
               </div>
             </aside>
 
-            {/* 焦點大圖展示區 (恢復原版長度與比例，支援滑鼠/觸控拖曳手勢切換圖片) */}
-            <div className="order-1 min-w-0 sm:order-2 h-full">
+            {/* 焦點大圖展示區 (寬度維持版面寬度，長度隨圖片自動變長變短，全圖完整展示) */}
+            <div className="order-1 min-w-0 sm:order-2">
               <div
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full aspect-square sm:aspect-[4/5] max-h-[580px] bg-white rounded-xl overflow-hidden border border-gray-200/80 shadow-2xs group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
+                className="relative w-full bg-white rounded-xl overflow-hidden border border-gray-200/80 shadow-2xs group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -365,9 +365,9 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 焦點主圖 (完整全圖呈現不裁切，支援拖曳跟隨) */}
+                {/* 焦點主圖 (寬度滿版貼齊，高度隨圖片長度自然伸縮，完整展示全圖) */}
                 <div
-                  className="w-full h-full flex items-center justify-center p-2.5 transition-transform duration-200"
+                  className="w-full flex items-center justify-center transition-transform duration-200"
                   style={{
                     transform: isDragging ? `translateX(${dragOffset * 0.4}px)` : 'none'
                   }}
@@ -376,7 +376,7 @@ export default function ProductPreviewPage() {
                     src={activeImage}
                     alt={product.name}
                     draggable={false}
-                    className="block max-h-full max-w-full object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.02]"
+                    className="block w-full h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01]"
                   />
                 </div>
 
