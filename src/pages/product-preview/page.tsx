@@ -214,7 +214,7 @@ export default function ProductPreviewPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#F7F7F5' }}>
       <Header />
 
-      <main className="mx-auto max-w-[1280px] px-4 pb-16 pt-[160px] md:pt-[176px] lg:pt-[190px]">
+      <main className="mx-auto max-w-[1280px] px-4 pb-16 pt-[108px] sm:pt-[116px] md:pt-[124px] lg:pt-[132px]">
         {/* =========================================================================
             1. 上方核心商品展示區塊 (Top Section)
             ========================================================================= */}
@@ -223,7 +223,7 @@ export default function ProductPreviewPage() {
           className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] xl:grid-cols-[720px_460px] xl:justify-center xl:gap-12"
         >
           {/* 左側：直長型縮圖導航列 + 直長型焦點主圖 (高度齊平) */}
-          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[124px] sm:items-stretch">
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[108px] sm:items-stretch">
             {/* 縮圖導航 (充滿高度，不留多餘空白) */}
             <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full h-full flex flex-col">
               <div className="relative flex items-center sm:flex-col w-full h-full gap-1.5 sm:gap-1.5">
