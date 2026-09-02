@@ -5,10 +5,10 @@ import ProductCard from '../../components/feature/ProductCard';
 import { mockProducts } from '../../mocks/products';
 import { formatTwd } from '../../domain/algorithms';
 
-// 範本預設商品資料（對齊 SAENGAK 正式分類：女性護理）
+// 預設商品資料（對齊 SAENGAK 正式分類：女性護理）
 const SAMPLE_PRODUCT = {
   id: 'template-sample',
-  name: '【示範範本】益生菌私密舒緩修護凝膠 (細節整合與長圖版型)',
+  name: '益生菌私密舒緩修護凝膠 (150ml)',
   subtitle: '韓國原裝進口 | Dermatest 醫學肌膚認證 | 溫和弱酸配方',
   category: '女性護理',
   price: 1280,
@@ -66,7 +66,7 @@ const SAMPLE_PRODUCT = {
 
 export default function ProductPreviewPage() {
   const [selectedImage, setSelectedImage] = useState(0);
-  // 老闆指示：產品內容與細節只要一個，統一為 'details'
+  // 頁籤狀態（預設選中產品內容）
   const [selectedTab, setSelectedTab] = useState<'details' | 'reviews' | 'related' | 'qa'>('details');
   const [selectedOption1, setSelectedOption1] = useState('單瓶裝 (150ml)');
   const [selectedOption2, setSelectedOption2] = useState('無香純淨款 (Fragrance-Free)');
@@ -191,17 +191,9 @@ export default function ProductPreviewPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#F7F7F5' }}>
       <Header />
 
-      {/* 頂部範本展示提示條 */}
-      <div className="bg-[#245B50] text-white text-xs sm:text-sm py-2 px-4 text-center font-medium shadow-sm fixed top-0 left-0 w-full z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 flex-wrap">
-          <span className="bg-white/20 px-2 py-0.5 rounded text-xs">老闆修改方向對齊版</span>
-          <span>按原本長圖比例、移除多餘底色邊框、五點特點加上標題、整合「產品內容」第 1 頁籤。</span>
-        </div>
-      </div>
-
       <main className="mx-auto max-w-[1280px] px-4 pb-16 pt-[160px] md:pt-[176px] lg:pt-[190px]">
         {/* =========================================================================
-            1. 上方核心商品區塊 (Top Section) - 依照手繪草圖與老闆指示
+            1. 上方核心商品展示區塊 (Top Section)
             ========================================================================= */}
         <section
           id="product-main-section"
@@ -316,7 +308,7 @@ export default function ProductPreviewPage() {
             </div>
           </div>
 
-          {/* 右側：商品資訊、價格、變體、產品特點與購買按鈕 (老闆指示：沒有底、邊框) */}
+          {/* 右側：商品資訊、價格、變體、產品特點與購買按鈕 */}
           <aside className="min-w-0 w-full space-y-6">
             {/* 1. 商品類別 */}
             <div>
@@ -335,7 +327,7 @@ export default function ProductPreviewPage() {
               </p>
             </div>
 
-            {/* 3. 原價與折扣價 (無底色卡片、無大外框) */}
+            {/* 3. 原價與折扣價 */}
             <div className="space-y-1 border-t border-gray-200/60 pt-4">
               <div className="text-sm text-gray-400 line-through">
                 原價 {formatTwd(product.originalPrice)}
@@ -360,7 +352,7 @@ export default function ProductPreviewPage() {
               )}
             </div>
 
-            {/* 4. 產品變體選擇 (無底色卡片、無大外框) */}
+            {/* 4. 產品變體選擇 */}
             <div className="space-y-4 border-t border-gray-200/60 pt-4">
               {/* 容量規格 */}
               <div className="space-y-2">
@@ -417,7 +409,7 @@ export default function ProductPreviewPage() {
               </div>
             </div>
 
-            {/* 5. 產品特點（老闆指示：加上標題「產品特點」、符號條列、無底邊框） */}
+            {/* 5. 產品特點（標題與特色條列清單） */}
             <div className="border-t border-gray-200/60 pt-4 space-y-2.5">
               <h3 className="text-sm font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                 產品特點
@@ -893,7 +885,7 @@ export default function ProductPreviewPage() {
                         LINE 官方客服專屬諮詢
                       </h4>
                       <p className="text-xs sm:text-sm text-gray-600">
-                        若您對此範本之尺寸規格、保養方式有任何問題，歡迎隨時加入官方 LINE 諮詢。
+                        若您對商品尺寸規格、使用保養方式有任何疑問，歡迎隨時加入官方 LINE 諮詢。
                       </p>
                     </div>
                     <a
