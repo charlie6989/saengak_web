@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../../contexts/CartContext';
 
 interface Product {
   id: string | number;
@@ -16,6 +15,12 @@ interface Product {
   isNew?: boolean;
   productType?: string;
   vendor?: string;
+  availableForSale?: boolean;
+  variants?: Array<{
+    id?: string;
+    availableForSale?: boolean;
+    quantityAvailable?: number;
+  }>;
 }
 
 interface ProductCardProps {
@@ -29,7 +34,11 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageSrc, setImageSrc] = useState(product.image || FALLBACK_PRODUCT_IMAGE);
   const [hoverSrc, setHoverSrc] = useState(product.hoverImage || product.image || FALLBACK_PRODUCT_IMAGE);
-  const { addToCart } = useCart();
+  const isSoldOut =
+    product.availableForSale === false ||
+    (Array.isArray(product.variants) &&
+      product.variants.length > 0 &&
+      product.variants.every((v) => v.availableForSale === false));
   const discountPercentage = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
@@ -56,9 +65,9 @@ export default function ProductCard({ product }: ProductCardProps) {
     setIsWishlisted(!isWishlisted);
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleViewProduct = (e: React.MouseEvent) => {
     e.stopPropagation();
-    addToCart(product, 1);
+    handleCardClick();
   };
 
   return (
@@ -69,19 +78,19 @@ export default function ProductCard({ product }: ProductCardProps) {
           src={imageSrc}
           alt={product.name}
           onError={() => setImageSrc(FALLBACK_PRODUCT_IMAGE)}
-          className="w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300"
+          className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300 ${isSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
         />
         {hoverSrc && (
           <img
             src={hoverSrc}
             alt={product.name}
             onError={() => setHoverSrc(FALLBACK_PRODUCT_IMAGE)}
-            className="w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            className={`w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSoldOut ? 'grayscale-[30%]' : ''}`}
           />
         )}
 
         {/* Product Labels */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
           {product.isBest && (
             <span className="bg-red-500 text-white text-xs px-2 py-1 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>BEST</span>
           )}
@@ -89,6 +98,18 @@ export default function ProductCard({ product }: ProductCardProps) {
             <span className="bg-blue-500 text-white text-xs px-2 py-1 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>NEW</span>
           )}
         </div>
+
+        {/* 已售完 圖層 (第 1 層) */}
+        {isSoldOut && (
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-20 pointer-events-none">
+            <span
+              className="bg-black/80 text-white text-xs md:text-sm px-3.5 py-1.5 rounded-full font-medium tracking-wider shadow-md border border-white/20"
+              style={{ fontFamily: "Noto Sans TC, sans-serif" }}
+            >
+              已售完
+            </span>
+          </div>
+        )}
       </div>
 
       {/* 產品資訊 - 使用 flex-1 讓內容區域自動填充 */}
@@ -155,25 +176,26 @@ export default function ProductCard({ product }: ProductCardProps) {
           </button>
         </div>
 
-        {/* 加入購物車按鈕 - 固定在底部 */}
+        {/* 查看商品按鈕 - 固定在底部 */}
         <button
-          onClick={handleAddToCart}
+          onClick={handleViewProduct}
+          aria-label={`查看 ${product.name} 商品詳情`}
           className="add-to-cart-btn mt-auto"
           style={{
-            backgroundColor: '#E9F1EC',
-            color: '#222222',
+            backgroundColor: isSoldOut ? '#F3F4F6' : '#E9F1EC',
+            color: isSoldOut ? '#888888' : '#222222',
             fontFamily: "Noto Sans TC, sans-serif"
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#245B50';
-            e.currentTarget.style.color = '#ffffff';
+            e.currentTarget.style.backgroundColor = isSoldOut ? '#E5E7EB' : '#245B50';
+            e.currentTarget.style.color = isSoldOut ? '#444444' : '#ffffff';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#E9F1EC';
-            e.currentTarget.style.color = '#222222';
+            e.currentTarget.style.backgroundColor = isSoldOut ? '#F3F4F6' : '#E9F1EC';
+            e.currentTarget.style.color = isSoldOut ? '#888888' : '#222222';
           }}
         >
-          加入購物車
+          {isSoldOut ? '已售完・查看詳情' : '查看商品'}
         </button>
       </div>
     </div>

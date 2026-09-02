@@ -153,9 +153,16 @@ SUPPORT.md
 __pycache__/
 /Lib/
 .venv/
+.tmp/
 tmp/
 scripts/clean_organized_materials.cjs
 scripts/organize_nas_materials.cjs
 scripts/unzip_helper.ps1
+scripts/check_unmapped.mjs
+scripts/direct_replace_shopify_images.mjs
+scripts/full_folder_mapping.mjs
+scripts/inspect_shopify_products.mjs
+scripts/list_all_shopify_details.mjs
+scripts/verify_mappings.mjs
 check-db.mjs
 *.exe

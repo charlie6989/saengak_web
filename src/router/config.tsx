@@ -6,6 +6,7 @@ import { lazy } from 'react';
 const HomePage = lazy(() => import('../pages/home/page'));
 const SearchPage = lazy(() => import('../pages/search/page'));
 const ProductPage = lazy(() => import('../pages/product/page'));
+const ProductPreviewPage = lazy(() => import('../pages/product-preview/page'));
 const LoginPage = lazy(() => import('../pages/login/page'));
 const RegisterPage = lazy(() => import('../pages/register/page'));
 const ProfilePage = lazy(() => import('../pages/profile/page'));
@@ -58,6 +59,10 @@ const routes: RouteObject[] = [
   {
     path: '/product',
     element: <ProductPage />,
+  },
+  {
+    path: '/product-preview',
+    element: <ProductPreviewPage />,
   },
   {
     path: '/product/:id',

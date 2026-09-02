@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { useCart } from '../../../contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 import { getShopifyProducts } from '../../../lib/shopify';
 import { mockProducts } from '../../../mocks/products';
 import { rankEditorialProducts } from '../../../domain/algorithms';
@@ -21,12 +21,18 @@ interface Product {
   isNew?: boolean;
   productType?: string;
   vendor?: string;
+  availableForSale?: boolean;
+  variants?: Array<{
+    id?: string;
+    availableForSale?: boolean;
+    quantityAvailable?: number;
+  }>;
 }
 
 export default function SolutionSection() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
-  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchShopifyProducts();
@@ -50,6 +56,8 @@ export default function SolutionSection() {
           isNew: true,
           productType: p.productType,
           vendor: p.vendor,
+          availableForSale: p.availableForSale,
+          variants: p.variants,
         })));
         return;
       }
@@ -75,12 +83,12 @@ export default function SolutionSection() {
 
   const handleProductClick = (product: Product) => {
     const numericId = product.id.replace('gid://shopify/Product/', '');
-    window.location.href = `/product/${numericId}`;
+    navigate(`/product/${numericId}`);
   };
 
-  const handleAddToCartClick = (e: React.MouseEvent, product: Product) => {
+  const handleViewProductClick = (e: React.MouseEvent, product: Product) => {
     e.stopPropagation();
-    addToCart(product, 1);
+    handleProductClick(product);
   };
 
   return (
@@ -143,10 +151,16 @@ export default function SolutionSection() {
                 <div className="grid grid-cols-2 gap-4" data-product-shop>
                   {products.map((product) => {
                     const discountRate = calculateDiscountRate(product.price, product.originalPrice);
+                    const isSoldOut =
+                      product.availableForSale === false ||
+                      (Array.isArray(product.variants) &&
+                        product.variants.length > 0 &&
+                        product.variants.every((v) => v.availableForSale === false));
+
                     return (
                       <div
                         key={product.id}
-                        className="group cursor-pointer bg-white"
+                        className="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-2xs border border-gray-100/80 flex flex-col h-full hover:shadow-md transition-shadow"
                         data-product-shop
                         onClick={() => handleProductClick(product)}
                       >
@@ -155,29 +169,41 @@ export default function SolutionSection() {
                           <img
                             src={product.image}
                             alt={product.name}
-                            className="w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300"
+                            className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300 ${isSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
                           />
                           {product.hoverImage && (
                             <img
                               src={product.hoverImage}
                               alt={product.name}
-                              className="w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                              className={`w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSoldOut ? 'grayscale-[30%]' : ''}`}
                             />
                           )}
                           {/* Labels */}
-                          <div className="absolute top-2 left-2 flex flex-col gap-1">
+                          <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
                             {product.isBest && (
                               <span className="bg-red-500 text-white text-xs px-2 py-1 font-medium">BEST</span>
                             )}
                             {product.isNew && (
-                              <span className="bg-blue-5/00 text-white text-xs px-2 py-1 font-medium">NEW</span>
+                              <span className="bg-blue-500 text-white text-xs px-2 py-1 font-medium">NEW</span>
                             )}
                           </div>
+
+                          {/* 已售完 圖層 (第 1 層) */}
+                          {isSoldOut && (
+                            <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-20 pointer-events-none">
+                              <span
+                                className="bg-black/80 text-white text-xs md:text-sm px-3.5 py-1.5 rounded-full font-medium tracking-wider shadow-md border border-white/20"
+                                style={{ fontFamily: "Noto Sans TC, sans-serif" }}
+                              >
+                                已售完
+                              </span>
+                            </div>
+                          )}
                         </div>
 
                         {/* Product Info */}
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-start gap-2 px-4 pt-3" style={{ paddingTop: 'calc(0.5cm - 0.15cm)', paddingBottom: 'calc(0.5cm - 0.15cm)' }}>
+                        <div className="space-y-2 p-4 flex flex-col flex-1">
+                          <div className="flex justify-between items-start gap-2 flex-1" style={{ paddingTop: 'calc(0.5cm - 0.15cm)', paddingBottom: 'calc(0.5cm - 0.15cm)' }}>
                             <div className="flex-1 space-y-1">
                               <p className="text-xs text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                                 {product.productType || '女性護理'}
@@ -207,7 +233,7 @@ export default function SolutionSection() {
                           </div>
 
                           {/* Price Block */}
-                          <div className="space-y-1 px-4">
+                          <div className="space-y-1">
                             <div className="flex items-center justify-between">
                               <div className="flex flex-col gap-1">
                                 {product.originalPrice && product.originalPrice > product.price ? (
@@ -229,13 +255,26 @@ export default function SolutionSection() {
                             </div>
                           </div>
 
-                          {/* Add to Cart Button */}
+                          {/* View Product Button */}
                           <button
-                            onClick={(e) => handleAddToCartClick(e, product)}
-                            className="add-to-cart-btn"
-                            style={{ fontFamily: "Noto Sans TC, sans-serif" }}
+                            onClick={(e) => handleViewProductClick(e, product)}
+                            aria-label={`查看 ${product.name} 商品詳情`}
+                            className="add-to-cart-btn mt-auto"
+                            style={{
+                              backgroundColor: isSoldOut ? '#F3F4F6' : '#E9F1EC',
+                              color: isSoldOut ? '#888888' : '#222222',
+                              fontFamily: "Noto Sans TC, sans-serif"
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = isSoldOut ? '#E5E7EB' : '#245B50';
+                              e.currentTarget.style.color = isSoldOut ? '#444444' : '#ffffff';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = isSoldOut ? '#F3F4F6' : '#E9F1EC';
+                              e.currentTarget.style.color = isSoldOut ? '#888888' : '#222222';
+                            }}
                           >
-                            加入購物車
+                            {isSoldOut ? '已售完・查看詳情' : '查看商品'}
                           </button>
                         </div>
                       </div>

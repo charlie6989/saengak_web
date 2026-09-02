@@ -17,6 +17,7 @@ export interface Product {
     tags?: string[];
     productType?: string;
     vendor?: string;
+    availableForSale?: boolean;
     handle?: string;
     highlights?: string[];
     subtitle?: string;

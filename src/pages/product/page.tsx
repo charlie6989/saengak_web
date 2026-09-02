@@ -320,6 +320,11 @@ export default function ProductPage() {
   const currentPrice = selectedVariant ? selectedVariant.price : (product?.price ?? 0);
   const currentCompareAtPrice = selectedVariant?.compareAtPrice ?? product?.originalPrice;
   const isAvailableForSale = selectedVariant ? selectedVariant.availableForSale : (product?.availableForSale ?? true);
+  const isAllSoldOut =
+    product?.availableForSale === false ||
+    (Array.isArray(product?.variants) &&
+      product.variants.length > 0 &&
+      product.variants.every((v) => v.availableForSale === false));
 
   const productImages = product
     ? Array.from(
@@ -717,7 +722,7 @@ export default function ProductPage() {
                                     e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
                                   }}
                                   draggable={false}
-                                  className="block h-full w-full object-cover object-center pointer-events-none"
+                                  className={`block h-full w-full object-cover object-center pointer-events-none ${isAllSoldOut ? 'grayscale-[30%]' : ''}`}
                                   loading="lazy"
                                 />
                               </button>
@@ -804,16 +809,28 @@ export default function ProductPage() {
                       }}
                       data-testid="product-main-image"
                       draggable={false}
-                      className="block max-h-full max-w-full object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.02]"
+                      className={`block max-h-full max-w-full object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.02] ${isAllSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
                     />
                   </div>
 
+                  {/* 已售完 圖層 (第 1 層) */}
+                  {isAllSoldOut && (
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-20 pointer-events-none">
+                      <span
+                        className="bg-black/80 text-white text-sm md:text-base px-5 py-2 rounded-full font-medium tracking-wider shadow-md border border-white/20"
+                        style={{ fontFamily: "Noto Sans TC, sans-serif" }}
+                      >
+                        已售完
+                      </span>
+                    </div>
+                  )}
+
                   {/* Image counter indicator */}
-                  <div className="absolute bottom-3 left-3 bg-black/55 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 pointer-events-none">
+                  <div className="absolute bottom-3 left-3 bg-black/55 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 pointer-events-none z-10">
                     <span>{selectedImage + 1} / {productImages.length}</span>
                   </div>
 
-                  <span className="absolute bottom-3 right-3 bg-black/55 hover:bg-black/75 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 pointer-events-none transition-colors">
+                  <span className="absolute bottom-3 right-3 bg-black/55 hover:bg-black/75 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 pointer-events-none transition-colors z-10">
                     <i className="ri-zoom-in-line"></i> 點擊放大
                   </span>
                 </div>

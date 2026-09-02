@@ -18,6 +18,12 @@ interface Product {
   reviews?: number;
   isBest?: boolean;
   isNew?: boolean;
+  availableForSale?: boolean;
+  variants?: Array<{
+    id?: string;
+    availableForSale?: boolean;
+    quantityAvailable?: number;
+  }>;
 }
 
 interface ProductSectionProps {
@@ -59,6 +65,8 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
           description: p.description,
           model: p.handle,
           isNew: true,
+          availableForSale: p.availableForSale,
+          variants: p.variants,
         })));
       } else {
         setAllProducts(mockProducts.slice(0, 4));
