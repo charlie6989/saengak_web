@@ -326,7 +326,7 @@ export default function ProductPreviewPage() {
               </div>
             </aside>
 
-            {/* 焦點大圖展示區 (支援滑鼠/觸控拖曳手勢切換圖片) */}
+            {/* 焦點大圖展示區 (恢復原版長度與比例，支援滑鼠/觸控拖曳手勢切換圖片) */}
             <div className="order-1 min-w-0 sm:order-2 h-full">
               <div
                 onPointerDown={handlePointerDown}
@@ -334,7 +334,7 @@ export default function ProductPreviewPage() {
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full aspect-[3/4] max-h-[620px] bg-white rounded-xl overflow-hidden border border-gray-200/80 shadow-2xs group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
+                className="relative w-full aspect-square sm:aspect-[4/5] max-h-[580px] bg-white rounded-xl overflow-hidden border border-gray-200/80 shadow-2xs group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -365,9 +365,9 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 主長圖 (支援拖曳位移跟隨效果) */}
+                {/* 焦點主圖 (支援拖曳跟隨與原版長度比例) */}
                 <div
-                  className="w-full h-full flex items-center justify-center transition-transform duration-200"
+                  className="w-full h-full flex items-center justify-center p-3 transition-transform duration-200"
                   style={{
                     transform: isDragging ? `translateX(${dragOffset * 0.4}px)` : 'none'
                   }}
@@ -376,7 +376,7 @@ export default function ProductPreviewPage() {
                     src={activeImage}
                     alt={product.name}
                     draggable={false}
-                    className="block h-full w-full object-cover object-center pointer-events-none transition-transform duration-500 group-hover:scale-[1.02]"
+                    className="block max-h-full max-w-full object-contain object-center pointer-events-none transition-transform duration-500 group-hover:scale-[1.02]"
                   />
                 </div>
 
