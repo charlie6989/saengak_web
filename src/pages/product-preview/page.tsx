@@ -91,17 +91,17 @@ export default function ProductPreviewPage() {
   const productImages = product.images;
   const activeImage = productImages[selectedImage] || productImages[0];
 
-  // 自動滾動縮圖（選中第 6 張以上自動平滑滾動）
+  // 自動滾動縮圖（選中第 7 張以上自動平滑滾動）
   useEffect(() => {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
     if (window.innerWidth >= 640) {
-      const itemHeight = container.clientHeight / 5;
-      const targetScrollTop = Math.max(0, (selectedImage - 4) * itemHeight);
+      const itemHeight = container.clientHeight / 6;
+      const targetScrollTop = Math.max(0, (selectedImage - 5) * itemHeight);
       container.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
     } else {
-      const slotWidth = container.clientWidth / 5;
-      const targetScrollLeft = Math.max(0, (selectedImage - 4) * slotWidth);
+      const slotWidth = container.clientWidth / 6;
+      const targetScrollLeft = Math.max(0, (selectedImage - 5) * slotWidth);
       container.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
     }
   }, [selectedImage]);
@@ -139,7 +139,7 @@ export default function ProductPreviewPage() {
     hasThumbDragged.current = false;
   };
 
-  // 縮圖列捲動按鈕 Handlers（支援 5 張一版平滑捲動）
+  // 縮圖列捲動按鈕 Handlers（支援 6 張一版平滑捲動）
   const handleScrollUpThumbnails = () => {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
@@ -235,23 +235,23 @@ export default function ProductPreviewPage() {
         >
           {/* 左側：直長型縮圖導航列 + 直長型焦點主圖 (高度齊平) */}
           <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[108px] sm:items-stretch">
-            {/* 縮圖導航 (充滿高度，不留多餘空白) */}
-            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full h-full flex flex-col">
-              <div className="relative flex items-center sm:flex-col w-full h-full gap-1.5 sm:gap-1.5">
-                {/* 桌機版：頂部向上箭頭 (超過 5 張時顯示) */}
-                {productImages.length > 5 && (
+            {/* 縮圖導航 (展示 6 張圖片，總高度嚴格與右側焦點圖等高齊平) */}
+            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full h-full min-h-0 flex flex-col overflow-hidden">
+              <div className="relative flex items-center sm:flex-col w-full h-full min-h-0 gap-1.5 sm:gap-1">
+                {/* 桌機版：頂部向上箭頭 (超過 6 張時顯示) */}
+                {productImages.length > 6 && (
                   <button
                     type="button"
                     onClick={handleScrollUpThumbnails}
                     aria-label="向上瀏覽更多縮圖"
-                    className="hidden sm:flex w-full py-1.5 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded-md text-xs transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
+                    className="hidden sm:flex w-full h-6 flex-shrink-0 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded text-xs transition-colors shadow-2xs z-10 cursor-pointer mb-0.5"
                   >
-                    <i className="ri-arrow-up-s-line text-sm"></i>
+                    <i className="ri-arrow-up-s-line text-xs"></i>
                   </button>
                 )}
 
                 {/* 手機版：左箭頭 */}
-                {productImages.length > 5 && (
+                {productImages.length > 6 && (
                   <button
                     type="button"
                     onClick={handleScrollLeftThumbnails}
@@ -262,26 +262,26 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 縮圖列表 (精準 5 張一版) */}
-                <div className="flex-1 min-w-0 overflow-hidden sm:w-full sm:h-full">
+                {/* 縮圖列表 (精準展示 6 張圖片，等分填滿可用高度) */}
+                <div className="flex-1 min-w-0 min-h-0 overflow-hidden sm:w-full sm:h-full">
                   <ul
                     ref={thumbnailListRef}
                     onPointerDown={handleThumbPointerDown}
                     onPointerMove={handleThumbPointerMove}
                     onPointerUp={handleThumbPointerUp}
                     onPointerCancel={handleThumbPointerCancel}
-                    className="w-full h-full flex gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-full scroll-smooth no-scrollbar select-none cursor-grab active:cursor-grabbing touch-pan-y snap-y snap-mandatory"
+                    className="w-full h-full flex gap-1.5 sm:gap-1.5 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto scroll-smooth no-scrollbar select-none cursor-grab active:cursor-grabbing touch-pan-y snap-y snap-mandatory"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
                     {productImages.map((url, idx) => {
                       const isSelected = selectedImage === idx;
                       return (
-                        <li key={idx} className="w-[calc((100%-24px)/5)] sm:w-full sm:h-[calc((100%-32px)/5)] flex-shrink-0 snap-start">
+                        <li key={idx} className="w-[calc((100%-30px)/6)] sm:w-full sm:h-[calc((100%-25px)/6)] flex-shrink-0 snap-start">
                           <button
                             type="button"
                             onClick={() => handleThumbnailClick(idx)}
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
-                            className={`block w-full h-full aspect-[3/4] sm:aspect-auto overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
+                            className={`block w-full h-full aspect-square sm:aspect-auto overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
                               isSelected
                                 ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
@@ -301,7 +301,7 @@ export default function ProductPreviewPage() {
                 </div>
 
                 {/* 手機版：右箭頭 */}
-                {productImages.length > 5 && (
+                {productImages.length > 6 && (
                   <button
                     type="button"
                     onClick={handleScrollRightThumbnails}
@@ -312,15 +312,15 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 桌機版：底部向下箭頭 (超過 5 張時顯示) */}
-                {productImages.length > 5 && (
+                {/* 桌機版：底部向下箭頭 (超過 6 張時顯示) */}
+                {productImages.length > 6 && (
                   <button
                     type="button"
                     onClick={handleScrollDownThumbnails}
                     aria-label="向下瀏覽更多縮圖"
-                    className="hidden sm:flex w-full py-1.5 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded-md text-xs transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
+                    className="hidden sm:flex w-full h-6 flex-shrink-0 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded text-xs transition-colors shadow-2xs z-10 cursor-pointer mt-0.5"
                   >
-                    <i className="ri-arrow-down-s-line text-sm"></i>
+                    <i className="ri-arrow-down-s-line text-xs"></i>
                   </button>
                 )}
               </div>
