@@ -365,9 +365,9 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 焦點主圖 (滿版寬度填滿，無左右白邊，支援拖曳跟隨) */}
+                {/* 焦點主圖 (完整全圖呈現不裁切，支援拖曳跟隨) */}
                 <div
-                  className="w-full h-full flex items-center justify-center transition-transform duration-200"
+                  className="w-full h-full flex items-center justify-center p-2.5 transition-transform duration-200"
                   style={{
                     transform: isDragging ? `translateX(${dragOffset * 0.4}px)` : 'none'
                   }}
@@ -376,7 +376,7 @@ export default function ProductPreviewPage() {
                     src={activeImage}
                     alt={product.name}
                     draggable={false}
-                    className="block w-full h-full object-cover object-center pointer-events-none transition-transform duration-500 group-hover:scale-[1.02]"
+                    className="block max-h-full max-w-full object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.02]"
                   />
                 </div>
 
