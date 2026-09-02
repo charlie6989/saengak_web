@@ -75,6 +75,18 @@ export default function ProductPreviewPage() {
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const thumbnailListRef = useRef<HTMLUListElement>(null);
 
+  // 焦點圖拖曳與滑動切換手勢狀態
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+  const dragStartX = useRef<number | null>(null);
+  const hasDragged = useRef(false);
+
+  // 縮圖列拖曳狀態
+  const isThumbDragging = useRef(false);
+  const thumbDragStartX = useRef<number | null>(null);
+  const thumbScrollStartX = useRef<number>(0);
+  const hasThumbDragged = useRef(false);
+
   const product = SAMPLE_PRODUCT;
   const productImages = product.images;
   const activeImage = productImages[selectedImage] || productImages[0];
@@ -84,12 +96,96 @@ export default function ProductPreviewPage() {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
     if (window.innerWidth >= 640) {
-      container.scrollTo({ top: selectedImage * 76, behavior: 'smooth' });
+      container.scrollTo({ top: selectedImage * 96, behavior: 'smooth' });
     } else {
       const slotWidth = container.clientWidth / 5;
       container.scrollTo({ left: selectedImage * slotWidth, behavior: 'smooth' });
     }
   }, [selectedImage]);
+
+  // 縮圖拖曳 Handlers
+  const handleThumbPointerDown = (e: React.PointerEvent<HTMLUListElement>) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    if (!thumbnailListRef.current) return;
+    thumbDragStartX.current = e.clientX;
+    thumbScrollStartX.current = thumbnailListRef.current.scrollLeft;
+    isThumbDragging.current = true;
+    hasThumbDragged.current = false;
+  };
+
+  const handleThumbPointerMove = (e: React.PointerEvent<HTMLUListElement>) => {
+    if (!isThumbDragging.current || thumbDragStartX.current === null || !thumbnailListRef.current) return;
+    const deltaX = e.clientX - thumbDragStartX.current;
+    if (Math.abs(deltaX) > 6) {
+      hasThumbDragged.current = true;
+    }
+    thumbnailListRef.current.scrollLeft = thumbScrollStartX.current - deltaX;
+  };
+
+  const handleThumbPointerUp = () => {
+    isThumbDragging.current = false;
+    thumbDragStartX.current = null;
+    setTimeout(() => {
+      hasThumbDragged.current = false;
+    }, 60);
+  };
+
+  const handleThumbPointerCancel = () => {
+    isThumbDragging.current = false;
+    thumbDragStartX.current = null;
+    hasThumbDragged.current = false;
+  };
+
+  const handleThumbnailClick = (index: number) => {
+    if (hasThumbDragged.current) return;
+    setSelectedImage(index);
+  };
+
+  // 焦點圖滑鼠/觸控拖曳手勢 Handlers
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    dragStartX.current = e.clientX;
+    hasDragged.current = false;
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || dragStartX.current === null) return;
+    const deltaX = e.clientX - dragStartX.current;
+    if (Math.abs(deltaX) > 8) {
+      hasDragged.current = true;
+    }
+    setDragOffset(deltaX);
+  };
+
+  const handlePointerUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    const threshold = 40; // 滑動切換門檻 40px
+    if (dragOffset < -threshold) {
+      // 向左滑動 -> 下一張
+      setSelectedImage((prev) => Math.min(productImages.length - 1, prev + 1));
+    } else if (dragOffset > threshold) {
+      // 向右滑動 -> 上一張
+      setSelectedImage((prev) => Math.max(0, prev - 1));
+    }
+    setDragOffset(0);
+    dragStartX.current = null;
+  };
+
+  const handlePointerCancel = () => {
+    setIsDragging(false);
+    setDragOffset(0);
+    dragStartX.current = null;
+  };
+
+  const handleMainImageClick = () => {
+    if (hasDragged.current) {
+      hasDragged.current = false;
+      return;
+    }
+    setIsZoomModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F7F7F5' }}>
@@ -99,7 +195,7 @@ export default function ProductPreviewPage() {
       <div className="bg-[#245B50] text-white text-xs sm:text-sm py-2 px-4 text-center font-medium shadow-sm fixed top-0 left-0 w-full z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 flex-wrap">
           <span className="bg-white/20 px-2 py-0.5 rounded text-xs">老闆修改方向對齊版</span>
-          <span>按原本長圖比例、移除多餘底色邊框、五點特點加上標題、整合「細節」單一頁籤。</span>
+          <span>按原本長圖比例、移除多餘底色邊框、五點特點加上標題、整合「產品內容」第 1 頁籤。</span>
         </div>
       </div>
 
@@ -111,15 +207,19 @@ export default function ProductPreviewPage() {
           id="product-main-section"
           className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] xl:grid-cols-[720px_460px] xl:justify-center xl:gap-12"
         >
-          {/* 左側：縮圖導航列 + 直長型焦點主圖 */}
-          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[82px_minmax(0,1fr)] md:grid-cols-[90px_minmax(0,1fr)] lg:grid-cols-[96px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[124px]">
-            {/* 縮圖導航 (原版精緻方正樣式) */}
-            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full">
-              <div className="relative flex items-center sm:flex-col w-full gap-1.5 sm:gap-0">
-                <div className="flex-1 min-w-0 overflow-hidden sm:w-full">
+          {/* 左側：直長型縮圖導航列 + 直長型焦點主圖 (高度齊平) */}
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[88px_minmax(0,1fr)] md:grid-cols-[96px_minmax(0,1fr)] lg:grid-cols-[104px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[124px] sm:items-stretch">
+            {/* 縮圖導航 (長度加長、與右側焦點圖等高齊平) */}
+            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full h-full flex flex-col">
+              <div className="relative flex items-center sm:flex-col w-full h-full gap-1.5 sm:gap-0">
+                <div className="flex-1 min-w-0 overflow-hidden sm:w-full sm:h-full">
                   <ul
                     ref={thumbnailListRef}
-                    className="w-full flex gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-[540px] sm:max-h-[580px] scroll-smooth no-scrollbar select-none"
+                    onPointerDown={handleThumbPointerDown}
+                    onPointerMove={handleThumbPointerMove}
+                    onPointerUp={handleThumbPointerUp}
+                    onPointerCancel={handleThumbPointerCancel}
+                    className="w-full h-full flex gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-full max-h-[620px] scroll-smooth no-scrollbar select-none cursor-grab active:cursor-grabbing touch-pan-y"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
                     {productImages.map((url, idx) => {
@@ -128,9 +228,9 @@ export default function ProductPreviewPage() {
                         <li key={idx} className="w-[calc((100%-24px)/5)] sm:w-full flex-shrink-0">
                           <button
                             type="button"
-                            onClick={() => setSelectedImage(idx)}
+                            onClick={() => handleThumbnailClick(idx)}
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
-                            className={`block w-full aspect-square sm:aspect-auto sm:h-[68px] overflow-hidden rounded-lg transition-all duration-200 border-2 cursor-pointer bg-white ${
+                            className={`block w-full aspect-[3/4] overflow-hidden rounded-lg transition-all duration-200 border-2 cursor-pointer bg-white ${
                               isSelected
                                 ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
@@ -151,11 +251,15 @@ export default function ProductPreviewPage() {
               </div>
             </aside>
 
-            {/* 焦點大圖展示區 (按原本比例為長：aspect-[3/4]) */}
-            <div className="order-1 min-w-0 sm:order-2">
+            {/* 焦點大圖展示區 (支援滑鼠/觸控拖曳手勢切換圖片) */}
+            <div className="order-1 min-w-0 sm:order-2 h-full">
               <div
-                onClick={() => setIsZoomModalOpen(true)}
-                className="relative w-full aspect-[3/4] max-h-[620px] bg-white rounded-xl overflow-hidden border border-gray-200/80 shadow-2xs group flex items-center justify-center cursor-zoom-in select-none"
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerCancel}
+                onClick={handleMainImageClick}
+                className="relative w-full aspect-[3/4] max-h-[620px] bg-white rounded-xl overflow-hidden border border-gray-200/80 shadow-2xs group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -186,12 +290,18 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 主長圖 */}
-                <div className="w-full h-full flex items-center justify-center">
+                {/* 主長圖 (支援拖曳位移跟隨效果) */}
+                <div
+                  className="w-full h-full flex items-center justify-center transition-transform duration-200"
+                  style={{
+                    transform: isDragging ? `translateX(${dragOffset * 0.4}px)` : 'none'
+                  }}
+                >
                   <img
                     src={activeImage}
                     alt={product.name}
-                    className="block h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    draggable={false}
+                    className="block h-full w-full object-cover object-center pointer-events-none transition-transform duration-500 group-hover:scale-[1.02]"
                   />
                 </div>
 
@@ -200,7 +310,7 @@ export default function ProductPreviewPage() {
                   <span>{selectedImage + 1} / {productImages.length}</span>
                 </div>
                 <span className="absolute bottom-3 right-3 bg-black/55 hover:bg-black/75 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 pointer-events-none transition-colors">
-                  <i className="ri-zoom-in-line"></i> 點擊放大
+                  <i className="ri-zoom-in-line"></i> 點擊放大 / 拖曳切換
                 </span>
               </div>
             </div>
