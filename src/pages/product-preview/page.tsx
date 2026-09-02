@@ -392,12 +392,12 @@ export default function ProductPreviewPage() {
             ========================================================================= */}
         <div className="w-full mt-20">
           <div className="max-w-5xl mx-auto">
-            {/* 頁籤選單導航列 (Tab Headers) - 原版乾淨極簡樣式 */}
-            <div className="mb-12 border-b border-gray-200">
-              <div className="flex flex-wrap sm:flex-nowrap justify-center max-w-3xl mx-auto">
+            {/* 頁籤選單導航列 (Tab Headers) - 原版框線橫條樣式 */}
+            <div className="mb-12">
+              <div className="flex flex-wrap sm:flex-nowrap justify-center max-w-4xl mx-auto bg-[#EDF1EE]">
                 {[
+                  { id: 'reviews', label: '評論 (354)' },
                   { id: 'details', label: '細節' },
-                  { id: 'reviews', label: '評論' },
                   { id: 'related', label: '相關產品' },
                   { id: 'qa', label: '詢問' }
                 ].map((tab) => {
@@ -407,10 +407,10 @@ export default function ProductPreviewPage() {
                       key={tab.id}
                       type="button"
                       onClick={() => setSelectedTab(tab.id as any)}
-                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[52px] text-base font-medium transition-all duration-200 border-b-2 cursor-pointer ${
+                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[46px] text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-center ${
                         isActive
-                          ? 'border-[#245B50] text-[#245B50] font-bold bg-emerald-50/40'
-                          : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50/50'
+                          ? 'border-[1.5px] border-[#245B50] bg-[#D6D4CA] text-gray-900 font-bold'
+                          : 'border border-transparent text-gray-600 hover:text-gray-900 hover:bg-[#E2E7E3]'
                       }`}
                       style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
                     >
