@@ -91,15 +91,18 @@ export default function ProductPreviewPage() {
   const productImages = product.images;
   const activeImage = productImages[selectedImage] || productImages[0];
 
-  // 自動滾動縮圖
+  // 自動滾動縮圖（選中第 6 張以上自動平滑滾動）
   useEffect(() => {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
     if (window.innerWidth >= 640) {
-      container.scrollTo({ top: selectedImage * 102, behavior: 'smooth' });
+      const itemHeight = container.clientHeight / 5;
+      const targetScrollTop = Math.max(0, (selectedImage - 4) * itemHeight);
+      container.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
     } else {
       const slotWidth = container.clientWidth / 5;
-      container.scrollTo({ left: selectedImage * slotWidth, behavior: 'smooth' });
+      const targetScrollLeft = Math.max(0, (selectedImage - 4) * slotWidth);
+      container.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
     }
   }, [selectedImage]);
 
@@ -136,27 +139,35 @@ export default function ProductPreviewPage() {
     hasThumbDragged.current = false;
   };
 
-  // 縮圖列捲動按鈕 Handlers
+  // 縮圖列捲動按鈕 Handlers（支援 5 張一版平滑捲動）
   const handleScrollUpThumbnails = () => {
     if (!thumbnailListRef.current) return;
-    thumbnailListRef.current.scrollBy({ top: -98, behavior: 'smooth' });
+    const container = thumbnailListRef.current;
+    if (window.innerWidth >= 640) {
+      container.scrollBy({ top: -container.clientHeight, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
+    }
   };
 
   const handleScrollDownThumbnails = () => {
     if (!thumbnailListRef.current) return;
-    thumbnailListRef.current.scrollBy({ top: 98, behavior: 'smooth' });
+    const container = thumbnailListRef.current;
+    if (window.innerWidth >= 640) {
+      container.scrollBy({ top: container.clientHeight, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
+    }
   };
 
   const handleScrollLeftThumbnails = () => {
     if (!thumbnailListRef.current) return;
-    const slotWidth = thumbnailListRef.current.clientWidth / 5;
-    thumbnailListRef.current.scrollBy({ left: -slotWidth, behavior: 'smooth' });
+    thumbnailListRef.current.scrollBy({ left: -thumbnailListRef.current.clientWidth, behavior: 'smooth' });
   };
 
   const handleScrollRightThumbnails = () => {
     if (!thumbnailListRef.current) return;
-    const slotWidth = thumbnailListRef.current.clientWidth / 5;
-    thumbnailListRef.current.scrollBy({ left: slotWidth, behavior: 'smooth' });
+    thumbnailListRef.current.scrollBy({ left: thumbnailListRef.current.clientWidth, behavior: 'smooth' });
   };
 
   const handleThumbnailClick = (index: number) => {
@@ -251,7 +262,7 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 縮圖列表 (充滿可用高度，展示 5~6 張縮圖) */}
+                {/* 縮圖列表 (精準 5 張一版) */}
                 <div className="flex-1 min-w-0 overflow-hidden sm:w-full sm:h-full">
                   <ul
                     ref={thumbnailListRef}
@@ -259,18 +270,18 @@ export default function ProductPreviewPage() {
                     onPointerMove={handleThumbPointerMove}
                     onPointerUp={handleThumbPointerUp}
                     onPointerCancel={handleThumbPointerCancel}
-                    className="w-full h-full flex gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-full scroll-smooth no-scrollbar select-none cursor-grab active:cursor-grabbing touch-pan-y"
+                    className="w-full h-full flex gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-full scroll-smooth no-scrollbar select-none cursor-grab active:cursor-grabbing touch-pan-y snap-y snap-mandatory"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
                     {productImages.map((url, idx) => {
                       const isSelected = selectedImage === idx;
                       return (
-                        <li key={idx} className="w-[calc((100%-24px)/5)] sm:w-full flex-shrink-0">
+                        <li key={idx} className="w-[calc((100%-24px)/5)] sm:w-full sm:h-[calc((100%-32px)/5)] flex-shrink-0 snap-start">
                           <button
                             type="button"
                             onClick={() => handleThumbnailClick(idx)}
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
-                            className={`block w-full aspect-[3/4] sm:aspect-auto sm:h-[102px] overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
+                            className={`block w-full h-full aspect-[3/4] sm:aspect-auto overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
                               isSelected
                                 ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
