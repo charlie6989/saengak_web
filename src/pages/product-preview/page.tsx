@@ -498,13 +498,13 @@ export default function ProductPreviewPage() {
         </section>
 
         {/* =========================================================================
-            2. 下方頁籤系統 (Tabs Section) - 緊湊距離與細緻淡雅框線
+            2. 下方頁籤與內容整合區塊 (包含頁籤與文章內容之細緻淡雅外框容器)
             ========================================================================= */}
-        <div className="w-full mt-12 sm:mt-14">
-          <div className="max-w-5xl mx-auto">
-            {/* 頁籤選單導航列 (Tab Headers) - 細緻淡雅框線與緊湊間距 */}
-            <div className="mb-6">
-              <div className="flex flex-wrap sm:flex-nowrap justify-center max-w-4xl mx-auto bg-[#EDF1EE] border border-gray-300/80">
+        <div className="w-full mt-12 sm:mt-16">
+          <div className="max-w-5xl mx-auto rounded-2xl bg-white border border-gray-200/90 shadow-2xs overflow-hidden">
+            {/* 頁籤選單導航列 (Tab Headers) - 位於大外框頂部 */}
+            <div className="border-b border-gray-200/80 bg-[#EDF1EE]">
+              <div className="flex flex-wrap sm:flex-nowrap justify-center w-full">
                 {[
                   { id: 'details', label: '產品內容' },
                   { id: 'reviews', label: '評論 (354)' },
@@ -517,9 +517,9 @@ export default function ProductPreviewPage() {
                       key={tab.id}
                       type="button"
                       onClick={() => setSelectedTab(tab.id as any)}
-                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[44px] text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-center ${
+                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[46px] text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-center ${
                         isActive
-                          ? 'border border-[#245B50]/70 bg-[#D6D4CA] text-gray-900 font-bold shadow-2xs'
+                          ? 'border-b-2 border-b-[#245B50] sm:border-b-0 sm:border sm:border-[#245B50]/60 bg-[#D6D4CA] text-gray-900 font-bold shadow-2xs'
                           : 'border border-transparent text-gray-600 hover:text-gray-900 hover:bg-[#E2E7E3]'
                       }`}
                       style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
@@ -531,13 +531,13 @@ export default function ProductPreviewPage() {
               </div>
             </div>
 
-            {/* 頁籤內容主面板 (Tab Panels) */}
-            <div className="min-h-[460px]">
+            {/* 頁籤內容主面板 (Tab Panels) - 內縮 padding，與頁籤緊密相連 */}
+            <div className="p-6 sm:p-10 min-h-[460px]">
               {/* -------------------------------------------------------------
                   單一核心頁籤：【產品內容】 (包含生活情境圖文、其他功能/細節圖片、尺寸、版型、規格)
                   ------------------------------------------------------------- */}
               {selectedTab === 'details' && (
-                <div className="space-y-10 animate-fadeIn">
+                <div className="space-y-12 animate-fadeIn">
                   {/* 1. 商品生活情境圖文 (Scenario Showcase) */}
                   <div className="space-y-6">
                     {product.contentSections.map((sec, idx) => (
