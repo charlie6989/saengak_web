@@ -84,7 +84,7 @@ export default function ProductPreviewPage() {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
     if (window.innerWidth >= 640) {
-      container.scrollTo({ top: selectedImage * 96, behavior: 'smooth' });
+      container.scrollTo({ top: selectedImage * 76, behavior: 'smooth' });
     } else {
       const slotWidth = container.clientWidth / 5;
       container.scrollTo({ left: selectedImage * slotWidth, behavior: 'smooth' });
@@ -111,26 +111,26 @@ export default function ProductPreviewPage() {
           id="product-main-section"
           className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] xl:grid-cols-[720px_460px] xl:justify-center xl:gap-12"
         >
-          {/* 左側：直長型垂直縮圖列 + 直長型焦點主圖 (按原本比例為長) */}
-          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-4 lg:sticky lg:top-[124px]">
-            {/* 縮圖導航 (直長型比例 3:4) */}
+          {/* 左側：縮圖導航列 + 直長型焦點主圖 */}
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[82px_minmax(0,1fr)] md:grid-cols-[90px_minmax(0,1fr)] lg:grid-cols-[96px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[124px]">
+            {/* 縮圖導航 (原版精緻方正樣式) */}
             <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full">
-              <div className="relative flex items-center sm:flex-col w-full gap-2 sm:gap-0">
+              <div className="relative flex items-center sm:flex-col w-full gap-1.5 sm:gap-0">
                 <div className="flex-1 min-w-0 overflow-hidden sm:w-full">
                   <ul
                     ref={thumbnailListRef}
-                    className="w-full flex gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-[580px] sm:max-h-[620px] scroll-smooth no-scrollbar select-none"
+                    className="w-full flex gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-[540px] sm:max-h-[580px] scroll-smooth no-scrollbar select-none"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
                     {productImages.map((url, idx) => {
                       const isSelected = selectedImage === idx;
                       return (
-                        <li key={idx} className="w-[calc((100%-32px)/5)] sm:w-full flex-shrink-0">
+                        <li key={idx} className="w-[calc((100%-24px)/5)] sm:w-full flex-shrink-0">
                           <button
                             type="button"
                             onClick={() => setSelectedImage(idx)}
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
-                            className={`block w-full aspect-[3/4] overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
+                            className={`block w-full aspect-square sm:aspect-auto sm:h-[68px] overflow-hidden rounded-lg transition-all duration-200 border-2 cursor-pointer bg-white ${
                               isSelected
                                 ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
