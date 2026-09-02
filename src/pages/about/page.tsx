@@ -12,16 +12,17 @@ export default function AboutPage() {
         {/* =========================================================================
             1. Hero 主視覺 Banner (櫻花與護理產品雅緻背景)
             ========================================================================= */}
-        <section className="relative overflow-hidden bg-[#FAF6F3] py-24 sm:py-32 lg:py-40">
-          {/* 背景圖片與柔和遮罩 */}
+        <section className="relative overflow-hidden bg-[#FAF6F3] py-20 sm:py-28 lg:py-36">
+          {/* 背景圖片 (清晰鮮明呈現，維持明亮通透感) */}
           <div className="absolute inset-0 z-0">
             <img
               src="/images/about/hero-bg.jpg"
               alt="Saengak 韓國女性私密日常照護品牌"
-              className="h-full w-full object-cover object-center opacity-45 mix-blend-multiply"
+              className="h-full w-full object-cover object-right sm:object-center opacity-95"
               loading="eager"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FAF6F3]/95 via-[#FAF6F3]/80 to-transparent"></div>
+            {/* 輕透柔和漸層，確保左側文字清晰好讀，右側圖片原汁原味鮮明可見 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FAF6F3]/90 via-[#FAF6F3]/60 sm:via-[#FAF6F3]/40 to-transparent"></div>
           </div>
 
           <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -361,47 +362,97 @@ export default function AboutPage() {
         </section>
 
         {/* =========================================================================
-            7. 章節六：營運資訊卡片 (嚴格保留原有正式法定資訊)
+            7. 章節六：營運與法定資訊 (與品牌風格完美融合的雅緻排版)
             ========================================================================= */}
-        <section className="py-16 bg-white">
-          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <div className="rounded-2xl bg-[#F7F9F8] p-7 sm:p-9 border border-gray-200/80 shadow-xs">
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200/60">
-                <div className="w-9 h-9 rounded-lg bg-[#245B50] text-white flex items-center justify-center">
-                  <i className="ri-building-line text-lg"></i>
-                </div>
+        <section className="py-20 lg:py-24 bg-[#FAF9F7] border-t border-gray-200/60">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <span className="text-xs sm:text-sm font-bold tracking-widest text-[#245B50] uppercase">
+                LEGAL & BUSINESS INFORMATION
+              </span>
+              <h2 className="mt-2.5 text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+                營運與法定資訊
+              </h2>
+              <p className="mt-3 text-xs sm:text-sm text-gray-500 leading-relaxed">
+                透明揭露營運主體與法定登記資料，為每位顧客提供安心透明的消費保障
+              </p>
+            </div>
+
+            {/* 3 欄式優雅卡片網格 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* 卡片 1: 企業登記 */}
+              <div className="bg-white p-7 sm:p-8 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-[#245B50]/30 transition-all flex flex-col justify-between">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">營運資訊</h2>
-                  <p className="text-xs text-gray-500">法定登記與消費者服務聲明</p>
+                  <div className="w-11 h-11 rounded-xl bg-[#E3EFEA] text-[#245B50] flex items-center justify-center text-xl mb-5">
+                    <i className="ri-building-4-line"></i>
+                  </div>
+                  <h3 className="text-base font-bold text-gray-900">企業登記</h3>
+                  <div className="mt-4 space-y-2.5 text-sm">
+                    <div>
+                      <span className="text-xs text-gray-400 block mb-0.5">營運公司</span>
+                      <span className="font-semibold text-gray-800">{siteContent.legalName}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-400 block mb-0.5">統一編號</span>
+                      <span className="font-mono text-gray-700 bg-gray-50 px-2 py-0.5 rounded border border-gray-100 inline-block">
+                        {siteContent.taxId}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <dl className="grid grid-cols-1 sm:grid-cols-[10rem_1fr] gap-x-4 gap-y-3.5 text-sm">
-                <dt className="text-gray-500 font-medium">營運公司</dt>
-                <dd className="font-semibold text-gray-900">{siteContent.legalName}</dd>
 
-                <dt className="text-gray-500 font-medium">統一編號</dt>
-                <dd className="font-mono text-gray-900">{siteContent.taxId}</dd>
+              {/* 卡片 2: 聯繫與客服 */}
+              <div className="bg-white p-7 sm:p-8 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-[#245B50]/30 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="w-11 h-11 rounded-xl bg-[#E3EFEA] text-[#245B50] flex items-center justify-center text-xl mb-5">
+                    <i className="ri-mail-send-line"></i>
+                  </div>
+                  <h3 className="text-base font-bold text-gray-900">聯絡與服務</h3>
+                  <div className="mt-4 space-y-2.5 text-sm">
+                    <div>
+                      <span className="text-xs text-gray-400 block mb-0.5">公司信箱</span>
+                      <a
+                        href={`mailto:${siteContent.companyEmail}`}
+                        className="text-[#245B50] font-medium hover:underline inline-flex items-center gap-1"
+                      >
+                        {siteContent.companyEmail}
+                        <i className="ri-external-link-line text-xs"></i>
+                      </a>
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-400 block mb-0.5">客服狀態</span>
+                      <span className="text-xs leading-relaxed text-gray-600 block">
+                        {siteContent.supportStatus}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                <dt className="text-gray-500 font-medium">公司信箱</dt>
-                <dd>
-                  <a
-                    href={`mailto:${siteContent.companyEmail}`}
-                    className="text-[#245B50] font-medium hover:underline inline-flex items-center gap-1"
-                  >
-                    {siteContent.companyEmail}
-                    <i className="ri-external-link-line text-xs"></i>
-                  </a>
-                </dd>
-
-                <dt className="text-gray-500 font-medium">登記地址</dt>
-                <dd className="text-gray-800">{siteContent.registeredAddress}</dd>
-
-                <dt className="text-gray-500 font-medium">客服狀態</dt>
-                <dd className="text-gray-800">{siteContent.supportStatus}</dd>
-
-                <dt className="text-gray-500 font-medium">內容盤點</dt>
-                <dd className="text-gray-600">{siteContent.contentReviewedAt}</dd>
-              </dl>
+              {/* 卡片 3: 地址與盤點 */}
+              <div className="bg-white p-7 sm:p-8 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-[#245B50]/30 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="w-11 h-11 rounded-xl bg-[#E3EFEA] text-[#245B50] flex items-center justify-center text-xl mb-5">
+                    <i className="ri-map-pin-2-line"></i>
+                  </div>
+                  <h3 className="text-base font-bold text-gray-900">登記地址與盤點</h3>
+                  <div className="mt-4 space-y-2.5 text-sm">
+                    <div>
+                      <span className="text-xs text-gray-400 block mb-0.5">登記地址</span>
+                      <span className="text-gray-700 leading-relaxed block text-xs sm:text-sm">
+                        {siteContent.registeredAddress}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-400 block mb-0.5">內容盤點</span>
+                      <span className="text-xs text-gray-500 font-mono">
+                        {siteContent.contentReviewedAt}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
