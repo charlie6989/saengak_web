@@ -262,26 +262,26 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 縮圖列表 (精準展示 6 張圖片，等分填滿可用高度) */}
-                <div className="flex-1 min-w-0 min-h-0 overflow-hidden sm:w-full sm:h-full">
+                {/* 縮圖列表 (長度縮短，6 張縮圖精準收在焦點大圖高度內) */}
+                <div className="flex-1 min-w-0 min-h-0 overflow-hidden sm:w-full">
                   <ul
                     ref={thumbnailListRef}
                     onPointerDown={handleThumbPointerDown}
                     onPointerMove={handleThumbPointerMove}
                     onPointerUp={handleThumbPointerUp}
                     onPointerCancel={handleThumbPointerCancel}
-                    className="w-full h-full flex gap-1.5 sm:gap-1.5 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto scroll-smooth no-scrollbar select-none cursor-grab active:cursor-grabbing touch-pan-y snap-y snap-mandatory"
+                    className="w-full flex gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto scroll-smooth no-scrollbar select-none cursor-grab active:cursor-grabbing touch-pan-y"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
                     {productImages.map((url, idx) => {
                       const isSelected = selectedImage === idx;
                       return (
-                        <li key={idx} className="w-[calc((100%-30px)/6)] sm:w-full sm:h-[calc((100%-25px)/6)] flex-shrink-0 snap-start">
+                        <li key={idx} className="w-[calc((100%-30px)/6)] sm:w-full flex-shrink-0">
                           <button
                             type="button"
                             onClick={() => handleThumbnailClick(idx)}
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
-                            className={`block w-full h-full aspect-square sm:aspect-auto overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
+                            className={`block w-full aspect-square sm:aspect-auto sm:h-[68px] md:sm:h-[74px] lg:sm:h-[78px] overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
                               isSelected
                                 ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
