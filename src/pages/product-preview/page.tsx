@@ -382,9 +382,9 @@ export default function ProductPreviewPage() {
 
           {/* 右側：商品資訊、價格、變體、產品特點與購買按鈕 */}
           <aside className="min-w-0 w-full space-y-6">
-            {/* 1. 商品類別 */}
+            {/* 1. 商品類別 (實心淡雅底色標籤) */}
             <div>
-              <span className="text-xs sm:text-sm font-bold text-[#245B50] tracking-wider">
+              <span className="inline-block bg-[#E3EFEA] text-[#245B50] px-3 py-1 text-xs sm:text-sm font-bold rounded-md tracking-wider">
                 {product.category}
               </span>
             </div>
