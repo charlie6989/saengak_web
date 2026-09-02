@@ -396,8 +396,8 @@ export default function ProductPreviewPage() {
             <div className="mb-12">
               <div className="flex flex-wrap sm:flex-nowrap justify-center max-w-4xl mx-auto bg-[#EDF1EE]">
                 {[
+                  { id: 'details', label: '產品內容' },
                   { id: 'reviews', label: '評論 (354)' },
-                  { id: 'details', label: '細節' },
                   { id: 'related', label: '相關產品' },
                   { id: 'qa', label: '詢問' }
                 ].map((tab) => {
