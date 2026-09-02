@@ -498,13 +498,13 @@ export default function ProductPreviewPage() {
         </section>
 
         {/* =========================================================================
-            2. 下方頁籤系統 (Tabs Section) - 老闆指示：產品內容與細節只要一個【細節】，背景與原本一致
+            2. 下方頁籤系統 (Tabs Section) - 緊湊距離與細緻淡雅框線
             ========================================================================= */}
-        <div className="w-full mt-20">
+        <div className="w-full mt-12 sm:mt-14">
           <div className="max-w-5xl mx-auto">
-            {/* 頁籤選單導航列 (Tab Headers) - 原版框線橫條樣式 */}
-            <div className="mb-12">
-              <div className="flex flex-wrap sm:flex-nowrap justify-center max-w-4xl mx-auto bg-[#EDF1EE]">
+            {/* 頁籤選單導航列 (Tab Headers) - 細緻淡雅框線與緊湊間距 */}
+            <div className="mb-6">
+              <div className="flex flex-wrap sm:flex-nowrap justify-center max-w-4xl mx-auto bg-[#EDF1EE] border border-gray-300/80">
                 {[
                   { id: 'details', label: '產品內容' },
                   { id: 'reviews', label: '評論 (354)' },
@@ -517,9 +517,9 @@ export default function ProductPreviewPage() {
                       key={tab.id}
                       type="button"
                       onClick={() => setSelectedTab(tab.id as any)}
-                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[46px] text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-center ${
+                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[44px] text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-center ${
                         isActive
-                          ? 'border-[1.5px] border-[#245B50] bg-[#D6D4CA] text-gray-900 font-bold'
+                          ? 'border border-[#245B50]/70 bg-[#D6D4CA] text-gray-900 font-bold shadow-2xs'
                           : 'border border-transparent text-gray-600 hover:text-gray-900 hover:bg-[#E2E7E3]'
                       }`}
                       style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
@@ -534,12 +534,12 @@ export default function ProductPreviewPage() {
             {/* 頁籤內容主面板 (Tab Panels) */}
             <div className="min-h-[460px]">
               {/* -------------------------------------------------------------
-                  單一核心頁籤：【細節】 (包含商品其他功能/細節圖片、尺寸、版型、規格)
+                  單一核心頁籤：【產品內容】 (包含生活情境圖文、其他功能/細節圖片、尺寸、版型、規格)
                   ------------------------------------------------------------- */}
               {selectedTab === 'details' && (
-                <div className="space-y-16 animate-fadeIn">
+                <div className="space-y-10 animate-fadeIn">
                   {/* 1. 商品生活情境圖文 (Scenario Showcase) */}
-                  <div className="space-y-10">
+                  <div className="space-y-6">
                     {product.contentSections.map((sec, idx) => (
                       <div
                         key={idx}
