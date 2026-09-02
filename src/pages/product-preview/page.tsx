@@ -136,6 +136,29 @@ export default function ProductPreviewPage() {
     hasThumbDragged.current = false;
   };
 
+  // 縮圖列捲動按鈕 Handlers
+  const handleScrollUpThumbnails = () => {
+    if (!thumbnailListRef.current) return;
+    thumbnailListRef.current.scrollBy({ top: -98, behavior: 'smooth' });
+  };
+
+  const handleScrollDownThumbnails = () => {
+    if (!thumbnailListRef.current) return;
+    thumbnailListRef.current.scrollBy({ top: 98, behavior: 'smooth' });
+  };
+
+  const handleScrollLeftThumbnails = () => {
+    if (!thumbnailListRef.current) return;
+    const slotWidth = thumbnailListRef.current.clientWidth / 5;
+    thumbnailListRef.current.scrollBy({ left: -slotWidth, behavior: 'smooth' });
+  };
+
+  const handleScrollRightThumbnails = () => {
+    if (!thumbnailListRef.current) return;
+    const slotWidth = thumbnailListRef.current.clientWidth / 5;
+    thumbnailListRef.current.scrollBy({ left: slotWidth, behavior: 'smooth' });
+  };
+
   const handleThumbnailClick = (index: number) => {
     if (hasThumbDragged.current) return;
     setSelectedImage(index);
@@ -201,9 +224,34 @@ export default function ProductPreviewPage() {
         >
           {/* 左側：直長型縮圖導航列 + 直長型焦點主圖 (高度齊平) */}
           <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[124px] sm:items-stretch">
-            {/* 縮圖導航 (長度適中、剛好可完整容納 5 張縮圖) */}
-            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full h-full flex flex-col">
-              <div className="relative flex items-center sm:flex-col w-full h-full gap-1.5 sm:gap-0">
+            {/* 縮圖導航 (5 張一列，超過 5 張顯示上下/左右箭頭) */}
+            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full h-full flex flex-col justify-center">
+              <div className="relative flex items-center sm:flex-col w-full h-full gap-1.5 sm:gap-1">
+                {/* 桌機版：頂部向上箭頭 (超過 5 張時顯示) */}
+                {productImages.length > 5 && (
+                  <button
+                    type="button"
+                    onClick={handleScrollUpThumbnails}
+                    aria-label="向上瀏覽更多縮圖"
+                    className="hidden sm:flex w-full py-1 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded-md text-xs transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
+                  >
+                    <i className="ri-arrow-up-s-line text-sm"></i>
+                  </button>
+                )}
+
+                {/* 手機版：左箭頭 */}
+                {productImages.length > 5 && (
+                  <button
+                    type="button"
+                    onClick={handleScrollLeftThumbnails}
+                    aria-label="向左瀏覽更多縮圖"
+                    className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
+                  >
+                    <i className="ri-arrow-left-s-line text-base"></i>
+                  </button>
+                )}
+
+                {/* 縮圖列表 (剛好 5 張一列) */}
                 <div className="flex-1 min-w-0 overflow-hidden sm:w-full sm:h-full">
                   <ul
                     ref={thumbnailListRef}
@@ -211,7 +259,7 @@ export default function ProductPreviewPage() {
                     onPointerMove={handleThumbPointerMove}
                     onPointerUp={handleThumbPointerUp}
                     onPointerCancel={handleThumbPointerCancel}
-                    className="w-full h-full flex gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-[530px] sm:max-h-[560px] scroll-smooth no-scrollbar select-none cursor-grab active:cursor-grabbing touch-pan-y"
+                    className="w-full h-full flex gap-1.5 sm:gap-2 overflow-x-auto sm:overflow-x-hidden sm:flex-col sm:overflow-y-auto sm:h-[490px] sm:max-h-[520px] scroll-smooth no-scrollbar select-none cursor-grab active:cursor-grabbing touch-pan-y"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
                     {productImages.map((url, idx) => {
@@ -222,7 +270,7 @@ export default function ProductPreviewPage() {
                             type="button"
                             onClick={() => handleThumbnailClick(idx)}
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
-                            className={`block w-full aspect-[3/4] sm:aspect-auto sm:h-[94px] overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
+                            className={`block w-full aspect-[3/4] sm:aspect-auto sm:h-[90px] overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
                               isSelected
                                 ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
@@ -240,6 +288,30 @@ export default function ProductPreviewPage() {
                     })}
                   </ul>
                 </div>
+
+                {/* 手機版：右箭頭 */}
+                {productImages.length > 5 && (
+                  <button
+                    type="button"
+                    onClick={handleScrollRightThumbnails}
+                    aria-label="向右瀏覽更多縮圖"
+                    className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
+                  >
+                    <i className="ri-arrow-right-s-line text-base"></i>
+                  </button>
+                )}
+
+                {/* 桌機版：底部向下箭頭 (超過 5 張時顯示) */}
+                {productImages.length > 5 && (
+                  <button
+                    type="button"
+                    onClick={handleScrollDownThumbnails}
+                    aria-label="向下瀏覽更多縮圖"
+                    className="hidden sm:flex w-full py-1 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded-md text-xs transition-colors shadow-2xs z-10 cursor-pointer flex-shrink-0"
+                  >
+                    <i className="ri-arrow-down-s-line text-sm"></i>
+                  </button>
+                )}
               </div>
             </aside>
 
