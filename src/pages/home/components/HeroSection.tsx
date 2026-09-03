@@ -4,28 +4,23 @@ import { useState, useEffect } from 'react';
 const heroSlides = [
   {
     desktop: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989_09.jpg',
-    mobile: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989.jpg',
-    link: '/product/balance-whipped-wash'
+    mobile: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989.jpg'
   },
   {
     desktop: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989_05.jpg',
-    mobile: 'https://hlbhc.cafe24.com/product_detail/board/F.jpg',
-    link: '/product/feminine-calming-mist'
+    mobile: 'https://hlbhc.cafe24.com/product_detail/board/F.jpg'
   },
   {
     desktop: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_103053359_02.jpg',
-    mobile: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_103053359_01.jpg',
-    link: '/product/inner-care-gel'
+    mobile: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_103053359_01.jpg'
   },
   {
     desktop: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989_07.jpg',
-    mobile: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989_03.jpg',
-    link: '/product/foaming-wash'
+    mobile: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989_03.jpg'
   },
   {
     desktop: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989_08.jpg',
-    mobile: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989_04.jpg',
-    link: '/product/feminine-tissue'
+    mobile: 'https://hlbhc.cafe24.com/product_detail/board/KakaoTalk_20250716_102218989_04.jpg'
   }
 ];
 
@@ -59,7 +54,7 @@ export default function HeroSection() {
               index === currentSlide ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <a href={slide.link} className="block w-full h-full">
+            <div className="w-full h-full">
               {/* 桌面版圖片 */}
               <img
                 src={slide.desktop}
@@ -72,7 +67,7 @@ export default function HeroSection() {
                 alt={`SAENGAK 品牌商品展示 ${index + 1}`}
                 className="md:hidden h-full w-full object-cover object-[21%_center]"
               />
-            </a>
+            </div>
           </div>
         ))}
       </div>
