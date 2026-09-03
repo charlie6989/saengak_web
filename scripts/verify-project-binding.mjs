@@ -53,10 +53,9 @@ if ((scope === 'all' || scope === 'vercel') && vercelProjectName !== expectedVer
 }
 
 if (scope === 'all' || scope === 'vercel') {
-  for (const envName of [
-    'VITE_PUBLIC_CHECKOUT_SUPABASE_URL',
-    'VITE_PUBLIC_SUPABASE_URL',
-  ]) {
+  // 結帳已遷移至 Vercel API；只驗證目前實際使用的公開 Supabase URL。
+  // 舊版 VITE_PUBLIC_CHECKOUT_SUPABASE_URL 不再是現行 binding contract。
+  for (const envName of ['VITE_PUBLIC_SUPABASE_URL']) {
     const value = process.env[envName] ?? '';
     if (!value) {
       errors.push(`缺少 ${envName}，無法證明 Vercel 綁定到 SAENGAK Supabase`);
