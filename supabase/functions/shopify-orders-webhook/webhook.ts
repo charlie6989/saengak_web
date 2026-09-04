@@ -70,6 +70,9 @@ export interface ShopifyOrderSyncInput {
   p_triggered_at: string;
   p_line_items: ShopifyOrderLineInput[];
   p_fulfillments: ShopifyFulfillmentInput[];
+  p_discount_codes: string[];
+  p_discount_amount: string;
+  p_shipping_amount: string;
 }
 
 export interface ShopifyRefundSyncInput {
@@ -379,6 +382,18 @@ export function parseShopifyOrderWebhook(
     160,
   );
 
+  const rawDiscountCodes = Array.isArray(payload.discount_codes) ? payload.discount_codes : [];
+  const discountCodes = [...new Set(
+    rawDiscountCodes
+      .map((rawDiscountCode) => boundedText(asRecord(rawDiscountCode)?.code, 50).toUpperCase())
+      .filter(Boolean),
+  )].slice(0, 10);
+  const discountAmount = positiveMoney(payload.total_discounts) ?? '0';
+  const shippingAmount =
+    positiveMoney(asRecord(asRecord(payload.total_shipping_price_set)?.shop_money)?.amount) ??
+    positiveMoney(firstShippingLine?.price) ??
+    '0';
+
   if (
     !orderId || !cartToken || !orderNumber || !totalAmount ||
     !/^[A-Z]{3}$/.test(currencyCode) || !createdAt || !updatedAt ||
@@ -441,6 +456,9 @@ export function parseShopifyOrderWebhook(
     p_triggered_at: triggeredAt,
     p_line_items: lineItems as ShopifyOrderLineInput[],
     p_fulfillments: fulfillments,
+    p_discount_codes: discountCodes,
+    p_discount_amount: discountAmount,
+    p_shipping_amount: shippingAmount,
   };
 }
 

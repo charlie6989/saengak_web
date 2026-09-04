@@ -51,6 +51,115 @@ describe('Amego invoice dispatch', () => {
     });
   });
 
+  it('builds two explicit lines for shipping and discount when they reconcile with the total', () => {
+    const explicitJob: AmegoJob = {
+      ...job,
+      request_payload: {
+        ...job.request_payload,
+        totalAmount: '680',
+        lineItems: [{ productName: '深層修護私密清潔露', quantity: 1, price: '634' }],
+        shippingAmount: 146,
+        discountAmount: 100,
+      },
+    };
+    const payload = buildAmegoInvoicePayload(explicitJob);
+    expect(payload).toMatchObject({
+      TotalAmount: '680',
+      ProductItem: [
+        { Description: '深層修護私密清潔露', Amount: '634' },
+        { Description: '運費', Amount: '146' },
+        { Description: '折扣', Amount: '-100' },
+      ],
+    });
+    const items = payload.ProductItem as Array<{ Description: string; Amount: string }>;
+    expect(items.some((item) => item.Description.includes('／訂單調整'))).toBe(false);
+    expect(items.reduce((sum, item) => sum + Number(item.Amount), 0)).toBe(680);
+  });
+
+  it('falls back to the single-line adjustment when discountAmount is missing', () => {
+    const partialJob: AmegoJob = {
+      ...job,
+      request_payload: {
+        ...job.request_payload,
+        shippingAmount: 146,
+        // discountAmount intentionally omitted to simulate a pre-migration job payload
+      },
+    };
+    const payload = buildAmegoInvoicePayload(partialJob);
+    expect(payload).toMatchObject({
+      TotalAmount: '680',
+      ProductItem: [
+        { Description: '深層修護私密清潔露', Amount: '650' },
+        { Description: '運費／訂單調整', Amount: '30' },
+      ],
+    });
+    const items = payload.ProductItem as Array<{ Description: string; Amount: string }>;
+    expect(items.reduce((sum, item) => sum + Number(item.Amount), 0)).toBe(680);
+  });
+
+  it('falls back to the single-line adjustment when shipping and discount do not reconcile with the total', () => {
+    const mismatchedJob: AmegoJob = {
+      ...job,
+      request_payload: {
+        ...job.request_payload,
+        shippingAmount: 999,
+        discountAmount: 0,
+      },
+    };
+    const payload = buildAmegoInvoicePayload(mismatchedJob);
+    expect(payload).toMatchObject({
+      TotalAmount: '680',
+      ProductItem: [
+        { Description: '深層修護私密清潔露', Amount: '650' },
+        { Description: '運費／訂單調整', Amount: '30' },
+      ],
+    });
+    const items = payload.ProductItem as Array<{ Description: string; Amount: string }>;
+    expect(items.reduce((sum, item) => sum + Number(item.Amount), 0)).toBe(680);
+  });
+
+  it('omits the shipping line when shippingAmount is zero but still applies a positive discount', () => {
+    const freeShippingJob: AmegoJob = {
+      ...job,
+      request_payload: {
+        ...job.request_payload,
+        totalAmount: '600',
+        lineItems: [{ productName: '深層修護私密清潔露', quantity: 1, price: '650' }],
+        shippingAmount: 0,
+        discountAmount: 50,
+      },
+    };
+    const payload = buildAmegoInvoicePayload(freeShippingJob);
+    expect(payload).toMatchObject({
+      TotalAmount: '600',
+      ProductItem: [
+        { Description: '深層修護私密清潔露', Amount: '650' },
+        { Description: '折扣', Amount: '-50' },
+      ],
+    });
+    const items = payload.ProductItem as Array<{ Description: string; Amount: string }>;
+    expect(items.some((item) => item.Description === '運費')).toBe(false);
+    expect(items.reduce((sum, item) => sum + Number(item.Amount), 0)).toBe(600);
+  });
+
+  it('adds no adjustment line when shipping and discount are both zero and totals already reconcile', () => {
+    const exactJob: AmegoJob = {
+      ...job,
+      request_payload: {
+        ...job.request_payload,
+        totalAmount: '650',
+        lineItems: [{ productName: '深層修護私密清潔露', quantity: 1, price: '650' }],
+        shippingAmount: 0,
+        discountAmount: 0,
+      },
+    };
+    const payload = buildAmegoInvoicePayload(exactJob);
+    const items = payload.ProductItem as Array<{ Description: string; Amount: string }>;
+    expect(items).toHaveLength(exactJob.request_payload.lineItems.length);
+    expect(payload).toMatchObject({ TotalAmount: '650' });
+    expect(items.reduce((sum, item) => sum + Number(item.Amount), 0)).toBe(650);
+  });
+
   it('queries before issuing and marks issued only after status 99 readback', async () => {
     const fetcher = vi.fn()
       .mockResolvedValueOnce(response({ code: 71, msg: '查無資料' }))

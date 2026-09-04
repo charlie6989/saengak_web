@@ -78,11 +78,29 @@ function parseDiscountCodes(value: unknown): string[] | undefined {
   return codes.length > 0 ? codes.slice(0, 5) : undefined;
 }
 
+export function findInapplicableDiscountCodes(
+  requestedCodes: string[] | undefined,
+  returnedDiscountCodes: Array<{ code?: string; applicable?: boolean }> | undefined,
+): string[] {
+  if (!requestedCodes || requestedCodes.length === 0) return [];
+  const applicableCodes = new Set(
+    (returnedDiscountCodes ?? [])
+      .filter((entry) => entry?.applicable === true)
+      .map((entry) => (entry.code ?? '').toUpperCase()),
+  );
+  return requestedCodes.filter((code) => !applicableCodes.has(code.toUpperCase()));
+}
+
 interface ShopifyCartCreateResponse {
   errors?: Array<{ message?: string }>;
   data?: {
     cartCreate?: {
-      cart?: { id?: string; checkoutUrl?: string; totalQuantity?: number };
+      cart?: {
+        id?: string;
+        checkoutUrl?: string;
+        totalQuantity?: number;
+        discountCodes?: Array<{ code?: string; applicable?: boolean }>;
+      };
       userErrors?: unknown[];
       warnings?: unknown[];
     };
@@ -379,12 +397,15 @@ export async function POST(request: Request): Promise<Response> {
       }, { status: 502, headers: corsHeaders });
     }
 
+    const invalidDiscountCodes = findInapplicableDiscountCodes(discountCodes, payload.cart.discountCodes);
+
     return jsonResponse({
       checkoutUrl: payload.cart.checkoutUrl,
       cartId: payload.cart.id,
       totalQuantity: payload.cart.totalQuantity,
       warnings: payload.warnings ?? [],
       orderTrackingLinked: true,
+      invalidDiscountCodes,
     }, { status: 200, headers: corsHeaders });
 
   } catch (error) {

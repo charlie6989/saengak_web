@@ -9,6 +9,7 @@ export const isShopifyCheckoutConfigured = true;
 interface ShopifyCheckoutResponse {
   checkoutUrl?: string;
   orderTrackingLinked?: boolean;
+  invalidDiscountCodes?: string[];
   error?: string;
   code?: string;
   details?: unknown;
@@ -89,7 +90,7 @@ export async function createShopifyCheckout(
   lines: ShopifyCheckoutLine[],
   invoicePreference: InvoicePreference,
   discountCodes?: string[],
-): Promise<string> {
+): Promise<{ checkoutUrl: string; invalidDiscountCodes: string[] }> {
   if (!isShopifyCheckoutConfigured) {
     throw new Error('Shopify checkout 尚未設定');
   }
@@ -132,5 +133,8 @@ export async function createShopifyCheckout(
 
   assertMemberOrderTracking(data, true);
 
-  return validateShopifyCheckoutUrl(data.checkoutUrl);
+  return {
+    checkoutUrl: validateShopifyCheckoutUrl(data.checkoutUrl),
+    invalidDiscountCodes: Array.isArray(data.invalidDiscountCodes) ? data.invalidDiscountCodes : [],
+  };
 }

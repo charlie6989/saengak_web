@@ -9,11 +9,14 @@ import {
 } from '../../domain/invoice';
 import { createShopifyCheckout } from '../../lib/shopifyCheckout';
 import { captureExceptionSafe } from '../../lib/sentry';
-import { fetchUserCoupons, calculateDiscountAmount } from '../../lib/promotions';
+import {
+  fetchUserCoupons,
+  calculateDiscountAmount,
+  fetchShippingSettings,
+  computePostDiscountShippingWarning,
+} from '../../lib/promotions';
 import type { UserCoupon } from '../../types/promotions';
 import AuthModal from './AuthModal';
-
-const FREE_SHIPPING_THRESHOLD = 1500;
 
 export default function CartSidebar() {
   const [checkoutMessage, setCheckoutMessage] = useState('');
@@ -24,6 +27,7 @@ export default function CartSidebar() {
   const [isCouponSectionOpen, setIsCouponSectionOpen] = useState(false);
   const [selectedCouponCode, setSelectedCouponCode] = useState<string>('');
   const [manualCouponInput, setManualCouponInput] = useState<string>('');
+  const [shippingSettings, setShippingSettings] = useState({ freeShippingThreshold: 1500, defaultShippingFee: 80 });
   const { user, isLoading: isAuthLoading } = useAuth();
 
   const { 
@@ -55,14 +59,27 @@ export default function CartSidebar() {
     }
   }, [isCartOpen, user?.id]);
 
+  // 當購物車開啟時，自動同步後台免運門檻設定，避免與 site_settings 脫鉤
+  useEffect(() => {
+    if (isCartOpen) {
+      void fetchShippingSettings().then(setShippingSettings);
+    }
+  }, [isCartOpen]);
+
   const totalPrice = getTotalPrice();
-  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - totalPrice);
-  const freeShippingProgress = Math.min(100, Math.round((totalPrice / FREE_SHIPPING_THRESHOLD) * 100));
+  const amountToFreeShipping = Math.max(0, shippingSettings.freeShippingThreshold - totalPrice);
+  const freeShippingProgress = Math.min(100, Math.round((totalPrice / shippingSettings.freeShippingThreshold) * 100));
 
   const activeCoupon = userCoupons.find((c) => c.coupon_code === selectedCouponCode);
   const discountCalculation = activeCoupon?.promotion
     ? calculateDiscountAmount(activeCoupon.promotion, totalPrice)
     : { amount: 0, isEligible: true, shortfall: 0 };
+
+  const shippingWarning = computePostDiscountShippingWarning(
+    totalPrice,
+    discountCalculation.amount,
+    shippingSettings.freeShippingThreshold,
+  );
 
   const submitCheckout = async () => {
     setIsSubmitting(true);
@@ -74,8 +91,15 @@ export default function CartSidebar() {
       });
       
       const discountCodes = selectedCouponCode.trim() ? [selectedCouponCode.trim()] : undefined;
-      const checkoutUrl = await createShopifyCheckout(shopifyLines, invoicePreference, discountCodes);
-      window.location.href = checkoutUrl;
+      const result = await createShopifyCheckout(shopifyLines, invoicePreference, discountCodes);
+      if (result.invalidDiscountCodes.length > 0) {
+        setSelectedCouponCode('');
+        setCheckoutMessage(
+          `折扣碼 ${result.invalidDiscountCodes.join('、')} 目前無法套用（可能未達門檻、已達使用上限或已失效），已為您移除，請確認金額後再次點擊結帳。`
+        );
+        return;
+      }
+      window.location.href = result.checkoutUrl;
     } catch (err: any) {
       const msg = err?.message || '建立結帳失敗，請稍後再試。';
       setCheckoutMessage(msg);
@@ -162,7 +186,7 @@ export default function CartSidebar() {
             <div className="flex items-center justify-between text-xs mb-1.5">
               <span className="font-medium text-teal-900">
                 {amountToFreeShipping === 0 ? (
-                  <span className="text-teal-700 font-bold">🎉 已達成免運門檻（滿 NT$ 1,500）</span>
+                  <span className="text-teal-700 font-bold">🎉 已達成免運門檻（滿 {formatTwd(shippingSettings.freeShippingThreshold)}）</span>
                 ) : (
                   <span>再消費 <strong className="text-teal-700 font-bold">{formatTwd(amountToFreeShipping)}</strong> 即可享<strong>免運優惠</strong></span>
                 )}
@@ -313,6 +337,12 @@ export default function CartSidebar() {
                 <div className="flex items-center justify-between text-xs text-teal-700 font-semibold">
                   <span>優惠折抵 ({selectedCouponCode})</span>
                   <span>-{formatTwd(discountCalculation.amount)}</span>
+                </div>
+              )}
+              {selectedCouponCode && discountCalculation.amount > 0 && shippingWarning.willLoseFreeShipping && (
+                <div className="flex items-start gap-1.5 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 mt-1">
+                  <i className="ri-error-warning-line mt-0.5 flex-shrink-0"></i>
+                  <span>套用此折扣後金額將低於免運門檻，還差 {formatTwd(shippingWarning.amountStillNeeded)} 才能維持免運，實際運費以 Shopify 結帳頁計算結果為準。</span>
                 </div>
               )}
               <div className="flex items-center justify-between pt-1 border-t border-gray-100">

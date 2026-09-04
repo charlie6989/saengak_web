@@ -17,7 +17,7 @@ vi.mock('../api/_lib/supabase-admin.js', async (importOriginal) => {
   };
 });
 
-import { POST, OPTIONS } from '../api/create-shopify-cart.js';
+import { POST, OPTIONS, findInapplicableDiscountCodes } from '../api/create-shopify-cart.js';
 import {
   setMemorySiteSetting,
   resetMemoryDatabase,
@@ -256,6 +256,59 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
       expect(capturedVariables?.input?.discountCodes).toEqual(['WELCOME100']);
     });
 
+    it('當 Shopify 回傳折扣碼 applicable: false 時，Cart 仍成功建立 (200) 但回應帶出 invalidDiscountCodes', async () => {
+      const mockCheckoutUrl = 'https://gh2xgs-zf.myshopify.com/cart/c/67890';
+      const mockCartId = 'gid://shopify/Cart/test_cart_token_inapplicable';
+
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          data: {
+            cartCreate: {
+              cart: {
+                id: mockCartId,
+                checkoutUrl: mockCheckoutUrl,
+                totalQuantity: 1,
+                discountCodes: [{ code: 'WELCOME100', applicable: false }],
+              },
+              userErrors: [],
+              warnings: [],
+            },
+          },
+        }),
+      } as any);
+
+      const request = new Request('http://localhost/api/create-shopify-cart', {
+        method: 'POST',
+        headers: {
+          Origin: 'https://saengak.com.tw',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer valid-member-token',
+        },
+        body: JSON.stringify({
+          lines: [
+            {
+              merchandiseId: 'gid://shopify/ProductVariant/1234567890',
+              quantity: 1,
+            },
+          ],
+          invoicePreference: {
+            kind: 'personal',
+            carrier: 'none',
+            carrierId: '',
+          },
+          discountCodes: ['WELCOME100'],
+        }),
+      });
+
+      const response = await POST(request);
+      expect(response.status).toBe(200);
+      const data = (await response.json()) as any;
+      expect(data.invalidDiscountCodes).toEqual(['WELCOME100']);
+      expect(data.checkoutUrl).toBe(mockCheckoutUrl);
+    });
+
     it('當 Shopify 回報 Online Store Locked 時，轉譯為 503 SHOPIFY_STOREFRONT_LOCKED', async () => {
       globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
@@ -291,5 +344,40 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
       const data = (await response.json()) as any;
       expect(data.code).toBe('SHOPIFY_STOREFRONT_LOCKED');
     });
+  });
+});
+
+describe('findInapplicableDiscountCodes 純函式測試 (api/create-shopify-cart.ts)', () => {
+  it('未提供 requestedCodes（undefined）時回傳空陣列', () => {
+    expect(findInapplicableDiscountCodes(undefined, [{ code: 'WELCOME100', applicable: true }])).toEqual([]);
+  });
+
+  it('requestedCodes 為空陣列時回傳空陣列', () => {
+    expect(findInapplicableDiscountCodes([], [{ code: 'WELCOME100', applicable: true }])).toEqual([]);
+  });
+
+  it('全部 requestedCodes 皆 applicable: true 時回傳空陣列（大小寫不同也視為相同）', () => {
+    expect(
+      findInapplicableDiscountCodes(
+        ['welcome100'],
+        [{ code: 'WELCOME100', applicable: true }],
+      ),
+    ).toEqual([]);
+  });
+
+  it('有 code 的 applicable 為 false 時，回傳陣列包含該 code', () => {
+    expect(
+      findInapplicableDiscountCodes(
+        ['WELCOME100'],
+        [{ code: 'WELCOME100', applicable: false }],
+      ),
+    ).toEqual(['WELCOME100']);
+  });
+
+  it('returnedDiscountCodes 為 undefined（Shopify 未回傳此欄位）時，全部 requestedCodes 視為無效', () => {
+    expect(findInapplicableDiscountCodes(['WELCOME100', 'SUMMER20'], undefined)).toEqual([
+      'WELCOME100',
+      'SUMMER20',
+    ]);
   });
 });

@@ -21,6 +21,8 @@ export interface AmegoJob {
     totalAmount: string | number;
     lineItems: JobLineItem[];
     preference: InvoicePreference;
+    shippingAmount?: string | number;
+    discountAmount?: string | number;
   };
   expected_total_amount: string | number;
   expected_buyer_identifier: string | null;
@@ -102,15 +104,52 @@ export function buildAmegoInvoicePayload(job: AmegoJob): UnknownRecord {
   });
 
   const itemTotal = productItems.reduce((sum, item) => sum + Number(item.Amount), 0);
-  if (itemTotal !== totalAmount) {
-    productItems.push({
-      Description: itemTotal < totalAmount ? '運費／訂單調整' : '折扣／訂單調整',
-      Quantity: '1',
-      UnitPrice: String(totalAmount - itemTotal),
-      Amount: String(totalAmount - itemTotal),
-      Remark: '',
-      TaxType: '1',
-    });
+
+  let appliedExplicitAdjustments = false;
+  if (request.shippingAmount !== undefined && request.discountAmount !== undefined) {
+    try {
+      const shippingAmt = integerMoney(request.shippingAmount, 'Shipping amount');
+      const discountAmt = integerMoney(request.discountAmount, 'Discount amount');
+      if (itemTotal + shippingAmt - discountAmt === totalAmount) {
+        if (shippingAmt > 0) {
+          productItems.push({
+            Description: '運費',
+            Quantity: '1',
+            UnitPrice: String(shippingAmt),
+            Amount: String(shippingAmt),
+            Remark: '',
+            TaxType: '1',
+          });
+        }
+        if (discountAmt > 0) {
+          productItems.push({
+            Description: '折扣',
+            Quantity: '1',
+            UnitPrice: String(-discountAmt),
+            Amount: String(-discountAmt),
+            Remark: '',
+            TaxType: '1',
+          });
+        }
+        appliedExplicitAdjustments = true;
+      }
+    } catch {
+      // shippingAmount/discountAmount 格式不合法時，安全退回下方的猜測式單行邏輯，不可讓整張發票開立失敗
+    }
+  }
+
+  if (!appliedExplicitAdjustments) {
+    const remainder = totalAmount - itemTotal;
+    if (remainder !== 0) {
+      productItems.push({
+        Description: remainder > 0 ? '運費／訂單調整' : '折扣／訂單調整',
+        Quantity: '1',
+        UnitPrice: String(remainder),
+        Amount: String(remainder),
+        Remark: '',
+        TaxType: '1',
+      });
+    }
   }
 
   const preference = request.preference;

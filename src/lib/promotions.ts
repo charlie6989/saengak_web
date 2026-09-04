@@ -1,71 +1,80 @@
 import { supabase } from './supabase';
 import type { Promotion, UserCoupon, ClaimCouponResult } from '../types/promotions';
 
-// 預設促銷活動（對齊 Shopify 後台 Discounts 與本地容錯）
+// 預設促銷活動（僅在 Shopify API 與 Supabase 皆無法讀取時使用之最後備援；
+// 數值必須與 Shopify 後台實際設定同步，避免呈現與正式折扣邏輯不符的假資訊）
 export const DEFAULT_PROMOTIONS: Promotion[] = [
   {
     id: 'promo-welcome-100',
     code: 'WELCOME100',
     title: '新會員見面禮',
     subtitle: '首次加入會員專享折抵',
-    description: '全館消費滿 NT$ 1,000 現折 NT$ 100。每位會員限領乙次。',
+    description: '全館消費滿 NT$ 1,500 現折 NT$ 100。',
     category: 'welcome',
     discount_type: 'fixed_amount',
     discount_value: 100,
-    min_spend: 1000,
+    min_spend: 1500,
     starts_at: '2026-01-01T00:00:00Z',
-    ends_at: '2026-12-31T23:59:59Z',
     badge_text: '新客專享',
     image_url: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=800',
     is_active: true,
+    applies_once_per_customer: true,
+    usage_limit: null,
+    combines_with: { order_discounts: false, product_discounts: false, shipping_discounts: false },
   },
   {
     id: 'promo-save-15',
     code: 'SAVE15',
     title: 'VIP 專屬回饋',
     subtitle: '質感選品全品項 85 折',
-    description: '全館消費滿 NT$ 2,000 享結帳 85 折優惠（最高折抵 NT$ 600）。',
+    description: '全館消費滿 NT$ 3,000 享結帳 85 折優惠。',
     category: 'discount',
     discount_type: 'percentage',
     discount_value: 15,
-    min_spend: 2000,
+    min_spend: 3000,
     starts_at: '2026-01-01T00:00:00Z',
-    ends_at: '2026-12-31T23:59:59Z',
     badge_text: '15% OFF',
     image_url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=800',
     is_active: true,
+    applies_once_per_customer: true,
+    usage_limit: null,
+    combines_with: { order_discounts: false, product_discounts: false, shipping_discounts: false },
   },
   {
     id: 'promo-free-ship',
     code: 'FREESHIP',
     title: '初夏免運專案',
     subtitle: '超商與宅配滿額免運費',
-    description: '消費滿 NT$ 999 即可享免運費優惠，結帳時直接折抵運費。',
+    description: '消費滿 NT$ 1,499 即可享免運費優惠，結帳時直接折抵運費。',
     category: 'shipping',
     discount_type: 'free_shipping',
     discount_value: 0,
-    min_spend: 999,
+    min_spend: 1499,
     starts_at: '2026-01-01T00:00:00Z',
-    ends_at: '2026-12-31T23:59:59Z',
     badge_text: '全館免運',
     image_url: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&q=80&w=800',
     is_active: true,
+    applies_once_per_customer: true,
+    usage_limit: null,
+    combines_with: { order_discounts: false, product_discounts: false, shipping_discounts: false },
   },
   {
     id: 'promo-special-30',
     code: 'SPECIAL30',
     title: '限時會員日狂歡',
     subtitle: '指定熱銷組合 7 折特惠',
-    description: '單筆訂單滿 NT$ 3,500 即享 7 折專屬特惠，數量有限送完為止。',
+    description: '單筆訂單滿 NT$ 5,250 即享 7 折專屬特惠。',
     category: 'member',
     discount_type: 'percentage',
     discount_value: 30,
-    min_spend: 3500,
+    min_spend: 5250,
     starts_at: '2026-01-01T00:00:00Z',
-    ends_at: '2026-12-31T23:59:59Z',
     badge_text: '30% OFF',
     image_url: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=800',
     is_active: true,
+    applies_once_per_customer: true,
+    usage_limit: null,
+    combines_with: { order_discounts: false, product_discounts: false, shipping_discounts: false },
   },
 ];
 
@@ -191,57 +200,32 @@ export async function claimPromotionCoupon(
     return { success: true, message: '優惠券已成功歸戶！', coupon: newCoupon };
   }
 
+  // 領券歸戶一律交由後端 API 處理：後端會以「代碼」重新向 Shopify 查證權威折扣資料，
+  // 並用 service role 寫入 promotions / user_coupons（一般會員的 RLS 不允許直接寫入 promotions，
+  // 且 Shopify 折扣的 id 是 gid://shopify/... 字串，與 user_coupons.promotion_id 的 uuid 外鍵型別不符，
+  // 前端不可再直接對 Supabase insert）。任何失敗一律如實回報，不再退回 localStorage 假裝成功——
+  // 那只會製造資料庫裡不存在、換裝置或清快取就消失的假優惠券。
   try {
-    const { data, error } = await supabase
-      .from('user_coupons')
-      .insert({
-        user_id: userId,
-        promotion_id: promotion.id,
-        coupon_code: promotion.code,
-        status: 'available',
-      })
-      .select(`
-        *,
-        promotion:promotions (*)
-      `)
-      .single();
-
-    if (error) {
-      if (error.code === '23505') { // Unique violation
-        return { success: false, message: '您已領取過此張優惠券', alreadyClaimed: true };
-      }
-      throw error;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    if (!token) {
+      return { success: false, message: '登入狀態已逾期，請重新登入後再試' };
     }
 
-    return {
-      success: true,
-      message: '優惠券已成功歸戶至會員中心！',
-      coupon: data as UserCoupon,
-    };
-  } catch (err: any) {
-    console.warn('歸戶寫入失敗，切換至本地快取容錯:', err);
-    // 容錯機制
-    const key = `${LOCAL_STORAGE_COUPONS_KEY}_${userId}`;
-    const raw = localStorage.getItem(key);
-    const list: UserCoupon[] = raw ? JSON.parse(raw) : [];
+    const response = await fetch('/api/promotions/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ code: promotion.code }),
+    });
 
-    if (list.some((c) => c.coupon_code === promotion.code)) {
-      return { success: false, message: '您已領取過此張優惠券', alreadyClaimed: true };
+    const data = await response.json().catch(() => null) as ClaimCouponResult | null;
+    if (data && typeof data.success === 'boolean') {
+      return data;
     }
-
-    const newCoupon: UserCoupon = {
-      id: `fallback-${Date.now()}`,
-      user_id: userId,
-      promotion_id: promotion.id,
-      coupon_code: promotion.code,
-      status: 'available',
-      claimed_at: new Date().toISOString(),
-      promotion,
-    };
-
-    list.unshift(newCoupon);
-    localStorage.setItem(key, JSON.stringify(list));
-    return { success: true, message: '優惠券已成功歸戶！', coupon: newCoupon };
+    return { success: false, message: '領取失敗，請稍後再試' };
+  } catch (err) {
+    console.warn('呼叫領券 API 失敗:', err);
+    return { success: false, message: '領取失敗，請稍後再試，或稍後於會員中心確認是否已歸戶' };
   }
 }
 
@@ -282,5 +266,46 @@ export function calculateDiscountAmount(
     amount: 0,
     isEligible: true,
     shortfall: 0,
+  };
+}
+
+/**
+ * 查詢免運門檻與預設運費設定（來源為 Supabase site_settings，經 /api/shopify/discounts 回應帶出）。
+ * 讀取失敗時退回與後端相同的預設值，避免前後端門檻顯示不同步。
+ */
+export async function fetchShippingSettings(): Promise<{ freeShippingThreshold: number; defaultShippingFee: number }> {
+  const FALLBACK = { freeShippingThreshold: 1500, defaultShippingFee: 80 };
+  try {
+    const res = await fetch('/api/shopify/discounts', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) return FALLBACK;
+    const data = await res.json();
+    const s = data?.siteSettings;
+    if (s && typeof s.freeShippingThreshold === 'number' && typeof s.defaultShippingFee === 'number') {
+      return { freeShippingThreshold: s.freeShippingThreshold, defaultShippingFee: s.defaultShippingFee };
+    }
+    return FALLBACK;
+  } catch {
+    return FALLBACK;
+  }
+}
+
+/**
+ * 判斷套用折扣碼後，購物車小計是否會從「符合免運」跌落至「不符合免運」，
+ * 避免顧客誤以為原本達標的免運資格在套用折扣後依然有效。
+ */
+export function computePostDiscountShippingWarning(
+  subtotal: number,
+  discountAmount: number,
+  freeShippingThreshold: number,
+): { willLoseFreeShipping: boolean; amountStillNeeded: number } {
+  const postDiscountSubtotal = subtotal - discountAmount;
+  const wasEligibleBefore = subtotal >= freeShippingThreshold;
+  const eligibleAfter = postDiscountSubtotal >= freeShippingThreshold;
+  return {
+    willLoseFreeShipping: wasEligibleBefore && !eligibleAfter,
+    amountStillNeeded: Math.max(0, freeShippingThreshold - postDiscountSubtotal),
   };
 }

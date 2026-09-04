@@ -91,6 +91,54 @@ describe('Shopify order webhook validation', () => {
     });
   });
 
+  it('defaults discount codes, discount amount and shipping amount when absent from the payload', () => {
+    expect(parseShopifyOrderWebhook(payload, metadata)).toMatchObject({
+      p_discount_codes: [],
+      p_discount_amount: '0',
+      p_shipping_amount: '0',
+    });
+  });
+
+  it('normalizes a discount code to uppercase', () => {
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      discount_codes: [{ code: 'welcome100', amount: '100.00', type: 'fixed_amount' }],
+    }, metadata)).toMatchObject({
+      p_discount_codes: ['WELCOME100'],
+    });
+  });
+
+  it('deduplicates discount codes case-insensitively and drops entries without a code', () => {
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      discount_codes: [{ code: 'A' }, { code: 'a' }, {}],
+    }, metadata)).toMatchObject({
+      p_discount_codes: ['A'],
+    });
+  });
+
+  it('carries the order-level discount amount', () => {
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      total_discounts: '100.00',
+    }, metadata)?.p_discount_amount).toBe('100.00');
+  });
+
+  it('prefers total_shipping_price_set for the shipping amount', () => {
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      total_shipping_price_set: { shop_money: { amount: '146.00', currency_code: 'TWD' } },
+    }, metadata)?.p_shipping_amount).toBe('146.00');
+  });
+
+  it('falls back to shipping_lines[0].price when total_shipping_price_set is absent', () => {
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      total_shipping_price_set: undefined,
+      shipping_lines: [{ title: '7-ELEVEN', price: '60.00' }],
+    }, metadata)?.p_shipping_amount).toBe('60.00');
+  });
+
   it('prefers the stable member link token carried through Shopify order attributes', () => {
     expect(parseShopifyOrderWebhook({
       ...payload,
