@@ -198,7 +198,7 @@ export default function Header() {
           className="view-wrap"
           style={{
             background: 'transparent !important',
-            padding: '12px 0.8cm' // 設定左右邊界為 0.8cm
+            padding: '0 0.8cm' // 設定頂部貼合公告欄 (0px)，左右邊界為 0.8cm
           }}
         >
           {/* 主導航 - 響應式設計，手機版增加高度 */}

@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
-import ProductCard from '../../components/feature/ProductCard';
-import { mockProducts } from '../../mocks/products';
 import { formatTwd } from '../../domain/algorithms';
 
 // 預設商品資料（對齊 SAENGAK 正式分類：女性護理）
@@ -64,6 +62,54 @@ const SAMPLE_PRODUCT = {
   ]
 };
 
+// 對齊 Readdy 第 1 版原版規格之相關產品推薦資料（3:4 長方形圖片、規格、簡介與折扣價格）
+const RELATED_PREVIEW_PRODUCTS = [
+  {
+    id: 'rel-1',
+    category: '女性護理',
+    name: 'VAGI 私密護理潔淨慕斯',
+    spec: '180ml | 女性清潔劑',
+    description: '專為敏感肌膚設計的溫和潔膚產品，低刺激配方適合敏感性肌膚，有效緩解異味問題',
+    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=900&h=1200',
+    originalPrice: 19,
+    price: 14,
+    discountPercentage: 24
+  },
+  {
+    id: 'rel-2',
+    category: '女性護理',
+    name: '抗菌無痕內褲 - 舒適款',
+    spec: '180ml | 女性清潔劑',
+    description: '專為敏感肌膚設計的溫和潔膚產品，低刺激配方適合敏感性肌膚，有效緩解異味問題',
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=900&h=1200',
+    originalPrice: 14,
+    price: 11,
+    discountPercentage: 22
+  },
+  {
+    id: 'rel-3',
+    category: '女性護理',
+    name: '深層修護私密清潔露',
+    spec: '180ml | 女性清潔劑',
+    description: '專為敏感肌膚設計的溫和潔膚產品，低刺激配方適合敏感性肌膚，有效緩解異味問題',
+    image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=900&h=1200',
+    originalPrice: 22,
+    price: 17,
+    discountPercentage: 20
+  },
+  {
+    id: 'rel-4',
+    category: '女性護理',
+    name: '生理褲 - 超薄款',
+    spec: '180ml | 女性清潔劑',
+    description: '專為敏感肌膚設計的溫和潔膚產品，低刺激配方適合敏感性肌膚，有效緩解異味問題',
+    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=900&h=1200',
+    originalPrice: 21,
+    price: 16,
+    discountPercentage: 23
+  }
+];
+
 export default function ProductPreviewPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   // 頁籤狀態（預設選中產品內容）
@@ -73,6 +119,7 @@ export default function ProductPreviewPage() {
   const [sizeUnit, setSizeUnit] = useState<'cm' | 'inch'>('cm');
   const [quantity, setQuantity] = useState(1);
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
+  const [relatedWishlist, setRelatedWishlist] = useState<Record<string, boolean>>({});
   const thumbnailListRef = useRef<HTMLUListElement>(null);
 
   // 焦點圖拖曳與滑動切換手勢狀態
@@ -651,7 +698,7 @@ export default function ProductPreviewPage() {
             2. 下方頁籤與內容整合區塊 (包含頁籤與文章內容之細緻淡雅外框容器)
             ========================================================================= */}
         <div className="w-full mt-12 sm:mt-16">
-          <div className="max-w-5xl mx-auto rounded-2xl bg-white border border-gray-200/90 shadow-2xs overflow-hidden">
+          <div className="w-full max-w-7xl mx-auto rounded-2xl bg-white border border-gray-200/90 shadow-2xs overflow-hidden">
             {/* 頁籤選單導航列 (Tab Headers) - 位於大外框頂部 */}
             <div className="border-b border-gray-200/80 bg-[#EDF1EE]">
               <div className="flex flex-wrap sm:flex-nowrap justify-center w-full">
@@ -666,13 +713,22 @@ export default function ProductPreviewPage() {
                     <button
                       key={tab.id}
                       type="button"
-                      onClick={() => setSelectedTab(tab.id as any)}
-                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[46px] text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-center ${
+                      onClick={(e) => {
+                        setSelectedTab(tab.id as any);
+                        (e.currentTarget as HTMLButtonElement).blur();
+                      }}
+                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[48px] text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-center border-0 outline-none focus:outline-none focus:ring-0 focus:border-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none select-none ${
                         isActive
-                          ? 'border-b-2 border-b-[#245B50] sm:border-b-0 sm:border sm:border-[#245B50]/60 bg-[#D6D4CA] text-gray-900 font-bold shadow-2xs'
-                          : 'border border-transparent text-gray-600 hover:text-gray-900 hover:bg-[#E2E7E3]'
+                          ? 'bg-[#CDC7BC] text-gray-900 font-bold'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-[#E2E7E3]'
                       }`}
-                      style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                      style={{
+                        fontFamily: 'Noto Sans TC, sans-serif',
+                        outline: 'none',
+                        boxShadow: 'none',
+                        border: 'none',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
                     >
                       <span>{tab.label}</span>
                     </button>
@@ -1018,15 +1074,120 @@ export default function ProductPreviewPage() {
               {/* -------------------------------------------------------------
                   頁籤三：【相關推薦】
                   ------------------------------------------------------------- */}
+              {/* -------------------------------------------------------------
+                  頁籤三：【相關推薦】（對齊 Readdy 第 1 版原版規格：長方形 3:4 圖片與滿版商品卡片）
+                  ------------------------------------------------------------- */}
               {selectedTab === 'related' && (
-                <div className="animate-fadeIn">
-                  <h3 className="text-xl font-bold text-gray-900 mb-6 text-center" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                    為您精選的搭配選品
+                <div className="animate-fadeIn space-y-6">
+                  <h3
+                    className="text-xl sm:text-2xl font-bold text-gray-900 text-center"
+                    style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                  >
+                    相關產品推薦
                   </h3>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {mockProducts.slice(0, 4).map((p) => (
-                      <ProductCard key={p.id} product={p} />
-                    ))}
+                    {RELATED_PREVIEW_PRODUCTS.map((item) => {
+                      const isWishlisted = !!relatedWishlist[item.id];
+                      return (
+                        <div
+                          key={item.id}
+                          className="group flex flex-col cursor-pointer"
+                          onClick={() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                        >
+                          {/* 3:4 直長型長方形圖片 (對齊第 1 版規格) */}
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#F5F5F3] mb-3.5">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                            {/* 懸浮觀看商品按鈕 */}
+                            <div className="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                className="w-full py-2.5 bg-white/95 hover:bg-[#245B50] hover:text-white text-gray-900 text-xs sm:text-sm font-medium shadow-sm transition-all text-center cursor-pointer"
+                                style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                              >
+                                觀看商品
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* 商品資訊區塊 */}
+                          <div className="space-y-1 flex-1 flex flex-col">
+                            {/* 類別與收藏圖示 */}
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                              <span>{item.category}</span>
+                              <button
+                                type="button"
+                                aria-label="收藏商品"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setRelatedWishlist((prev) => ({
+                                    ...prev,
+                                    [item.id]: !prev[item.id]
+                                  }));
+                                }}
+                                className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer p-0.5"
+                              >
+                                <i
+                                  className={
+                                    isWishlisted
+                                      ? 'ri-heart-fill text-red-500'
+                                      : 'ri-heart-line'
+                                  }
+                                ></i>
+                              </button>
+                            </div>
+
+                            {/* 商品名稱 */}
+                            <h4
+                              className="font-bold text-gray-900 text-sm sm:text-base group-hover:text-[#245B50] transition-colors line-clamp-1"
+                              style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                            >
+                              {item.name}
+                            </h4>
+
+                            {/* 規格標籤 */}
+                            <p className="text-xs text-gray-500 font-normal">
+                              {item.spec}
+                            </p>
+
+                            {/* 簡短描述 */}
+                            <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed flex-1 pt-0.5">
+                              {item.description}
+                            </p>
+
+                            {/* 價格資訊 */}
+                            <div className="pt-2 space-y-0.5">
+                              {item.originalPrice && (
+                                <div className="text-xs text-gray-400 line-through">
+                                  ${item.originalPrice}
+                                </div>
+                              )}
+                              <div className="flex items-baseline gap-2">
+                                {item.discountPercentage && (
+                                  <span className="text-sm font-bold text-[#245B50]">
+                                    -{item.discountPercentage}%
+                                  </span>
+                                )}
+                                <span className="text-base font-bold text-gray-900">
+                                  ${item.price}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
