@@ -1105,7 +1105,7 @@ export default function ProductPreviewPage() {
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                               loading="lazy"
                             />
-                            {/* 懸浮觀看商品按鈕 */}
+                            {/* 懸浮查看商品按鈕 */}
                             <div className="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                               <button
                                 type="button"
@@ -1116,7 +1116,7 @@ export default function ProductPreviewPage() {
                                 className="w-full py-2.5 bg-white/95 hover:bg-[#245B50] hover:text-white text-gray-900 text-xs sm:text-sm font-medium shadow-sm transition-all text-center cursor-pointer"
                                 style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
                               >
-                                觀看商品
+                                查看商品
                               </button>
                             </div>
                           </div>
