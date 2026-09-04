@@ -91,6 +91,81 @@ export default function ProductPreviewPage() {
   const productImages = product.images;
   const activeImage = productImages[selectedImage] || productImages[0];
 
+  // 詢問 (Q&A) 虛擬問答資料與互動狀態（會員資訊以部分遮蔽之 Email 呈現以保護隱私）
+  const [qaList, setQaList] = useState([
+    {
+      id: 'qa-1',
+      author: 'li***9@gmail.com',
+      date: '2026/02/24',
+      question: '這個產品可以用來清洗陰道內部嗎？',
+      answer: '不建議用於陰道內部。此產品專門設計用於外陰部清潔，以維持私密部位的自然酸鹼平衡。如有任何不適，請停止使用並諮詢醫師。',
+      helpful: 24
+    },
+    {
+      id: 'qa-2',
+      author: 'yu***6@gmail.com',
+      date: '2026/02/18',
+      question: '成分中的植物萃取會引起過敏嗎？',
+      answer: 'Saengak 產品經過嚴格測試，使用低敏配方，但極少數人仍可能對植物成分過敏。建議使用前先在小範圍皮膚測試。若出現紅腫或癢感，請立即停用並諮詢醫師。',
+      helpful: 18
+    },
+    {
+      id: 'qa-3',
+      author: 'ch***7@gmail.com',
+      date: '2026/02/09',
+      question: '懷孕期間可使用嗎？',
+      answer: '懷孕期間荷爾蒙變化可能導致私密部位敏感度提升。建議在懷孕期間使用本產品前，先諮詢專業婦產科醫師意見。',
+      helpful: 12
+    },
+    {
+      id: 'qa-4',
+      author: 'cl***8@yahoo.com.tw',
+      date: '2026/01/28',
+      question: '建議的每日使用次數與清潔方式為何？',
+      answer: '建議每日沐浴時使用 1 次，按壓約 1-2 下凝膠於掌心起泡後輕柔清潔外陰部位，再以溫水徹底沖淨即可。生理期間或運動過後亦可視需要適度使用。',
+      helpful: 15
+    },
+    {
+      id: 'qa-5',
+      author: 'le***3@gmail.com',
+      date: '2026/01/15',
+      question: '商品開封後可以保存多久？',
+      answer: '未開封狀態下保質期為 3 年。開封後為維持益生菌微生態與植萃活性，建議置於陰涼通風處，並於 6 至 12 個月內使用完畢。',
+      helpful: 9
+    }
+  ]);
+  const [questionInput, setQuestionInput] = useState('');
+  const [likedQuestions, setLikedQuestions] = useState<Record<string, boolean>>({});
+  const [showSuccessNotice, setShowSuccessNotice] = useState(false);
+
+  const handleToggleHelpful = (id: string) => {
+    setLikedQuestions((prev) => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
+  const handleQuestionSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!questionInput.trim()) return;
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+    const newQa = {
+      id: `qa-${Date.now()}`,
+      author: 'yo***@gmail.com (您)',
+      date: formattedDate,
+      question: questionInput.trim(),
+      answer: '感謝您的提問！我們的專業護理團隊將於 24 小時內完成回覆並更新於此。',
+      helpful: 0
+    };
+    setQaList((prev) => [newQa, ...prev]);
+    setQuestionInput('');
+    setShowSuccessNotice(true);
+    setTimeout(() => {
+      setShowSuccessNotice(false);
+    }, 4000);
+  };
+
   // 自動滾動縮圖（選中第 7 張以上自動平滑滾動）
   useEffect(() => {
     if (!thumbnailListRef.current) return;
@@ -957,29 +1032,125 @@ export default function ProductPreviewPage() {
               )}
 
               {/* -------------------------------------------------------------
-                  頁籤四：【諮詢與問答】
+                  頁籤四：【詢問 (Q&A)】（對齊 Readdy 原版規格與虛擬資料）
                   ------------------------------------------------------------- */}
               {selectedTab === 'qa' && (
-                <div className="space-y-6 animate-fadeIn">
-                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <h4 className="text-lg font-bold text-[#1a473e] flex items-center gap-2">
-                        <i className="ri-line-fill text-2xl text-[#06C755]"></i>
-                        LINE 官方客服專屬諮詢
-                      </h4>
-                      <p className="text-xs sm:text-sm text-gray-600">
-                        若您對商品尺寸規格、使用保養方式有任何疑問，歡迎隨時加入官方 LINE 諮詢。
-                      </p>
-                    </div>
-                    <a
-                      href="https://line.me/R/ti/p/@saengak"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#06C755] hover:bg-[#05b34c] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors whitespace-nowrap"
-                    >
-                      <i className="ri-line-fill text-lg"></i>
-                      加 LINE 諮詢客服
-                    </a>
+                <div className="space-y-8 animate-fadeIn">
+                  {/* 1. 提出問題區塊 */}
+                  <div className="rounded-2xl border border-gray-200/90 bg-gray-50/70 p-6 sm:p-8 space-y-4 shadow-2xs">
+                    <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+                      提出問題
+                    </h3>
+
+                    {showSuccessNotice && (
+                      <div className="p-3.5 bg-emerald-50 text-[#245B50] text-xs font-semibold rounded-xl border border-emerald-200 flex items-center gap-2 animate-fadeIn">
+                        <i className="ri-checkbox-circle-fill text-base text-emerald-600"></i>
+                        <span>提問已成功送出！客服人員將於 24 小時內回覆並公開於下方列表。</span>
+                      </div>
+                    )}
+
+                    <form onSubmit={handleQuestionSubmit} className="space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-sm font-medium text-gray-700">
+                            您的問題
+                          </label>
+                          <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                            <i className="ri-shield-user-line text-[#245B50]"></i>
+                            <span>為保護隱私，提問將以部分遮蔽之 Email 帳號公開</span>
+                          </span>
+                        </div>
+                        <textarea
+                          rows={4}
+                          value={questionInput}
+                          onChange={(e) => setQuestionInput(e.target.value)}
+                          placeholder="在此輸入您的問題..."
+                          className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:border-[#245B50] focus:ring-1 focus:ring-[#245B50] focus:outline-none bg-white placeholder-gray-400 resize-none transition-all shadow-2xs"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={!questionInput.trim()}
+                        className="w-full py-3.5 bg-[#245B50] hover:bg-[#1a4239] text-white text-sm font-bold rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        提交問題
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* 2. 顧客提問與專業回覆列表 */}
+                  <div className="space-y-6 pt-2">
+                    {qaList.map((item) => {
+                      const isLiked = !!likedQuestions[item.id];
+                      return (
+                        <div
+                          key={item.id}
+                          className="border-b border-gray-200/70 pb-6 last:border-b-0 last:pb-0 space-y-3"
+                        >
+                          {/* 會員資訊列 (遮蔽之 Email 與提問日期) */}
+                          <div className="flex items-center justify-between text-xs text-gray-500">
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-50 text-[#245B50] text-[11px]">
+                                <i className="ri-mail-line"></i>
+                              </span>
+                              <span className="font-mono text-gray-700 font-medium">{item.author}</span>
+                            </div>
+                            <span className="text-gray-400 text-xs font-mono">{item.date}</span>
+                          </div>
+
+                          {/* 問題 */}
+                          <div className="flex items-start gap-3">
+                            <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-gray-200 text-gray-700 text-xs font-bold flex-shrink-0 mt-0.5 select-none">
+                              Q
+                            </span>
+                            <h4
+                              className="text-base font-bold text-gray-900 leading-snug"
+                              style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
+                            >
+                              {item.question}
+                            </h4>
+                          </div>
+
+                          {/* 回覆 */}
+                          <div className="flex items-start gap-3 bg-[#F9FBFA] p-3.5 rounded-xl border border-gray-100">
+                            <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-[#E3EFEA] text-[#245B50] text-xs font-bold flex-shrink-0 mt-0.5 select-none">
+                              A
+                            </span>
+                            <div className="space-y-1">
+                              <span className="text-xs font-bold text-[#245B50]">
+                                SAENGAK 官方專業團隊回覆
+                              </span>
+                              <p className="text-sm text-gray-600 leading-relaxed">
+                                {item.answer}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* 有幫助互動按鈕 */}
+                          <div className="ml-9">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleHelpful(item.id)}
+                              className={`inline-flex items-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${
+                                isLiked
+                                  ? 'text-[#245B50] font-bold'
+                                  : 'text-gray-500 hover:text-[#245B50]'
+                              }`}
+                            >
+                              <i
+                                className={
+                                  isLiked
+                                    ? 'ri-thumb-up-fill text-sm text-[#245B50]'
+                                    : 'ri-thumb-up-line text-sm'
+                                }
+                              ></i>
+                              <span>有幫助 ({item.helpful + (isLiked ? 1 : 0)})</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
