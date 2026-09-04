@@ -1092,17 +1092,17 @@ export default function ProductPreviewPage() {
                       return (
                         <div
                           key={item.id}
-                          className="group flex flex-col cursor-pointer"
+                          className="group cursor-pointer flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-2xs border border-gray-100/80 hover:shadow-md transition-shadow"
                           onClick={() => {
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
                         >
                           {/* 3:4 直長型長方形圖片 (對齊第 1 版規格) */}
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#F5F5F3] mb-3.5">
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#F5F5F3]">
                             <img
                               src={item.image}
                               alt={item.name}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                               loading="lazy"
                             />
                             {/* 懸浮查看商品按鈕 */}
@@ -1122,7 +1122,7 @@ export default function ProductPreviewPage() {
                           </div>
 
                           {/* 商品資訊區塊 */}
-                          <div className="space-y-1 flex-1 flex flex-col">
+                          <div className="p-4 space-y-1 flex-1 flex flex-col">
                             {/* 類別與收藏圖示 */}
                             <div className="flex items-center justify-between text-xs text-gray-500">
                               <span>{item.category}</span>
