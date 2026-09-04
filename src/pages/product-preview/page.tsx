@@ -62,13 +62,12 @@ const SAMPLE_PRODUCT = {
   ]
 };
 
-// 對齊 Readdy 第 1 版原版規格之相關產品推薦資料（3:4 長方形圖片、規格、簡介與折扣價格）
+// 對齊 Readdy 第 1 版原版規格之相關產品推薦資料（3:4 長方形圖片、簡介與折扣價格）
 const RELATED_PREVIEW_PRODUCTS = [
   {
     id: 'rel-1',
     category: '女性護理',
     name: 'VAGI 私密護理潔淨慕斯',
-    spec: '180ml | 女性清潔劑',
     description: '專為敏感肌膚設計的溫和潔膚產品，低刺激配方適合敏感性肌膚，有效緩解異味問題',
     image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=900&h=1200',
     originalPrice: 19,
@@ -79,7 +78,6 @@ const RELATED_PREVIEW_PRODUCTS = [
     id: 'rel-2',
     category: '女性護理',
     name: '抗菌無痕內褲 - 舒適款',
-    spec: '180ml | 女性清潔劑',
     description: '專為敏感肌膚設計的溫和潔膚產品，低刺激配方適合敏感性肌膚，有效緩解異味問題',
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=900&h=1200',
     originalPrice: 14,
@@ -90,7 +88,6 @@ const RELATED_PREVIEW_PRODUCTS = [
     id: 'rel-3',
     category: '女性護理',
     name: '深層修護私密清潔露',
-    spec: '180ml | 女性清潔劑',
     description: '專為敏感肌膚設計的溫和潔膚產品，低刺激配方適合敏感性肌膚，有效緩解異味問題',
     image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=900&h=1200',
     originalPrice: 22,
@@ -101,7 +98,6 @@ const RELATED_PREVIEW_PRODUCTS = [
     id: 'rel-4',
     category: '女性護理',
     name: '生理褲 - 超薄款',
-    spec: '180ml | 女性清潔劑',
     description: '專為敏感肌膚設計的溫和潔膚產品，低刺激配方適合敏感性肌膚，有效緩解異味問題',
     image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=900&h=1200',
     originalPrice: 21,
@@ -1155,11 +1151,6 @@ export default function ProductPreviewPage() {
                             >
                               {item.name}
                             </h4>
-
-                            {/* 規格標籤 */}
-                            <p className="text-xs text-gray-500 font-normal">
-                              {item.spec}
-                            </p>
 
                             {/* 簡短描述 */}
                             <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed flex-1 pt-0.5">
