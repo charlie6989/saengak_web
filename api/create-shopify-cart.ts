@@ -66,6 +66,16 @@ interface CheckoutLine {
 interface CreateCartRequestBody {
   lines?: unknown;
   invoicePreference?: unknown;
+  discountCodes?: unknown;
+}
+
+function parseDiscountCodes(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const codes = value
+    .filter((v): v is string => typeof v === 'string')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0 && s.length <= 50);
+  return codes.length > 0 ? codes.slice(0, 5) : undefined;
 }
 
 interface ShopifyCartCreateResponse {
@@ -175,6 +185,7 @@ export async function POST(request: Request): Promise<Response> {
       carrier: 'none',
       carrierId: '',
     });
+    const discountCodes = parseDiscountCodes(body?.discountCodes);
 
     if (
       !body ||
@@ -209,6 +220,10 @@ export async function POST(request: Request): Promise<Response> {
             id
             checkoutUrl
             totalQuantity
+            discountCodes {
+              code
+              applicable
+            }
           }
           userErrors {
             field
@@ -285,6 +300,14 @@ export async function POST(request: Request): Promise<Response> {
       }, { status: 502, headers: corsHeaders });
     }
 
+    const cartInput: Record<string, unknown> = {
+      lines: body.lines,
+      attributes,
+    };
+    if (discountCodes && discountCodes.length > 0) {
+      cartInput.discountCodes = discountCodes;
+    }
+
     const shopifyResponse = await fetch(
       `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`,
       {
@@ -296,7 +319,7 @@ export async function POST(request: Request): Promise<Response> {
         },
         body: JSON.stringify({
           query,
-          variables: { input: { lines: body.lines, attributes } },
+          variables: { input: cartInput },
         }),
       },
     );

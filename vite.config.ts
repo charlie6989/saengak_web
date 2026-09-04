@@ -52,6 +52,38 @@ function devApiPlugin(): Plugin {
           res.end(JSON.stringify({ error: message }));
         }
       });
+
+      server.middlewares.use('/api/shopify/discounts', async (req, res) => {
+        try {
+          const method = req.method || 'GET';
+          const headers = new Headers();
+          Object.entries(req.headers).forEach(([name, value]) => {
+            if (Array.isArray(value)) {
+              value.forEach((item) => headers.append(name, item));
+            } else if (value) {
+              headers.set(name, value);
+            }
+          });
+
+          const host = req.headers.host || 'localhost:3000';
+          const webRequest = new Request(`http://${host}/api/shopify/discounts`, {
+            method,
+            headers,
+          });
+          const api = await import('./api/shopify/discounts.js');
+          const response = method === 'OPTIONS'
+            ? await api.OPTIONS(webRequest)
+            : await api.GET(webRequest);
+
+          res.statusCode = response.status;
+          response.headers.forEach((value, name) => res.setHeader(name, value));
+          res.end(await response.text());
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Unable to fetch discounts';
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: message }));
+        }
+      });
     },
   };
 }

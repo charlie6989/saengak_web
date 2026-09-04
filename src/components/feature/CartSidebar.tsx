@@ -9,6 +9,8 @@ import {
 } from '../../domain/invoice';
 import { createShopifyCheckout } from '../../lib/shopifyCheckout';
 import { captureExceptionSafe } from '../../lib/sentry';
+import { fetchUserCoupons, calculateDiscountAmount } from '../../lib/promotions';
+import type { UserCoupon } from '../../types/promotions';
 import AuthModal from './AuthModal';
 
 const FREE_SHIPPING_THRESHOLD = 1500;
@@ -18,6 +20,10 @@ export default function CartSidebar() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [invoicePreference, setInvoicePreference] = useState<InvoicePreference>(defaultInvoicePreference);
+  const [userCoupons, setUserCoupons] = useState<UserCoupon[]>([]);
+  const [isCouponSectionOpen, setIsCouponSectionOpen] = useState(false);
+  const [selectedCouponCode, setSelectedCouponCode] = useState<string>('');
+  const [manualCouponInput, setManualCouponInput] = useState<string>('');
   const { user, isLoading: isAuthLoading } = useAuth();
 
   const { 
@@ -40,9 +46,23 @@ export default function CartSidebar() {
     }
   }, [isCartOpen, validateAndPruneCart]);
 
+  // 當購物車開啟時，自動載入會員專屬優惠券
+  useEffect(() => {
+    if (isCartOpen && user?.id) {
+      void fetchUserCoupons(user.id).then((coupons) => {
+        setUserCoupons(coupons.filter((c) => c.status === 'available'));
+      });
+    }
+  }, [isCartOpen, user?.id]);
+
   const totalPrice = getTotalPrice();
   const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - totalPrice);
   const freeShippingProgress = Math.min(100, Math.round((totalPrice / FREE_SHIPPING_THRESHOLD) * 100));
+
+  const activeCoupon = userCoupons.find((c) => c.coupon_code === selectedCouponCode);
+  const discountCalculation = activeCoupon?.promotion
+    ? calculateDiscountAmount(activeCoupon.promotion, totalPrice)
+    : { amount: 0, isEligible: true, shortfall: 0 };
 
   const submitCheckout = async () => {
     setIsSubmitting(true);
@@ -53,7 +73,8 @@ export default function CartSidebar() {
         return { merchandiseId, quantity: item.quantity };
       });
       
-      const checkoutUrl = await createShopifyCheckout(shopifyLines, invoicePreference);
+      const discountCodes = selectedCouponCode.trim() ? [selectedCouponCode.trim()] : undefined;
+      const checkoutUrl = await createShopifyCheckout(shopifyLines, invoicePreference, discountCodes);
       window.location.href = checkoutUrl;
     } catch (err: any) {
       const msg = err?.message || '建立結帳失敗，請稍後再試。';
@@ -283,15 +304,179 @@ export default function CartSidebar() {
         {items.length > 0 && (
           <div className="border-t border-gray-200 px-6 py-4 bg-white space-y-3 shrink-0">
             {/* Total */}
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <span className="text-sm text-gray-600 font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                  總金額
+            <div className="py-2 space-y-1">
+              <div className="flex items-center justify-between text-xs text-gray-600">
+                <span>商品小計</span>
+                <span>{formatTwd(totalPrice)}</span>
+              </div>
+              {selectedCouponCode && discountCalculation.amount > 0 && (
+                <div className="flex items-center justify-between text-xs text-teal-700 font-semibold">
+                  <span>優惠折抵 ({selectedCouponCode})</span>
+                  <span>-{formatTwd(discountCalculation.amount)}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+                <div>
+                  <span className="text-sm text-gray-900 font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                    總結帳金額
+                  </span>
+                  {selectedCouponCode && (
+                    <p className="text-[10px] text-gray-400">實際金額於 Shopify Checkout 結算</p>
+                  )}
+                </div>
+                <span className="text-xl font-bold text-teal-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                  {formatTwd(Math.max(0, totalPrice - discountCalculation.amount))}
                 </span>
               </div>
-              <span className="text-xl font-bold text-teal-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                {formatTwd(totalPrice)}
-              </span>
+            </div>
+
+            {/* 優惠券折抵區塊 */}
+            <div className="border-t border-gray-100 pt-3 pb-1">
+              <button
+                type="button"
+                onClick={() => setIsCouponSectionOpen(!isCouponSectionOpen)}
+                className="w-full flex items-center justify-between text-xs font-bold text-gray-800 hover:text-teal-700 py-1 transition-colors cursor-pointer"
+              >
+                <span className="flex items-center gap-1.5">
+                  <i className="ri-ticket-2-line text-teal-600 text-sm"></i>
+                  <span>選擇優惠券 / 輸入折扣碼</span>
+                  {selectedCouponCode && (
+                    <span className="px-2 py-0.5 rounded bg-teal-100 text-teal-800 font-mono font-bold text-[11px]">
+                      {selectedCouponCode}
+                    </span>
+                  )}
+                </span>
+                <i className={`ri-arrow-down-s-line text-base transition-transform ${isCouponSectionOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}></i>
+              </button>
+
+              {isCouponSectionOpen && (
+                <div className="mt-3 space-y-3 p-3 bg-gray-50/80 rounded-xl border border-gray-200/70 text-xs">
+                  {/* 手動輸入優惠碼 */}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="輸入折扣代碼"
+                      value={manualCouponInput}
+                      onChange={(e) => setManualCouponInput(e.target.value.toUpperCase())}
+                      className="flex-1 px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-mono uppercase bg-white focus:outline-none focus:border-teal-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!manualCouponInput.trim()) return;
+                        setSelectedCouponCode(manualCouponInput.trim());
+                        setManualCouponInput('');
+                      }}
+                      className="px-3 py-1.5 bg-teal-700 text-white rounded-lg font-semibold hover:bg-teal-800 cursor-pointer"
+                    >
+                      套用
+                    </button>
+                  </div>
+
+                  {/* 已套用之折扣碼指示 */}
+                  {selectedCouponCode && (
+                    <div className="flex items-center justify-between bg-teal-50 p-2.5 rounded-lg border border-teal-200 text-teal-900">
+                      <div className="flex items-center gap-2">
+                        <i className="ri-checkbox-circle-fill text-teal-600"></i>
+                        <span>已套用：<strong className="font-mono">{selectedCouponCode}</strong></span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCouponCode('')}
+                        className="text-gray-400 hover:text-red-500 font-bold px-1 cursor-pointer"
+                        title="取消套用"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
+                  {/* 會員已歸戶優惠券列表 */}
+                  {user ? (
+                    userCoupons.length > 0 ? (
+                      <div className="space-y-2 pt-1 border-t border-gray-200/60">
+                        <p className="text-[11px] font-semibold text-gray-600">您的可用優惠券：</p>
+                        <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
+                          {userCoupons.map((c) => {
+                            const isSelected = selectedCouponCode === c.coupon_code;
+                            const isEligible = !c.promotion || totalPrice >= c.promotion.min_spend;
+
+                            return (
+                              <div
+                                key={c.id}
+                                onClick={() => {
+                                  if (!isEligible) return;
+                                  setSelectedCouponCode(isSelected ? '' : c.coupon_code);
+                                }}
+                                className={`p-2 rounded-lg border transition-all cursor-pointer flex items-center justify-between ${
+                                  isSelected
+                                    ? 'bg-teal-50/70 border-teal-500 text-teal-950 font-medium'
+                                    : isEligible
+                                    ? 'bg-white border-gray-200 hover:border-teal-300 text-gray-800'
+                                    : 'bg-gray-100 border-gray-200 text-gray-400 opacity-60 cursor-not-allowed'
+                                }`}
+                              >
+                                <div>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="font-bold">{c.promotion?.title || c.coupon_code}</span>
+                                    <span className="font-mono text-[10px] text-gray-500">({c.coupon_code})</span>
+                                  </div>
+                                  <p className="text-[10px] text-gray-500 mt-0.5">
+                                    {c.promotion?.min_spend
+                                      ? `滿 NT$ ${c.promotion.min_spend.toLocaleString()} 可用`
+                                      : '無門檻'}
+                                    {!isEligible && c.promotion && (
+                                      <span className="text-red-500 ml-1 font-semibold">
+                                        (差 NT$ {(c.promotion.min_spend - totalPrice).toLocaleString()})
+                                      </span>
+                                    )}
+                                  </p>
+                                </div>
+                                <button
+                                  type="button"
+                                  disabled={!isEligible}
+                                  className={`text-[11px] px-2 py-1 rounded font-semibold ${
+                                    isSelected
+                                      ? 'bg-teal-700 text-white'
+                                      : isEligible
+                                      ? 'bg-gray-100 text-gray-700 hover:bg-teal-100 hover:text-teal-900'
+                                      : 'bg-gray-200 text-gray-400'
+                                  }`}
+                                >
+                                  {isSelected ? '已選用' : '選用'}
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="pt-2 border-t border-gray-200/60 text-center py-2">
+                        <p className="text-gray-500 text-[11px]">目前尚無可用的優惠券</p>
+                        <a
+                          href="/promotion"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-block mt-1 text-teal-700 font-bold hover:underline text-[11px]"
+                        >
+                          前往優惠專區領取 →
+                        </a>
+                      </div>
+                    )
+                  ) : (
+                    <div className="pt-2 border-t border-gray-200/60 text-center py-2">
+                      <p className="text-gray-500 text-[11px]">登入會員可自動載入已領取的專屬折價券</p>
+                      <button
+                        type="button"
+                        onClick={() => setIsAuthModalOpen(true)}
+                        className="inline-block mt-1 text-teal-700 font-bold hover:underline text-[11px] cursor-pointer"
+                      >
+                        立即登入 →
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Invoice Form */}

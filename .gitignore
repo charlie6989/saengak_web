@@ -132,6 +132,7 @@ backup_lucissi/
 scripts/backup-shopify-store.mjs
 scripts/test-api-keys.mjs
 scripts/test-shopify-backup.mjs
+scripts/create_shopify_discounts.mjs
 
 # Contains hardcoded production admin credentials (plaintext password) - never commit
 supabase/DEPLOY_TO_PRODUCTION.sql

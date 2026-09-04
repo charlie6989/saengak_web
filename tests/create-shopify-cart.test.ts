@@ -200,6 +200,62 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
       expect(data.totalQuantity).toBe(2);
     });
 
+    it('若請求包含 discountCodes，正確將折扣代碼傳遞給 Shopify cartCreate mutation', async () => {
+      const mockCheckoutUrl = 'https://gh2xgs-zf.myshopify.com/cart/c/12345';
+      const mockCartId = 'gid://shopify/Cart/test_cart_token_99999';
+
+      let capturedVariables: any = null;
+      globalThis.fetch = vi.fn().mockImplementation(async (_url, options: any) => {
+        const body = JSON.parse(options.body);
+        capturedVariables = body.variables;
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            data: {
+              cartCreate: {
+                cart: {
+                  id: mockCartId,
+                  checkoutUrl: mockCheckoutUrl,
+                  totalQuantity: 1,
+                  discountCodes: [{ code: 'WELCOME100', applicable: true }],
+                },
+                userErrors: [],
+                warnings: [],
+              },
+            },
+          }),
+        };
+      });
+
+      const request = new Request('http://localhost/api/create-shopify-cart', {
+        method: 'POST',
+        headers: {
+          Origin: 'https://saengak.com.tw',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer valid-member-token',
+        },
+        body: JSON.stringify({
+          lines: [
+            {
+              merchandiseId: 'gid://shopify/ProductVariant/1234567890',
+              quantity: 1,
+            },
+          ],
+          invoicePreference: {
+            kind: 'personal',
+            carrier: 'none',
+            carrierId: '',
+          },
+          discountCodes: ['WELCOME100'],
+        }),
+      });
+
+      const response = await POST(request);
+      expect(response.status).toBe(200);
+      expect(capturedVariables?.input?.discountCodes).toEqual(['WELCOME100']);
+    });
+
     it('當 Shopify 回報 Online Store Locked 時，轉譯為 503 SHOPIFY_STOREFRONT_LOCKED', async () => {
       globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,

@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { mockUsers, mockOrders, mockFavorites, mockAuthState, simulateApiDelay } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
@@ -8,6 +8,8 @@ import Footer from '../../components/feature/Footer';
 import { safePublicHttpsUrl } from '../../lib/publicUrl';
 import { fetchMemberReviews, submitProductReview, isOrderDelivered } from '../../lib/reviews-qa';
 import type { ProductReview } from '../../types/reviews-qa';
+import { fetchUserCoupons } from '../../lib/promotions';
+import type { UserCoupon } from '../../types/promotions';
 
 interface UserProfile {
   id: string;
@@ -116,6 +118,11 @@ export default function ProfilePage() {
   const [reviewError, setReviewError] = useState<string>('');
   const [reviewToast, setReviewToast] = useState<string>('');
 
+  // 優惠券狀態
+  const [coupons, setCoupons] = useState<UserCoupon[]>([]);
+  const [couponFilter, setCouponFilter] = useState<'available' | 'used' | 'expired'>('available');
+  const [couponToast, setCouponToast] = useState<string>('');
+
   useEffect(() => {
     const getUser = async () => {
       if (useMockData) {
@@ -138,6 +145,7 @@ export default function ProfilePage() {
             loadOrders(user.id),
             loadFavorites(user.id),
             loadMemberReviews(user.id),
+            loadMemberCoupons(user.id),
           ]);
         } else {
           navigate('/login');
@@ -152,7 +160,7 @@ export default function ProfilePage() {
   // 監聽 URL 參數變化
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab && ['profile', 'orders', 'favorites'].includes(tab)) {
+    if (tab && ['profile', 'orders', 'favorites', 'coupons'].includes(tab)) {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -187,8 +195,20 @@ export default function ProfilePage() {
 
       // 載入評價
       await loadMemberReviews(userId);
+
+      // 載入優惠券
+      await loadMemberCoupons(userId);
     } catch (error) {
       console.error('載入假數據失敗:', error);
+    }
+  };
+
+  const loadMemberCoupons = async (userId: string) => {
+    try {
+      const userCoupons = await fetchUserCoupons(userId);
+      setCoupons(userCoupons);
+    } catch (error) {
+      console.error('載入會員優惠券失敗:', error);
     }
   };
 
@@ -624,6 +644,16 @@ export default function ProfilePage() {
                   <i className="ri-heart-line mr-2"></i>
                   我的收藏 ({favorites.length})
                 </button>
+                <button
+                  onClick={() => setActiveTab('coupons')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm cursor-pointer whitespace-nowrap ${activeTab === 'coupons'
+                      ? 'border-teal-500 text-teal-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                >
+                  <i className="ri-coupon-3-line mr-2"></i>
+                  我的優惠券 ({coupons.filter((c) => c.status === 'available').length})
+                </button>
               </nav>
             </div>
           </div>
@@ -1016,6 +1046,198 @@ export default function ProfilePage() {
                       </button>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 我的優惠券標籤 */}
+          {activeTab === 'coupons' && (
+            <div className="bg-white shadow-sm p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">我的優惠券</h2>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                    您所領取之專屬折價券均儲存於此，結帳時可直接折抵購物金額。
+                  </p>
+                </div>
+                <Link
+                  to="/promotion"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#225B4F] text-white hover:bg-[#1a473e] text-xs sm:text-sm font-semibold rounded-lg shadow-2xs transition-colors self-start sm:self-auto cursor-pointer"
+                >
+                  <i className="ri-gift-line"></i>
+                  <span>前往優惠專區領券</span>
+                  <i className="ri-external-link-line text-xs"></i>
+                </Link>
+              </div>
+
+              {couponToast && (
+                <div className="mb-6 p-3 text-sm rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-2">
+                  <i className="ri-checkbox-circle-line text-emerald-600"></i>
+                  <span>{couponToast}</span>
+                </div>
+              )}
+
+              {/* 優惠券狀態篩選子頁籤 */}
+              <div className="flex border-b border-gray-200 mb-6 gap-2 sm:gap-6">
+                <button
+                  type="button"
+                  onClick={() => setCouponFilter('available')}
+                  className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
+                    couponFilter === 'available'
+                      ? 'border-[#225B4F] text-[#225B4F]'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  可使用 ({coupons.filter((c) => c.status === 'available').length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCouponFilter('used')}
+                  className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
+                    couponFilter === 'used'
+                      ? 'border-[#225B4F] text-[#225B4F]'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  已使用 ({coupons.filter((c) => c.status === 'used').length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCouponFilter('expired')}
+                  className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
+                    couponFilter === 'expired'
+                      ? 'border-[#225B4F] text-[#225B4F]'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  已過期 ({coupons.filter((c) => c.status === 'expired').length})
+                </button>
+              </div>
+
+              {/* 列表渲染 */}
+              {coupons.filter((c) => c.status === couponFilter).length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                    <i className="ri-coupon-line text-3xl"></i>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    尚無{couponFilter === 'available' ? '可使用' : couponFilter === 'used' ? '已使用' : '已過期'}的優惠券
+                  </h3>
+                  <p className="text-gray-500 mb-6 text-sm">
+                    {couponFilter === 'available'
+                      ? '探索最新優惠活動，立即領取專屬折扣碼！'
+                      : '此分類目前沒有任何紀錄。'}
+                  </p>
+                  {couponFilter === 'available' && (
+                    <Link
+                      to="/promotion"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#225B4F] text-white hover:bg-[#1a473e] text-sm font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
+                    >
+                      <span>前往優惠專區領券</span>
+                      <i className="ri-external-link-line text-sm"></i>
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {coupons
+                    .filter((c) => c.status === couponFilter)
+                    .map((item) => {
+                      const promo = item.promotion;
+                      const isAvailable = item.status === 'available';
+
+                      return (
+                        <div
+                          key={item.id}
+                          className={`relative border rounded-2xl p-5 transition-all flex flex-col justify-between ${
+                            isAvailable
+                              ? 'border-gray-200 bg-white hover:border-[#225B4F]/50 hover:shadow-sm'
+                              : 'border-gray-200 bg-gray-50/70 opacity-75'
+                          }`}
+                        >
+                          <div>
+                            {/* 頂部標籤與面額 */}
+                            <div className="flex items-start justify-between gap-2 mb-3">
+                              <div>
+                                <span className={`inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full mb-1.5 ${
+                                  isAvailable
+                                    ? 'bg-[#225B4F]/10 text-[#225B4F]'
+                                    : 'bg-gray-200 text-gray-600'
+                                }`}>
+                                  {promo?.badge_text || (promo?.discount_type === 'free_shipping' ? '免運券' : '折價券')}
+                                </span>
+                                <h3 className="font-bold text-gray-900 text-base">
+                                  {promo?.title || item.coupon_code}
+                                </h3>
+                              </div>
+                              <div className="text-right">
+                                <span className={`text-xl font-black ${isAvailable ? 'text-[#225B4F]' : 'text-gray-500'}`}>
+                                  {promo?.discount_type === 'percentage'
+                                    ? `${promo.discount_value}% OFF`
+                                    : promo?.discount_type === 'fixed_amount'
+                                    ? `NT$ ${promo.discount_value}`
+                                    : '全館免運'}
+                                </span>
+                              </div>
+                            </div>
+
+                            <p className="text-xs text-gray-600 leading-relaxed mb-4">
+                              {promo?.description || (promo?.min_spend ? `全館消費滿 NT$ ${promo.min_spend.toLocaleString()} 即可使用` : '結帳時無條件折抵')}
+                            </p>
+                          </div>
+
+                          <div className="pt-4 border-t border-gray-100 flex flex-col gap-3">
+                            {/* 代碼與複製 */}
+                            <div className="flex items-center justify-between bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200/70">
+                              <span className="font-mono text-xs font-bold text-gray-700">
+                                {item.coupon_code}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (navigator.clipboard) {
+                                    navigator.clipboard.writeText(item.coupon_code);
+                                    setCouponToast(`已複製優惠碼：${item.coupon_code}`);
+                                    setTimeout(() => setCouponToast(''), 3000);
+                                  }
+                                }}
+                                className="text-xs text-[#225B4F] hover:text-[#173e35] font-semibold cursor-pointer"
+                              >
+                                複製代碼
+                              </button>
+                            </div>
+
+                            {/* 日期與動作按鈕 */}
+                            <div className="flex items-center justify-between pt-1">
+                              <span className="text-[11px] text-gray-400">
+                                {promo?.ends_at
+                                  ? `到期日：${new Date(promo.ends_at).toLocaleDateString('zh-TW')}`
+                                  : `領取於 ${new Date(item.claimed_at).toLocaleDateString('zh-TW')}`}
+                              </span>
+
+                              {isAvailable ? (
+                                <button
+                                  type="button"
+                                  onClick={() => navigate('/search?query=all')}
+                                  className="px-3.5 py-1.5 bg-[#225B4F] hover:bg-[#1a473e] text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                >
+                                  立即去使用
+                                </button>
+                              ) : (
+                                <span className="text-xs text-gray-400 font-medium">
+                                  {item.status === 'used' ? '已於訂單中使用' : '已過期'}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               )}
             </div>

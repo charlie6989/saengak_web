@@ -88,6 +88,7 @@ export function validateShopifyCheckoutUrl(rawCheckoutUrl: string): string {
 export async function createShopifyCheckout(
   lines: ShopifyCheckoutLine[],
   invoicePreference: InvoicePreference,
+  discountCodes?: string[],
 ): Promise<string> {
   if (!isShopifyCheckoutConfigured) {
     throw new Error('Shopify checkout 尚未設定');
@@ -112,7 +113,11 @@ export async function createShopifyCheckout(
     {
       method: 'POST',
       headers,
-      body: JSON.stringify({ lines, invoicePreference }),
+      body: JSON.stringify({
+        lines,
+        invoicePreference,
+        ...(discountCodes && discountCodes.length > 0 ? { discountCodes } : {}),
+      }),
     },
   );
 
