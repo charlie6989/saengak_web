@@ -189,27 +189,24 @@ export default function Header() {
         </div>
       </div>
 
-      {/* 桌面版 - Solid Menu Bar with Conditional Background */}
+      {/* 桌面版 - 滿版導覽列選單，去除左右空隙 */}
       <header
-        className="hidden lg:block fixed top-0 left-0 w-full z-50 bg-transparent"
+        className="hidden lg:block fixed top-0 left-0 w-full z-50 bg-[#FFFEF2] border-b border-[#E8E6DC]/60"
         style={{ marginTop: '32px' }}
       >
         <div
-          className="view-wrap"
+          className="w-full px-6 lg:px-12"
           style={{
-            background: 'transparent !important',
-            padding: '0 0.8cm' // 設定頂部貼合公告欄 (0px)，左右邊界為 0.8cm
+            backgroundColor: '#FFFEF2'
           }}
         >
-          {/* 主導航 - 響應式設計，手機版增加高度 */}
+          {/* 主導航 - 滿版設計，無左右空隙 */}
           <div
-            className="mx-auto w-full"
+            className="w-full"
             style={{
-              maxWidth: 'calc(100vw - 1.6cm)', // 扣除左右各 0.8cm 的邊界
-              height: 'min(64px, 4.03vw)', // 手機版增加到 64px
-              backgroundColor: '#FFFEF2', // 統一設定為 #FFFEF2
-              borderRadius: '0px',
-              padding: '0 min(20px, 2.22vw)' // 手機版減少內邊距
+              height: 'min(64px, 4.03vw)',
+              backgroundColor: '#FFFEF2',
+              borderRadius: '0px'
             }}
           >
             <div className="flex items-center justify-between h-full">

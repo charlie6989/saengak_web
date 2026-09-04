@@ -399,7 +399,7 @@ export default function ProductPreviewPage() {
                             type="button"
                             onClick={() => handleThumbnailClick(idx)}
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
-                            className={`block w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${
+                            className={`block w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer ${
                               isSelected
                                 ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
@@ -444,7 +444,7 @@ export default function ProductPreviewPage() {
               </div>
             </aside>
 
-            {/* 焦點大圖展示區 (寬度維持版面寬度，長度隨圖片自動變長變短，全圖完整展示) */}
+            {/* 焦點大圖展示區 (左右背景完全一致無白框色差，全圖完整自然展示) */}
             <div className="order-1 min-w-0 sm:order-2">
               <div
                 onPointerDown={handlePointerDown}
@@ -452,7 +452,8 @@ export default function ProductPreviewPage() {
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full bg-white rounded-xl overflow-hidden border border-gray-200/80 shadow-2xs group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
+                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
+                style={{ backgroundColor: '#F7F7F5' }}
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -494,7 +495,7 @@ export default function ProductPreviewPage() {
                     src={activeImage}
                     alt={product.name}
                     draggable={false}
-                    className="block w-full h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01]"
+                    className="block w-full h-auto object-cover object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl"
                   />
                 </div>
 
@@ -689,52 +690,55 @@ export default function ProductPreviewPage() {
             </div>
           </aside>
         </section>
+      </main>
 
-        {/* =========================================================================
-            2. 下方頁籤與內容整合區塊 (包含頁籤與文章內容之細緻淡雅外框容器)
-            ========================================================================= */}
-        <div className="w-full mt-12 sm:mt-16">
-          <div className="w-full max-w-7xl mx-auto rounded-2xl bg-white border border-gray-200/90 shadow-2xs overflow-hidden">
-            {/* 頁籤選單導航列 (Tab Headers) - 位於大外框頂部 */}
-            <div className="border-b border-gray-200/80 bg-[#EDF1EE]">
-              <div className="flex flex-wrap sm:flex-nowrap justify-center w-full">
-                {[
-                  { id: 'details', label: '產品內容' },
-                  { id: 'reviews', label: '評論 (354)' },
-                  { id: 'related', label: '相關產品' },
-                  { id: 'qa', label: '詢問' }
-                ].map((tab) => {
-                  const isActive = selectedTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={(e) => {
-                        setSelectedTab(tab.id as any);
-                        (e.currentTarget as HTMLButtonElement).blur();
-                      }}
-                      className={`flex-1 min-w-[120px] sm:min-w-0 h-[48px] text-sm sm:text-base transition-all duration-150 cursor-pointer flex items-center justify-center border-0 outline-none focus:outline-none focus:ring-0 focus:border-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none select-none ${
-                        isActive
-                          ? 'bg-[#CDC7BC] text-gray-900 font-bold'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-[#E2E7E3]'
-                      }`}
-                      style={{
-                        fontFamily: 'Noto Sans TC, sans-serif',
-                        outline: 'none',
-                        boxShadow: 'none',
-                        border: 'none',
-                        WebkitTapHighlightColor: 'transparent',
-                      }}
-                    >
-                      <span>{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+      {/* =========================================================================
+          2. 下方全寬頁籤與內容區塊 (Full-Width Tabs Section - 調整全寬背景純白與頁籤底色，消除區塊色差)
+          ========================================================================= */}
+      <div className="w-full bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* 頁籤選單導航列 (Tab Navigation - 保持原版 4 頁籤名稱與順序，對齊原版平整無框按鈕與底色) */}
+          <div className="mb-12">
+            <div className="flex gap-0 justify-center">
+              {[
+                { id: 'details', label: '產品內容' },
+                { id: 'reviews', label: '評論 (354)' },
+                { id: 'related', label: '相關產品' },
+                { id: 'qa', label: '詢問' }
+              ].map((tab) => {
+                const isActive = selectedTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={(e) => {
+                      setSelectedTab(tab.id as any);
+                      (e.currentTarget as HTMLButtonElement).blur();
+                    }}
+                    className={`text-base font-normal transition-all duration-300 flex-1 max-w-[355px] cursor-pointer select-none ${
+                      isActive ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                    style={{
+                      fontFamily: '"Noto Sans TC", sans-serif',
+                      height: '50px',
+                      fontSize: '16px',
+                      backgroundColor: isActive ? 'rgb(216, 214, 202)' : 'rgb(235, 243, 236)',
+                      borderWidth: 'medium',
+                      borderStyle: 'none',
+                      borderColor: 'currentColor',
+                      borderImage: 'none',
+                      borderRadius: '0px',
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
+          </div>
 
-            {/* 頁籤內容主面板 (Tab Panels) - 內縮 padding，與頁籤緊密相連 */}
-            <div className="p-6 sm:p-10 min-h-[460px]">
+          {/* 頁籤內容主面板 (Tab Panels - 內容完全保持原樣不變) */}
+          <div className="min-h-[400px]">
               {/* -------------------------------------------------------------
                   單一核心頁籤：【產品內容】 (包含生活情境圖文、其他功能/細節圖片、尺寸、版型、規格)
                   ------------------------------------------------------------- */}
@@ -1309,7 +1313,6 @@ export default function ProductPreviewPage() {
             </div>
           </div>
         </div>
-      </main>
 
       {/* 圖片放大檢視 Modal */}
       {isZoomModalOpen && (
