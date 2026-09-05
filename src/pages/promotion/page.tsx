@@ -4,6 +4,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import AuthModal from '../../components/feature/AuthModal';
 import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 import {
   fetchActivePromotions,
   fetchUserCoupons,
@@ -55,15 +56,25 @@ export default function PromotionPage() {
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  // 讀取促銷活動
+  // 讀取促銷活動與使用者優惠券
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       const promos = await fetchActivePromotions();
       setPromotions(promos);
 
-      if (user?.id) {
-        const coupons = await fetchUserCoupons(user.id);
+      let activeUserId = user?.id;
+      if (!activeUserId && typeof window !== 'undefined') {
+        const mockRaw = localStorage.getItem('mockCurrentUser');
+        if (mockRaw) {
+          try {
+            activeUserId = JSON.parse(mockRaw).id;
+          } catch {}
+        }
+      }
+
+      if (activeUserId) {
+        const coupons = await fetchUserCoupons(activeUserId);
         setUserCoupons(coupons);
       } else {
         setUserCoupons([]);
@@ -84,8 +95,25 @@ export default function PromotionPage() {
     );
   };
 
-  const handleClaim = async (promo: Promotion) => {
-    if (!user) {
+  const getUserCoupon = (promo: Promotion): UserCoupon | undefined => {
+    return userCoupons.find(
+      (c) => c.promotion_id === promo.id || c.coupon_code === promo.code
+    );
+  };
+
+  const handleClaim = async (promo: Promotion, targetUserId?: string) => {
+    let effectiveUserId = targetUserId || user?.id;
+
+    if (!effectiveUserId && typeof window !== 'undefined') {
+      const mockRaw = localStorage.getItem('mockCurrentUser');
+      if (mockRaw) {
+        try {
+          effectiveUserId = JSON.parse(mockRaw).id;
+        } catch {}
+      }
+    }
+
+    if (!effectiveUserId) {
       setPendingPromoToClaim(promo);
       setIsAuthModalOpen(true);
       return;
@@ -93,9 +121,9 @@ export default function PromotionPage() {
 
     setClaimingId(promo.id);
     try {
-      const result = await claimPromotionCoupon(user.id, promo);
+      const result = await claimPromotionCoupon(effectiveUserId, promo);
       if (result.success && result.coupon) {
-        setUserCoupons((prev) => [result.coupon!, ...prev]);
+        setUserCoupons((prev) => [result.coupon!, ...prev.filter((c) => c.id !== result.coupon!.id)]);
         showToast(result.message, 'success');
       } else {
         showToast(result.message, result.alreadyClaimed ? 'info' : 'error');
@@ -110,12 +138,32 @@ export default function PromotionPage() {
   // 登入完成回呼
   const handleAuthenticated = async () => {
     setIsAuthModalOpen(false);
-    if (pendingPromoToClaim && user?.id) {
-      await handleClaim(pendingPromoToClaim);
-      setPendingPromoToClaim(null);
-    } else if (user?.id) {
-      const coupons = await fetchUserCoupons(user.id);
+
+    let activeUserId: string | undefined;
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      activeUserId = sessionData.session?.user?.id;
+    } catch {}
+
+    if (!activeUserId && typeof window !== 'undefined') {
+      const mockRaw = localStorage.getItem('mockCurrentUser');
+      if (mockRaw) {
+        try {
+          activeUserId = JSON.parse(mockRaw).id;
+        } catch {}
+      }
+    }
+
+    const effectiveId = activeUserId || user?.id;
+    if (effectiveId) {
+      const coupons = await fetchUserCoupons(effectiveId);
       setUserCoupons(coupons);
+
+      if (pendingPromoToClaim) {
+        const promoToClaim = pendingPromoToClaim;
+        setPendingPromoToClaim(null);
+        await handleClaim(promoToClaim, effectiveId);
+      }
     }
   };
 
@@ -246,8 +294,15 @@ export default function PromotionPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {filteredPromotions.map((promo) => {
-                const claimed = isCouponClaimed(promo.id, promo.code);
+                const userCoupon = getUserCoupon(promo);
+                const isUserLoggedIn = Boolean(user?.id || (typeof window !== 'undefined' && localStorage.getItem('mockCurrentUser')));
+                const isClaimed = Boolean(userCoupon);
+                const isUsed = userCoupon?.status === 'used';
                 const isClaimingThis = claimingId === promo.id;
+                const isExhausted = Boolean(
+                  promo.is_exhausted ||
+                  (typeof promo.usage_limit === 'number' && typeof promo.async_usage_count === 'number' && promo.async_usage_count >= promo.usage_limit)
+                );
 
                 return (
                   <div
@@ -339,15 +394,38 @@ export default function PromotionPage() {
                             </span>
                           )}
 
-                          {/* 2. 限制每個代碼的總使用次數上限 (若未勾選則為 null，不加以限制) */}
-                          {typeof promo.usage_limit === 'number' && (
+                          {/* 2. 限制每個代碼的總使用次數上限 與 額滿狀態 */}
+                          {isExhausted ? (
+                            <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-700 border border-gray-300 px-2 py-0.5 rounded-md font-medium">
+                              <i className="ri-close-circle-line text-xs text-gray-500"></i>
+                              已全數兌換完畢
+                            </span>
+                          ) : typeof promo.usage_limit === 'number' ? (
                             <span className="inline-flex items-center gap-1 bg-rose-50 text-rose-900 border border-rose-200/80 px-2 py-0.5 rounded-md font-medium">
                               <i className="ri-fire-line text-xs text-rose-600"></i>
                               全店限量 {promo.usage_limit.toLocaleString()} 組
                             </span>
+                          ) : null}
+
+                          {/* 3. 門檻標籤 (滿件或滿額或無門檻) */}
+                          {promo.min_quantity && promo.min_quantity > 0 ? (
+                            <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-900 border border-blue-200/80 px-2 py-0.5 rounded-md font-medium">
+                              <i className="ri-shopping-bag-3-line text-xs text-blue-700"></i>
+                              滿 {promo.min_quantity} 件可折
+                            </span>
+                          ) : promo.min_spend > 0 ? (
+                            <span className="inline-flex items-center gap-1 bg-sky-50 text-sky-900 border border-sky-200/80 px-2 py-0.5 rounded-md font-medium">
+                              <i className="ri-money-dollar-circle-line text-xs text-sky-700"></i>
+                              滿 NT$ {promo.min_spend.toLocaleString()} 可折
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-900 border border-emerald-200/80 px-2 py-0.5 rounded-md font-medium">
+                              <i className="ri-check-double-line text-xs text-emerald-700"></i>
+                              全館無門檻
+                            </span>
                           )}
 
-                          {/* 3. 折扣組合規則 (依 combines_with 動態判斷，不寫死) */}
+                          {/* 4. 折扣組合規則 (依 combines_with 動態判斷，不寫死) */}
                           {(() => {
                             const combines = promo.combines_with;
                             const canCombine = combines && (combines.order_discounts || combines.product_discounts || combines.shipping_discounts);
@@ -394,14 +472,54 @@ export default function PromotionPage() {
 
                         <div className="flex items-center justify-between gap-3 pt-1">
                           <span className="text-[11px] text-gray-400">
-                            {promo.ends_at ? `有效期限至 ${new Date(promo.ends_at).toLocaleDateString('zh-TW')}` : '長期有效'}
+                            {promo.ends_at ? `有效期限至 ${new Date(promo.ends_at).toLocaleDateString('zh-TW')}` : '無使用期限 • 長期有效'}
                           </span>
 
-                          {claimed ? (
+                          {isExhausted ? (
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200">
+                                <i className="ri-forbid-line"></i>
+                                已全數兌完
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => navigate('/search?query=all')}
+                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer"
+                              >
+                                前往逛逛
+                              </button>
+                            </div>
+                          ) : !isUserLoggedIn ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPendingPromoToClaim(promo);
+                                setIsAuthModalOpen(true);
+                              }}
+                              className="px-4 py-2 text-xs font-bold text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
+                            >
+                              <i className="ri-download-cloud-line text-sm"></i>
+                              <span>立即領券歸戶</span>
+                            </button>
+                          ) : isUsed && promo.applies_once_per_customer ? (
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200">
+                                <i className="ri-check-double-line text-gray-500"></i>
+                                已於訂單中使用
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => navigate('/search?query=all')}
+                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer"
+                              >
+                                前往逛逛
+                              </button>
+                            </div>
+                          ) : isClaimed ? (
                             <div className="flex items-center gap-2">
                               <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
                                 <i className="ri-check-line font-bold"></i>
-                                已歸戶
+                                {promo.applies_once_per_customer ? '已歸戶' : '已歸戶（可重複使用）'}
                               </span>
                               <button
                                 type="button"

@@ -55,7 +55,7 @@ const SitemapPage = () => {
       color: 'text-teal-600',
       bgColor: 'bg-teal-50',
       links: [
-        { name: '一對一諮詢', url: '/customer-service', description: '聯繫我們的專業客服團隊' },
+        { name: '線上客服', url: '/customer-service', description: '聯繫我們的專業客服團隊' },
         { name: '常見問題', url: '/faq', description: '查看常見問題和詳細解答' },
         { name: '訂單狀態', url: '/order-status', description: '查詢和追蹤您的訂單狀態' },
         { name: '退換貨說明', url: '/return-policy', description: '了解退換貨政策和詳細流程' },
@@ -264,7 +264,7 @@ const SitemapPage = () => {
                 style={{ fontFamily: "Noto Sans TC, sans-serif" }}
               >
                 <i className="ri-customer-service-line mr-2 sm:mr-3 text-lg sm:text-xl"></i>
-                一對一諮詢
+                線上客服
               </Link>
               <Link
                 to="/faq"

@@ -67,7 +67,7 @@ const RELATED_PREVIEW_PRODUCTS = [
   {
     id: 'rel-1',
     category: '女性護理',
-    name: 'VAGI 私密護理潔淨慕斯',
+    name: 'SAENGAK 私密護理潔淨慕斯',
     description: '專為敏感肌膚設計的溫和潔膚產品，低刺激配方適合敏感性肌膚，有效緩解異味問題',
     image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=900&h=1200',
     originalPrice: 19,
@@ -351,10 +351,10 @@ export default function ProductPreviewPage() {
           id="product-main-section"
           className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] xl:grid-cols-[720px_460px] xl:justify-center xl:gap-12"
         >
-          {/* 左側：直長型縮圖導航列 + 直長型焦點主圖 (高度齊平) */}
-          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[108px] sm:items-stretch">
-            {/* 縮圖導航 (展示 6 張圖片，總高度嚴格與右側焦點圖等高齊平) */}
-            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full h-full min-h-0 flex flex-col overflow-hidden">
+          {/* 左側：直長型縮圖導航列 + 直長型焦點主圖 (高度嚴格控制在右邊立即購買按鈕之內，約 520px) */}
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[108px] sm:h-[520px] sm:max-h-[520px]">
+            {/* 縮圖導航 (總長度嚴格控制不超過右邊立即購買高度，展示 6 張縮圖，超出支援平滑捲動) */}
+            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full sm:h-[520px] min-h-0 flex flex-col overflow-hidden">
               <div className="relative flex items-center sm:flex-col w-full h-full min-h-0 gap-1.5 sm:gap-1">
                 {/* 桌機版：頂部向上箭頭 (超過 6 張時顯示) */}
                 {productImages.length > 6 && (
@@ -380,7 +380,7 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 縮圖列表 (完全與右側焦點圖等高，6 張縮圖均分 100% 高度) */}
+                {/* 縮圖列表 (完全在 520px 容器內，每張縮圖等比正方形不變形，超出則內部平滑滾動) */}
                 <div className="flex-1 min-w-0 min-h-0 overflow-hidden sm:w-full sm:h-full">
                   <ul
                     ref={thumbnailListRef}
@@ -444,15 +444,15 @@ export default function ProductPreviewPage() {
               </div>
             </aside>
 
-            {/* 焦點大圖展示區 (左右背景完全一致無白框色差，全圖完整自然展示) */}
-            <div className="order-1 min-w-0 sm:order-2">
+            {/* 焦點大圖展示區 (高度與縮圖齊平 520px，全圖完整自然展示) */}
+            <div className="order-1 min-w-0 sm:order-2 aspect-square sm:aspect-auto sm:h-[520px]">
               <div
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
+                className="relative w-full h-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
                 style={{ backgroundColor: '#F7F7F5' }}
               >
                 {/* 左右導覽箭頭 */}
@@ -484,9 +484,9 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 焦點主圖 (寬度滿版貼齊，高度隨圖片長度自然伸縮，完整展示全圖) */}
+                {/* 焦點主圖 (高度與寬度自然填滿容器，全圖滿版無白邊) */}
                 <div
-                  className="w-full flex items-center justify-center transition-transform duration-200"
+                  className="w-full h-full flex items-center justify-center transition-transform duration-200"
                   style={{
                     transform: isDragging ? `translateX(${dragOffset * 0.4}px)` : 'none'
                   }}
@@ -495,7 +495,7 @@ export default function ProductPreviewPage() {
                     src={activeImage}
                     alt={product.name}
                     draggable={false}
-                    className="block w-full h-auto object-cover object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl"
+                    className="block w-full h-full object-cover object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl"
                   />
                 </div>
 
@@ -702,7 +702,7 @@ export default function ProductPreviewPage() {
             <div className="flex gap-0 justify-center">
               {[
                 { id: 'details', label: '產品內容' },
-                { id: 'reviews', label: '評論 (354)' },
+                { id: 'reviews', label: '顧客評價 (354)' },
                 { id: 'related', label: '相關產品' },
                 { id: 'qa', label: '詢問' }
               ].map((tab) => {

@@ -57,6 +57,45 @@ export interface ShopifyProductOption {
   values: string[];
 }
 
+export interface MusinsaFitGuide {
+  fit?: string;
+  thickness?: string;
+  elasticity?: string;
+  breathability?: string;
+}
+
+export interface SizeChartItem {
+  size: string;
+  waist: string;
+  hips: string;
+  crotch: string;
+  weight: string;
+}
+
+export interface CareSpecs {
+  volume?: string;
+  texture?: string;
+  application?: string;
+  origin?: string;
+  ingredients?: string;
+  shelf_life?: string;
+  [key: string]: string | undefined;
+}
+
+export interface LifestyleShowcaseItem {
+  badge: string;
+  title: string;
+  description: string;
+  image?: string;
+}
+
+export interface CraftDetailItem {
+  category: string;
+  title: string;
+  description: string;
+  image?: string;
+}
+
 export interface ShopifyProduct {
   id: string;
   name: string;
@@ -80,6 +119,12 @@ export interface ShopifyProduct {
   highlights?: string[];
   subtitle?: string;
   promotionBadge?: string;
+  fitGuide?: MusinsaFitGuide;
+  sizeChart?: SizeChartItem[];
+  careSpecs?: CareSpecs;
+  careInstructions?: string[];
+  lifestyleShowcase?: LifestyleShowcaseItem[];
+  craftDetails?: CraftDetailItem[];
 }
 
 export interface ShopifyCollection {
@@ -215,9 +260,39 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
 
   const fallbackImage = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800';
 
-  const highlights = parseProductHighlights(node.highlights?.value, node.descriptionHtml || '');
-  const subtitle = node.subtitle?.value?.trim() || undefined;
-  const promotionBadge = node.promotionBadge?.value?.trim() || undefined;
+  // 建立 metafield lookup map，相容單一欄位 query 與批次 identifiers query
+  const metafieldMap = new Map<string, any>();
+  if (Array.isArray(node.metafields)) {
+    node.metafields.forEach((m: any) => {
+      if (m && m.key) {
+        metafieldMap.set(`${m.namespace || 'custom'}.${m.key}`, m);
+        metafieldMap.set(m.key, m);
+      }
+    });
+  }
+  const getMeta = (key: string, directMeta: any) => {
+    return directMeta?.value || metafieldMap.get(key)?.value || metafieldMap.get(`custom.${key}`)?.value;
+  };
+
+  const highlights = parseProductHighlights(getMeta('highlights', node.highlights), node.descriptionHtml || '');
+  const subtitle = (getMeta('subtitle', node.subtitle) || '').trim() || undefined;
+  const promotionBadge = (getMeta('promotion_badge', node.promotionBadge) || '').trim() || undefined;
+
+  const parseJsonMetafield = <T>(val: string | undefined): T | undefined => {
+    if (!val) return undefined;
+    try {
+      return JSON.parse(val) as T;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const fitGuide = parseJsonMetafield<MusinsaFitGuide>(getMeta('fit_guide', node.fitGuide));
+  const sizeChart = parseJsonMetafield<SizeChartItem[]>(getMeta('size_chart', node.sizeChart));
+  const careSpecs = parseJsonMetafield<CareSpecs>(getMeta('care_specs', node.careSpecs));
+  const careInstructions = parseJsonMetafield<string[]>(getMeta('care_instructions', node.careInstructions));
+  const lifestyleShowcase = parseJsonMetafield<LifestyleShowcaseItem[]>(getMeta('lifestyle_showcase', node.lifestyleShowcase));
+  const craftDetails = parseJsonMetafield<CraftDetailItem[]>(getMeta('craft_details', node.craftDetails));
 
   return {
     id: node.id || '',
@@ -242,6 +317,12 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     highlights,
     subtitle,
     promotionBadge,
+    fitGuide,
+    sizeChart,
+    careSpecs,
+    careInstructions,
+    lifestyleShowcase,
+    craftDetails,
   };
 }
 
@@ -277,6 +358,46 @@ const PRODUCT_FRAGMENT = `
     type
   }
   promotionBadge: metafield(namespace: "custom", key: "promotion_badge") {
+    value
+    type
+  }
+  fitGuide: metafield(namespace: "custom", key: "fit_guide") {
+    value
+    type
+  }
+  sizeChart: metafield(namespace: "custom", key: "size_chart") {
+    value
+    type
+  }
+  careSpecs: metafield(namespace: "custom", key: "care_specs") {
+    value
+    type
+  }
+  careInstructions: metafield(namespace: "custom", key: "care_instructions") {
+    value
+    type
+  }
+  lifestyleShowcase: metafield(namespace: "custom", key: "lifestyle_showcase") {
+    value
+    type
+  }
+  craftDetails: metafield(namespace: "custom", key: "craft_details") {
+    value
+    type
+  }
+  metafields(identifiers: [
+    { namespace: "custom", key: "highlights" },
+    { namespace: "custom", key: "subtitle" },
+    { namespace: "custom", key: "promotion_badge" },
+    { namespace: "custom", key: "fit_guide" },
+    { namespace: "custom", key: "size_chart" },
+    { namespace: "custom", key: "care_specs" },
+    { namespace: "custom", key: "care_instructions" },
+    { namespace: "custom", key: "lifestyle_showcase" },
+    { namespace: "custom", key: "craft_details" }
+  ]) {
+    namespace
+    key
     value
     type
   }
@@ -374,12 +495,13 @@ export async function getShopifyProducts(optionsOrFirst: number | {
 export async function getShopifyProduct(idOrHandle: string): Promise<ShopifyProduct | null> {
   if (!idOrHandle) return null;
 
-  const trimmed = idOrHandle.trim();
-  const isGid = trimmed.startsWith('gid://shopify/Product/');
-  const isNumeric = /^\d+$/.test(trimmed);
+  let trimmed = decodeURIComponent(idOrHandle.trim());
+  const gidMatch = trimmed.match(/(\d+)$/);
+  const isNumeric = /^\d+$/.test(trimmed) || (trimmed.includes('gid:') && Boolean(gidMatch));
+  const numericId = gidMatch ? gidMatch[1] : trimmed;
 
-  if (isGid || isNumeric) {
-    const gid = isGid ? trimmed : `gid://shopify/Product/${trimmed}`;
+  if (isNumeric) {
+    const gid = `gid://shopify/Product/${numericId}`;
     try {
       const gqlQuery = `
         query GetProductById($id: ID!) {
@@ -441,7 +563,10 @@ export async function getShopifyProductByHandle(handle: string): Promise<Shopify
 export async function getShopifyProductsByIds(ids: string[]): Promise<ShopifyProduct[]> {
   if (!ids || ids.length === 0) return [];
 
-  const gids = ids.map((id) => (id.startsWith('gid://shopify/Product/') ? id : `gid://shopify/Product/${id}`));
+  const gids = ids.map((id) => {
+    const numMatch = id.match(/(\d+)$/);
+    return numMatch ? `gid://shopify/Product/${numMatch[1]}` : (id.startsWith('gid://') ? id : `gid://shopify/Product/${id}`);
+  });
 
   const gqlQuery = `
     query GetProductsByIds($ids: [ID!]!) {

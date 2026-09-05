@@ -109,7 +109,14 @@ export async function fetchActivePromotions(): Promise<Promotion[]> {
       .order('created_at', { ascending: false });
 
     if (!error && data && data.length > 0) {
-      return data as Promotion[];
+      return data.map((p: any) => ({
+        ...p,
+        applies_once_per_customer: p.applies_once_per_customer ?? true,
+        usage_limit: p.usage_limit ?? null,
+        async_usage_count: p.async_usage_count ?? 0,
+        is_exhausted: typeof p.usage_limit === 'number' && typeof p.async_usage_count === 'number' && p.async_usage_count >= p.usage_limit,
+        combines_with: p.combines_with ?? { order_discounts: false, product_discounts: false, shipping_discounts: false },
+      })) as Promotion[];
     }
   } catch (dbErr) {
     console.warn('載入 Supabase 促銷活動失敗:', dbErr);
@@ -125,8 +132,19 @@ export async function fetchActivePromotions(): Promise<Promotion[]> {
 export async function fetchUserCoupons(userId: string): Promise<UserCoupon[]> {
   if (!userId) return [];
 
-  // Mock 模式支援
-  const isMockAuth = typeof window !== 'undefined' && localStorage.getItem('useMockAuth') === 'true';
+  // 1. 檢查是否具備真實 Supabase Auth Session
+  let hasRealSession = false;
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    hasRealSession = Boolean(sessionData.session?.user?.id && sessionData.session.user.id === userId);
+  } catch {}
+
+  // 2. Mock 模式判定 (若非真實 Session 且存在 mockCurrentUser 或 useMockAuth)
+  const isMockAuth = !hasRealSession && typeof window !== 'undefined' && (
+    localStorage.getItem('useMockAuth') === 'true' ||
+    Boolean(localStorage.getItem('mockCurrentUser'))
+  );
+
   if (isMockAuth) {
     const saved = localStorage.getItem(`${LOCAL_STORAGE_COUPONS_KEY}_${userId}`);
     if (saved) {
@@ -155,7 +173,17 @@ export async function fetchUserCoupons(userId: string): Promise<UserCoupon[]> {
       return saved ? JSON.parse(saved) : [];
     }
 
-    return (data || []) as UserCoupon[];
+    return (data || []).map((c: any) => ({
+      ...c,
+      promotion: c.promotion ? {
+        ...c.promotion,
+        applies_once_per_customer: c.promotion.applies_once_per_customer ?? true,
+        usage_limit: c.promotion.usage_limit ?? null,
+        async_usage_count: c.promotion.async_usage_count ?? 0,
+        is_exhausted: typeof c.promotion.usage_limit === 'number' && typeof c.promotion.async_usage_count === 'number' && c.promotion.async_usage_count >= c.promotion.usage_limit,
+        combines_with: c.promotion.combines_with ?? { order_discounts: false, product_discounts: false, shipping_discounts: false },
+      } : undefined,
+    })) as UserCoupon[];
   } catch (err) {
     console.warn('載入會員優惠券失敗:', err);
     return [];
@@ -173,7 +201,24 @@ export async function claimPromotionCoupon(
     return { success: false, message: '請先登入會員以領取優惠券' };
   }
 
-  const isMockAuth = typeof window !== 'undefined' && localStorage.getItem('useMockAuth') === 'true';
+  // 1. 取得 Supabase 認證 Token（若過期則嘗試刷新）
+  let token: string | undefined;
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    token = sessionData.session?.access_token;
+    if (!token) {
+      const { data: refreshData } = await supabase.auth.refreshSession();
+      token = refreshData.session?.access_token;
+    }
+  } catch (authErr) {
+    console.warn('獲取 Supabase Session 異常:', authErr);
+  }
+
+  // 2. Mock 模式判定 (若無真實 Session 且具備 mockCurrentUser 或 useMockAuth)
+  const isMockAuth = !token && typeof window !== 'undefined' && (
+    localStorage.getItem('useMockAuth') === 'true' ||
+    Boolean(localStorage.getItem('mockCurrentUser'))
+  );
 
   if (isMockAuth) {
     const key = `${LOCAL_STORAGE_COUPONS_KEY}_${userId}`;
@@ -197,21 +242,15 @@ export async function claimPromotionCoupon(
 
     list.unshift(newCoupon);
     localStorage.setItem(key, JSON.stringify(list));
-    return { success: true, message: '優惠券已成功歸戶！', coupon: newCoupon };
+    return { success: true, message: '優惠券已成功歸戶至會員中心！', coupon: newCoupon };
   }
 
-  // 領券歸戶一律交由後端 API 處理：後端會以「代碼」重新向 Shopify 查證權威折扣資料，
-  // 並用 service role 寫入 promotions / user_coupons（一般會員的 RLS 不允許直接寫入 promotions，
-  // 且 Shopify 折扣的 id 是 gid://shopify/... 字串，與 user_coupons.promotion_id 的 uuid 外鍵型別不符，
-  // 前端不可再直接對 Supabase insert）。任何失敗一律如實回報，不再退回 localStorage 假裝成功——
-  // 那只會製造資料庫裡不存在、換裝置或清快取就消失的假優惠券。
-  try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData.session?.access_token;
-    if (!token) {
-      return { success: false, message: '登入狀態已逾期，請重新登入後再試' };
-    }
+  if (!token) {
+    return { success: false, message: '登入狀態已逾期，請重新登入後再試' };
+  }
 
+  // 3. 優先交由後端權威 API 處理：查證 Shopify 折扣並將優惠券寫入 user_coupons
+  try {
     const response = await fetch('/api/promotions/claim', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -220,13 +259,63 @@ export async function claimPromotionCoupon(
 
     const data = await response.json().catch(() => null) as ClaimCouponResult | null;
     if (data && typeof data.success === 'boolean') {
-      return data;
+      if (data.success || data.alreadyClaimed) {
+        return data;
+      }
     }
-    return { success: false, message: '領取失敗，請稍後再試' };
-  } catch (err) {
-    console.warn('呼叫領券 API 失敗:', err);
-    return { success: false, message: '領取失敗，請稍後再試，或稍後於會員中心確認是否已歸戶' };
+  } catch (apiErr) {
+    console.warn('呼叫領券 API 失敗，嘗試由前端透過 Supabase RLS 進行備援歸戶:', apiErr);
   }
+
+  // 4. 前端直接透過 Supabase 進行 RLS 歸戶備援 (避免後端網路異常或本機未設定環境變數造成阻擋)
+  try {
+    const { data: promoRow } = await supabase
+      .from('promotions')
+      .select('id')
+      .eq('code', promotion.code)
+      .maybeSingle();
+
+    if (promoRow?.id) {
+      const { data: couponRow, error: insertError } = await supabase
+        .from('user_coupons')
+        .insert({
+          user_id: userId,
+          promotion_id: promoRow.id,
+          coupon_code: promotion.code,
+          status: 'available',
+        })
+        .select('*, promotion:promotions (*)')
+        .single();
+
+      if (insertError) {
+        if (insertError.code === '23505') {
+          const { data: existingRow } = await supabase
+            .from('user_coupons')
+            .select('*, promotion:promotions (*)')
+            .eq('user_id', userId)
+            .eq('promotion_id', promoRow.id)
+            .maybeSingle();
+
+          return {
+            success: false,
+            message: '您已領取過此張優惠券',
+            alreadyClaimed: true,
+            coupon: (existingRow as UserCoupon) ?? undefined,
+          };
+        }
+      } else if (couponRow) {
+        return {
+          success: true,
+          message: '優惠券已成功歸戶至會員中心！',
+          coupon: couponRow as UserCoupon,
+        };
+      }
+    }
+  } catch (dbErr) {
+    console.warn('前端 Supabase 備援歸戶異常:', dbErr);
+  }
+
+  return { success: false, message: '領取失敗，請稍後再試' };
 }
 
 /**

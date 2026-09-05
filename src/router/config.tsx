@@ -69,6 +69,10 @@ const routes: RouteObject[] = [
     element: <ProductPage />,
   },
   {
+    path: '/product/*',
+    element: <ProductPage />,
+  },
+  {
     path: '/login',
     element: <LoginPage />,
   },

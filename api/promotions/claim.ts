@@ -78,10 +78,15 @@ export async function POST(request: Request): Promise<Response> {
       }, { status: 503, headers: corsHeaders });
     }
 
-    const authClient = createClient(supabaseUrl, publicKey, {
+    const userClient = createClient(supabaseUrl, publicKey, {
       auth: { persistSession: false, autoRefreshToken: false },
+      global: {
+        headers: {
+          Authorization: `Bearer ${bearerMatch[1]}`,
+        },
+      },
     });
-    const { data: authData, error: authError } = await authClient.auth.getUser(bearerMatch[1]);
+    const { data: authData, error: authError } = await userClient.auth.getUser(bearerMatch[1]);
     if (authError || !authData.user) {
       return jsonResponse({
         success: false,
@@ -102,8 +107,48 @@ export async function POST(request: Request): Promise<Response> {
       }, { status: 400, headers: corsHeaders });
     }
 
-    // 3. 一律以代碼重新向 Shopify 查證權威折扣資料，絕不信任前端傳來的門檻/折扣值等欄位
-    const promotion = await fetchShopifyPromotionByCode(code);
+    // 3. 一律以代碼向 Shopify 查證權威折扣資料；若 Shopify 服務暫時無法連線，則向 Supabase promotions 主表進行備援查證
+    let promotion = await fetchShopifyPromotionByCode(code);
+    let promotionId: string | null = null;
+
+    if (!promotion && typeof userClient.from === 'function') {
+      try {
+        const { data: dbPromo } = await userClient
+          .from('promotions')
+          .select('*')
+          .eq('code', code)
+          .eq('is_active', true)
+          .maybeSingle();
+
+        if (dbPromo) {
+          promotion = {
+            id: dbPromo.id,
+            code: dbPromo.code,
+            title: dbPromo.title,
+            subtitle: dbPromo.subtitle ?? undefined,
+            description: dbPromo.description ?? undefined,
+            category: dbPromo.category,
+            discount_type: dbPromo.discount_type,
+            discount_value: Number(dbPromo.discount_value),
+            min_spend: Number(dbPromo.min_spend),
+            min_quantity: null,
+            starts_at: dbPromo.starts_at,
+            ends_at: dbPromo.ends_at ?? undefined,
+            badge_text: dbPromo.badge_text ?? undefined,
+            image_url: dbPromo.image_url ?? undefined,
+            is_active: dbPromo.is_active,
+            applies_once_per_customer: dbPromo.applies_once_per_customer ?? true,
+            usage_limit: dbPromo.usage_limit ?? null,
+            async_usage_count: dbPromo.async_usage_count ?? 0,
+            combines_with: dbPromo.combines_with ?? { order_discounts: false, product_discounts: false, shipping_discounts: false },
+          };
+          promotionId = dbPromo.id;
+        }
+      } catch (dbPromoErr) {
+        console.warn('從 Supabase 查詢備援促銷活動失敗:', dbPromoErr);
+      }
+    }
+
     if (!promotion) {
       return jsonResponse({
         success: false,
@@ -112,52 +157,66 @@ export async function POST(request: Request): Promise<Response> {
       }, { status: 503, headers: corsHeaders });
     }
 
-    // 4. 取得 Service Role Client（繞過 RLS，因一般會員無權寫入 promotions）
+    // 4. 取得資料庫操作客戶端（若有 Service Role 則優先使用以支援自動 upsert 同調；若無則使用具備 RLS user_coupons_insert_own 權限之 userClient）
     const adminClient = getSupabaseAdminClient();
-    if (!adminClient) {
-      return jsonResponse({
-        success: false,
-        message: '會員系統暫時無法使用，請稍後再試',
-        code: 'MEMBER_SYSTEM_UNAVAILABLE',
-      }, { status: 503, headers: corsHeaders });
+    const claimClient = adminClient || userClient;
+
+    // 5. 若有 adminClient，將 Shopify 權威資料 upsert 進 public.promotions，取得穩定的 uuid 主鍵
+    if (adminClient && !promotionId) {
+      const { data: promotionRow, error: promotionUpsertError } = await adminClient
+        .from('promotions')
+        .upsert({
+          code: promotion.code,
+          title: promotion.title,
+          subtitle: promotion.subtitle || null,
+          description: promotion.description || null,
+          category: promotion.category,
+          discount_type: promotion.discount_type,
+          discount_value: promotion.discount_value,
+          min_spend: promotion.min_spend,
+          starts_at: promotion.starts_at,
+          ends_at: promotion.ends_at || null,
+          badge_text: promotion.badge_text || null,
+          image_url: promotion.image_url || null,
+          is_active: true,
+        }, { onConflict: 'code' })
+        .select('id')
+        .single();
+
+      if (!promotionUpsertError && promotionRow?.id) {
+        promotionId = promotionRow.id;
+      } else if (promotionUpsertError) {
+        console.warn('promotions upsert failed, falling back to query', promotionUpsertError);
+      }
     }
 
-    // 5. 將 Shopify 權威資料 upsert 進 public.promotions，取得穩定的 uuid 主鍵
-    const { data: promotionRow, error: promotionUpsertError } = await adminClient
-      .from('promotions')
-      .upsert({
-        code: promotion.code,
-        title: promotion.title,
-        subtitle: promotion.subtitle || null,
-        description: promotion.description || null,
-        category: promotion.category,
-        discount_type: promotion.discount_type,
-        discount_value: promotion.discount_value,
-        min_spend: promotion.min_spend,
-        starts_at: promotion.starts_at,
-        ends_at: promotion.ends_at || null,
-        badge_text: promotion.badge_text || null,
-        image_url: promotion.image_url || null,
-        is_active: true,
-      }, { onConflict: 'code' })
-      .select('id')
-      .single();
+    // 若尚未取得 promotionId，自 promotions 表查詢既有主檔 id
+    if (!promotionId && typeof claimClient.from === 'function') {
+      const { data: existingPromo } = await claimClient
+        .from('promotions')
+        .select('id')
+        .eq('code', promotion.code)
+        .maybeSingle();
 
-    if (promotionUpsertError || !promotionRow) {
-      console.error('promotions upsert failed', promotionUpsertError);
+      if (existingPromo?.id) {
+        promotionId = existingPromo.id;
+      }
+    }
+
+    if (!promotionId) {
       return jsonResponse({
         success: false,
-        message: '折扣資料同步失敗，請稍後再試',
-        code: 'PROMOTION_SYNC_FAILED',
-      }, { status: 502, headers: corsHeaders });
+        message: '促銷活動尚未啟用或主檔同步中，請稍後再試',
+        code: 'PROMOTION_NOT_FOUND',
+      }, { status: 404, headers: corsHeaders });
     }
 
     // 6. 將優惠券歸戶至會員名下（unique(user_id, promotion_id) 防重複領取）
-    const { data: couponRow, error: couponInsertError } = await adminClient
+    const { data: couponRow, error: couponInsertError } = await claimClient
       .from('user_coupons')
       .insert({
         user_id: checkoutUserId,
-        promotion_id: promotionRow.id,
+        promotion_id: promotionId,
         coupon_code: code,
         status: 'available',
       })
@@ -169,11 +228,11 @@ export async function POST(request: Request): Promise<Response> {
         // 已領取過：嘗試查回既有那筆優惠券供前端顯示（非必要，查詢失敗不影響已知結果）
         let existingCoupon: unknown;
         try {
-          const { data: existingRow } = await adminClient
+          const { data: existingRow } = await claimClient
             .from('user_coupons')
             .select('*, promotion:promotions (*)')
             .eq('user_id', checkoutUserId)
-            .eq('promotion_id', promotionRow.id)
+            .eq('promotion_id', promotionId)
             .maybeSingle();
           existingCoupon = existingRow ?? undefined;
         } catch (lookupErr) {

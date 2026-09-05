@@ -55,7 +55,7 @@ export default function Footer() {
                   className="text-base text-gray-600 hover:text-gray-900 transition-colors"
                   style={{ fontFamily: "Noto Sans TC, sans-serif" }}
                 >
-                  一對一諮詢
+                  線上客服
                 </Link>
               </li>
               <li>

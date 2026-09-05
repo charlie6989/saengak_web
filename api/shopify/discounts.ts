@@ -98,6 +98,7 @@ export interface ShopifyPromotion {
   applies_once_per_customer: boolean;
   usage_limit: number | null;
   async_usage_count: number;
+  is_exhausted: boolean;
   combines_with: {
     order_discounts: boolean;
     product_discounts: boolean;
@@ -300,6 +301,7 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
   // 勾選並填入數字為 number；未勾選為 null (不限總使用次數)
   const usageLimit = typeof cd.usageLimit === 'number' ? cd.usageLimit : null;
   const asyncUsageCount = typeof cd.asyncUsageCount === 'number' ? cd.asyncUsageCount : 0;
+  const isExhausted = usageLimit !== null && asyncUsageCount >= usageLimit;
 
   // 組合 (Combinations)：是否可與其他折扣併用
   const combinesWith = {
@@ -326,6 +328,10 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
 
   if (usageLimit !== null) {
     ruleDetails.push(`全店總限量 ${usageLimit.toLocaleString()} 組`);
+  }
+
+  if (isExhausted) {
+    ruleDetails.push('已全數兌換完畢');
   }
 
   const canCombineAny = combinesWith.order_discounts || combinesWith.product_discounts || combinesWith.shipping_discounts;
@@ -360,6 +366,7 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
     applies_once_per_customer: appliesOnce,
     usage_limit: usageLimit,
     async_usage_count: asyncUsageCount,
+    is_exhausted: isExhausted,
     combines_with: combinesWith,
   };
 }

@@ -134,7 +134,27 @@ describe('SAENGAK Shopify 折扣轉換純函式測試 (api/shopify/discounts.ts 
 
       expect(result).toBeDefined();
       expect(result!.usage_limit).toBeNull();
+      expect(result!.is_exhausted).toBe(false);
       expect(result!.description).not.toContain('全店總限量');
+    });
+
+    it('asyncUsageCount 大於等於 usageLimit 時，is_exhausted 為 true 且說明含「已全數兌換完畢」', () => {
+      const node = {
+        id: 'gid://shopify/DiscountCodeNode/7-exhausted',
+        codeDiscount: {
+          status: 'ACTIVE',
+          codes: { nodes: [{ code: 'EXHAUSTED100' }] },
+          customerGets: { value: { percentage: 0.1 } },
+          usageLimit: 100,
+          asyncUsageCount: 100,
+        },
+      };
+
+      const result = mapDiscountNodeToPromotion(node as any);
+
+      expect(result).toBeDefined();
+      expect(result!.is_exhausted).toBe(true);
+      expect(result!.description).toContain('已全數兌換完畢');
     });
   });
 
@@ -263,6 +283,61 @@ describe('SAENGAK Shopify 折扣轉換純函式測試 (api/shopify/discounts.ts 
       expect(result!.min_quantity).toBe(5);
       expect(result!.min_spend).toBe(0);
       expect(result!.description).toContain('滿 5 件');
+    });
+  });
+
+  describe('6. isOriginAllowed 安全檢驗 (同源 GET 放行與跨域惡意阻擋)', () => {
+    it('同源 GET 請求缺少 Origin 標頭但 Host 為本機或合法網域時，應放行 (true)', async () => {
+      const { isOriginAllowed } = await import('../api/_lib/security.js');
+      const req = new Request('http://localhost:3000/api/shopify/discounts', {
+        method: 'GET',
+        headers: { host: 'localhost:3000' },
+      });
+      expect(isOriginAllowed(null, req)).toBe(true);
+    });
+
+    it('同源請求帶有 Sec-Fetch-Site: same-origin 時，應放行 (true)', async () => {
+      const { isOriginAllowed } = await import('../api/_lib/security.js');
+      const req = new Request('https://saengak.com.tw/api/shopify/discounts', {
+        method: 'GET',
+        headers: {
+          'sec-fetch-site': 'same-origin',
+        },
+      });
+      expect(isOriginAllowed(null, req)).toBe(true);
+    });
+
+    it('合法白名單 Origin 跨域請求應放行 (true)', async () => {
+      const { isOriginAllowed } = await import('../api/_lib/security.js');
+      const req = new Request('https://saengak.com.tw/api/shopify/discounts', {
+        method: 'GET',
+        headers: {
+          Origin: 'https://saengak.com.tw',
+        },
+      });
+      expect(isOriginAllowed('https://saengak.com.tw', req)).toBe(true);
+    });
+
+    it('非授權惡意跨域 Origin 請求必須嚴格拒絕 (false)', async () => {
+      const { isOriginAllowed } = await import('../api/_lib/security.js');
+      const req = new Request('https://saengak.com.tw/api/shopify/discounts', {
+        method: 'GET',
+        headers: {
+          Origin: 'https://malicious-phishing.com',
+        },
+      });
+      expect(isOriginAllowed('https://malicious-phishing.com', req)).toBe(false);
+    });
+
+    it('非授權外站 Referer 請求必須嚴格拒絕 (false)', async () => {
+      const { isOriginAllowed } = await import('../api/_lib/security.js');
+      const req = new Request('https://saengak.com.tw/api/shopify/discounts', {
+        method: 'GET',
+        headers: {
+          referer: 'https://malicious-phishing.com/attack',
+        },
+      });
+      expect(isOriginAllowed(null, req)).toBe(false);
     });
   });
 });

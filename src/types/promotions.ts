@@ -28,6 +28,7 @@ export interface Promotion {
   applies_once_per_customer?: boolean;
   usage_limit?: number | null;
   async_usage_count?: number;
+  is_exhausted?: boolean;
   combines_with?: {
     order_discounts?: boolean;
     product_discounts?: boolean;

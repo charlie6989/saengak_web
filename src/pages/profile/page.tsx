@@ -1039,7 +1039,7 @@ export default function ProfilePage() {
                         收藏於 {formatDate(favorite.created_at)}
                       </p>
                       <button
-                        onClick={() => navigate(`/product/${favorite.product_id}`)}
+                        onClick={() => navigate(`/product/${favorite.product_id.split('/').pop() || favorite.product_id}`)}
                         className="w-full py-2 bg-teal-600 text-white hover:bg-teal-700 cursor-pointer whitespace-nowrap"
                       >
                         查看商品

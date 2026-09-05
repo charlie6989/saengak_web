@@ -269,4 +269,58 @@ describe('SAENGAK 會員領券歸戶 API 測試 (api/promotions/claim.ts)', () =
       expect(data.alreadyClaimed).toBe(true);
     });
   });
+
+  describe('6. 無 Service Role Key（本地開發降級 userClient 支援）', () => {
+    it('當 adminClient 為 null 時，降級使用 userClient 查詢 promotions 並寫入 user_coupons', async () => {
+      mocks.fetchShopifyPromotionByCode.mockResolvedValue(mockPromotion);
+      mocks.getSupabaseAdminClient.mockReturnValue(null);
+
+      const promotionsMaybeSingle = vi.fn().mockResolvedValue({ data: { id: 'promo-uuid-fallback' }, error: null });
+      const promotionsEq = vi.fn().mockReturnValue({ maybeSingle: promotionsMaybeSingle });
+      const promotionsSelect = vi.fn().mockReturnValue({ eq: promotionsEq });
+
+      const couponSingle = vi.fn().mockResolvedValue({
+        data: {
+          id: 'coupon-uuid-userclient',
+          user_id: 'member-123',
+          promotion_id: 'promo-uuid-fallback',
+          coupon_code: 'SAVE15',
+          status: 'available',
+        },
+        error: null,
+      });
+      const couponSelect = vi.fn().mockReturnValue({ single: couponSingle });
+      const couponInsert = vi.fn().mockReturnValue({ select: couponSelect });
+
+      mocks.createClient.mockReturnValue({
+        auth: {
+          getUser: vi.fn().mockResolvedValue({
+            data: { user: { id: 'member-123' } },
+            error: null,
+          }),
+        },
+        from: vi.fn((table: string) => {
+          if (table === 'promotions') return { select: promotionsSelect };
+          if (table === 'user_coupons') return { insert: couponInsert };
+          throw new Error(`Unexpected table: ${table}`);
+        }),
+      });
+
+      const request = new Request('http://localhost/api/promotions/claim', {
+        method: 'POST',
+        headers: {
+          Origin: 'https://saengak.com.tw',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer valid-member-token',
+        },
+        body: JSON.stringify({ code: 'SAVE15' }),
+      });
+
+      const response = await POST(request);
+      expect(response.status).toBe(200);
+      const data = (await response.json()) as any;
+      expect(data.success).toBe(true);
+      expect(data.coupon.id).toBe('coupon-uuid-userclient');
+    });
+  });
 });

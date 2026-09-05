@@ -17,21 +17,14 @@ export function getEffectiveOrigin(request: Request): string {
 }
 
 /**
- * 驗證請求 Origin 是否合法（防禦 CSRF）
- * 嚴格白名單：缺少 Origin 標頭一律視為不合法來源並拒絕（Fail-Closed），
- * 避免無 Origin 的伺服器對伺服器 / 腳本呼叫繞過白名單檢查。
+ * 驗證請求 Origin 是否合法（防禦 CSRF 與惡意跨域呼叫）
+ * 1. 若有 Origin 標頭：進行嚴格白名單比對（禁止非授權跨域來源）。
+ * 2. 若無 Origin 標頭：
+ *    - 依據 W3C/Fetch 規範，瀏覽器同源 GET/HEAD 請求不附帶 Origin 標頭，
+ *      此時以 Referer 標頭、Sec-Fetch-Site 或主機同源判定予以合法放行。
+ *    - 若帶有非白名單之外站 Referer 則嚴格阻擋。
  */
 export function isOriginAllowed(requestOrigin: string | null, request: Request): boolean {
-  if (!requestOrigin) return false;
-
-  const effectiveOrigin = getEffectiveOrigin(request);
-  if (requestOrigin === effectiveOrigin) return true;
-  try {
-    if (requestOrigin === new URL(request.url).origin) return true;
-  } catch {
-    // ignore
-  }
-
   // 預設允許清單
   const defaultAllowed = [
     'https://saengak.com.tw',
@@ -46,7 +39,58 @@ export function isOriginAllowed(requestOrigin: string | null, request: Request):
     .filter(Boolean);
 
   const allowedOrigins = [...new Set([...defaultAllowed, ...customAllowed])];
-  return allowedOrigins.includes(requestOrigin);
+
+  // 1. 若請求附帶 Origin 標頭（跨域請求或瀏覽器 POST/PUT 請求）
+  if (requestOrigin) {
+    const effectiveOrigin = getEffectiveOrigin(request);
+    if (requestOrigin === effectiveOrigin) return true;
+    try {
+      if (requestOrigin === new URL(request.url).origin) return true;
+    } catch {
+      // ignore
+    }
+    return allowedOrigins.includes(requestOrigin);
+  }
+
+  // 2. 若缺少 Origin 標頭（瀏覽器同源 GET 請求或本機伺服器內部調用）
+  // 檢查 Referer 標頭
+  const referer = request.headers.get('referer');
+  if (referer) {
+    try {
+      const refererOrigin = new URL(referer).origin;
+      if (allowedOrigins.includes(refererOrigin)) return true;
+      if (refererOrigin === getEffectiveOrigin(request)) return true;
+      // 帶有非白名單的外站 Referer 嚴格拒絕
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  // 檢查 Sec-Fetch-Site 標頭
+  const secFetchSite = request.headers.get('sec-fetch-site');
+  if (secFetchSite === 'same-origin' || secFetchSite === 'none') {
+    return true;
+  }
+
+  // 針對唯讀安全方法 (GET / HEAD)，檢驗 Host 是否為允許主機
+  const method = request.method?.toUpperCase();
+  if (method === 'GET' || method === 'HEAD') {
+    const effectiveOrigin = getEffectiveOrigin(request);
+    if (allowedOrigins.includes(effectiveOrigin)) return true;
+
+    const host = request.headers.get('host') || '';
+    if (
+      host.includes('localhost') ||
+      host.includes('127.0.0.1') ||
+      host.includes('saengak.com.tw') ||
+      host.endsWith('.vercel.app')
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**

@@ -483,7 +483,7 @@ export default function BlogArticle() {
                     <div
                       key={product.id}
                       className="cursor-pointer group flex items-center gap-3.5 p-2 rounded-xl hover:bg-gray-50 transition-colors"
-                      onClick={() => navigate(`/product/${product.id}`)}
+                      onClick={() => navigate(`/product/${product.id.split('/').pop() || product.id}`)}
                     >
                       <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
                         <img
