@@ -266,6 +266,50 @@ describe('Sentry Sanitizer & Security Redaction (資安脫敏測試)', () => {
 
       consoleSpy.mockRestore();
     });
+
+    it('captureExceptionSafe 應主動過濾 PGRST205 / schema cache 錯誤且不發送至 Sentry', () => {
+      const mockCapture = vi.fn();
+      (globalThis as any).window = {
+        Sentry: {
+          captureException: mockCapture,
+        },
+      };
+
+      const pgrstError = {
+        code: 'PGRST205',
+        details: null,
+        hint: "Perhaps you meant the table 'public.promotions'",
+        message: "Could not find the table 'public.product_reviews' in the schema cache",
+      };
+
+      const eventId = captureExceptionSafe(pgrstError);
+      expect(eventId).toMatch(/^#[0-9a-f]{6}$/);
+      expect(mockCapture).not.toHaveBeenCalled();
+
+      delete (globalThis as any).window;
+    });
+
+    it('captureExceptionSafe 遇非 Error 純物件時應正規化為 Error 實例以避免 Sentry 警告', () => {
+      const mockCapture = vi.fn();
+      (globalThis as any).window = {
+        Sentry: {
+          captureException: mockCapture,
+        },
+      };
+
+      const rawErrorObj = {
+        code: 'NETWORK_TIMEOUT',
+        message: '連線逾時',
+      };
+
+      captureExceptionSafe(rawErrorObj);
+      expect(mockCapture).toHaveBeenCalledTimes(1);
+      const sentArg = mockCapture.mock.calls[0][0];
+      expect(sentArg).toBeInstanceOf(Error);
+      expect(sentArg.message).toContain('[NETWORK_TIMEOUT] 連線逾時');
+
+      delete (globalThis as any).window;
+    });
   });
 
   describe('ErrorBoundary 邏輯測試', () => {

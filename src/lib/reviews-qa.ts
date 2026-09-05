@@ -90,6 +90,28 @@ export function isOrderDelivered(order?: {
 }
 
 /**
+ * 判斷錯誤是否屬於資料庫資料表尚未建立或 PostgREST 結構快取尚未同步 (如 PGRST205 / 42P01)
+ * 此類錯誤代表後端資料庫 migration 尚未套用或快取載入中，前台讀取應平滑降級為空清單，避免誤報至 Sentry 造成告警風暴。
+ */
+export function isTableMissingOrSchemaError(error: any): boolean {
+  if (!error) return false;
+  const code = String(error.code || '');
+  const message = String(error.message || '').toLowerCase();
+  const details = String(error.details || '').toLowerCase();
+  const hint = String(error.hint || '').toLowerCase();
+
+  return (
+    code === 'PGRST205' ||
+    code === '42P01' ||
+    message.includes('could not find the table') ||
+    message.includes('schema cache') ||
+    (message.includes('relation') && message.includes('does not exist')) ||
+    details.includes('schema cache') ||
+    hint.includes('perhaps you meant the table')
+  );
+}
+
+/**
  * 取得指定商品之已發布評價列表 (前台公開讀取)
  *
  * @param shopifyProductId Shopify 商品 GID 或 ID
@@ -111,6 +133,12 @@ export async function fetchPublishedReviews(shopifyProductId: string): Promise<P
       .order('created_at', { ascending: false });
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[reviews-qa] product_reviews 資料表尚未建立或快取同步中，平滑降級為空清單');
+        }
+        return [];
+      }
       captureExceptionSafe(error, {
         source: 'fetchPublishedReviews',
         shopifyProductId,
@@ -124,6 +152,9 @@ export async function fetchPublishedReviews(shopifyProductId: string): Promise<P
       display_name: maskUserIdentifier(rev.user_name || rev.user_email || rev.user_id),
     }));
   } catch (err) {
+    if (isTableMissingOrSchemaError(err)) {
+      return [];
+    }
     captureExceptionSafe(err, {
       source: 'fetchPublishedReviews.catch',
       shopifyProductId,
@@ -155,6 +186,12 @@ export async function fetchProductQA(shopifyProductId: string): Promise<ProductQ
       .order('created_at', { ascending: false });
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[reviews-qa] product_questions 資料表尚未建立或快取同步中，平滑降級為空清單');
+        }
+        return [];
+      }
       captureExceptionSafe(error, {
         source: 'fetchProductQA',
         shopifyProductId,
@@ -168,6 +205,9 @@ export async function fetchProductQA(shopifyProductId: string): Promise<ProductQ
       display_name: maskUserIdentifier(q.user_name || q.user_email || q.user_id),
     }));
   } catch (err) {
+    if (isTableMissingOrSchemaError(err)) {
+      return [];
+    }
     captureExceptionSafe(err, {
       source: 'fetchProductQA.catch',
       shopifyProductId,
@@ -197,6 +237,9 @@ export async function fetchMemberReviews(userId: string): Promise<ProductReview[
       .order('created_at', { ascending: false });
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return [];
+      }
       captureExceptionSafe(error, {
         source: 'fetchMemberReviews',
         userId,
@@ -206,6 +249,9 @@ export async function fetchMemberReviews(userId: string): Promise<ProductReview[
 
     return (data || []) as ProductReview[];
   } catch (err) {
+    if (isTableMissingOrSchemaError(err)) {
+      return [];
+    }
     captureExceptionSafe(err, {
       source: 'fetchMemberReviews.catch',
       userId,
@@ -282,6 +328,12 @@ export async function submitProductReview(
       .single();
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return {
+          data: null,
+          error: new Error('商品評價功能準備上線中，敬請期待！'),
+        };
+      }
       captureExceptionSafe(error, {
         source: 'submitProductReview',
         orderItemId: payload.order_item_id,
@@ -291,6 +343,12 @@ export async function submitProductReview(
 
     return { data: data as ProductReview, error: null };
   } catch (err: any) {
+    if (isTableMissingOrSchemaError(err)) {
+      return {
+        data: null,
+        error: new Error('商品評價功能準備上線中，敬請期待！'),
+      };
+    }
     captureExceptionSafe(err, {
       source: 'submitProductReview.catch',
       orderItemId: payload.order_item_id,
@@ -334,6 +392,12 @@ export async function submitProductQuestion(
       .single();
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return {
+          data: null,
+          error: new Error('商品提問功能準備上線中，敬請透過 LINE 客服洽詢！'),
+        };
+      }
       captureExceptionSafe(error, {
         source: 'submitProductQuestion',
         shopifyProductId: payload.shopify_product_id,
@@ -343,6 +407,12 @@ export async function submitProductQuestion(
 
     return { data: data as ProductQuestion, error: null };
   } catch (err: any) {
+    if (isTableMissingOrSchemaError(err)) {
+      return {
+        data: null,
+        error: new Error('商品提問功能準備上線中，敬請透過 LINE 客服洽詢！'),
+      };
+    }
     captureExceptionSafe(err, {
       source: 'submitProductQuestion.catch',
       shopifyProductId: payload.shopify_product_id,
@@ -374,6 +444,9 @@ export async function fetchAdminReviews(
     const { data, error } = await query;
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return [];
+      }
       captureExceptionSafe(error, {
         source: 'fetchAdminReviews',
         filterStatus,
@@ -383,6 +456,9 @@ export async function fetchAdminReviews(
 
     return (data || []) as ProductReview[];
   } catch (err) {
+    if (isTableMissingOrSchemaError(err)) {
+      return [];
+    }
     captureExceptionSafe(err, {
       source: 'fetchAdminReviews.catch',
       filterStatus,
@@ -417,6 +493,9 @@ export async function updateReviewStatus(
       .eq('id', reviewId);
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+      }
       captureExceptionSafe(error, {
         source: 'updateReviewStatus',
         reviewId,
@@ -427,6 +506,9 @@ export async function updateReviewStatus(
 
     return { success: true, error: null };
   } catch (err: any) {
+    if (isTableMissingOrSchemaError(err)) {
+      return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+    }
     captureExceptionSafe(err, {
       source: 'updateReviewStatus.catch',
       reviewId,
@@ -460,6 +542,9 @@ export async function deleteReview(
       .eq('id', reviewId);
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+      }
       captureExceptionSafe(error, {
         source: 'deleteReview',
         reviewId,
@@ -469,6 +554,9 @@ export async function deleteReview(
 
     return { success: true, error: null };
   } catch (err: any) {
+    if (isTableMissingOrSchemaError(err)) {
+      return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+    }
     captureExceptionSafe(err, {
       source: 'deleteReview.catch',
       reviewId,
@@ -500,6 +588,9 @@ export async function fetchAdminQuestions(
     const { data, error } = await query;
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return [];
+      }
       captureExceptionSafe(error, {
         source: 'fetchAdminQuestions',
         filterStatus,
@@ -509,6 +600,9 @@ export async function fetchAdminQuestions(
 
     return (data || []) as ProductQuestion[];
   } catch (err) {
+    if (isTableMissingOrSchemaError(err)) {
+      return [];
+    }
     captureExceptionSafe(err, {
       source: 'fetchAdminQuestions.catch',
       filterStatus,
@@ -547,6 +641,9 @@ export async function replyProductQuestion(
       .eq('id', payload.question_id);
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+      }
       captureExceptionSafe(error, {
         source: 'replyProductQuestion',
         questionId: payload.question_id,
@@ -556,6 +653,9 @@ export async function replyProductQuestion(
 
     return { success: true, error: null };
   } catch (err: any) {
+    if (isTableMissingOrSchemaError(err)) {
+      return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+    }
     captureExceptionSafe(err, {
       source: 'replyProductQuestion.catch',
       questionId: payload.question_id,
@@ -597,6 +697,9 @@ export async function updateQuestionStatus(
       .eq('id', questionId);
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+      }
       captureExceptionSafe(error, {
         source: 'updateQuestionStatus',
         questionId,
@@ -607,6 +710,9 @@ export async function updateQuestionStatus(
 
     return { success: true, error: null };
   } catch (err: any) {
+    if (isTableMissingOrSchemaError(err)) {
+      return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+    }
     captureExceptionSafe(err, {
       source: 'updateQuestionStatus.catch',
       questionId,
@@ -640,6 +746,9 @@ export async function deleteQuestion(
       .eq('id', questionId);
 
     if (error) {
+      if (isTableMissingOrSchemaError(error)) {
+        return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+      }
       captureExceptionSafe(error, {
         source: 'deleteQuestion',
         questionId,
@@ -649,6 +758,9 @@ export async function deleteQuestion(
 
     return { success: true, error: null };
   } catch (err: any) {
+    if (isTableMissingOrSchemaError(err)) {
+      return { success: false, error: new Error('資料表尚未建立或仍在快取同步中') };
+    }
     captureExceptionSafe(err, {
       source: 'deleteQuestion.catch',
       questionId,

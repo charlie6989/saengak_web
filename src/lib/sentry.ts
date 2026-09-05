@@ -265,11 +265,42 @@ export function captureExceptionSafe(error: any, context?: any): string {
   const safeContext = context ? sanitizeObject(context) : undefined;
   const safeError = error instanceof Error ? sanitizeObject(error) : error;
 
+  // 1. 阻擋已知資料表未建立/結構快取中之非異常情境 (PGRST205 / 42P01)，避免 Sentry 告警風暴
+  const code = String(error?.code || '');
+  const msg = typeof error?.message === 'string' ? error.message.toLowerCase() : '';
+  const hint = typeof error?.hint === 'string' ? error.hint.toLowerCase() : '';
+  if (
+    code === 'PGRST205' ||
+    code === '42P01' ||
+    msg.includes('could not find the table') ||
+    msg.includes('schema cache') ||
+    hint.includes('perhaps you meant the table')
+  ) {
+    if (process.env.NODE_ENV !== 'production' || typeof window === 'undefined') {
+      console.warn(`[Sentry Ignored Schema Cache Error] ${eventId}:`, safeError);
+    }
+    return eventId;
+  }
+
   // 若全域環境已掛載 Sentry，安全呼叫 Sentry captureException
   try {
     const globalSentry = (typeof window !== 'undefined' && (window as any).Sentry) ? (window as any).Sentry : null;
     if (globalSentry && typeof globalSentry.captureException === 'function') {
-      globalSentry.captureException(error, {
+      // 2. 若傳入的是純物件 (例如 PostgrestError)，正規化為具備明確 message 的 Error 實例，避免 Sentry 警告 "Object captured as exception with keys: ..."
+      let exceptionToSend = error;
+      if (!(error instanceof Error) && typeof error === 'object' && error !== null) {
+        const errMessage = error.message || error.error_description || error.details || JSON.stringify(safeError);
+        const errPrefix = error.code ? `[${error.code}] ` : '';
+        const syntheticError = new Error(`${errPrefix}${errMessage}`);
+        if (error.name) {
+          syntheticError.name = error.name;
+        } else if (error.code) {
+          syntheticError.name = `DatabaseError(${error.code})`;
+        }
+        exceptionToSend = syntheticError;
+      }
+
+      globalSentry.captureException(exceptionToSend, {
         extra: safeContext,
         tags: { safeEventId: eventId },
       });

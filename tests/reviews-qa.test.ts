@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   maskUserIdentifier,
   isOrderDelivered,
+  isTableMissingOrSchemaError,
   fetchPublishedReviews,
   fetchProductQA,
   fetchMemberReviews,
@@ -143,6 +144,35 @@ describe('reviews-qa 資料存取與脫敏模組測試', () => {
       expect(queryBuilder.eq).toHaveBeenCalledWith('is_public', true);
       expect(result).toHaveLength(1);
       expect(result[0].display_name).toBe('會員 #d3b0');
+    });
+
+    it('isTableMissingOrSchemaError 應正確識別 PGRST205 與 schema cache 錯誤', () => {
+      expect(isTableMissingOrSchemaError({ code: 'PGRST205', message: "Could not find the table 'public.product_reviews' in the schema cache" })).toBe(true);
+      expect(isTableMissingOrSchemaError({ code: '42P01', message: "relation \"product_questions\" does not exist" })).toBe(true);
+      expect(isTableMissingOrSchemaError({ code: 'PGRST116', message: "The result contains 0 rows" })).toBe(false);
+      expect(isTableMissingOrSchemaError(null)).toBe(false);
+    });
+
+    it('fetchPublishedReviews 與 fetchProductQA 遇 PGRST205 錯誤時應平滑降級回傳空陣列', async () => {
+      const pgrst205Error = {
+        code: 'PGRST205',
+        details: null,
+        hint: "Perhaps you meant the table 'public.promotions'",
+        message: "Could not find the table 'public.product_reviews' in the schema cache",
+      };
+
+      const queryBuilder: any = {
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        order: vi.fn().mockResolvedValue({ data: null, error: pgrst205Error }),
+      };
+      (supabase.from as any).mockReturnValue(queryBuilder);
+
+      const reviews = await fetchPublishedReviews('prod-not-migrated');
+      expect(reviews).toEqual([]);
+
+      const qa = await fetchProductQA('prod-not-migrated');
+      expect(qa).toEqual([]);
     });
 
     it('submitProductReview 應驗證評分範圍與評論內容', async () => {
