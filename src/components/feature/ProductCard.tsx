@@ -207,10 +207,18 @@ export default function ProductCard({ product }: ProductCardProps) {
               {displayTitle}
             </h3>
 
-            {/* Subtitle/Specs - 統一呈現 SAENGAK 品牌標籤 */}
-            <p className="text-xs sm:text-sm mb-1 text-[#225B4F]/80 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-              {product.vendor && product.vendor !== 'My Store 7' ? product.vendor : 'SAENGAK'}
-            </p>
+            {/* Subtitle/Specs - 僅在有合法品牌時呈現，嚴禁內著類商品誤植 SAENGAK */}
+            {(() => {
+              const isUnderwear = (product.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(product.name || '');
+              const displayVendor = (product.vendor && product.vendor !== 'My Store 7') ? product.vendor : '';
+              if (isUnderwear && displayVendor.toUpperCase() === 'SAENGAK') return null;
+              if (!displayVendor) return null;
+              return (
+                <p className="text-xs sm:text-sm mb-1 text-[#225B4F]/80 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                  {displayVendor}
+                </p>
+              );
+            })()}
 
 
             {/* Description - 搜尋頁／列表頁須為一句話 */}

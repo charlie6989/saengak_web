@@ -209,18 +209,35 @@ export default function ProductPreviewPage() {
     }, 4000);
   };
 
-  // 自動滾動縮圖（選中第 7 張以上自動平滑滾動）
+  // 自動平滑滾動縮圖列 (保證選中縮圖恆處於可視範圍內)
   useEffect(() => {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
+    const targetItem = container.children[selectedImage] as HTMLElement | undefined;
+    if (!targetItem) return;
+
     if (window.innerWidth >= 640) {
-      const itemHeight = container.clientHeight / 6;
-      const targetScrollTop = Math.max(0, (selectedImage - 5) * itemHeight);
-      container.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+      const itemTop = targetItem.offsetTop;
+      const itemHeight = targetItem.offsetHeight;
+      const containerScrollTop = container.scrollTop;
+      const containerHeight = container.clientHeight;
+
+      if (itemTop < containerScrollTop) {
+        container.scrollTo({ top: itemTop - 8, behavior: 'smooth' });
+      } else if (itemTop + itemHeight > containerScrollTop + containerHeight) {
+        container.scrollTo({ top: itemTop + itemHeight - containerHeight + 8, behavior: 'smooth' });
+      }
     } else {
-      const slotWidth = container.clientWidth / 6;
-      const targetScrollLeft = Math.max(0, (selectedImage - 5) * slotWidth);
-      container.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+      const itemLeft = targetItem.offsetLeft;
+      const itemWidth = targetItem.offsetWidth;
+      const containerScrollLeft = container.scrollLeft;
+      const containerWidth = container.clientWidth;
+
+      if (itemLeft < containerScrollLeft) {
+        container.scrollTo({ left: itemLeft - 8, behavior: 'smooth' });
+      } else if (itemLeft + itemWidth > containerScrollLeft + containerWidth) {
+        container.scrollTo({ left: itemLeft + itemWidth - containerWidth + 8, behavior: 'smooth' });
+      }
     }
   }, [selectedImage]);
 
@@ -257,14 +274,18 @@ export default function ProductPreviewPage() {
     hasThumbDragged.current = false;
   };
 
-  // 縮圖列捲動按鈕 Handlers（支援 6 張一版平滑捲動）
+  // 縮圖列捲動按鈕 Handlers（支援單張正方形縮圖步進捲動）
   const handleScrollUpThumbnails = () => {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
     if (window.innerWidth >= 640) {
-      container.scrollBy({ top: -container.clientHeight, behavior: 'smooth' });
+      const firstItem = container.firstElementChild as HTMLElement | null;
+      const step = firstItem ? firstItem.offsetHeight + 8 : 98;
+      container.scrollBy({ top: -step, behavior: 'smooth' });
     } else {
-      container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
+      const firstItem = container.firstElementChild as HTMLElement | null;
+      const step = firstItem ? firstItem.offsetWidth + 6 : 70;
+      container.scrollBy({ left: -step, behavior: 'smooth' });
     }
   };
 
@@ -272,9 +293,13 @@ export default function ProductPreviewPage() {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
     if (window.innerWidth >= 640) {
-      container.scrollBy({ top: container.clientHeight, behavior: 'smooth' });
+      const firstItem = container.firstElementChild as HTMLElement | null;
+      const step = firstItem ? firstItem.offsetHeight + 8 : 98;
+      container.scrollBy({ top: step, behavior: 'smooth' });
     } else {
-      container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
+      const firstItem = container.firstElementChild as HTMLElement | null;
+      const step = firstItem ? firstItem.offsetWidth + 6 : 70;
+      container.scrollBy({ left: step, behavior: 'smooth' });
     }
   };
 
@@ -351,11 +376,11 @@ export default function ProductPreviewPage() {
           id="product-main-section"
           className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] xl:grid-cols-[720px_460px] xl:justify-center xl:gap-12"
         >
-          {/* 左側：直長型縮圖導航列 + 直長型焦點主圖 (高度嚴格控制在右邊立即購買按鈕之內，約 520px) */}
-          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[108px] sm:h-[520px] sm:max-h-[520px]">
-            {/* 縮圖導航 (總長度嚴格控制不超過右邊立即購買高度，展示 6 張縮圖，超出支援平滑捲動) */}
-            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full sm:h-[520px] min-h-0 flex flex-col overflow-hidden">
-              <div className="relative flex items-center sm:flex-col w-full h-full min-h-0 gap-1.5 sm:gap-1">
+          {/* 左側：直長型縮圖導航列 + 直長型焦點主圖 (縮圖嚴格限定一列 6 張等比方形，主圖滿版無裁切延伸) */}
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[108px] items-start self-start">
+            {/* 縮圖導航 (嚴格限制一列 6 張正方形縮圖，超過 6 張隨箭頭平滑切換) */}
+            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full flex-shrink-0 flex flex-col items-center">
+              <div className="relative flex items-center sm:flex-col w-full min-h-0 gap-1.5 sm:gap-1">
                 {/* 桌機版：頂部向上箭頭 (超過 6 張時顯示) */}
                 {productImages.length > 6 && (
                   <button
@@ -380,8 +405,8 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 縮圖列表 (完全在 520px 容器內，每張縮圖等比正方形不變形，超出則內部平滑滾動) */}
-                <div className="flex-1 min-w-0 min-h-0 overflow-hidden sm:w-full sm:h-full">
+                {/* 縮圖列表 (嚴格限制一列最多可視 6 張等比方形縮圖，超出則由箭頭單張捲動) */}
+                <div className={`w-full overflow-hidden flex-1 sm:flex-initial ${productImages.length >= 6 ? 'sm:h-[508px] md:h-[544px] lg:h-[580px]' : 'sm:h-auto'}`}>
                   <ul
                     ref={thumbnailListRef}
                     onPointerDown={handleThumbPointerDown}
@@ -394,7 +419,7 @@ export default function ProductPreviewPage() {
                     {productImages.map((url, idx) => {
                       const isSelected = selectedImage === idx;
                       return (
-                        <li key={idx} className="w-[calc((100%-25px)/6)] sm:w-full sm:h-[calc((100%-25px)/6)] flex-shrink-0">
+                        <li key={idx} className="w-16 h-16 sm:w-full sm:h-auto sm:aspect-square flex-shrink-0">
                           <button
                             type="button"
                             onClick={() => handleThumbnailClick(idx)}
@@ -444,16 +469,15 @@ export default function ProductPreviewPage() {
               </div>
             </aside>
 
-            {/* 焦點大圖展示區 (高度與縮圖齊平 520px，全圖完整自然展示) */}
-            <div className="order-1 min-w-0 sm:order-2 aspect-square sm:aspect-auto sm:h-[520px]">
+            {/* 焦點大圖展示區 (滿版 100% 寬度，高度依圖片比例向下自然延伸，零左右留白且 100% 不裁切) */}
+            <div className="order-1 min-w-0 sm:order-2 w-full flex flex-col">
               <div
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full h-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
-                style={{ backgroundColor: '#F7F7F5' }}
+                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F7F7F5] shadow-xs"
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -484,9 +508,9 @@ export default function ProductPreviewPage() {
                   </button>
                 )}
 
-                {/* 焦點主圖 (高度與寬度自然填滿容器，全圖滿版無白邊) */}
+                {/* 焦點主圖 (寬度滿版 100%，高度隨比例自然延伸，零留白且完整不裁切) */}
                 <div
-                  className="w-full h-full flex items-center justify-center transition-transform duration-200"
+                  className="w-full flex items-center justify-center transition-transform duration-200"
                   style={{
                     transform: isDragging ? `translateX(${dragOffset * 0.4}px)` : 'none'
                   }}
@@ -495,7 +519,7 @@ export default function ProductPreviewPage() {
                     src={activeImage}
                     alt={product.name}
                     draggable={false}
-                    className="block w-full h-full object-cover object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl"
+                    className="block w-full h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl"
                   />
                 </div>
 

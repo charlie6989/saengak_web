@@ -8,6 +8,7 @@ import AuthCaptcha, {
   isAuthCaptchaReady,
 } from './AuthCaptcha';
 import GoogleLoginButton from './GoogleLoginButton';
+import FacebookLoginButton from './FacebookLoginButton';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -305,14 +306,18 @@ export default function AuthModal({
           </div>
         </div>}
 
-        {/* Google 官方原生 SDK 一鍵登入/註冊 */}
-        <div className="mb-6">
+        {/* 第三方快速登入 (Google & Facebook) */}
+        <div className="mb-6 space-y-3">
           <GoogleLoginButton
             text={isLogin ? 'signin_with' : 'signup_with'}
-            theme="outline"
-            size="large"
             onSuccess={handleGoogleSuccess}
             onError={(err) => setMessage(`Google 登入失敗: ${err.message}`)}
+            disabled={loading}
+          />
+
+          <FacebookLoginButton
+            text={isLogin ? 'signin_with' : 'signup_with'}
+            onError={(err) => setMessage(`Facebook 登入失敗: ${err.message}`)}
             disabled={loading}
           />
 

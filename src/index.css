@@ -858,3 +858,13 @@ a:focus {
   font-size: 0.95rem;
   line-height: 1.75;
 }
+
+/* 隱藏原生捲軸 (Chrome, Safari, Edge, Firefox) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

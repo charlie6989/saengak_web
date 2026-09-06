@@ -38,34 +38,63 @@ export default function SolutionSection() {
     fetchShopifyProducts();
   }, []);
 
+  const isSaengakCareProduct = (p: any) => {
+    const title = (p.name || p.title || '').toLowerCase();
+    const type = (p.productType || '').toLowerCase();
+    const tags = Array.isArray(p.tags) ? p.tags.join(' ').toLowerCase() : '';
+    const combined = `${title} ${type} ${tags}`;
+
+    // 嚴格排除所有非 SAENGAK 品牌產品（內著、內褲、除毛刀、護衣袋等選品）
+    if (/(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲|除毛刀|護衣袋|洗衣袋|配件|收腹)/i.test(combined)) {
+      return false;
+    }
+
+    // 必須為 SAENGAK 女性私密保養護理系列
+    return /(?:清潔露|慕斯|噴霧|濕巾|凝膠|女性護理|深層修護|每日清潔|私密|保養)/i.test(combined);
+  };
+
   const fetchShopifyProducts = async () => {
     setLoading(true);
     try {
-      // Direct Shopify Storefront API fetch for solution products
-      const items = await getShopifyProducts({ first: 8 });
-      if (items && items.length > 0) {
-        setProducts(items.map((p) => ({
-          id: p.id,
-          name: p.name || p.title,
-          image: p.image,
-          hoverImage: p.hoverImage || p.image,
-          price: p.price,
-          originalPrice: p.originalPrice,
-          description: p.description,
-          model: p.handle,
-          isNew: true,
-          productType: p.productType,
-          vendor: p.vendor,
-          availableForSale: p.availableForSale,
-          variants: p.variants,
-        })));
-        return;
+      // 取得商品池並嚴格篩選僅限 SAENGAK 護理商品
+      const items = await getShopifyProducts({ first: 50 });
+      const saengakItems = (items || []).filter(isSaengakCareProduct);
+
+      let displayList: Product[] = saengakItems.map((p) => ({
+        id: p.id,
+        name: p.name || p.title,
+        image: p.image,
+        hoverImage: p.hoverImage || p.image,
+        price: p.price,
+        originalPrice: p.originalPrice,
+        description: p.description,
+        model: p.handle,
+        isNew: true,
+        productType: p.productType || '女性護理',
+        vendor: 'SAENGAK',
+        availableForSale: p.availableForSale,
+        variants: p.variants,
+      }));
+
+      // 若 Shopify 後台的 SAENGAK 核心護理品不足 4 款，以 SAENGAK 官方經典品項補足
+      if (displayList.length < 4) {
+        const canonicalSaengak = rankEditorialProducts(mockProducts).filter(isSaengakCareProduct);
+        const existingNames = new Set(displayList.map(p => p.name));
+        for (const item of canonicalSaengak) {
+          if (!existingNames.has(item.name) && displayList.length < 4) {
+            displayList.push({
+              ...item,
+              vendor: 'SAENGAK'
+            });
+            existingNames.add(item.name);
+          }
+        }
       }
 
-      setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
+      setProducts(displayList.slice(0, 4));
     } catch (err) {
       captureExceptionSafe(err, { source: 'SolutionSection', fallback: 'mockProducts' });
-      setProducts(rankEditorialProducts(mockProducts).slice(0, 4));
+      setProducts(rankEditorialProducts(mockProducts).filter(isSaengakCareProduct).slice(0, 4));
     } finally {
       setLoading(false);
     }
@@ -211,11 +240,17 @@ export default function SolutionSection() {
                               <h3 className="text-base font-semibold line-clamp-2 leading-tight mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#225B4F" }}>
                                 {product.name}
                               </h3>
-                              {product.vendor && (
-                                <p className="text-xs mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif", marginBottom: "0.675rem", color: "#225B4F" }}>
-                                  {product.vendor}
-                                </p>
-                              )}
+                              {(() => {
+                                const isUnderwear = (product.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(product.name || '');
+                                const displayVendor = (product.vendor && product.vendor !== 'My Store 7') ? product.vendor : '';
+                                if (isUnderwear && displayVendor.toUpperCase() === 'SAENGAK') return null;
+                                if (!displayVendor) return null;
+                                return (
+                                  <p className="text-xs mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif", marginBottom: "0.675rem", color: "#225B4F" }}>
+                                    {displayVendor}
+                                  </p>
+                                );
+                              })()}
                               <p className="text-sm line-clamp-3 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#BBBBBB" }}>
                                 {product.description}
                               </p>

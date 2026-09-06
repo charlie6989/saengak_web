@@ -40,7 +40,7 @@ export default function ShopifyDescriptionViewer({
   subtitle,
   highlights = [],
   images = [],
-  vendor = 'SAENGAK',
+  vendor = '',
   contentSections,
   fitGuide,
   sizeChart,
@@ -525,11 +525,22 @@ export default function ShopifyDescriptionViewer({
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2.5">
               <dt className="text-gray-500">品牌／進口商</dt>
-              <dd className="font-semibold text-gray-900">{vendor || 'SAENGAK'}</dd>
+              <dd className="font-semibold text-gray-900">
+                {(() => {
+                  if (isApparel) {
+                    return (vendor && vendor.toUpperCase() !== 'SAENGAK' && vendor !== 'My Store 7')
+                      ? vendor
+                      : '精選生活選品';
+                  }
+                  return vendor || 'SAENGAK';
+                })()}
+              </dd>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2.5">
               <dt className="text-gray-500">製造國別 (Origin)</dt>
-              <dd className="font-semibold text-gray-900">{careSpecs?.origin || '韓國 (Made in Korea)'}</dd>
+              <dd className="font-semibold text-gray-900">
+                {careSpecs?.origin || (isApparel ? '嚴選優良工廠製造' : '韓國 (Made in Korea)')}
+              </dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-500">品質檢驗</dt>

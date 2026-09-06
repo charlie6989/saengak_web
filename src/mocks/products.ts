@@ -16,6 +16,7 @@ export interface Product {
     isNew?: boolean;
     tags?: string[];
     productType?: string;
+    category?: string;
     vendor?: string;
     availableForSale?: boolean;
     handle?: string;

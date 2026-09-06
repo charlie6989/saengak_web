@@ -169,13 +169,21 @@ export default function ProductPage() {
             highlights: shopifyProduct.highlights && shopifyProduct.highlights.length > 0
               ? shopifyProduct.highlights
               : [
-                  '嚴選優質材料與人體工學細緻剪裁，日常使用舒適安心',
-                  '通過多重出廠品質檢驗合格，呵護敏弱肌膚無負擔',
-                  '重視每個微小工藝細節，帶來極致貼身與陪伴感',
-                  '簡約高雅生活美學設計，提升居家生活品質',
-                  '官方旗艦直營正品保證，享 7 天安心鑑賞期'
-                ],
-            subtitle: shopifyProduct.subtitle || `${shopifyProduct.vendor || 'SAENGAK'} 官方旗艦直營 | 原裝正品品質保證`,
+                '嚴選優質材料與人體工學細緻剪裁，日常使用舒適安心',
+                '通過多重出廠品質檢驗合格，呵護敏弱肌膚無負擔',
+                '重視每個微小工藝細節，帶來極致貼身與陪伴感',
+                '簡約高雅生活美學設計，提升居家生活品質',
+                '官方旗艦直營正品保證，享 7 天安心鑑賞期'
+              ],
+            subtitle: shopifyProduct.subtitle || (() => {
+              const isUnderwear = (shopifyProduct.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(shopifyProduct.title || '');
+              if (isUnderwear) {
+                return (shopifyProduct.vendor && shopifyProduct.vendor.toUpperCase() !== 'SAENGAK' && shopifyProduct.vendor !== 'My Store 7')
+                  ? `${shopifyProduct.vendor} 精選選品 | 品質保證`
+                  : '親膚舒適・日常優質貼身選品';
+              }
+              return `${shopifyProduct.vendor || 'SAENGAK'} 官方旗艦直營 | 原裝正品品質保證`;
+            })(),
             promotionBadge: shopifyProduct.promotionBadge || '春季特別優惠・滿 2 件享免運折扣',
             fitGuide: shopifyProduct.fitGuide,
             sizeChart: shopifyProduct.sizeChart,
@@ -750,14 +758,18 @@ export default function ProductPage() {
     hasThumbDragged.current = false;
   };
 
-  // 縮圖列捲動按鈕 Handlers（支援 6 張一版平滑捲動）
+  // 縮圖列捲動按鈕 Handlers（支援單張正方形縮圖步進捲動）
   const handleScrollUpThumbnails = () => {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
     if (window.innerWidth >= 640) {
-      container.scrollBy({ top: -container.clientHeight, behavior: 'smooth' });
+      const firstItem = container.firstElementChild as HTMLElement | null;
+      const step = firstItem ? firstItem.offsetHeight + 8 : 98;
+      container.scrollBy({ top: -step, behavior: 'smooth' });
     } else {
-      container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
+      const firstItem = container.firstElementChild as HTMLElement | null;
+      const step = firstItem ? firstItem.offsetWidth + 6 : 70;
+      container.scrollBy({ left: -step, behavior: 'smooth' });
     }
   };
 
@@ -765,9 +777,13 @@ export default function ProductPage() {
     if (!thumbnailListRef.current) return;
     const container = thumbnailListRef.current;
     if (window.innerWidth >= 640) {
-      container.scrollBy({ top: container.clientHeight, behavior: 'smooth' });
+      const firstItem = container.firstElementChild as HTMLElement | null;
+      const step = firstItem ? firstItem.offsetHeight + 8 : 98;
+      container.scrollBy({ top: step, behavior: 'smooth' });
     } else {
-      container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
+      const firstItem = container.firstElementChild as HTMLElement | null;
+      const step = firstItem ? firstItem.offsetWidth + 6 : 70;
+      container.scrollBy({ left: step, behavior: 'smooth' });
     }
   };
 
@@ -889,14 +905,14 @@ export default function ProductPage() {
           data-testid="product-main-section"
           className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] xl:grid-cols-[720px_460px] xl:justify-center xl:gap-12"
         >
-          {/* Left group: thumbnails + main image (sticky as whole group, 高度嚴格控制在右邊立即購買按鈕之內) */}
+          {/* Left group: thumbnails + main image (縮圖嚴格限定一列 6 張等比方形，主圖滿版無裁切延伸) */}
           <div
             data-testid="product-gallery"
-            className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[108px] sm:h-[520px] sm:max-h-[520px]"
+            className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[108px] items-start self-start"
           >
-            {/* 縮圖導航 (總長度嚴格控制不超過右邊立即購買高度，支援多圖平滑捲動) */}
-            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full sm:h-[520px] min-h-0 flex flex-col overflow-hidden">
-              <div className="relative flex items-center sm:flex-col w-full h-full min-h-0 gap-1.5 sm:gap-1">
+            {/* 縮圖導航 (嚴格限制一列 6 張正方形縮圖，超過 6 張隨箭頭平滑切換) */}
+            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full flex-shrink-0 flex flex-col items-center">
+              <div className="relative flex items-center sm:flex-col w-full min-h-0 gap-1.5 sm:gap-1">
                 {/* 桌機版：頂部向上箭頭 (超過 6 張時顯示) */}
                 {productImages.length > 6 && (
                   <button
@@ -921,8 +937,8 @@ export default function ProductPage() {
                   </button>
                 )}
 
-                {/* 縮圖列表 (完全在 520px 容器內，每張縮圖等比正方形不變形，超出則內部平滑滾動) */}
-                <div className="flex-1 min-w-0 min-h-0 overflow-hidden sm:w-full sm:h-full">
+                {/* 縮圖列表 (嚴格限制一列最多可視 6 張等比方形縮圖，超出則由箭頭單張捲動) */}
+                <div className={`w-full overflow-hidden flex-1 sm:flex-initial ${productImages.length >= 6 ? 'sm:h-[508px] md:h-[544px] lg:h-[580px]' : 'sm:h-auto'}`}>
                   <ul
                     ref={thumbnailListRef}
                     onPointerDown={handleThumbPointerDown}
@@ -935,18 +951,17 @@ export default function ProductPage() {
                     {productImages.map((url, idx) => {
                       const isSelected = selectedImage === idx;
                       return (
-                        <li key={idx} className="w-[calc((100%-25px)/6)] sm:w-full sm:h-[calc((100%-25px)/6)] flex-shrink-0">
+                        <li key={idx} className="w-16 h-16 sm:w-full sm:h-auto sm:aspect-square flex-shrink-0">
                           <button
                             type="button"
                             onClick={() => handleThumbnailClick(idx)}
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
                             aria-pressed={isSelected}
                             data-testid={`product-thumbnail-${idx}`}
-                            className={`block w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white flex items-center justify-center p-0.5 ${
-                              isSelected
+                            className={`block w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${isSelected
                                 ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
-                            }`}
+                              }`}
                           >
                             <img
                               src={url}
@@ -955,7 +970,7 @@ export default function ProductPage() {
                                 e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
                               }}
                               draggable={false}
-                              className={`block max-h-full max-w-full object-contain object-center pointer-events-none ${isAllSoldOut ? 'grayscale-[30%]' : ''}`}
+                              className={`block w-full h-full object-cover object-center pointer-events-none ${isAllSoldOut ? 'grayscale-[30%]' : ''}`}
                               loading="lazy"
                             />
                           </button>
@@ -991,16 +1006,15 @@ export default function ProductPage() {
               </div>
             </aside>
 
-            {/* 焦點大圖展示區 (高度與縮圖齊平 520px，全圖滿版無白邊) */}
-            <div className="order-1 min-w-0 sm:order-2 aspect-square sm:aspect-auto sm:h-[520px]">
+            {/* 焦點大圖展示區 (滿版 100% 寬度，高度依圖片比例向下自然延伸，零左右留白且 100% 不裁切) */}
+            <div className="order-1 min-w-0 sm:order-2 w-full flex flex-col">
               <div
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full h-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing"
-                style={{ backgroundColor: '#F7F7F5' }}
+                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F7F7F5] shadow-xs"
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -1025,9 +1039,9 @@ export default function ProductPage() {
                   </button>
                 )}
 
-                {/* 焦點主圖 (高度與寬度自然置中，100% 完整呈現絕不裁切上下任何像素) */}
+                {/* 焦點主圖 (寬度滿版 100%，高度隨比例自然延伸，零留白且完整不裁切) */}
                 <div
-                  className="w-full h-full flex items-center justify-center p-2 sm:p-3 transition-transform duration-200"
+                  className="w-full flex items-center justify-center transition-transform duration-200"
                   style={{
                     transform: isDragging ? `translateX(${dragOffset * 0.4}px)` : 'none'
                   }}
@@ -1040,7 +1054,7 @@ export default function ProductPage() {
                     }}
                     data-testid="product-main-image"
                     draggable={false}
-                    className={`block max-w-full max-h-full w-auto h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-lg m-auto ${isAllSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
+                    className={`block w-full h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl ${isAllSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
                   />
                 </div>
 
@@ -1082,7 +1096,16 @@ export default function ProductPage() {
                 {product.name}
               </h1>
               <p className="text-sm text-gray-500 font-medium">
-                {product.subtitle || product.vendor || 'SAENGAK 官方旗艦直營'}
+                {(() => {
+                  const isUnderwear = (product.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(product.name || '');
+                  if (product.subtitle) return product.subtitle;
+                  if (isUnderwear) {
+                    return (product.vendor && product.vendor.toUpperCase() !== 'SAENGAK' && product.vendor !== 'My Store 7')
+                      ? product.vendor
+                      : '親膚舒適日常選品';
+                  }
+                  return product.vendor || 'SAENGAK 官方旗艦直營';
+                })()}
               </p>
             </div>
 
@@ -1144,13 +1167,12 @@ export default function ProductPage() {
                               type="button"
                               onClick={() => handleOptionSelect(option.name, val)}
                               data-testid={`option-${option.name}-${val}`}
-                              className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                                isSelected
+                              className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${isSelected
                                   ? 'bg-[#245B50] text-white shadow-xs ring-2 ring-[#245B50] ring-offset-1'
                                   : isAvailable
                                     ? 'bg-white text-gray-700 border border-gray-300 hover:border-[#245B50] hover:bg-emerald-50/40'
                                     : 'bg-gray-100 text-gray-400 border border-dashed border-gray-300 opacity-60'
-                              }`}
+                                }`}
                             >
                               <span className={!isAvailable ? 'line-through decoration-gray-400' : ''}>
                                 {val}
@@ -1284,9 +1306,8 @@ export default function ProductPage() {
                       setSelectedTab(tab.id as any);
                       (e.currentTarget as HTMLButtonElement).blur();
                     }}
-                    className={`text-base font-normal transition-all duration-300 flex-1 max-w-[355px] cursor-pointer select-none ${
-                      isActive ? 'text-gray-900 font-semibold' : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                    className={`text-base font-normal transition-all duration-300 flex-1 max-w-[355px] cursor-pointer select-none ${isActive ? 'text-gray-900 font-semibold' : 'text-gray-500 hover:text-gray-700'
+                      }`}
                     style={{
                       fontFamily: '"Noto Sans TC", sans-serif',
                       height: '50px',
@@ -1320,7 +1341,15 @@ export default function ProductPage() {
                 subtitle={product.subtitle}
                 highlights={product.highlights || []}
                 images={productImages}
-                vendor={product.vendor || 'SAENGAK'}
+                vendor={(() => {
+                  const isUnderwear = (product.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(product.name || '');
+                  if (isUnderwear) {
+                    return (product.vendor && product.vendor.toUpperCase() !== 'SAENGAK' && product.vendor !== 'My Store 7')
+                      ? product.vendor
+                      : '';
+                  }
+                  return product.vendor || 'SAENGAK';
+                })()}
                 fitGuide={product.fitGuide}
                 sizeChart={product.sizeChart}
                 careSpecs={product.careSpecs}
@@ -1357,8 +1386,8 @@ export default function ProductPage() {
                                 isFull
                                   ? 'ri-star-fill'
                                   : isHalf
-                                  ? 'ri-star-half-fill'
-                                  : 'ri-star-line text-gray-300'
+                                    ? 'ri-star-half-fill'
+                                    : 'ri-star-line text-gray-300'
                               }
                             ></i>
                           );
@@ -1462,11 +1491,10 @@ export default function ProductPage() {
                       <button
                         type="button"
                         onClick={() => { setRecommendationMode('category'); setRotationIndex(0); }}
-                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                          recommendationMode === 'category'
+                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${recommendationMode === 'category'
                             ? 'bg-white text-[#245B50] shadow-2xs font-bold'
                             : 'text-gray-600 hover:text-gray-900'
-                        }`}
+                          }`}
                       >
                         <i className="ri-layout-grid-line text-xs"></i>
                         <span>同類精選</span>
@@ -1475,11 +1503,10 @@ export default function ProductPage() {
                       <button
                         type="button"
                         onClick={() => { setRecommendationMode('popular'); setRotationIndex(0); }}
-                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                          recommendationMode === 'popular'
+                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${recommendationMode === 'popular'
                             ? 'bg-white text-[#245B50] shadow-2xs font-bold'
                             : 'text-gray-600 hover:text-gray-900'
-                        }`}
+                          }`}
                       >
                         <i className="ri-fire-line text-xs"></i>
                         <span>暢銷熱賣</span>
@@ -1488,11 +1515,10 @@ export default function ProductPage() {
                       <button
                         type="button"
                         onClick={() => { setRecommendationMode('top_rated'); setRotationIndex(0); }}
-                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                          recommendationMode === 'top_rated'
+                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${recommendationMode === 'top_rated'
                             ? 'bg-white text-[#245B50] shadow-2xs font-bold'
                             : 'text-gray-600 hover:text-gray-900'
-                        }`}
+                          }`}
                       >
                         <i className="ri-star-smile-line text-xs"></i>
                         <span>好評榜單</span>
@@ -1501,11 +1527,10 @@ export default function ProductPage() {
                       <button
                         type="button"
                         onClick={() => { setRecommendationMode('random'); setRotationIndex((r) => r + 1); }}
-                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                          recommendationMode === 'random'
+                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${recommendationMode === 'random'
                             ? 'bg-white text-[#245B50] shadow-2xs font-bold'
                             : 'text-gray-600 hover:text-gray-900'
-                        }`}
+                          }`}
                       >
                         <i className="ri-shuffle-line text-xs"></i>
                         <span>隨機探索</span>
@@ -1735,7 +1760,16 @@ export default function ProductPage() {
                     className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-center text-xs text-amber-800 font-medium"
                     data-testid="qa-disabled-notice"
                   >
-                    目前商品問答表單暫停開放
+                    目前商品問答表單暫停開放，若有任何疑問歡迎點此透過{' '}
+                    <a
+                      href={lineOaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#245B50] font-bold underline hover:text-[#1a4239] transition-colors"
+                    >
+                      LINE 官方客服
+                    </a>{' '}
+                    洽詢。
                   </div>
                 )}
 
@@ -1752,7 +1786,16 @@ export default function ProductPage() {
                       尚無相關問答
                     </h4>
                     <p className="text-xs text-gray-500 max-w-md mx-auto">
-                      此商品目前尚無公開問答，歡迎登入會員提出您的商品疑問或透過 LINE 官方客服洽詢。
+                      此商品目前尚無公開問答，歡迎登入會員提出您的商品疑問或透過{' '}
+                      <a
+                        href={lineOaUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#245B50] font-semibold underline hover:text-[#1a4239] transition-colors"
+                      >
+                        LINE 官方客服
+                      </a>{' '}
+                      洽詢。
                     </p>
                   </div>
                 ) : (
@@ -1814,11 +1857,10 @@ export default function ProductPage() {
                             <button
                               type="button"
                               onClick={() => handleToggleHelpful(item.id)}
-                              className={`inline-flex items-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${
-                                isLiked
+                              className={`inline-flex items-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${isLiked
                                   ? 'text-[#245B50] font-bold'
                                   : 'text-gray-500 hover:text-[#245B50]'
-                              }`}
+                                }`}
                             >
                               <i
                                 className={

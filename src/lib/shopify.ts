@@ -307,9 +307,20 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     image: images[0]?.url || fallbackImage,
     hoverImage: images[1]?.url || images[0]?.url || fallbackImage,
     images,
-    tags: node.tags || [],
+    tags: (() => {
+      const rawTags = node.tags || [];
+      const isUnderwear = (node.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(node.title || '');
+      return isUnderwear ? rawTags.filter(t => t.toUpperCase() !== 'SAENGAK') : rawTags;
+    })(),
     productType: node.productType || '',
-    vendor: node.vendor || 'SAENGAK',
+    vendor: (() => {
+      const v = node.vendor?.trim();
+      const isUnderwear = (node.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(node.title || '');
+      if (isUnderwear) {
+        return (v && v.toUpperCase() !== 'SAENGAK' && v !== 'My Store 7') ? v : '';
+      }
+      return (v && v !== 'My Store 7') ? v : '';
+    })(),
     createdAt: node.createdAt || new Date().toISOString(),
     availableForSale: node.availableForSale ?? true,
     variants,
