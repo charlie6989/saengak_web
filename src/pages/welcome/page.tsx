@@ -155,10 +155,10 @@ export default function WelcomePage() {
                   <i className="ri-shopping-bag-3-line text-4xl text-green-500"></i>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  瀏覽展示目錄
+                  探索精選系列
                 </h2>
                 <p className="text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-                  目前可依女性護理、每日清潔、深層修護與舒適穿著瀏覽展示內容；正式規格、價格與庫存將以 Shopify 商品資料為準。
+                  提供女性護理、每日清潔、深層修護與舒適穿著等多種日常系列，陪伴妳探索最自在的呵護方案。
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
                   <div className="bg-gray-50 rounded-lg p-4 text-center">

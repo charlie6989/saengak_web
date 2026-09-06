@@ -109,8 +109,8 @@ export default function SolutionSection() {
               </button>
             </div>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-              依日常清潔、貼身衣物與使用情境整理展示目錄<br />
-              正式規格與適用方式以商品標示為準
+              專為不同生活節奏打造的專屬私密保養方案<br />
+              溫和植萃配方，陪伴妳的每一個自在日常
             </p>
           </div>
 
@@ -129,10 +129,10 @@ export default function SolutionSection() {
                 ></div>
                 <div className="absolute bottom-8 left-8 text-white">
                   <h3 className="text-2xl font-bold mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    展示目錄分類
+                    純淨呵護方案
                   </h3>
                   <p className="text-sm opacity-90" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    依目前展示資料整理選購方向
+                    溫和潔淨與深層修護推薦
                   </p>
                 </div>
               </div>
@@ -296,7 +296,7 @@ export default function SolutionSection() {
           <div className="relative h-[300px] md:h-[400px]">
             <img
               src="https://readdy.ai/api/search-image?query=Premium%20comfortable%20antibacterial%20underwear%20banner%20design%2C%20elegant%20Korean%20woman%20wearing%20comfortable%20white%20cotton%20underwear%2C%20soft%20pastel%20background%2C%20clean%20minimalist%20aesthetic%2C%20health%20and%20wellness%20theme%2C%20modern%20lifestyle%20photography%2C%20gentle%20lighting%2C%20serene%20and%20comfortable%20atmosphere%2C%20premium%20quality%20fabric%20texture&width=1440&height=400&seq=underwear-banner&orientation=landscape"
-              alt="SAENGAK 貼身衣物展示"
+              alt="SAENGAK 舒適生活系列"
               className="w-full h-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent"></div>
@@ -304,11 +304,11 @@ export default function SolutionSection() {
               <div className="max-w-7xl mx-auto px-4 w-full">
                 <div className="max-w-2xl">
                   <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    貼身衣物展示
+                    親膚透氣 舒適生活
                   </h2>
                   <p className="text-lg md:text-xl text-white/90 mb-6 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    材質、剪裁、檢測與適用方式尚待正式商品欄位確認<br />
-                    現階段不以展示圖推定商品功效
+                    精選天然純棉與親膚面料，讓肌膚自在呼吸<br />
+                    回歸純粹自然的極致舒適享受
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <a

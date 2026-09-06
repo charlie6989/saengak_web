@@ -59,7 +59,7 @@ export default function CustomerService() {
             <i className="ri-question-answer-line mb-4 block text-3xl text-teal-700" />
             <h2 className="mb-4 text-xl font-bold text-gray-900">自助查詢</h2>
             <p className="mb-5 text-sm leading-6 text-gray-600">
-              網站目前是公開展示與會員接線階段；正式訂單、付款、配送及退換貨條件，將在 Shopify 與物流服務完成驗收後公告。
+              若您對商品選購、訂單進度、會員帳戶或售後服務有任何疑問，歡迎隨時參閱常見問題或與我們聯繫。
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to="/faq" className="rounded-md bg-teal-700 px-5 py-3 text-sm font-medium text-white hover:bg-teal-800">

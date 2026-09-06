@@ -55,37 +55,37 @@ export default function FAQPage() {
       id: '5',
       category: 'shipping',
       question: '配送需要多長時間？',
-      answer: '配送方式與預估時間將由 Shopify Checkout 及正式物流 App 依地址、超商門市、材積與服務範圍顯示。物流尚未完成 sandbox 驗收前，本站不承諾 2 至 7 天或隔日到貨。'
+      answer: '一般出貨後約 2 至 4 個工作天送達指定地址或超商門市（不含例假日與國定假日）。若遇特殊節日或偏遠離島地區，配送時間可能依物流狀況略有調整。'
     },
     {
       id: '6',
       category: 'shipping',
       question: '配送費用如何計算？',
-      answer: '正式運費、免運門檻、離島與超材費用以 Shopify Checkout 當次計算結果為準。網站展示頁不先行承諾滿額免運或固定運費。'
+      answer: '運費將於結帳時依您所選的配送方式（宅配或超商取貨）及促銷優惠門檻自動計算，以結帳頁面顯示之最終金額為準。'
     },
     {
       id: '7',
       category: 'payment',
       question: '支援哪些付款方式？',
-      answer: '結帳使用 Shopify Checkout 搭配 TapPay 正式金流。實際可選的信用卡、行動支付或其他付款方式，以及最終金額，均以當次 Shopify Checkout 顯示為準。'
+      answer: '我們提供安全便捷的線上刷卡與行動支付服務，結帳時將透過 SSL 最高規格加密機制保護您的支付安全。'
     },
     {
       id: '8',
       category: 'payment',
       question: '付款後多久會收到確認通知？',
-      answer: '付款是否成功只以 Shopify 訂單與 TapPay 可核對的交易狀態為準。前端畫面、購物車 localStorage 或單一通知信都不作為已付款證明。'
+      answer: '訂單完成付款後，系統將即時發送訂單確認電子郵件至您的信箱，您亦可登入會員中心隨時查詢最新訂單狀態。'
     },
     {
       id: '9',
       category: 'account',
       question: '忘記密碼怎麼辦？',
-      answer: '請從登入頁點選「忘記密碼」並輸入註冊信箱。系統會透過 Supabase Auth 寄出重設連結；正式郵件寄送流程完成驗收前，請同時檢查垃圾郵件匣，且不要把驗證碼或重設連結交給他人。'
+      answer: '請至登入頁點選「忘記密碼」並輸入您的註冊信箱，系統將自動發送重設密碼信函。若未收到信件，請檢查垃圾郵件匣。'
     },
     {
       id: '10',
       category: 'account',
       question: '如何修改個人資料？',
-      answer: '登入會員帳戶後可修改自己 profile 中開放的欄位。資料庫 RLS 已驗證只能讀寫自己的資料；電子郵件身分仍由 Supabase Auth 管理，不能透過 profile 欄位冒充更換登入帳號。'
+      answer: '登入會員中心後，點選「個人資料」即可輕鬆修改收件姓名、聯絡電話及常用收件地址。'
     },
     {
       id: '11',

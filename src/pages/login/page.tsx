@@ -10,6 +10,7 @@ import AuthCaptcha, {
   isAuthCaptchaReady,
 } from '../../components/feature/AuthCaptcha';
 import GoogleLoginButton from '../../components/feature/GoogleLoginButton';
+import FacebookLoginButton from '../../components/feature/FacebookLoginButton';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -172,14 +173,20 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Google 原生 SDK 一鍵登入 */}
-            <div className="mb-6">
+            {/* 第三方快速登入 (Google & Facebook) */}
+            <div className="mb-6 space-y-3">
               <GoogleLoginButton
                 text="continue_with"
                 theme="outline"
                 size="large"
                 onSuccess={handleGoogleSuccess}
                 onError={(err) => setMessage(`Google 登入失敗: ${err.message}`)}
+                disabled={loading || (!useMockData && !isSupabaseConfigured)}
+              />
+
+              <FacebookLoginButton
+                text="continue_with"
+                onError={(err) => setMessage(`Facebook 登入失敗: ${err.message}`)}
                 disabled={loading || (!useMockData && !isSupabaseConfigured)}
               />
 

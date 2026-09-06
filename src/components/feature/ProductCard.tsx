@@ -29,6 +29,83 @@ interface ProductCardProps {
 
 const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800';
 
+/**
+ * 清洗商品標題：
+ * 1. 剃除 SAENGAK｜、LUCISSI｜ 等重複性品牌前綴與表情符號
+ * 2. 嚴格遵守標題 12 字以內規範
+ */
+export function sanitizeProductTitle(rawName: string): string {
+  if (!rawName) return '';
+  let cleaned = rawName
+    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
+    .replace(/^(\s*✨|\s*🌸|\s*🌹|\s*🎀|\s*💫|\s*🌬️)+/g, '')
+    .trim();
+
+  cleaned = cleaned
+    .replace(/^(\s*SAENGAK\s*[｜|_\-–—]\s*)+/gi, '')
+    .replace(/^(\s*LUCISSI\s*[｜|_\-–—]\s*)+/gi, '')
+    .replace(/^(?:SAENGAK|LUCISSI)[｜|_\-–—\s]+/gi, '')
+    .replace(/\s*(現貨|現貨\s*\d*|_images|_URL|\.jpg|\.png).*$/gi, '')
+    .trim();
+
+  // 4 大核心產品保留 Saengak 原品牌名稱
+  if (cleaned.includes('慕斯') || cleaned.includes('潔淨慕斯')) return 'Saengak 平衡調理私密潔淨慕斯';
+  if (cleaned.includes('養膚濕巾') || cleaned.includes('私密濕巾') || (cleaned.includes('益生菌') && cleaned.includes('濕巾'))) return 'Saengak 益生菌私密養膚濕巾';
+  if (cleaned.includes('精華噴霧') || cleaned.includes('修護噴霧') || cleaned.includes('雙層修護')) return 'Saengak 私密雙層修護精華噴霧';
+  if (cleaned.includes('清潔露') || cleaned.includes('深層修護')) return 'Saengak 深層修護私密清潔露';
+
+  // 核心產品若以 SAENGAK 開頭則標準化
+  if (/^saengak\s*/i.test(rawName)) {
+    return 'Saengak ' + cleaned.slice(0, 12);
+  }
+
+  // 若仍超過 12 字，精簡至 12 字
+  if (cleaned.length > 12) {
+    const parts = cleaned.split(/[\s_]+/);
+    if (parts[0] && parts[0].length <= 12 && parts[0].length >= 4) {
+      return parts[0];
+    }
+    return cleaned.slice(0, 12);
+  }
+  return cleaned;
+}
+
+/**
+ * 抽取商品單句核心描述（規則：短語一句話、無標點符號、無省略號 ...）
+ */
+export function extractSingleSentenceDescription(product: Product): string {
+  const name = (product.name || '').toLowerCase();
+  if (name.includes('慕斯') || name.includes('潔淨慕斯')) {
+    return '微米綿密弱酸泡泡 溫和淨化異味';
+  }
+  if (name.includes('濕巾') || name.includes('養膚濕巾')) {
+    return '如水般親膚溫和植萃 隨身潔淨清新';
+  }
+  if (name.includes('噴霧') || name.includes('雙層')) {
+    return '雙層水油黃金配比 隨手安撫舒緩';
+  }
+  if (name.includes('清潔露') || name.includes('深層修護')) {
+    return '專利植萃溫和淨膚 深層舒緩修護';
+  }
+
+  const rawDesc = (product.description || '').trim();
+  if (!rawDesc) return '溫和植萃成分 柔嫩呵護私密肌膚';
+
+  // 移除所有標點符號與省略號
+  let cleaned = rawDesc
+    .replace(/<[^>]+>/g, '')
+    .replace(/[，。！？!?；;：:、\-_—–~～()（）「」『』\n\r\t]+/g, ' ')
+    .replace(/\.{2,}/g, '')
+    .replace(/…/g, '')
+    .trim();
+
+  // 限制長度在 16 字以內，不產生截斷 ...
+  if (cleaned.length > 16) {
+    cleaned = cleaned.slice(0, 16).trim();
+  }
+  return cleaned || '溫和植萃成分 柔嫩呵護私密肌膚';
+}
+
 export default function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate();
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -42,6 +119,9 @@ export default function ProductCard({ product }: ProductCardProps) {
   const discountPercentage = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
+
+  const displayTitle = sanitizeProductTitle(product.name);
+  const singleSentenceDesc = extractSingleSentenceDescription(product);
 
   // 韓元轉新台幣匯率 (1 KRW = 0.024 TWD)
   const convertToTWD = (krwPrice: number) => {
@@ -122,21 +202,20 @@ export default function ProductCard({ product }: ProductCardProps) {
               {product.productType || '精選商品'}
             </p>
 
-            {/* Product Title - 降低粗度，顏色改為 #225B4F */}
-            <h3 className="text-lg font-semibold line-clamp-2 leading-tight" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#225B4F" }}>
-              {product.name}
+            {/* Product Title - 完整展示 Saengak 品牌與品名，不以省略號截斷 */}
+            <h3 className="text-sm md:text-base font-semibold leading-snug line-clamp-2 min-h-[2.5rem]" title={displayTitle} style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#225B4F" }}>
+              {displayTitle}
             </h3>
 
-            {/* Subtitle/Specs - 比產品敘述大一些，小於產品標題，顏色改為 #225B4F */}
-            {product.vendor && (
-              <p className="text-sm mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif", marginBottom: "0.675rem", color: "#225B4F" }}>
-                {product.vendor}
-              </p>
-            )}
+            {/* Subtitle/Specs - 統一呈現 SAENGAK 品牌標籤 */}
+            <p className="text-xs sm:text-sm mb-1 text-[#225B4F]/80 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+              {product.vendor && product.vendor !== 'My Store 7' ? product.vendor : 'SAENGAK'}
+            </p>
 
-            {/* Description - 字體大小改為和產品尺寸一樣，顏色改為 #BBBBBB */}
-            <p className="text-sm line-clamp-3 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#BBBBBB" }}>
-              {product.description}
+
+            {/* Description - 搜尋頁／列表頁須為一句話 */}
+            <p className="text-xs sm:text-sm line-clamp-1 leading-relaxed text-gray-500" title={singleSentenceDesc} style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+              {singleSentenceDesc}
             </p>
 
             {/* Price Block - 移到內容區塊內，享受留白效果 */}

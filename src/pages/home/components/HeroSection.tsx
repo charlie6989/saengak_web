@@ -58,13 +58,13 @@ export default function HeroSection() {
               {/* 桌面版圖片 */}
               <img
                 src={slide.desktop}
-                alt={`SAENGAK 品牌商品展示 ${index + 1}`}
+                alt={`SAENGAK 品牌視覺形象 ${index + 1}`}
                 className="hidden md:block w-full h-full object-cover object-center"
               />
               {/* 手機版圖片 */}
               <img
                 src={slide.desktop}
-                alt={`SAENGAK 品牌商品展示 ${index + 1}`}
+                alt={`SAENGAK 品牌視覺形象 ${index + 1}`}
                 className="md:hidden h-full w-full object-cover object-[21%_center]"
               />
             </div>
@@ -72,14 +72,6 @@ export default function HeroSection() {
         ))}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 -translate-y-1/2 md:flex md:justify-center">
-        <div className="mx-auto flex min-h-[210px] max-w-3xl flex-col justify-center bg-[#173f36]/95 px-6 py-8 text-center text-white shadow-lg backdrop-blur-sm md:mx-0 md:min-h-[230px] md:px-12 md:py-10">
-          <p className="text-xl font-semibold md:text-3xl">先確認資料，再選擇日常護理</p>
-          <p className="mt-2 text-sm leading-6 text-white/90 md:text-base">
-            目前為品牌展示目錄；成分、認證、測試與適用方式，以正式商品資料及實際包裝標示為準。
-          </p>
-        </div>
-      </div>
 
       {/* 導航按鈕 */}
       <button

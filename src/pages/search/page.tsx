@@ -5,7 +5,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
 import { useShopifyCollectionProducts } from '../../hooks/useShopifyCollections';
-import { useShopifyProductsByTag, COMMON_TAGS } from '../../hooks/useShopifyTags';
+import { useShopifyProductsByTag } from '../../hooks/useShopifyTags';
 import { mockProducts, type Product } from '../../mocks/products';
 import { calculateSearchScore, deriveCatalogSignals, paginateItems } from '../../domain/algorithms';
 import { getShopifyProducts } from '../../lib/shopify';
@@ -38,8 +38,8 @@ export default function Search() {
   });
 
   // Shopify hooks
-  const { collection, products: collectionProducts, fetchCollectionProducts } = useShopifyCollectionProducts();
-  const { products: tagProducts, fetchProductsByTag } = useShopifyProductsByTag();
+  const { collection, products: collectionProducts } = useShopifyCollectionProducts();
+  const { products: tagProducts } = useShopifyProductsByTag();
 
   // 從 URL 參數讀取分類和搜尋字串 (支援 query, q, keyword, search 並處理 all)
   const rawCategory = searchParams.get('category') || '';
@@ -60,13 +60,9 @@ export default function Search() {
     '女性護理',
     '每日清潔',
     '深層修護',
-    '舒適穿著',
-    '生理褲',
-    '抗菌無痕內褲',
-    '超薄無痕內褲',
-    '無痕收腹內褲',
-    '舒適純棉內褲'
+    '舒適穿著'
   ];
+
 
   // 新增篩選選項
   const usageOptions = [
@@ -115,7 +111,7 @@ export default function Search() {
         console.log('Loading products from Shopify (default all)...');
         setLoadingMethod('default');
 
-        const items = await getShopifyProducts({ first: 50 });
+        const items = await getShopifyProducts({ first: 100 });
         if (items && items.length > 0) {
           const transformedProducts = items.map((product) => ({
             id: product.id,
@@ -426,6 +422,40 @@ export default function Search() {
     return "全部商品";
   };
 
+  // 4 大分類專屬橫幅與描述設定 (各分類圖片獨立，不重複)
+  const CATEGORY_CONFIG: Record<string, { image: string; description: string }> = {
+    '女性護理': {
+      image: '/images/categories/feminine-care.jpg',
+      description: '韓國沙龍級極簡護理，給予私密肌膚最溫柔細膩的長效守護'
+    },
+    '每日清潔': {
+      image: '/images/categories/daily-cleansing.jpg',
+      description: '弱酸性親膚潔淨配方，綿密慕斯泡沫維持每日微生態平衡'
+    },
+    '深層修護': {
+      image: '/images/categories/intensive-repair.jpg',
+      description: '專利高活性修護精華，深度舒緩乾癢敏弱，長效平衡健康屏障'
+    },
+    '舒適穿著': {
+      image: '/images/categories/comfort-wear.jpg',
+      description: '頂級親膚純棉與無痕透氣剪裁，細膩貼合日常生活的每個節奏'
+    },
+    '益生菌私密舒緩凝膠': {
+      image: '/images/categories/intensive-repair.jpg',
+      description: '專利益生菌舒緩修護配方，溫和穩定私密肌膚微生態'
+    }
+  };
+
+  const ORIGINAL_SEARCH_BANNER = "https://readdy.ai/api/search-image?query=Premium%20feminine%20care%20products%20arranged%20elegantly%20on%20wooden%20platform%20with%20soft%20natural%20lighting%2C%20clean%20minimalist%20Korean%20beauty%20style%2C%20warm%20beige%20and%20cream%20tones%2C%20professional%20product%20photography%2C%20simple%20background&width=1349&height=695&seq=search-hero&orientation=landscape";
+
+  const getPageImage = () => {
+    if (collection?.image) return collection.image;
+    if (category && CATEGORY_CONFIG[category]) {
+      return CATEGORY_CONFIG[category].image;
+    }
+    return ORIGINAL_SEARCH_BANNER;
+  };
+
   // 獲取當前頁面描述
   const getPageDescription = () => {
     if (collection) {
@@ -434,8 +464,8 @@ export default function Search() {
     if (tag) {
       return `包含 ${tag} 標籤的所有商品`;
     }
-    if (category) {
-      return '專業女性護理產品，呵護您的健康';
+    if (category && CATEGORY_CONFIG[category]) {
+      return CATEGORY_CONFIG[category].description;
     }
     if (q) {
       return `"${q}" 的搜尋結果`;
@@ -472,7 +502,7 @@ export default function Search() {
       <div className="relative w-full overflow-hidden">
         <div className="w-full h-[280px] sm:h-[400px] lg:h-[695px]">
           <img
-            src={collection?.image || "https://readdy.ai/api/search-image?query=Premium%20feminine%20care%20products%20arranged%20elegantly%20on%20wooden%20platform%20with%20soft%20natural%20lighting%2C%20clean%20minimalist%20Korean%20beauty%20style%2C%20warm%20beige%20and%20cream%20tones%2C%20professional%20product%20photography%2C%20simple%20background&width=1349&height=695&seq=search-hero&orientation=landscape"}
+            src={getPageImage()}
             alt={getPageTitle()}
             className="w-full h-full object-cover"
           />

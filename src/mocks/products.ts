@@ -26,121 +26,83 @@ export interface Product {
 
 export const mockProducts: Product[] = [
     {
-        id: '1',
-        name: '益生菌私密舒緩凝膠',
-        subtitle: '韓國 | 韓國 Dermatest | 女性清潔劑',
-        description: '展示品項；完整成分、敏感肌適用性與使用方式待正式商品資料確認',
+        id: '7819899994179',
+        name: 'Saengak 平衡調理私密潔淨慕斯',
+        subtitle: '韓國植萃調理 | 專利微米弱酸泡沫',
+        description: '微米綿密弱酸泡泡 溫和淨化異味',
         image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800',
         hoverImage: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=800',
-        price: 1280,
-        originalPrice: 1600,
+        price: 890,
+        originalPrice: 1080,
         isBest: true,
-        isNew: false,
-        tags: ['女性護理', '私密護理', '舒緩', '凝膠'],
-        promotionBadge: '2+1 促銷價，享受驚喜折扣！',
+        isNew: true,
+        productType: '每日清潔',
+        tags: ['每日清潔', '私密護理', '慕斯', '清潔'],
         highlights: [
-            '不含 21 種有害成分',
-            '使用植物性萃取成分',
-            'pH 4.5~5.5 弱酸性配方',
-            '醫學等級皮膚測試認證'
-        ],
-        images: [
-            { url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&q=80&w=800' }
+            '微米綿密細緻弱酸泡沫',
+            '深層淨化異味與分泌物困擾',
+            'pH 弱酸平衡私密微生態'
         ]
     },
     {
-        id: '2',
-        name: '抗菌無痕內褲 - 舒適款',
-        subtitle: '親膚純棉 | 無痕透氣 | 每日舒適首選',
-        description: '展示款式；纖維成分、抗菌測試與剪裁規格待正式商品資料確認',
-        image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800',
-        hoverImage: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800',
-        price: 890,
-        originalPrice: 1200,
-        isBest: false,
+        id: '7819900551235',
+        name: 'Saengak 益生菌私密養膚濕巾',
+        subtitle: '隨身單片便攜 | 純淨草本萃取',
+        description: '如水般親膚溫和植萃 隨身潔淨清新',
+        image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=800',
+        hoverImage: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800',
+        price: 390,
+        originalPrice: 480,
+        isBest: true,
         isNew: true,
-        tags: ['抗菌', '無痕', '內褲', '舒適'],
+        productType: '每日清潔',
+        tags: ['每日清潔', '濕巾', '便攜', '養膚'],
         highlights: [
-            '100% 純棉親膚透氣雙層底襠',
-            '超細細膩彈力纖維，貼身不緊繃',
-            '立體美型剪裁，服貼無痕零著感',
-            '嚴選安心染料，親膚不易褪色'
-        ],
-        images: [
-            { url: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800' }
+            '如水般親膚溫和植萃成分',
+            '單片獨立密封包裝方便隨身',
+            '維持全天候潔淨清新'
+        ]
+    },
+    {
+        id: '7819995545667',
+        name: 'Saengak 私密雙層修護精華噴霧',
+        subtitle: '德國專利燕麥活性成分 | 雙層水油',
+        description: '雙層水油黃金配比 隨手安撫舒緩',
+        image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=800',
+        hoverImage: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800',
+        price: 980,
+        originalPrice: 1280,
+        isBest: true,
+        isNew: true,
+        productType: '女性護理',
+        tags: ['女性護理', '噴霧', '雙層修護', '修護'],
+        highlights: [
+            '德國專利燕麥活性修護成分',
+            '精華油與植萃雙層黃金配比',
+            '隨手一噴即時安撫乾燥與異味'
         ]
     },
     {
         id: '3',
         variantId: 'gid://shopify/ProductVariant/43639647502403',
-        name: '深層修護私密清潔露',
-        description: '展示清潔品項；成分、pH 值與適用方式待正式商品資料確認',
-        image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=800',
-        hoverImage: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800',
-        price: 680,
-        isBest: false,
-        isNew: false,
-        tags: ['清潔', '修護', '私密護理', '深層'],
-        images: [
-            { url: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800' }
-        ]
-    },
-    {
-        id: '4',
-        name: '生理褲 - 超薄款',
-        description: '展示生理褲品項；厚度、吸收層與使用限制待正式商品資料確認',
-        image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=800',
-        hoverImage: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800',
-        price: 1450,
-        originalPrice: 1800,
-        isBest: true,
-        isNew: true,
-        tags: ['生理褲', '超薄', '保護'],
-        images: [
-            { url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800' }
-        ]
-    },
-    {
-        id: '5',
-        name: '舒適純棉內褲組合',
-        description: '展示內褲組合；棉含量、洗滌方式與尺寸待正式商品資料確認',
-        image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800',
-        hoverImage: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800',
-        price: 1200,
-        isBest: false,
-        isNew: false,
-        tags: ['純棉', '舒適', '內褲', '透氣'],
-        images: [
-            { url: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800' }
-        ]
-    },
-    {
-        id: '6',
-        name: '無痕收腹內褲',
-        description: '展示剪裁品項；材質、尺寸與穿著效果待正式商品資料確認',
+        name: 'Saengak 深層修護私密清潔露',
+        subtitle: '專利草本萃取 | 溫和舒緩修護',
+        description: '專利植萃溫和淨膚 深層舒緩修護',
         image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800',
-        hoverImage: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=800',
-        price: 980,
-        originalPrice: 1300,
+        hoverImage: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800',
+        price: 780,
+        originalPrice: 980,
         isBest: false,
         isNew: false,
-        tags: ['無痕', '收腹', '塑形', '內褲'],
-        images: [
-            { url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800' },
-            { url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=800' }
+        productType: '深層修護',
+        tags: ['深層修護', '清潔露', '修護', '私密護理'],
+        highlights: [
+            '專利草本植萃溫和淨膚配方',
+            '深層舒緩修護私密嬌嫩肌膚',
+            '洗後保濕清爽不緊繃'
         ]
     }
+
 ];
 
 export const getMockProductById = (id: string): Product | undefined => {

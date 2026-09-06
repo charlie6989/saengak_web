@@ -118,10 +118,39 @@ export default function ProfilePage() {
   const [reviewError, setReviewError] = useState<string>('');
   const [reviewToast, setReviewToast] = useState<string>('');
 
-  // 優惠券狀態
-  const [coupons, setCoupons] = useState<UserCoupon[]>([]);
-  const [couponFilter, setCouponFilter] = useState<'available' | 'used' | 'expired'>('available');
-  const [couponToast, setCouponToast] = useState<string>('');
+  // 社群帳號綁定狀態
+  const [linkMessage, setLinkMessage] = useState<string>('');
+  const [linkingFb, setLinkingFb] = useState<boolean>(false);
+
+  const isFacebookLinked = Boolean(
+    user?.identities?.some((id: any) => id.provider === 'facebook') ||
+    user?.app_metadata?.provider === 'facebook' ||
+    user?.app_metadata?.providers?.includes('facebook')
+  );
+
+  const isGoogleLinked = Boolean(
+    user?.identities?.some((id: any) => id.provider === 'google') ||
+    user?.app_metadata?.provider === 'google' ||
+    user?.app_metadata?.providers?.includes('google')
+  );
+
+  const handleLinkFacebook = async () => {
+    try {
+      setLinkingFb(true);
+      setLinkMessage('');
+      const { error } = await supabase.auth.linkIdentity({
+        provider: 'facebook',
+        options: {
+          redirectTo: `${window.location.origin}/profile?tab=profile`
+        }
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      console.error('FB 綁定失敗:', err);
+      setLinkMessage(`綁定失敗：${err.message || '請確認網路連線或稍後再試'}`);
+      setLinkingFb(false);
+    }
+  };
 
   useEffect(() => {
     const getUser = async () => {
@@ -809,6 +838,73 @@ export default function ProfilePage() {
                     className={`w-full px-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-teal-500' : 'bg-gray-50'
                       }`}
                   />
+                </div>
+              </div>
+
+              {/* 社群帳號綁定管理 */}
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <h3 className="text-base font-semibold text-gray-900 mb-1">社群帳號綁定</h3>
+                <p className="text-xs text-gray-500 mb-4">
+                  綁定第三方社群帳號後，您即可使用該社群帳號一鍵快速登入，享受更便捷的安全防護。
+                </p>
+
+                {linkMessage && (
+                  <div className="mb-4 p-3 rounded-lg bg-amber-50 text-amber-800 text-xs border border-amber-200">
+                    {linkMessage}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Facebook 綁定卡片 */}
+                  <div className="p-4 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-xl flex-shrink-0">
+                        <i className="ri-facebook-fill"></i>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">Facebook</p>
+                        <p className="text-xs text-gray-500">
+                          {isFacebookLinked ? '已成功綁定' : '尚未綁定'}
+                        </p>
+                      </div>
+                    </div>
+                    {isFacebookLinked ? (
+                      <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full font-medium">
+                        <i className="ri-checkbox-circle-line"></i> 已連結
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleLinkFacebook}
+                        disabled={linkingFb}
+                        className="text-xs font-semibold px-3 py-1.5 bg-[#1877F2] hover:bg-[#166FE5] text-white rounded-lg shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
+                      >
+                        {linkingFb ? '跳轉中...' : '立即綁定'}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Google 狀態卡片 */}
+                  <div className="p-4 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 text-gray-700 flex items-center justify-center text-xl flex-shrink-0">
+                        <i className="ri-google-fill text-red-500"></i>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">Google</p>
+                        <p className="text-xs text-gray-500">
+                          {isGoogleLinked ? '已成功綁定' : '未綁定'}
+                        </p>
+                      </div>
+                    </div>
+                    {isGoogleLinked ? (
+                      <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full font-medium">
+                        <i className="ri-checkbox-circle-line"></i> 已連結
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-400">未連結</span>
+                    )}
+                  </div>
                 </div>
               </div>
 

@@ -194,3 +194,7 @@ scripts/update_*.mjs
 scripts/verify_csv_payload.mjs
 check-db.mjs
 *.exe
+scripts/temp_images/
+scripts/download_temp_images.mjs
+scripts/get_en_images.mjs
+scripts/all_products_cleanup_preview.md

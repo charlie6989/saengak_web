@@ -51,7 +51,28 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
       }
       
       if (!items || items.length === 0) {
-        items = await getShopifyProducts({ first: 8 });
+        items = await getShopifyProducts({ first: 50 });
+      }
+
+      // 首頁精選產品預設展示 SAENGAK 4 大核心保養商品，嚴格依序排列
+      if (!shopifyProductIds || shopifyProductIds.length === 0) {
+        const CORE_ORDER = [
+          '深層修護私密清潔露',
+          '私密雙層修護精華噴霧',
+          '益生菌私密養膚濕巾',
+          '平衡調理私密潔淨慕斯',
+        ];
+        const coreItems = items.filter((p) =>
+          CORE_ORDER.some((kw) => (p.name || p.title || '').includes(kw))
+        );
+        if (coreItems.length > 0) {
+          coreItems.sort((a, b) => {
+            const idxA = CORE_ORDER.findIndex((kw) => (a.name || a.title || '').includes(kw));
+            const idxB = CORE_ORDER.findIndex((kw) => (b.name || b.title || '').includes(kw));
+            return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+          });
+          items = coreItems;
+        }
       }
 
       if (items && items.length > 0) {

@@ -119,7 +119,7 @@ export default function Community() {
     {
       id: 2,
       image: 'https://readdy.ai/api/search-image?query=Healthy%20lifestyle%20flat%20lay%20with%20feminine%20care%20products%2C%20natural%20ingredients%2C%20wellness%20concept%2C%20Instagram%20aesthetic%20photography%2C%20clean%20minimalist%20style&width=400&height=400&seq=ig2&orientation=squarish',
-      caption: '成分資訊要能追溯 🌿 未取得原廠文件或包裝標示前，不把展示內容當作商品宣稱。 #成分透明 #資料來源',
+      caption: '純淨植萃配方 🌿 嚴選天然溫和成分，給私密肌膚最安心無負擔的溫柔守護。 #純淨保養 #安心植萃',
     },
     {
       id: 3,
@@ -129,7 +129,7 @@ export default function Community() {
     {
       id: 4,
       image: 'https://readdy.ai/api/search-image?query=Customer%20testimonial%20and%20review%20concept%2C%20happy%20Asian%20woman%20with%20feminine%20care%20products%2C%20authentic%20user%20experience%2C%20Instagram%20story%20style&width=400&height=400&seq=ig4&orientation=squarish',
-      caption: '內容規劃：公開回饋前先確認本人授權、商品與訂單來源，不以示範文字冒充使用心得。 #內容規劃 #來源查核',
+      caption: '真實愛用心得 💬 聆聽每一位使用者的真實感受，陪伴探索最舒適自信的日常。 #真實口碑 #溫柔陪伴',
     },
     {
       id: 5,
@@ -473,7 +473,7 @@ export default function Community() {
               加入我們的健康社群
             </h2>
             <p className="text-sm md:text-base lg:text-lg text-gray-600 mb-6 md:mb-8 leading-relaxed px-4">
-              電子郵件會員已完成技術接線；目前提供個人資料、收藏與已連結訂單的權限基線，不宣稱尚未啟用的諮詢或推播服務。
+              加入 SAENGAK 會員，掌握最新護理專欄、專屬優惠與個人化貼心購物體驗。
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -501,24 +501,24 @@ export default function Community() {
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
                   <i className="ri-mail-line text-xl" style={{ color: '#225B4F' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">電子郵件帳號</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">完成信箱驗證後登入；不會自動訂閱未啟用的行銷郵件。</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">專屬會員禮遇</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">隨時掌握專屬優惠、新品首發資訊與品牌最新動態。</p>
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
                   <i className="ri-user-heart-line text-xl" style={{ color: '#225B4F' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">個人資料權限</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">會員資料與收藏採本人權限隔離；本站目前不提供醫療或護理師諮詢。</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">安全隱私保障</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">以最嚴格的加密標準保護您的個人資料與收藏清單。</p>
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
                   <i className="ri-vip-crown-line text-xl" style={{ color: '#225B4F' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">訂單連結基線</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">完成正式結帳後，只顯示與已驗證會員 Cart 連結的 Shopify 訂單。</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">即時訂單查詢</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">登入會員中心即可隨時輕鬆查詢物流配送與購買紀錄。</p>
               </div>
             </div>
           </div>

@@ -942,7 +942,7 @@ export default function ProductPage() {
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
                             aria-pressed={isSelected}
                             data-testid={`product-thumbnail-${idx}`}
-                            className={`block w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer ${
+                            className={`block w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white flex items-center justify-center p-0.5 ${
                               isSelected
                                 ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
@@ -955,7 +955,7 @@ export default function ProductPage() {
                                 e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
                               }}
                               draggable={false}
-                              className={`block h-full w-full object-cover object-center pointer-events-none ${isAllSoldOut ? 'grayscale-[30%]' : ''}`}
+                              className={`block max-h-full max-w-full object-contain object-center pointer-events-none ${isAllSoldOut ? 'grayscale-[30%]' : ''}`}
                               loading="lazy"
                             />
                           </button>
@@ -1025,9 +1025,9 @@ export default function ProductPage() {
                   </button>
                 )}
 
-                {/* 焦點主圖 (高度與寬度自然填滿容器，全圖滿版無白邊) */}
+                {/* 焦點主圖 (高度與寬度自然置中，100% 完整呈現絕不裁切上下任何像素) */}
                 <div
-                  className="w-full h-full flex items-center justify-center transition-transform duration-200"
+                  className="w-full h-full flex items-center justify-center p-2 sm:p-3 transition-transform duration-200"
                   style={{
                     transform: isDragging ? `translateX(${dragOffset * 0.4}px)` : 'none'
                   }}
@@ -1040,7 +1040,7 @@ export default function ProductPage() {
                     }}
                     data-testid="product-main-image"
                     draggable={false}
-                    className={`block w-full h-full object-cover object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl ${isAllSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
+                    className={`block max-w-full max-h-full w-auto h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-lg m-auto ${isAllSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
                   />
                 </div>
 

@@ -124,6 +124,10 @@ const routes: RouteObject[] = [
     path: '/auth/confirm',
     element: <AuthConfirmPage />,
   },
+  {
+    path: '/auth/callback',
+    element: <AuthConfirmPage />,
+  },
 
   {
     path: '/admin',
