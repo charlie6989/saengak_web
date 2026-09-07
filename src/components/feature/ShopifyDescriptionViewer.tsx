@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import type {
   MusinsaFitGuide,
   SizeChartItem,
@@ -30,6 +30,7 @@ export interface ShopifyDescriptionViewerProps {
   careInstructions?: string[];
   lifestyleShowcase?: LifestyleShowcaseItem[];
   craftDetails?: CraftDetailItem[];
+  descriptionImages?: { src: string; alt?: string }[];
 }
 
 export default function ShopifyDescriptionViewer({
@@ -48,6 +49,7 @@ export default function ShopifyDescriptionViewer({
   careInstructions,
   lifestyleShowcase,
   craftDetails,
+  descriptionImages = [],
 }: ShopifyDescriptionViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoomImageSrc, setZoomImageSrc] = useState<string | null>(null);
@@ -108,7 +110,107 @@ export default function ShopifyDescriptionViewer({
     };
   }, [html]);
 
-  const hasHtmlContent = Boolean(html && html.trim().length > 10);
+  // 智慧分離：將 html 拆分為「純文字生活引言 (leadTextHtml)」與「所有描述圖卡 (extractedDescriptionImages)」
+  const { leadTextHtml, extractedDescriptionImages } = useMemo(() => {
+    const list: { src: string; alt: string }[] = [];
+
+    // 0. 加入 props 傳入的 descriptionImages (若有)
+    if (descriptionImages && descriptionImages.length > 0) {
+      for (const item of descriptionImages) {
+        if (item?.src && !list.some((img) => img.src === item.src)) {
+          list.push({ src: item.src, alt: item.alt || '' });
+        }
+      }
+    }
+
+    if (!html) return { leadTextHtml: '', extractedDescriptionImages: list };
+
+    // 1. 提取所有 <img> 標籤中的 src 與 alt
+    const imgRegex = /<img\b[^>]*?\bsrc=["']([^"']+)["'][^>]*>/gi;
+    let match: RegExpExecArray | null;
+
+    const getAlt = (tagStr: string) => {
+      const altMatch = tagStr.match(/\balt=["']([^"']*)["']/i);
+      return altMatch ? altMatch[1] : '';
+    };
+
+    while ((match = imgRegex.exec(html)) !== null) {
+      const src = match[1];
+      const alt = getAlt(match[0]);
+      if (src && !list.some((img) => img.src === src)) {
+        list.push({ src, alt });
+      }
+    }
+
+    // 2. 清除 html 中的所有描述圖容器與 img 標籤，保留乾淨的生活引言或文字內容
+    let cleanedHtml = html
+      .replace(/<div\b[^>]*class=["'][^"']*product-description-images[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '')
+      .replace(/<p\b[^>]*>\s*<img\b[^>]*>\s*<\/p>/gi, '')
+      .replace(/<img\b[^>]*>/gi, '')
+      .trim();
+
+    return {
+      leadTextHtml: cleanedHtml,
+      extractedDescriptionImages: list,
+    };
+  }, [html, descriptionImages]);
+
+  const hasLeadContent = Boolean(leadTextHtml && leadTextHtml.trim().length > 10);
+
+  // 檢驗是否適合放入五大圖文卡位（嚴格排除帶有文字排版、問答大字或白邊條的圖卡，優先使用純實拍攝影圖）
+  const isEligibleShowcaseImage = (url: string) => {
+    if (!url) return false;
+    const lower = url.toLowerCase();
+    if (
+      lower.includes('03_f0255fc5') ||
+      lower.includes('03_商品圖') ||
+      lower.includes('faq') ||
+      lower.includes('問答') ||
+      lower.includes('q&a') ||
+      lower.includes('qa') ||
+      lower.includes('尺碼表') ||
+      lower.includes('size_chart')
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  // 智慧建立商品內容前 5 張圖片資源池：
+  // 依據規範：優先從「商品圖 (images)」開始取得，嚴格過濾白邊與文字圖卡；除非商品圖不足 5 張，才依序從「描述圖片 (extractedDescriptionImages)」取用合格圖片遞補
+  const contentImagesPool = useMemo(() => {
+    const pool: string[] = [];
+
+    // 1. 優先從商品圖 (images) 開始取得，排除帶字/白邊圖卡
+    for (const url of images) {
+      if (url && isEligibleShowcaseImage(url) && !pool.includes(url)) {
+        pool.push(url);
+        if (pool.length >= 5) break;
+      }
+    }
+
+    // 2. 除非商品圖不足 5 張，才依序取用合適的描述圖片遞補（同樣排除 FAQ/文字大圖）
+    if (pool.length < 5) {
+      for (const item of extractedDescriptionImages) {
+        if (item?.src && isEligibleShowcaseImage(item.src) && !pool.includes(item.src)) {
+          pool.push(item.src);
+          if (pool.length >= 5) break;
+        }
+      }
+    }
+
+    // 3. 若仍不足 5 張，才放寬納入其他非空圖片
+    if (pool.length < 5) {
+      for (const url of images) {
+        if (url && !pool.includes(url)) {
+          pool.push(url);
+          if (pool.length >= 5) break;
+        }
+      }
+    }
+
+    return pool;
+  }, [images, extractedDescriptionImages]);
 
   // 生活情境圖文展示 (Props 優先，次為 fallback)
   const displaySections: ContentSection[] = (() => {
@@ -118,7 +220,7 @@ export default function ShopifyDescriptionViewer({
         badge: item.badge || `CARE 0${idx + 1}`,
         title: item.title,
         description: item.description,
-        image: item.image || images[idx + 1] || (idx === 0
+        image: contentImagesPool[idx] || item.image || (idx === 0
           ? 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=1200'
           : idx === 1
             ? 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=1200'
@@ -133,7 +235,7 @@ export default function ShopifyDescriptionViewer({
         description: isApparel
           ? '嚴選超細纖維與天然純棉襠部，無痕貼合身型曲線，無論日常活動或睡眠皆能享受零拘束的親膚著感。'
           : '為女性私密肌膚量身打造，富含高活性益生菌複合成分與天然植萃精華，深層維持微生態弱酸屏障。',
-        image: images[1] || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=1200',
+        image: contentImagesPool[0] || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=1200',
         badge: 'CARE 01',
       },
       {
@@ -143,7 +245,7 @@ export default function ShopifyDescriptionViewer({
         description: isApparel
           ? '高透氣立體織造工藝，能迅速排出濕氣與悶熱感，在潮濕悶熱的氣候中依然保持全天候透氣乾爽。'
           : '水感凝露質地，輕盈水潤好推開，能快速被肌膚吸收並形成透氣鎖水保護膜，告別悶熱黏膩。',
-        image: images[2] || 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=1200',
+        image: contentImagesPool[1] || 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=1200',
         badge: 'TEXTURE 02',
       },
       {
@@ -153,7 +255,7 @@ export default function ShopifyDescriptionViewer({
         description: isApparel
           ? '通過多次洗滌與回彈性拉力測試，耐磨耐穿不易變形，細緻無痕收邊技術讓穿著時完美隱形無勒痕。'
           : '無酒精、無色素、無paraben防腐劑，通過人體皮膚刺激測試，敏感時期與每日日常皆可放心使用。',
-        image: images[3] || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1200',
+        image: contentImagesPool[2] || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1200',
         badge: 'SAFETY 03',
       },
     ];
@@ -166,7 +268,7 @@ export default function ShopifyDescriptionViewer({
         category: c.category,
         title: c.title,
         description: c.description,
-        image: c.image || images[idx + 4] || (idx === 0
+        image: contentImagesPool[3 + idx] || c.image || (idx === 0
           ? 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800'
           : 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800'),
       }));
@@ -178,7 +280,7 @@ export default function ShopifyDescriptionViewer({
         description: isApparel
           ? '採用高精密熱壓貼合與平整車縫工藝，有效減少肌膚摩擦感，全天候自在無負擔。'
           : '輕透水潤質地，觸膚即化，快速形成透氣保濕鎖水屏障，維持全天候清新舒適。',
-        image: images[4] || 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800',
+        image: contentImagesPool[3] || 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800',
       },
       {
         category: isApparel ? '衛生防護工藝' : '瓶器與包裝工藝',
@@ -186,7 +288,7 @@ export default function ShopifyDescriptionViewer({
         description: isApparel
           ? '底襠嚴選透氣純棉面料，具備抑菌防潮特性，維持私密處全日清爽衛生。'
           : '特殊氣密式瓶器設計，防止外界水氣與空氣回流，確保每滴成分活性長效新鮮。',
-        image: images[5] || 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800',
+        image: contentImagesPool[4] || 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800',
       },
     ];
   })();
@@ -225,12 +327,12 @@ export default function ShopifyDescriptionViewer({
 
   return (
     <div className="space-y-12 animate-fadeIn">
-      {/* 方案 A 小編富文本內容 */}
-      {hasHtmlContent ? (
+      {/* 方案 A 小編富文本引言內容 (已智慧分離圖片至下方) */}
+      {hasLeadContent ? (
         <div
           ref={containerRef}
-          className="bg-white p-6 sm:p-10 rounded-2xl border border-gray-200/70 shadow-2xs space-y-6 overflow-hidden [&_.editorial-preface]:p-6 [&_.editorial-preface]:sm:p-8 [&_.editorial-preface]:bg-[#FAF9F5] [&_.editorial-preface]:border-l-4 [&_.editorial-preface]:border-[#245B50] [&_.editorial-preface]:rounded-r-2xl [&_.editorial-preface]:shadow-2xs [&_.editorial-preface_p]:text-gray-700 [&_.editorial-preface_p]:text-base [&_.editorial-preface_p]:leading-relaxed [&_.editorial-preface_p]:mb-3.5 last:[&_.editorial-preface_p]:mb-0 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:border-l-4 [&_h2]:border-[#245B50] [&_h2]:pl-3.5 [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-gray-800 [&_h3]:mt-8 [&_h3]:mb-3 [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:text-gray-800 [&_h4]:mt-6 [&_h4]:mb-2 [&_p]:text-base [&_p]:text-gray-700 [&_p]:leading-relaxed [&_p]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-5 [&_ul]:space-y-2.5 [&_li]:text-gray-700 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-5 [&_ol]:space-y-2.5 [&_li]:text-gray-700 [&_img]:rounded-2xl [&_img]:shadow-xs [&_img]:mx-auto [&_img]:my-8 [&_img]:max-w-full [&_img]:h-auto [&_img]:object-cover hover:[&_img]:shadow-md hover:[&_img]:scale-[1.01] [&_img]:transition-all [&_img]:duration-500 [&_table]:w-full [&_table]:border-collapse [&_table]:my-8 [&_table]:rounded-xl [&_table]:overflow-hidden [&_table]:border [&_table]:border-gray-200 [&_table]:shadow-2xs [&_th]:bg-stone-100 [&_th]:text-[#245B50] [&_th]:p-3.5 [&_th]:font-bold [&_th]:text-left [&_th]:text-sm [&_td]:p-3.5 [&_td]:border-t [&_td]:border-gray-100 [&_td]:text-gray-700 [&_td]:text-sm [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-600/60 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:bg-emerald-50/40 [&_blockquote]:rounded-r-xl [&_blockquote]:italic [&_blockquote]:text-gray-700"
-          dangerouslySetInnerHTML={{ __html: html || '' }}
+          className="bg-white p-6 sm:p-10 rounded-2xl border border-gray-200/70 shadow-2xs space-y-6 overflow-hidden [&_.editorial-preface]:p-6 [&_.editorial-preface]:sm:p-8 [&_.editorial-preface]:bg-[#FAF9F5] [&_.editorial-preface]:border-l-4 [&_.editorial-preface]:border-[#245B50] [&_.editorial-preface]:rounded-r-2xl [&_.editorial-preface]:shadow-2xs [&_.editorial-preface_p]:text-gray-700 [&_.editorial-preface_p]:text-base [&_.editorial-preface_p]:leading-relaxed [&_.editorial-preface_p]:mb-3.5 last:[&_.editorial-preface_p]:mb-0 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:border-l-4 [&_h2]:border-[#245B50] [&_h2]:pl-3.5 [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-gray-800 [&_h3]:mt-8 [&_h3]:mb-3 [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:text-gray-800 [&_h4]:mt-6 [&_h4]:mb-2 [&_p]:text-base [&_p]:text-gray-700 [&_p]:leading-relaxed [&_p]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-5 [&_ul]:space-y-2.5 [&_li]:text-gray-700 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-5 [&_ol]:space-y-2.5 [&_li]:text-gray-700 [&_table]:w-full [&_table]:border-collapse [&_table]:my-8 [&_table]:rounded-xl [&_table]:overflow-hidden [&_table]:border [&_table]:border-gray-200 [&_table]:shadow-2xs [&_th]:bg-stone-100 [&_th]:text-[#245B50] [&_th]:p-3.5 [&_th]:font-bold [&_th]:text-left [&_th]:text-sm [&_td]:p-3.5 [&_td]:border-t [&_td]:border-gray-100 [&_td]:text-gray-700 [&_td]:text-sm [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-600/60 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:bg-emerald-50/40 [&_blockquote]:rounded-r-xl [&_blockquote]:italic [&_blockquote]:text-gray-700"
+          dangerouslySetInnerHTML={{ __html: leadTextHtml }}
         />
       ) : (
         <div className="bg-white p-8 sm:p-12 rounded-2xl border border-gray-200/70 shadow-2xs text-center space-y-4">
@@ -306,11 +408,11 @@ export default function ShopifyDescriptionViewer({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {displayCrafts.map((craft, idx) => (
             <div key={idx} className="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-2xs group">
-              <div className="aspect-[16/10] overflow-hidden bg-gray-100">
+              <div className="aspect-[4/3] sm:aspect-[16/11] overflow-hidden bg-stone-50">
                 <img
                   src={craft.image}
                   alt={craft.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
                 />
               </div>
@@ -612,6 +714,36 @@ export default function ShopifyDescriptionViewer({
           </div>
         </div>
       </div>
+
+      {/* 6.5 描述圖片展示專區 (依規範精準置於「基本商品資訊與使用方式」區塊正下方) */}
+      {extractedDescriptionImages.length > 0 && (
+        <div className="space-y-6 animate-fadeIn" data-testid="product-description-images-section">
+          <div className="flex items-center gap-2.5 pb-2 border-b border-gray-100">
+            <span className="w-1.5 h-5 rounded-full bg-[#245B50]"></span>
+            <h4 className="text-lg sm:text-xl font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+              常見問答與詳細圖文說明 (Q&A & Details)
+            </h4>
+          </div>
+
+          {/* 無縫拼接圖片容器：整組統一外層卡片邊框與圓角，內部圖片完全零間隙緊密相連 */}
+          <div className="overflow-hidden rounded-2xl bg-white border border-gray-200/70 shadow-2xs flex flex-col gap-0 leading-none">
+            {extractedDescriptionImages.map((img, idx) => (
+              <div
+                key={idx}
+                className="w-full overflow-hidden text-center m-0 p-0 leading-none"
+              >
+                <img
+                  src={img.src}
+                  alt={img.alt || `${productName} 描述圖 ${idx + 1}`}
+                  loading="lazy"
+                  onClick={() => setZoomImageSrc(img.src)}
+                  className="w-full h-auto block cursor-zoom-in transition-opacity hover:opacity-95 mx-auto m-0 p-0 align-bottom"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 7. 正品保證與安心守護承諾 */}
       <div className="rounded-2xl border border-[#245B50]/20 bg-[#245B50]/5 p-6 sm:p-8 space-y-4">

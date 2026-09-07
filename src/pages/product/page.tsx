@@ -500,6 +500,84 @@ export default function ProductPage() {
     ? Math.round(((currentCompareAtPrice - currentPrice) / currentCompareAtPrice) * 100)
     : 0;
 
+  const isEligibleShowcaseImage = (url: string) => {
+    if (!url) return false;
+    const lower = url.toLowerCase();
+    if (
+      lower.includes('03_f0255fc5') ||
+      lower.includes('03_商品圖') ||
+      lower.includes('faq') ||
+      lower.includes('問答') ||
+      lower.includes('q&a') ||
+      lower.includes('qa') ||
+      lower.includes('尺碼表') ||
+      lower.includes('size_chart')
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  /**
+   * 智慧計算商品內容（產品內容頁籤）前 5 張圖片資源池：
+   * 依據規範：優先從純實拍「商品圖 (productImages)」依序取得，嚴格排除帶字/白邊圖卡；
+   * 除非商品圖片不足 5 張，才依序從「描述圖片 (descriptionHtml)」遞補合格圖檔。
+   */
+  const contentImagesPool = useMemo(() => {
+    const pool: string[] = [];
+
+    // 1. 優先從商品圖 (productImages) 開始取得，排除帶字/白邊圖卡
+    for (const url of productImages) {
+      if (url && isEligibleShowcaseImage(url) && !pool.includes(url)) {
+        pool.push(url);
+        if (pool.length >= 5) break;
+      }
+    }
+
+    // 2. 除非商品圖片不足 5 張，才依序取用描述圖片遞補（同樣排除 FAQ/文字大圖）
+    if (pool.length < 5 && (product?.descriptionHtml || product?.description)) {
+      const html = product.descriptionHtml || product.description;
+      const imgRegex = /<img\b[^>]*?\bsrc=["']([^"']+)["'][^>]*>/gi;
+      let match: RegExpExecArray | null;
+      while ((match = imgRegex.exec(html)) !== null) {
+        const src = match[1];
+        if (src && isEligibleShowcaseImage(src) && !pool.includes(src)) {
+          pool.push(src);
+          if (pool.length >= 5) break;
+        }
+      }
+    }
+
+    // 3. 若仍不足 5 張，才放寬納入其他非空圖片
+    if (pool.length < 5) {
+      for (const url of productImages) {
+        if (url && !pool.includes(url)) {
+          pool.push(url);
+          if (pool.length >= 5) break;
+        }
+      }
+    }
+
+    return pool;
+  }, [productImages, product?.descriptionHtml, product?.description]);
+
+  // 根據商品內容前 5 張圖片資源池，依序注入至生活特色與工藝細節
+  const resolvedLifestyleShowcase = useMemo(() => {
+    if (!product?.lifestyleShowcase || product.lifestyleShowcase.length === 0) return undefined;
+    return product.lifestyleShowcase.map((item, idx) => ({
+      ...item,
+      image: contentImagesPool[idx] || item.image,
+    }));
+  }, [product?.lifestyleShowcase, contentImagesPool]);
+
+  const resolvedCraftDetails = useMemo(() => {
+    if (!product?.craftDetails || product.craftDetails.length === 0) return undefined;
+    return product.craftDetails.map((item, idx) => ({
+      ...item,
+      image: contentImagesPool[3 + idx] || item.image,
+    }));
+  }, [product?.craftDetails, contentImagesPool]);
+
   /**
    * 智慧相關產品推薦演算法 (同類精選、暢銷熱賣、好評榜單、隨機探索與換一批輪動)
    */
@@ -1354,8 +1432,8 @@ export default function ProductPage() {
                 sizeChart={product.sizeChart}
                 careSpecs={product.careSpecs}
                 careInstructions={product.careInstructions}
-                lifestyleShowcase={product.lifestyleShowcase}
-                craftDetails={product.craftDetails}
+                lifestyleShowcase={resolvedLifestyleShowcase}
+                craftDetails={resolvedCraftDetails}
               />
             )}
 

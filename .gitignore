@@ -214,3 +214,5 @@ scripts/write_*.mjs
 scripts/reset-and-sync-vercel-env.mjs
 scripts/upload-vercel-env.mjs
 scripts/*.ps1
+scripts/final_comprehensive_audit.mjs
+scripts/query_last_product.mjs
