@@ -33,7 +33,7 @@ export const AdminStaff: React.FC = () => {
         const { data: sessionData } = await supabase.auth.getSession();
         const token = sessionData?.session?.access_token;
         if (token) {
-          const apiRes = await fetch(`/api/admin-users?token=${encodeURIComponent(token)}`, {
+          const apiRes = await fetch('/api/admin-users', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
