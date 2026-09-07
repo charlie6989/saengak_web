@@ -25,7 +25,7 @@
 
 - [ ] No Shopify, Supabase, TapPay, logistics, invoice or Vercel behavior changed
 - [ ] External-system changes are documented with dry-run and readback evidence
-- [ ] `CheckoutReleaseEnabled` remains fail-closed unless formal launch approval is attached
+- [ ] `site_settings.maintenance_mode` 全站維護開關 fail-closed 檢查已確認（`CheckoutReleaseEnabled` 已於 2026-08-23 移除，不再是現行閘門機制，詳見 `docs/00_DECISION_LOG.md` §3.3／§3.4）
 - [ ] No secrets, customer/order data, payment data or private screenshots are included
 
 ## UI evidence
