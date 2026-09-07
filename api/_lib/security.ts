@@ -1,14 +1,13 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 
 /**
- * 取得 Request 的實際 Origin 或 Host
+ * 取得 Request 的實際 Origin。
+ * 僅信任 Request 物件自身建構出的 URL（對應實際路由抵達的主機），
+ * 嚴禁採信 `x-forwarded-host`／`x-forwarded-proto` 等用戶端可任意夾帶、偽造的標頭來推算來源，
+ * 避免白名單比對被這類可轉發標頭繞過（SEC-3 稽核修正：原實作以 x-forwarded-host 計算「有效
+ * Origin」後，又拿它與 requestOrigin 互相比對放行，等同讓夾帶相同偽造標頭的跨域請求繞過白名單）。
  */
 export function getEffectiveOrigin(request: Request): string {
-  const forwardedProto = request.headers.get('x-forwarded-proto') || 'https';
-  const forwardedHost = request.headers.get('x-forwarded-host') || request.headers.get('host');
-  if (forwardedHost) {
-    return `${forwardedProto}://${forwardedHost}`;
-  }
   try {
     return new URL(request.url).origin;
   } catch {
@@ -18,11 +17,15 @@ export function getEffectiveOrigin(request: Request): string {
 
 /**
  * 驗證請求 Origin 是否合法（防禦 CSRF 與惡意跨域呼叫）
- * 1. 若有 Origin 標頭：進行嚴格白名單比對（禁止非授權跨域來源）。
+ * 1. 若有 Origin 標頭：僅接受「與本次請求真實 URL 同源」或「命中白名單」兩種情況放行，
+ *    一律採完整比對，不再信任可被任意夾帶偽造的 x-forwarded-host 標頭。
  * 2. 若無 Origin 標頭：
  *    - 依據 W3C/Fetch 規範，瀏覽器同源 GET/HEAD 請求不附帶 Origin 標頭，
  *      此時以 Referer 標頭、Sec-Fetch-Site 或主機同源判定予以合法放行。
  *    - 若帶有非白名單之外站 Referer 則嚴格阻擋。
+ *    - 主機同源判定一律對白名單清單完整比對（含由白名單反推出的 Host 清單），
+ *      不再使用 `includes()`/`endsWith()` 等子字串比對（原本 `host.endsWith('.vercel.app')`
+ *      會放行任何 Vercel 專案的 preview 網址，範圍過寬，已收斂為僅允許明確清單內的主機）。
  */
 export function isOriginAllowed(requestOrigin: string | null, request: Request): boolean {
   // 預設允許清單
@@ -40,15 +43,25 @@ export function isOriginAllowed(requestOrigin: string | null, request: Request):
 
   const allowedOrigins = [...new Set([...defaultAllowed, ...customAllowed])];
 
+  // 由白名單清單反推出對應的 Host（含埠號）清單，供無 Origin 標頭時的同源判定使用，
+  // 一律完整比對，避免任意子網域或名稱中帶有允許字樣的惡意主機被誤判為合法來源。
+  const allowedHosts = new Set(
+    allowedOrigins
+      .map((origin) => {
+        try {
+          return new URL(origin).host;
+        } catch {
+          return null;
+        }
+      })
+      .filter((host): host is string => Boolean(host)),
+  );
+
+  const effectiveOrigin = getEffectiveOrigin(request);
+
   // 1. 若請求附帶 Origin 標頭（跨域請求或瀏覽器 POST/PUT 請求）
   if (requestOrigin) {
-    const effectiveOrigin = getEffectiveOrigin(request);
     if (requestOrigin === effectiveOrigin) return true;
-    try {
-      if (requestOrigin === new URL(request.url).origin) return true;
-    } catch {
-      // ignore
-    }
     return allowedOrigins.includes(requestOrigin);
   }
 
@@ -59,7 +72,7 @@ export function isOriginAllowed(requestOrigin: string | null, request: Request):
     try {
       const refererOrigin = new URL(referer).origin;
       if (allowedOrigins.includes(refererOrigin)) return true;
-      if (refererOrigin === getEffectiveOrigin(request)) return true;
+      if (refererOrigin === effectiveOrigin) return true;
       // 帶有非白名單的外站 Referer 嚴格拒絕
       return false;
     } catch {
@@ -73,21 +86,13 @@ export function isOriginAllowed(requestOrigin: string | null, request: Request):
     return true;
   }
 
-  // 針對唯讀安全方法 (GET / HEAD)，檢驗 Host 是否為允許主機
+  // 針對唯讀安全方法 (GET / HEAD)，嚴格比對 Host 是否命中白名單（完整比對，非子字串包含）
   const method = request.method?.toUpperCase();
   if (method === 'GET' || method === 'HEAD') {
-    const effectiveOrigin = getEffectiveOrigin(request);
     if (allowedOrigins.includes(effectiveOrigin)) return true;
 
-    const host = request.headers.get('host') || '';
-    if (
-      host.includes('localhost') ||
-      host.includes('127.0.0.1') ||
-      host.includes('saengak.com.tw') ||
-      host.endsWith('.vercel.app')
-    ) {
-      return true;
-    }
+    const host = (request.headers.get('host') || '').toLowerCase();
+    if (host && allowedHosts.has(host)) return true;
   }
 
   return false;
