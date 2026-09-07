@@ -131,6 +131,46 @@ function devApiPlugin(): Plugin {
           res.end(JSON.stringify({ error: message }));
         }
       });
+
+      server.middlewares.use('/api/admin-users', async (req, res) => {
+        try {
+          const method = req.method || 'GET';
+          const headers = new Headers();
+          Object.entries(req.headers).forEach(([name, value]) => {
+            if (Array.isArray(value)) {
+              value.forEach((item) => headers.append(name, item));
+            } else if (value) {
+              headers.set(name, value);
+            }
+          });
+
+          const body = method === 'POST'
+            ? await new Promise<string>((resolve, reject) => {
+                let value = '';
+                req.on('data', (chunk) => { value += chunk; });
+                req.on('end', () => resolve(value));
+                req.on('error', reject);
+              })
+            : undefined;
+
+          const host = req.headers.host || 'localhost:3000';
+          const webRequest = new Request(`http://${host}${req.url}`, {
+            method,
+            headers,
+            body,
+          });
+          const api = await import('./api/admin-users.js');
+          const response = await api.handler(webRequest, null);
+
+          res.statusCode = response.status;
+          response.headers.forEach((value, name) => res.setHeader(name, value));
+          res.end(await response.text());
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Unable to query admin users';
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: message }));
+        }
+      });
     },
   };
 }

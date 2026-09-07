@@ -102,14 +102,35 @@ export async function handler(req: any, res: any): Promise<Response> {
       });
     }
 
-    const { data: profilesData } = await supabaseAdmin.from('profiles').select('*');
+    const [{ data: profilesData }, { data: socialAccountsData }] = await Promise.all([
+      supabaseAdmin.from('profiles').select('*'),
+      supabaseAdmin.from('user_social_accounts').select('*'),
+    ]);
+
     const profileMap = new Map<string, any>();
     (profilesData || []).forEach((p: any) => {
       profileMap.set(p.id, p);
     });
 
+    const socialMap = new Map<string, any[]>();
+    (socialAccountsData || []).forEach((s: any) => {
+      const list = socialMap.get(s.user_id) || [];
+      list.push(s);
+      socialMap.set(s.user_id, list);
+    });
+
     const combinedList = (usersData.users || []).map((u: any) => {
       const p = profileMap.get(u.id) || {};
+      const socials = socialMap.get(u.id) || (u.identities || []).map((id: any) => ({
+        provider: id.provider,
+        provider_user_id: id.id,
+        provider_email: id.identity_data?.email || u.email,
+        provider_name: id.identity_data?.full_name || id.identity_data?.name || p.name,
+        avatar_url: id.identity_data?.avatar_url || id.identity_data?.picture || p.avatar,
+        last_sign_in_at: id.last_sign_in_at || u.last_sign_in_at,
+        created_at: id.created_at || u.created_at,
+      }));
+
       const role = u.app_metadata?.role || (u.email === 'worktester2019@gmail.com' ? 'admin' : 'member');
       const name = p.name || u.user_metadata?.full_name || u.user_metadata?.name || (role === 'admin' ? '系統管理員' : '一般會員');
 
@@ -124,6 +145,7 @@ export async function handler(req: any, res: any): Promise<Response> {
         instagram: p.instagram || '',
         avatar: p.avatar || u.user_metadata?.avatar_url || u.user_metadata?.picture || '',
         role: role,
+        social_accounts: socials,
         created_at: p.created_at || u.created_at,
         updated_at: p.updated_at || u.updated_at,
       };

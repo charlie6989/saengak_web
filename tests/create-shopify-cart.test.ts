@@ -256,6 +256,101 @@ describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/creat
       expect(capturedVariables?.input?.discountCodes).toEqual(['WELCOME100']);
     });
 
+    it('會員具有姓名、手機與台灣標準地址時，自動將符合 Shopify 規格的 buyerIdentity 與 shipping attributes 帶入 cartCreate', async () => {
+      let capturedVariables: any = null;
+      globalThis.fetch = vi.fn().mockImplementation(async (_url, options) => {
+        capturedVariables = JSON.parse(options.body).variables;
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            data: {
+              cartCreate: {
+                cart: {
+                  id: 'gid://shopify/Cart/test_cart_address_fill',
+                  checkoutUrl: 'https://gh2xgs-zf.myshopify.com/cart/c/test_address',
+                  totalQuantity: 1,
+                },
+                userErrors: [],
+              },
+            },
+          }),
+        };
+      });
+
+      // 設定 mock adminClient 返回會員 profile
+      mocks.getSupabaseAdminClient.mockReturnValue({
+        rpc: vi.fn().mockResolvedValue({ error: null }),
+        from: vi.fn().mockImplementation((table: string) => {
+          if (table === 'profiles') {
+            return {
+              select: vi.fn().mockReturnValue({
+                eq: vi.fn().mockReturnValue({
+                  maybeSingle: vi.fn().mockResolvedValue({
+                    data: {
+                      name: '王大明',
+                      phone: '0912345678',
+                      address: '106 台北市大安區忠孝東路四段100號5樓',
+                    },
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          }
+          return {
+            upsert: vi.fn().mockResolvedValue({ error: null }),
+          };
+        }),
+      });
+
+      const request = new Request('http://localhost/api/create-shopify-cart', {
+        method: 'POST',
+        headers: {
+          Origin: 'https://saengak.com.tw',
+          Authorization: 'Bearer valid-member-token',
+        },
+        body: JSON.stringify({
+          lines: [
+            {
+              merchandiseId: 'gid://shopify/ProductVariant/1234567890',
+              quantity: 1,
+            },
+          ],
+        }),
+      });
+
+      const response = await POST(request);
+      expect(response.status).toBe(200);
+
+      // 驗證 buyerIdentity 規格
+      const buyerId = capturedVariables?.input?.buyerIdentity;
+      expect(buyerId).toBeDefined();
+      expect(buyerId.countryCode).toBe('TW');
+      expect(buyerId.phone).toBe('+886912345678');
+      expect(buyerId.deliveryAddressPreferences).toHaveLength(1);
+      const deliveryAddr = buyerId.deliveryAddressPreferences[0].deliveryAddress;
+      expect(deliveryAddr.country).toBe('TW');
+      expect(deliveryAddr.province).toBe('台北市');
+      expect(deliveryAddr.city).toBe('大安區');
+      expect(deliveryAddr.zip).toBe('106');
+      expect(deliveryAddr.address1).toBe('忠孝東路四段100號5樓');
+      expect(deliveryAddr.lastName).toBe('王');
+      expect(deliveryAddr.firstName).toBe('大明');
+      expect(deliveryAddr.phone).toBe('+886912345678');
+
+      // 驗證 attributes 備份
+      const attrs = capturedVariables?.input?.attributes || [];
+      const getAttr = (k: string) => attrs.find((a: any) => a.key === k)?.value;
+      expect(getAttr('_shipping_province')).toBe('台北市');
+      expect(getAttr('_shipping_city')).toBe('大安區');
+      expect(getAttr('_shipping_zip')).toBe('106');
+      expect(getAttr('_shipping_address1')).toBe('忠孝東路四段100號5樓');
+      expect(getAttr('_shipping_last_name')).toBe('王');
+      expect(getAttr('_shipping_first_name')).toBe('大明');
+      expect(getAttr('_shipping_phone')).toBe('+886912345678');
+    });
+
     it('當 Shopify 回傳折扣碼 applicable: false 時，Cart 仍成功建立 (200) 但回應帶出 invalidDiscountCodes', async () => {
       const mockCheckoutUrl = 'https://gh2xgs-zf.myshopify.com/cart/c/67890';
       const mockCartId = 'gid://shopify/Cart/test_cart_token_inapplicable';

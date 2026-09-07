@@ -12,6 +12,7 @@ import AuthCaptcha, {
 import GoogleLoginButton from '../../components/feature/GoogleLoginButton';
 import FacebookLoginButton from '../../components/feature/FacebookLoginButton';
 import { captureExceptionSafe } from '../../lib/sentry';
+import { normalizeTaiwanPhone, getTaiwanPhoneErrorMessage } from '../../lib/phoneValidation';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -20,6 +21,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: ''
   });
@@ -60,6 +62,7 @@ export default function RegisterPage() {
         id: `mock-${Date.now()}`,
         email: formData.email,
         name: formData.name,
+        phone: normalizeTaiwanPhone(formData.phone),
         created_at: new Date().toISOString()
       };
 
@@ -94,12 +97,14 @@ export default function RegisterPage() {
     setMessage('');
 
     try {
+      const normalizedPhone = normalizeTaiwanPhone(formData.phone);
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
             name: formData.name,
+            phone: normalizedPhone,
           },
           emailRedirectTo: `${window.location.origin}/auth/confirm`,
           ...captchaTokenOptions(captchaToken),
@@ -164,6 +169,17 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.name || !formData.name.trim()) {
+      setMessage('請填寫姓名（姓名為必填項目）');
+      return;
+    }
+
+    const phoneError = getTaiwanPhoneErrorMessage(formData.phone);
+    if (phoneError) {
+      setMessage(phoneError);
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setMessage('密碼不一致');
@@ -256,7 +272,7 @@ export default function RegisterPage() {
                   value={formData.name}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
-                  placeholder="姓名"
+                  placeholder="姓名（必填）"
                 />
               </div>
 
@@ -271,6 +287,19 @@ export default function RegisterPage() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
                   placeholder="電子郵件地址"
+                />
+              </div>
+
+              <div>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  placeholder="手機號碼（必填，例：0912345678）"
                 />
               </div>
 

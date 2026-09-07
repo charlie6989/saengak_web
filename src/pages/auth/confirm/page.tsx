@@ -46,6 +46,72 @@ export default function AuthConfirmPage() {
         }
 
         if (data.session) {
+          // 同步第三方（Facebook / Google 等）使用者資料至 public.profiles
+          const authUser = data.session.user;
+          if (authUser?.id) {
+            try {
+              const meta = authUser.user_metadata || {};
+              const name = meta.full_name || meta.name || '';
+              const avatar = meta.avatar_url || meta.picture || '';
+              const phone = meta.phone || authUser.phone || '';
+
+              const { data: existingProfile } = await supabase
+                .from('profiles')
+                .select('id, name, avatar, phone')
+                .eq('id', authUser.id)
+                .maybeSingle();
+
+              if (!existingProfile) {
+                await supabase.from('profiles').insert({
+                  id: authUser.id,
+                  email: authUser.email || '',
+                  name: name,
+                  avatar: avatar,
+                  phone: phone,
+                });
+              } else {
+                const updates: Record<string, any> = {};
+                if (name && !existingProfile.name) {
+                  updates.name = name;
+                }
+                if (avatar && !existingProfile.avatar) {
+                  updates.avatar = avatar;
+                }
+                if (phone && !existingProfile.phone) {
+                  updates.phone = phone;
+                }
+                if (Object.keys(updates).length > 0) {
+                  await supabase.from('profiles').update(updates).eq('id', authUser.id);
+                }
+              }
+
+              // 2. 自動記錄/更新獨立社群身分關聯表 (user_social_accounts)
+              const provider = (
+                authUser.app_metadata?.provider ||
+                (meta.iss?.includes('facebook') ? 'facebook' : meta.iss?.includes('google') ? 'google' : '')
+              ).toLowerCase();
+
+              if (provider && provider !== 'email') {
+                const providerUserId =
+                  authUser.identities?.find((i: any) => i.provider === provider)?.id || authUser.id;
+                await supabase.from('user_social_accounts').upsert(
+                  {
+                    user_id: authUser.id,
+                    provider: provider,
+                    provider_user_id: String(providerUserId),
+                    provider_email: authUser.email || '',
+                    provider_name: name,
+                    avatar_url: avatar,
+                    last_sign_in_at: new Date().toISOString(),
+                  },
+                  { onConflict: 'provider,provider_user_id' }
+                );
+              }
+            } catch (syncErr) {
+              console.warn('OAuth 回調同步 profiles / user_social_accounts 失敗 (忽略以保障跳轉):', syncErr);
+            }
+          }
+
           setIsSuccess(true);
           setLoading(false);
           setMessage('會員登入驗證成功！正在跳轉...');

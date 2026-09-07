@@ -10,6 +10,18 @@ import { fetchMemberReviews, submitProductReview, isOrderDelivered } from '../..
 import type { ProductReview } from '../../types/reviews-qa';
 import { fetchUserCoupons } from '../../lib/promotions';
 import type { UserCoupon } from '../../types/promotions';
+import {
+  isValidTaiwanPhone,
+  normalizeTaiwanPhone,
+  getTaiwanPhoneErrorMessage,
+} from '../../lib/phoneValidation';
+import {
+  getTaiwanCities,
+  getTaiwanDistricts,
+  getTaiwanZipCode,
+  formatTaiwanAddress,
+  parseTaiwanAddress,
+} from '../../lib/taiwanDistricts';
 
 interface UserProfile {
   id: string;
@@ -101,6 +113,58 @@ export default function ProfilePage() {
     instagram: '',
     avatar: ''
   });
+
+  // 台灣地址人性化二級連動選單狀態
+  const [addressCity, setAddressCity] = useState('');
+  const [addressDistrict, setAddressDistrict] = useState('');
+  const [addressZip, setAddressZip] = useState('');
+  const [addressStreet, setAddressStreet] = useState('');
+
+  const syncAddressStateFromRaw = (rawAddress?: string | null) => {
+    const parsed = parseTaiwanAddress(rawAddress || '');
+    setAddressCity(parsed.city);
+    setAddressDistrict(parsed.district);
+    setAddressZip(parsed.zip);
+    setAddressStreet(parsed.street);
+  };
+
+  const handleCityChange = (newCity: string) => {
+    setAddressCity(newCity);
+    setAddressDistrict('');
+    setAddressZip('');
+    const newAddress = formatTaiwanAddress({
+      city: newCity,
+      district: '',
+      zip: '',
+      street: addressStreet,
+    });
+    setFormData((prev) => ({ ...prev, address: newAddress }));
+  };
+
+  const handleDistrictChange = (newDistrict: string) => {
+    setAddressDistrict(newDistrict);
+    const newZip = getTaiwanZipCode(addressCity, newDistrict);
+    setAddressZip(newZip);
+    const newAddress = formatTaiwanAddress({
+      city: addressCity,
+      district: newDistrict,
+      zip: newZip,
+      street: addressStreet,
+    });
+    setFormData((prev) => ({ ...prev, address: newAddress }));
+  };
+
+  const handleStreetChange = (newStreet: string) => {
+    setAddressStreet(newStreet);
+    const newAddress = formatTaiwanAddress({
+      city: addressCity,
+      district: addressDistrict,
+      zip: addressZip,
+      street: newStreet,
+    });
+    setFormData((prev) => ({ ...prev, address: newAddress }));
+  };
+
   const [message, setMessage] = useState('');
   const [useMockData, setUseMockData] = useState(
     import.meta.env.DEV && typeof window !== 'undefined' && typeof localStorage !== 'undefined' && localStorage.getItem('useMockAuth') === 'true'
@@ -118,17 +182,28 @@ export default function ProfilePage() {
   const [reviewError, setReviewError] = useState<string>('');
   const [reviewToast, setReviewToast] = useState<string>('');
 
+  // 優惠券狀態
+  const [coupons, setCoupons] = useState<UserCoupon[]>([]);
+  const [couponFilter, setCouponFilter] = useState<'available' | 'used' | 'expired'>('available');
+  const [couponToast, setCouponToast] = useState<string>('');
+
   // 社群帳號綁定狀態
   const [linkMessage, setLinkMessage] = useState<string>('');
   const [linkingFb, setLinkingFb] = useState<boolean>(false);
+  const [socialAccounts, setSocialAccounts] = useState<any[]>([]);
+
+  const fbAccount = socialAccounts.find((sa) => sa.provider === 'facebook');
+  const googleAccount = socialAccounts.find((sa) => sa.provider === 'google');
 
   const isFacebookLinked = Boolean(
+    fbAccount ||
     user?.identities?.some((id: any) => id.provider === 'facebook') ||
     user?.app_metadata?.provider === 'facebook' ||
     user?.app_metadata?.providers?.includes('facebook')
   );
 
   const isGoogleLinked = Boolean(
+    googleAccount ||
     user?.identities?.some((id: any) => id.provider === 'google') ||
     user?.app_metadata?.provider === 'google' ||
     user?.app_metadata?.providers?.includes('google')
@@ -171,6 +246,7 @@ export default function ProfilePage() {
           setUser(user);
           await Promise.all([
             loadProfile(user.id, user),
+            loadSocialAccounts(user.id),
             loadOrders(user.id),
             loadFavorites(user.id),
             loadMemberReviews(user.id),
@@ -211,6 +287,7 @@ export default function ProfilePage() {
           instagram: mockUser.instagram || '',
           avatar: mockUser.avatar || ''
         });
+        syncAddressStateFromRaw(mockUser.address);
         setAvatarPreview(mockUser.avatar || '');
       }
 
@@ -329,6 +406,7 @@ export default function ProfilePage() {
           instagram: data.instagram || '',
           avatar: data.avatar || ''
         });
+        syncAddressStateFromRaw(data.address);
         setAvatarPreview(data.avatar || '');
       } else if (authUser) {
         const fallbackProfile = {
@@ -346,6 +424,21 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('載入個人資料失敗:', error);
       setMessage('個人資料暫時無法載入');
+    }
+  };
+
+  const loadSocialAccounts = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_social_accounts')
+        .select('*')
+        .eq('user_id', userId);
+      if (error) throw error;
+      if (data) {
+        setSocialAccounts(data);
+      }
+    } catch (error) {
+      console.warn('載入社群綁定帳號失敗:', error);
     }
   };
 
@@ -465,6 +558,39 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     if (!user) return;
 
+    if (!formData.name || !formData.name.trim()) {
+      setMessage('請填寫姓名（姓名為必填項目）');
+      return;
+    }
+
+    if (formData.phone && formData.phone.trim()) {
+      const phoneErr = getTaiwanPhoneErrorMessage(formData.phone);
+      if (phoneErr) {
+        setMessage(phoneErr);
+        return;
+      }
+    }
+
+    const normalizedPhone = formData.phone ? normalizeTaiwanPhone(formData.phone) : '';
+    const formattedAddress = formatTaiwanAddress({
+      city: addressCity,
+      district: addressDistrict,
+      zip: addressZip,
+      street: addressStreet,
+    });
+    const finalAddress = formattedAddress || (formData.address?.trim() || null);
+
+    const cleanPayload = {
+      name: formData.name || '',
+      phone: normalizedPhone || null,
+      address: finalAddress,
+      birth_date: formData.birth_date ? formData.birth_date : null,
+      gender: formData.gender ? formData.gender : null,
+      instagram: formData.instagram || null,
+      avatar: formData.avatar || null,
+      updated_at: new Date().toISOString(),
+    };
+
     try {
       if (useMockData) {
         // 假數據模式
@@ -473,8 +599,7 @@ export default function ProfilePage() {
         // 更新 localStorage 中的用戶資料
         const updatedUser = {
           ...user,
-          ...formData,
-          updated_at: new Date().toISOString()
+          ...cleanPayload,
         };
 
         localStorage.setItem('mockCurrentUser', JSON.stringify(updatedUser));
@@ -484,20 +609,35 @@ export default function ProfilePage() {
         setMessage('個人資料更新成功！');
         setIsEditing(false);
       } else {
-        // 真實 Supabase 更新
-        const { error } = await supabase
+        // 真實 Supabase 更新（先嘗試 update，避免 upsert RLS 或主鍵問題）
+        let { error } = await supabase
           .from('profiles')
-          .upsert({
-            id: user.id,
-            email: user.email,
-            ...formData,
-            updated_at: new Date().toISOString()
-          });
+          .update(cleanPayload)
+          .eq('id', user.id);
+
+        if (error) {
+          // 若 record 不存在則嘗試 upsert
+          const upsertRes = await supabase
+            .from('profiles')
+            .upsert({
+              id: user.id,
+              email: user.email,
+              ...cleanPayload,
+            });
+          error = upsertRes.error;
+        }
 
         if (error) {
           console.error('更新個人資料失敗:', error);
-          setMessage('更新失敗，請稍後再試');
+          setMessage(`更新失敗：${error.message || '請稍後再試'}`);
         } else {
+          // 同步更新 auth user_metadata
+          if (normalizedPhone) {
+            await supabase.auth.updateUser({
+              data: { phone: normalizedPhone }
+            }).catch(() => {});
+          }
+
           setMessage('個人資料更新成功！');
           setIsEditing(false);
           await loadProfile(user.id);
@@ -508,6 +648,23 @@ export default function ProfilePage() {
     }
 
     setTimeout(() => setMessage(''), 3000);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    if (profile) {
+      setFormData({
+        name: profile.name || '',
+        phone: profile.phone || '',
+        address: profile.address || '',
+        birth_date: profile.birth_date || '',
+        gender: profile.gender || '',
+        instagram: profile.instagram || '',
+        avatar: profile.avatar || ''
+      });
+      syncAddressStateFromRaw(profile.address);
+      setAvatarPreview(profile.avatar || '');
+    }
   };
 
   const handleLogout = async () => {
@@ -696,7 +853,7 @@ export default function ProfilePage() {
                   {isEditing ? (
                     <>
                       <button
-                        onClick={() => setIsEditing(false)}
+                        onClick={handleCancelEdit}
                         className="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap"
                       >
                         取消
@@ -744,11 +901,13 @@ export default function ProfilePage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    姓名
+                    姓名 <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     name="name"
+                    required
+                    placeholder="請輸入姓名（必填）"
                     value={formData.name}
                     onChange={handleInputChange}
                     disabled={!isEditing}
@@ -827,17 +986,119 @@ export default function ProfilePage() {
 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    地址
+                    常用收件配送地址
                   </label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    className={`w-full px-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-teal-500' : 'bg-gray-50'
-                      }`}
-                  />
+
+                  {isEditing ? (
+                    <div className="bg-teal-50/40 p-4 border border-teal-100 rounded-xl space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-teal-800 font-semibold flex items-center gap-1.5">
+                          <i className="ri-map-pin-2-fill text-teal-600"></i>
+                          台灣地址標準填寫格式
+                        </span>
+                        <span className="text-[11px] text-teal-700 bg-teal-100/60 px-2 py-0.5 rounded">
+                          結帳時自動對齊 Shopify 配送規格
+                        </span>
+                      </div>
+
+                      {/* 第一行：縣市 + 行政區 + 郵遞區號 */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            縣市
+                          </label>
+                          <select
+                            value={addressCity}
+                            onChange={(e) => handleCityChange(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          >
+                            <option value="">請選擇縣市</option>
+                            {getTaiwanCities().map((city) => (
+                              <option key={city} value={city}>
+                                {city}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            鄉鎮市區
+                          </label>
+                          <select
+                            value={addressDistrict}
+                            onChange={(e) => handleDistrictChange(e.target.value)}
+                            disabled={!addressCity}
+                            className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:text-gray-400"
+                          >
+                            <option value="">
+                              {addressCity ? '請選擇行政區' : '請先選擇縣市'}
+                            </option>
+                            {getTaiwanDistricts(addressCity).map((dist) => (
+                              <option key={dist.name} value={dist.name}>
+                                {dist.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            郵遞區號 (自動帶出)
+                          </label>
+                          <input
+                            type="text"
+                            value={addressZip}
+                            readOnly
+                            placeholder="自動產生"
+                            className="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 font-mono text-center rounded-md text-sm cursor-not-allowed"
+                          />
+                        </div>
+                      </div>
+
+                      {/* 第二行：詳細街道門牌 */}
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                          詳細地址 (路 / 街 / 巷 / 弄 / 號 / 樓)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="例：忠孝東路四段100號5樓"
+                          value={addressStreet}
+                          onChange={(e) => handleStreetChange(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    formData.address ? (
+                      <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-lg flex items-start gap-3">
+                        <div className="mt-0.5 text-teal-600">
+                          <i className="ri-map-pin-2-fill text-lg"></i>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            {addressZip && (
+                              <span className="inline-block px-2 py-0.5 bg-teal-100 text-teal-800 text-xs font-mono font-semibold rounded">
+                                {addressZip}
+                              </span>
+                            )}
+                            <span className="text-sm font-semibold text-gray-800">
+                              {[addressCity, addressDistrict].filter(Boolean).join(' ') || '台灣'}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-700">
+                            {addressStreet || formData.address}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-3.5 bg-gray-50 border border-dashed border-gray-300 rounded-lg text-sm text-gray-400 flex items-center gap-2">
+                        <i className="ri-map-pin-line text-gray-400"></i>
+                        尚未設定常用收件地址，點擊右上角「編輯資料」即可設定
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
 
@@ -864,7 +1125,11 @@ export default function ProfilePage() {
                       <div>
                         <p className="text-sm font-semibold text-gray-800">Facebook</p>
                         <p className="text-xs text-gray-500">
-                          {isFacebookLinked ? '已成功綁定' : '尚未綁定'}
+                          {isFacebookLinked
+                            ? fbAccount?.provider_name
+                              ? `已綁定：${fbAccount.provider_name}`
+                              : '已成功綁定'
+                            : '尚未綁定'}
                         </p>
                       </div>
                     </div>
@@ -893,7 +1158,11 @@ export default function ProfilePage() {
                       <div>
                         <p className="text-sm font-semibold text-gray-800">Google</p>
                         <p className="text-xs text-gray-500">
-                          {isGoogleLinked ? '已成功綁定' : '未綁定'}
+                          {isGoogleLinked
+                            ? googleAccount?.provider_name
+                              ? `已綁定：${googleAccount.provider_name}`
+                              : '已成功綁定'
+                            : '未綁定'}
                         </p>
                       </div>
                     </div>

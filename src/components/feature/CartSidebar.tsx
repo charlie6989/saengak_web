@@ -9,6 +9,12 @@ import {
 } from '../../domain/invoice';
 import { createShopifyCheckout } from '../../lib/shopifyCheckout';
 import { captureExceptionSafe } from '../../lib/sentry';
+import { supabase } from '../../lib/supabase';
+import {
+  isValidTaiwanPhone,
+  normalizeTaiwanPhone,
+  getTaiwanPhoneErrorMessage,
+} from '../../lib/phoneValidation';
 import {
   fetchUserCoupons,
   calculateDiscountAmount,
@@ -22,6 +28,11 @@ export default function CartSidebar() {
   const [checkoutMessage, setCheckoutMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
+  const [phoneNumberInput, setPhoneNumberInput] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const [isSavingPhone, setIsSavingPhone] = useState(false);
+  const [userProfilePhone, setUserProfilePhone] = useState<string | null>(null);
   const [invoicePreference, setInvoicePreference] = useState<InvoicePreference>(defaultInvoicePreference);
   const [userCoupons, setUserCoupons] = useState<UserCoupon[]>([]);
   const [isCouponSectionOpen, setIsCouponSectionOpen] = useState(false);
@@ -59,6 +70,22 @@ export default function CartSidebar() {
     }
   }, [isCartOpen, user?.id]);
 
+  // 當購物車開啟且 user 存在時，預先載入會員手機號碼
+  useEffect(() => {
+    if (isCartOpen && user?.id) {
+      void supabase
+        .from('profiles')
+        .select('phone')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.phone) {
+            setUserProfilePhone(data.phone);
+          }
+        });
+    }
+  }, [isCartOpen, user?.id]);
+
   // 當購物車開啟時，自動同步後台免運門檻設定，避免與 site_settings 脫鉤
   useEffect(() => {
     if (isCartOpen) {
@@ -80,6 +107,67 @@ export default function CartSidebar() {
     discountCalculation.amount,
     shippingSettings.freeShippingThreshold,
   );
+
+  const checkUserPhone = async (): Promise<boolean> => {
+    if (userProfilePhone && isValidTaiwanPhone(userProfilePhone)) {
+      return true;
+    }
+    if (!user?.id) return false;
+
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('phone')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const phone = data?.phone || (user.user_metadata?.phone as string) || (user.phone as string) || '';
+      if (phone && isValidTaiwanPhone(phone)) {
+        setUserProfilePhone(phone);
+        return true;
+      }
+    } catch (err) {
+      console.warn('檢查會員手機失敗:', err);
+    }
+    return false;
+  };
+
+  const handleSavePhoneAndCheckout = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPhoneError('');
+    const err = getTaiwanPhoneErrorMessage(phoneNumberInput);
+    if (err) {
+      setPhoneError(err);
+      return;
+    }
+
+    const normalized = normalizeTaiwanPhone(phoneNumberInput);
+    setIsSavingPhone(true);
+    try {
+      if (user?.id) {
+        const { error: updateErr } = await supabase
+          .from('profiles')
+          .update({ phone: normalized })
+          .eq('id', user.id);
+
+        if (updateErr) throw updateErr;
+
+        await supabase.auth.updateUser({
+          data: { phone: normalized }
+        }).catch(() => {});
+
+        setUserProfilePhone(normalized);
+      }
+
+      setIsPhoneModalOpen(false);
+      setCheckoutMessage('手機號碼已設定完成，正在建立會員專屬結帳...');
+      await submitCheckout();
+    } catch (saveErr: any) {
+      setPhoneError(saveErr?.message || '儲存手機號碼失敗，請稍後再試');
+    } finally {
+      setIsSavingPhone(false);
+    }
+  };
 
   const submitCheckout = async () => {
     setIsSubmitting(true);
@@ -137,12 +225,28 @@ export default function CartSidebar() {
       return;
     }
 
+    const hasPhone = await checkUserPhone();
+    if (!hasPhone) {
+      setPhoneNumberInput('');
+      setPhoneError('');
+      setIsPhoneModalOpen(true);
+      return;
+    }
+
     await submitCheckout();
   };
 
-  const handleAuthenticated = () => {
+  const handleAuthenticated = async () => {
     setIsAuthModalOpen(false);
-    setCheckoutMessage('登入成功，正在建立會員專屬結帳。');
+    setCheckoutMessage('登入成功，正在確認會員資料...');
+    const hasPhone = await checkUserPhone();
+    if (!hasPhone) {
+      setPhoneNumberInput('');
+      setPhoneError('');
+      setIsPhoneModalOpen(true);
+      return;
+    }
+    setCheckoutMessage('資料確認完成，正在建立會員專屬結帳。');
     void submitCheckout();
   };
 
@@ -702,6 +806,89 @@ export default function CartSidebar() {
         onAuthenticated={handleAuthenticated}
         purpose="checkout"
       />
+
+      {/* 完善手機號碼輕量彈窗 (結帳前防呆) */}
+      {isPhoneModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center space-x-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-lg">
+                  📱
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-900">完善配送聯絡手機</h3>
+                  <p className="text-xs text-gray-500">僅需填寫一次，保障配送與取件通知</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPhoneModalOpen(false)}
+                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSavePhoneAndCheckout} className="mt-4 space-y-4">
+              <div className="rounded-xl bg-gray-50 p-3.5 text-xs text-gray-600 space-y-1">
+                <p className="font-medium text-gray-800">🚚 為什麼需要填寫手機號碼？</p>
+                <p className="text-gray-500 leading-relaxed">
+                  物流快遞配送、超商取貨簡訊通知與電子發票開立通知皆需正確之手機號碼。
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  台灣手機號碼 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  required
+                  autoFocus
+                  placeholder="請輸入 10 碼手機（例：0912345678）"
+                  value={phoneNumberInput}
+                  onChange={(e) => {
+                    setPhoneNumberInput(e.target.value);
+                    if (phoneError) setPhoneError('');
+                  }}
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:border-teal-600 focus:ring-1 focus:ring-teal-600 focus:outline-none"
+                />
+                {phoneError && (
+                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                    ⚠️ {phoneError}
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-2 flex items-center justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setIsPhoneModalOpen(false)}
+                  disabled={isSavingPhone}
+                  className="rounded-lg px-4 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                >
+                  稍後填寫
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingPhone}
+                  className="rounded-lg bg-teal-700 px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-teal-800 disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  {isSavingPhone ? (
+                    <>
+                      <div className="h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>儲存中...</span>
+                    </>
+                  ) : (
+                    <span>儲存並前往結帳 ➔</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }

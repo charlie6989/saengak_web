@@ -269,25 +269,35 @@ describe('Shopify Storefront SDK Client', () => {
     });
 
     it('getShopifyProduct should fetch by numeric ID', async () => {
-      const product = await getShopifyProduct('7786993614915');
+      const products = await getShopifyProducts({ first: 1 });
+      const target = products[0];
+      expect(target).toBeDefined();
+      const numId = target.id.split('/').pop()!;
+      const product = await getShopifyProduct(numId);
 
       expect(product).toBeDefined();
-      expect(product?.name).toContain('深層修護私密清潔露');
-      expect(product?.price).toBe(680);
+      expect(product?.name).toBe(target.name);
+      expect(product?.price).toBe(target.price);
     });
 
     it('getShopifyProduct should fetch by GID', async () => {
-      const product = await getShopifyProduct('gid://shopify/Product/7786993614915');
+      const products = await getShopifyProducts({ first: 1 });
+      const target = products[0];
+      expect(target).toBeDefined();
+      const product = await getShopifyProduct(target.id);
 
       expect(product).toBeDefined();
-      expect(product?.name).toContain('深層修護私密清潔露');
+      expect(product?.name).toBe(target.name);
     });
 
     it('getShopifyProduct should fetch by handle', async () => {
-      const product = await getShopifyProduct('深層修護私密清潔露');
+      const products = await getShopifyProducts({ first: 1 });
+      const target = products[0];
+      expect(target).toBeDefined();
+      const product = await getShopifyProduct(target.handle);
 
       expect(product).toBeDefined();
-      expect(product?.title).toContain('深層修護私密清潔露');
+      expect(product?.title).toBe(target.title);
     });
 
 

@@ -11,6 +11,7 @@ import {
   SHOPIFY_API_VERSION,
 } from './_lib/shopify-config.js';
 import { isValidTaiwanTaxId, type InvoicePreference } from '../src/domain/invoice.js';
+import { parseTaiwanAddress, toShopifyMailingAddress } from '../src/lib/taiwanDistricts.js';
 import { createClient } from '@supabase/supabase-js';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -318,9 +319,83 @@ export async function POST(request: Request): Promise<Response> {
       }, { status: 502, headers: corsHeaders });
     }
 
+    // 查詢會員姓名、手機與台灣標準收件地址，準備預填至 Shopify Checkout
+    let memberName = '';
+    let memberPhone = '';
+    let memberAddress = '';
+    try {
+      if (typeof adminClient.from === 'function') {
+        const queryBuilder = adminClient.from('profiles') as any;
+        if (typeof queryBuilder?.select === 'function') {
+          const { data: memberProfile } = await queryBuilder
+            .select('name, phone, address')
+            .eq('id', checkoutUserId)
+            .maybeSingle();
+
+          if (memberProfile) {
+            memberName = memberProfile.name || '';
+            memberPhone = memberProfile.phone || '';
+            memberAddress = memberProfile.address || '';
+          }
+        }
+      }
+    } catch (profileErr) {
+      console.warn('讀取會員個人資料以預填結帳失敗（不阻斷結帳）:', profileErr);
+    }
+
+    if (!memberName) {
+      memberName = (typeof data.user.user_metadata?.name === 'string' ? data.user.user_metadata.name : '') ||
+        (typeof data.user.user_metadata?.full_name === 'string' ? data.user.user_metadata.full_name : '');
+    }
+    if (!memberPhone) {
+      memberPhone = (typeof data.user.user_metadata?.phone === 'string' ? data.user.user_metadata.phone : '') ||
+        (typeof data.user.phone === 'string' ? data.user.phone : '');
+    }
+
+    const addressComponents = parseTaiwanAddress(memberAddress);
+    const shopifyAddress = toShopifyMailingAddress(addressComponents, {
+      name: memberName,
+      phone: memberPhone,
+    });
+
+    if (shopifyAddress.province) attributes.push({ key: '_shipping_province', value: shopifyAddress.province });
+    if (shopifyAddress.city) attributes.push({ key: '_shipping_city', value: shopifyAddress.city });
+    if (shopifyAddress.zip) attributes.push({ key: '_shipping_zip', value: shopifyAddress.zip });
+    if (shopifyAddress.address1) attributes.push({ key: '_shipping_address1', value: shopifyAddress.address1 });
+    if (shopifyAddress.firstName) attributes.push({ key: '_shipping_first_name', value: shopifyAddress.firstName });
+    if (shopifyAddress.lastName) attributes.push({ key: '_shipping_last_name', value: shopifyAddress.lastName });
+    if (shopifyAddress.phone) attributes.push({ key: '_shipping_phone', value: shopifyAddress.phone });
+
+    const buyerIdentity: Record<string, unknown> = {
+      countryCode: 'TW',
+    };
+    if (data.user.email) {
+      buyerIdentity.email = data.user.email;
+    }
+    if (shopifyAddress.phone) {
+      buyerIdentity.phone = shopifyAddress.phone;
+    }
+    if (shopifyAddress.province || shopifyAddress.address1) {
+      buyerIdentity.deliveryAddressPreferences = [
+        {
+          deliveryAddress: {
+            address1: shopifyAddress.address1,
+            city: shopifyAddress.city,
+            province: shopifyAddress.province,
+            zip: shopifyAddress.zip,
+            country: 'TW',
+            ...(shopifyAddress.firstName ? { firstName: shopifyAddress.firstName } : {}),
+            ...(shopifyAddress.lastName ? { lastName: shopifyAddress.lastName } : {}),
+            ...(shopifyAddress.phone ? { phone: shopifyAddress.phone } : {}),
+          },
+        },
+      ];
+    }
+
     const cartInput: Record<string, unknown> = {
       lines: body.lines,
       attributes,
+      buyerIdentity,
     };
     if (discountCodes && discountCodes.length > 0) {
       cartInput.discountCodes = discountCodes;

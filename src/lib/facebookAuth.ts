@@ -141,8 +141,23 @@ async function syncFacebookProfile(user: any, fbData?: { name?: string; picture?
           .eq('id', user.id);
       }
     }
+
+    // 2. 自動同步至 user_social_accounts 獨立社群身分關聯表
+    const fbId = user.identities?.find((i: any) => i.provider === 'facebook')?.id || user.id;
+    await supabase.from('user_social_accounts').upsert(
+      {
+        user_id: user.id,
+        provider: 'facebook',
+        provider_user_id: String(fbId),
+        provider_email: user.email || '',
+        provider_name: name,
+        avatar_url: avatar,
+        last_sign_in_at: new Date().toISOString(),
+      },
+      { onConflict: 'provider,provider_user_id' }
+    );
   } catch (err) {
-    console.warn('同步 Facebook 個人資料至 profiles 失敗:', err);
+    console.warn('同步 Facebook 個人資料至 profiles / user_social_accounts 失敗:', err);
   }
 }
 
@@ -169,49 +184,55 @@ export async function triggerFacebookLogin(options?: {
     return { error: new Error(message) };
   }
 
-  // 2. 嘗試使用 Facebook JavaScript SDK 彈窗登入
-  try {
-    await loadFacebookSDK();
+  const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
 
-    if (window.FB) {
-      return new Promise((resolve) => {
-        window.FB!.login(
-          async (response) => {
-            if (response.status === 'connected' && response.authResponse) {
-              try {
-                const token = response.authResponse.accessToken;
-                const { data, error } = await supabase.auth.signInWithIdToken({
-                  provider: 'facebook',
-                  token,
+  // 2. 嘗試使用 Facebook JavaScript SDK 彈窗登入（Meta 要求必須在 HTTPS 安全環境，非 HTTPS 自動降級為標準 OAuth 重定向）
+  if (isHttps) {
+    try {
+      await loadFacebookSDK();
+
+      if (window.FB) {
+        return new Promise((resolve) => {
+          window.FB!.login(
+            async (response) => {
+              if (response.status === 'connected' && response.authResponse) {
+                try {
+                  const token = response.authResponse.accessToken;
+                  const { data, error } = await supabase.auth.signInWithIdToken({
+                    provider: 'facebook',
+                    token,
+                  });
+
+                  if (error) {
+                    // 若 signInWithIdToken 不支援則退回標準 OAuth
+                    throw error;
+                  }
+
+                  if (data.user) {
+                    await syncFacebookProfile(data.user);
+                  }
+
+                  resolve({ user: data.user, session: data.session, error: null });
+                } catch (tokenErr: any) {
+                  console.warn('Facebook IdToken 登入失敗，嘗試標準 OAuth:', tokenErr);
+                  // 轉為標準 OAuth 跳轉
+                  fallbackOAuth(options?.redirectTo).then(resolve);
+                }
+              } else {
+                resolve({
+                  error: new Error('已取消 Facebook 登入授權'),
                 });
-
-                if (error) {
-                  // 若 signInWithIdToken 不支援則退回標準 OAuth
-                  throw error;
-                }
-
-                if (data.user) {
-                  await syncFacebookProfile(data.user);
-                }
-
-                resolve({ user: data.user, session: data.session, error: null });
-              } catch (tokenErr: any) {
-                console.warn('Facebook IdToken 登入失敗，嘗試標準 OAuth:', tokenErr);
-                // 轉為標準 OAuth 跳轉
-                fallbackOAuth(options?.redirectTo).then(resolve);
               }
-            } else {
-              resolve({
-                error: new Error('已取消 Facebook 登入授權'),
-              });
-            }
-          },
-          { scope: 'public_profile,email' }
-        );
-      });
+            },
+            { scope: 'public_profile,email' }
+          );
+        });
+      }
+    } catch (sdkErr) {
+      console.warn('載入 Facebook SDK 失敗，退回標準 OAuth:', sdkErr);
     }
-  } catch (sdkErr) {
-    console.warn('載入 Facebook SDK 失敗，退回標準 OAuth:', sdkErr);
+  } else {
+    console.info('檢測到非 HTTPS 環境（例如本地端 HTTP 開發），自動降級使用 Supabase 標準 OAuth 重定向流程');
   }
 
   return fallbackOAuth(options?.redirectTo);

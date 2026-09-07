@@ -2,6 +2,24 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { captureExceptionSafe } from '../../lib/sentry';
+import {
+  getTaiwanCities,
+  getTaiwanDistricts,
+  getTaiwanZipCode,
+  formatTaiwanAddress,
+  parseTaiwanAddress,
+} from '../../lib/taiwanDistricts';
+
+export interface SocialAccount {
+  id?: string;
+  provider: string;
+  provider_user_id?: string;
+  provider_email?: string;
+  provider_name?: string;
+  avatar_url?: string;
+  last_sign_in_at?: string;
+  created_at?: string;
+}
 
 interface UserProfile {
   id: string;
@@ -15,6 +33,7 @@ interface UserProfile {
   created_at: string;
   avatar?: string;
   role?: string;
+  social_accounts?: SocialAccount[];
 }
 
 export const AdminMembers: React.FC = () => {
@@ -25,6 +44,58 @@ export const AdminMembers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [editingProfile, setEditingProfile] = useState<UserProfile | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  // 台灣地址二級連動選單狀態 (管理員編輯)
+  const [adminAddrCity, setAdminAddrCity] = useState('');
+  const [adminAddrDistrict, setAdminAddrDistrict] = useState('');
+  const [adminAddrZip, setAdminAddrZip] = useState('');
+  const [adminAddrStreet, setAdminAddrStreet] = useState('');
+
+  const handleOpenEditModal = (profile: UserProfile) => {
+    setEditingProfile({ ...profile });
+    const parsed = parseTaiwanAddress(profile.address || '');
+    setAdminAddrCity(parsed.city);
+    setAdminAddrDistrict(parsed.district);
+    setAdminAddrZip(parsed.zip);
+    setAdminAddrStreet(parsed.street);
+  };
+
+  const handleAdminCityChange = (newCity: string) => {
+    setAdminAddrCity(newCity);
+    setAdminAddrDistrict('');
+    setAdminAddrZip('');
+    const formatted = formatTaiwanAddress({
+      city: newCity,
+      district: '',
+      zip: '',
+      street: adminAddrStreet,
+    });
+    setEditingProfile((prev) => prev ? { ...prev, address: formatted } : null);
+  };
+
+  const handleAdminDistrictChange = (newDistrict: string) => {
+    setAdminAddrDistrict(newDistrict);
+    const newZip = getTaiwanZipCode(adminAddrCity, newDistrict);
+    setAdminAddrZip(newZip);
+    const formatted = formatTaiwanAddress({
+      city: adminAddrCity,
+      district: newDistrict,
+      zip: newZip,
+      street: adminAddrStreet,
+    });
+    setEditingProfile((prev) => prev ? { ...prev, address: formatted } : null);
+  };
+
+  const handleAdminStreetChange = (newStreet: string) => {
+    setAdminAddrStreet(newStreet);
+    const formatted = formatTaiwanAddress({
+      city: adminAddrCity,
+      district: adminAddrDistrict,
+      zip: adminAddrZip,
+      street: newStreet,
+    });
+    setEditingProfile((prev) => prev ? { ...prev, address: formatted } : null);
+  };
 
   const fetchProfiles = useCallback(async () => {
     setIsLoading(true);
@@ -61,20 +132,28 @@ export const AdminMembers: React.FC = () => {
         return;
       }
 
-      // 3. 降級直查 profiles 表
-      const { data: tableData, error: tableError } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // 3. 降級直查 profiles 表 + user_social_accounts 表
+      const [{ data: tableData, error: tableError }, { data: socialData }] = await Promise.all([
+        supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+        supabase.from('user_social_accounts').select('*'),
+      ]);
 
       if (tableError) {
         throw tableError;
       }
 
+      const socialMap = new Map<string, any[]>();
+      (socialData || []).forEach((s: any) => {
+        const list = socialMap.get(s.user_id) || [];
+        list.push(s);
+        socialMap.set(s.user_id, list);
+      });
+
       const KNOWN_ADMINS = ['worktester2019@gmail.com', 'charlie.liu6989@gmail.com', 'charlie.liu0809@gmail.com'];
       const membersOnly = (tableData || []).map((p: any) => ({
         ...p,
         role: (p.id === user?.id || p.email === user?.email || KNOWN_ADMINS.includes(p.email?.toLowerCase())) ? 'admin' : (p.role || 'member'),
+        social_accounts: socialMap.get(p.id) || [],
       })).filter((p: any) => p.role !== 'admin');
 
       setProfiles(membersOnly);
@@ -94,17 +173,31 @@ export const AdminMembers: React.FC = () => {
     e.preventDefault();
     if (!editingProfile) return;
 
+    if (!editingProfile.name || !editingProfile.name.trim()) {
+      alert('請填寫會員姓名（姓名為必填項目）');
+      return;
+    }
+
     setIsUpdating(true);
     try {
+      const formatted = formatTaiwanAddress({
+        city: adminAddrCity,
+        district: adminAddrDistrict,
+        zip: adminAddrZip,
+        street: adminAddrStreet,
+      });
+      const finalAddress = formatted || (editingProfile.address?.trim() || null);
+
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          name: editingProfile.name,
-          phone: editingProfile.phone,
-          address: editingProfile.address,
-          gender: editingProfile.gender,
-          birth_date: editingProfile.birth_date,
-          instagram: editingProfile.instagram,
+          name: editingProfile.name || '',
+          phone: editingProfile.phone || null,
+          address: finalAddress,
+          gender: editingProfile.gender || null,
+          birth_date: editingProfile.birth_date ? editingProfile.birth_date : null,
+          instagram: editingProfile.instagram || null,
+          updated_at: new Date().toISOString(),
         })
         .eq('id', editingProfile.id);
 
@@ -195,6 +288,7 @@ export const AdminMembers: React.FC = () => {
               <tr>
                 <th className="px-6 py-4 font-semibold">會員資訊</th>
                 <th className="px-6 py-4 font-semibold">Email 帳號</th>
+                <th className="px-6 py-4 font-semibold">登入管道 / 社群綁定</th>
                 <th className="px-6 py-4 font-semibold">聯絡電話 / 地址</th>
                 <th className="px-6 py-4 font-semibold text-center">註冊加入日期</th>
                 <th className="px-6 py-4 font-semibold text-right">操作</th>
@@ -203,14 +297,14 @@ export const AdminMembers: React.FC = () => {
             <tbody className="divide-y divide-gray-200 bg-white">
               {isLoading && profiles.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                     <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#225B4F]" />
                     <p className="mt-2 text-xs">載入會員名冊中...</p>
                   </td>
                 </tr>
               ) : filteredProfiles.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500 text-xs">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500 text-xs">
                     目前暫無一般前台會員資料
                   </td>
                 </tr>
@@ -232,6 +326,38 @@ export const AdminMembers: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 font-medium text-gray-800">{profile.email}</td>
                     <td className="px-6 py-4">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {profile.social_accounts && profile.social_accounts.length > 0 ? (
+                          profile.social_accounts.map((sa, idx) => {
+                            const isFB = sa.provider?.toLowerCase() === 'facebook';
+                            const isGoogle = sa.provider?.toLowerCase() === 'google';
+                            return (
+                              <span
+                                key={idx}
+                                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                                  isFB
+                                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                    : isGoogle
+                                    ? 'bg-red-50 text-red-700 border border-red-200'
+                                    : 'bg-gray-50 text-gray-700 border border-gray-200'
+                                }`}
+                                title={`綁定信箱: ${sa.provider_email || '-'}\n社群姓名: ${sa.provider_name || '-'}`}
+                              >
+                                {isFB && <span>🔵 FB</span>}
+                                {isGoogle && <span>🔴 Google</span>}
+                                {!isFB && !isGoogle && <span>🔗 {sa.provider}</span>}
+                                {sa.provider_name ? `: ${sa.provider_name}` : ''}
+                              </span>
+                            );
+                          })
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-gray-50 text-gray-600 border border-gray-200">
+                            ✉️ Email/密碼
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
                       <div className="text-xs text-gray-800">{profile.phone || '-'}</div>
                       <div className="text-xs text-gray-500 mt-1 line-clamp-1 max-w-xs" title={profile.address}>
                         {profile.address || '-'}
@@ -244,7 +370,7 @@ export const AdminMembers: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button
-                        onClick={() => setEditingProfile({ ...profile })}
+                        onClick={() => handleOpenEditModal(profile)}
                         className="rounded bg-white px-2.5 py-1.5 text-xs font-medium text-blue-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 cursor-pointer"
                       >
                         編輯資料
@@ -284,9 +410,13 @@ export const AdminMembers: React.FC = () => {
               </div>
 
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">姓名</label>
+                <label className="mb-1 block text-xs font-medium text-gray-700">
+                  姓名 <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
+                  required
+                  placeholder="請填寫會員姓名（必填）"
                   value={editingProfile.name || ''}
                   onChange={(e) => setEditingProfile({ ...editingProfile, name: e.target.value })}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#225B4F] focus:outline-none"
@@ -303,14 +433,75 @@ export const AdminMembers: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">聯絡地址</label>
-                <textarea
-                  value={editingProfile.address || ''}
-                  onChange={(e) => setEditingProfile({ ...editingProfile, address: e.target.value })}
-                  rows={2}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#225B4F] focus:outline-none resize-none"
-                />
+              {/* 台灣地址人性化二級連動 */}
+              <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-semibold text-gray-800">
+                    聯絡地址 (台灣標準格式)
+                  </label>
+                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                    自動對齊 Shopify 規格
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-[11px] font-medium text-gray-600 mb-0.5">縣市</label>
+                    <select
+                      value={adminAddrCity}
+                      onChange={(e) => handleAdminCityChange(e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-xs focus:border-[#225B4F] focus:outline-none"
+                    >
+                      <option value="">選擇縣市</option>
+                      {getTaiwanCities().map((city) => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-gray-600 mb-0.5">鄉鎮市區</label>
+                    <select
+                      value={adminAddrDistrict}
+                      onChange={(e) => handleAdminDistrictChange(e.target.value)}
+                      disabled={!adminAddrCity}
+                      className="w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-xs focus:border-[#225B4F] focus:outline-none disabled:bg-gray-100 disabled:text-gray-400"
+                    >
+                      <option value="">{adminAddrCity ? '選擇區域' : '先選縣市'}</option>
+                      {getTaiwanDistricts(adminAddrCity).map((dist) => (
+                        <option key={dist.name} value={dist.name}>
+                          {dist.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-gray-600 mb-0.5">郵遞區號</label>
+                    <input
+                      type="text"
+                      value={adminAddrZip}
+                      readOnly
+                      placeholder="區號"
+                      className="w-full rounded-lg border border-gray-300 bg-gray-100 px-2 py-1.5 text-xs font-mono text-center text-gray-500 cursor-not-allowed"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-600 mb-0.5">
+                    詳細地址 (街道 / 巷弄 / 門牌 / 樓層)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="例：忠孝東路四段100號5樓"
+                    value={adminAddrStreet}
+                    onChange={(e) => handleAdminStreetChange(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs focus:border-[#225B4F] focus:outline-none"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -346,6 +537,45 @@ export const AdminMembers: React.FC = () => {
                   onChange={(e) => setEditingProfile({ ...editingProfile, instagram: e.target.value })}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#225B4F] focus:outline-none"
                 />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-700">已綁定社群帳號</label>
+                {editingProfile.social_accounts && editingProfile.social_accounts.length > 0 ? (
+                  <div className="space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                    {editingProfile.social_accounts.map((sa, idx) => (
+                      <div key={idx} className="flex items-center justify-between text-xs">
+                        <div className="flex items-center space-x-2">
+                          {sa.avatar_url ? (
+                            <img src={sa.avatar_url} alt="" className="h-6 w-6 rounded-full object-cover" />
+                          ) : (
+                            <div className="h-6 w-6 rounded-full bg-gray-300 flex items-center justify-center text-[10px] font-bold text-white">
+                              {sa.provider[0]?.toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <span className="font-semibold text-gray-800">
+                              {sa.provider === 'facebook' ? 'Facebook' : sa.provider === 'google' ? 'Google' : sa.provider}
+                            </span>
+                            {sa.provider_name && <span className="ml-1 text-gray-600">({sa.provider_name})</span>}
+                          </div>
+                        </div>
+                        <div className="text-right text-[11px] text-gray-500">
+                          <div>{sa.provider_email || '-'}</div>
+                          {sa.last_sign_in_at && (
+                            <div className="text-[10px] text-gray-400">
+                              上次登入: {new Date(sa.last_sign_in_at).toLocaleDateString('zh-TW')}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-dashed border-gray-300 p-3 text-center text-xs text-gray-400">
+                    尚未綁定第三方社群帳號 (使用信箱密碼註冊)
+                  </div>
+                )}
               </div>
 
               <div className="mt-6 flex justify-end space-x-3 pt-4 border-t border-gray-100">
