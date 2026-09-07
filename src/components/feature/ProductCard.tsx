@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { resolveDisplayVendor } from '../../lib/brandOwnership';
 
 interface Product {
   id: string | number;
@@ -209,9 +210,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             {/* Subtitle/Specs - 僅在有合法品牌時呈現，嚴禁內著類商品誤植 SAENGAK */}
             {(() => {
-              const isUnderwear = (product.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(product.name || '');
-              const displayVendor = (product.vendor && product.vendor !== 'My Store 7') ? product.vendor : '';
-              if (isUnderwear && displayVendor.toUpperCase() === 'SAENGAK') return null;
+              // 安全解析顯示用品牌名稱：內著／周邊商品絕不可能得到 'SAENGAK'（見 src/lib/brandOwnership.ts）
+              const displayVendor = resolveDisplayVendor(
+                { productType: product.productType, name: product.name, vendor: product.vendor },
+                { allowSaengakFallbackForOwnBrand: false }
+              );
               if (!displayVendor) return null;
               return (
                 <p className="text-xs sm:text-sm mb-1 text-[#225B4F]/80 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>

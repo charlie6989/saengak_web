@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { getShopifyProducts, type ShopifyProduct } from '../../lib/shopify';
 import { captureExceptionSafe } from '../../lib/sentry';
+import { resolveDisplayVendor } from '../../lib/brandOwnership';
 
 export const ProductList: React.FC = () => {
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
@@ -165,7 +166,9 @@ export const ProductList: React.FC = () => {
                             {product.title}
                           </div>
                           <div className="text-[11px] text-gray-400">
-                            {product.vendor || 'SAENGAK'} | {product.productType || '護理保養'}
+                            {/* 先判斷是否為 SAENGAK 自有品類再決定顯示邏輯，嚴禁無條件 vendor || 'SAENGAK'：
+                                內褲、生理褲等舒適穿著商品絕對不是 SAENGAK 品牌（見 src/lib/brandOwnership.ts） */}
+                            {resolveDisplayVendor(product) || '未標示廠牌'} | {product.productType || '護理保養'}
                           </div>
                         </div>
                       </div>

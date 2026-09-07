@@ -6,6 +6,7 @@ import type {
   LifestyleShowcaseItem,
   CraftDetailItem,
 } from '../../lib/shopify';
+import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
 
 export interface ContentSection {
   title: string;
@@ -86,6 +87,30 @@ export default function ShopifyDescriptionViewer({
       combined.includes('apparel')
     );
   })();
+
+  // 品牌歸屬判斷（是否為「非 SAENGAK 自有品牌」之內著／周邊商品）—— 統一呼叫
+  // src/lib/brandOwnership.ts 共用模組，不得再自行複製關鍵字正則。
+  // 注意：此判斷刻意與上方 isApparel 分開維護——isApparel 僅用於挑選「內容模板」
+  // （服飾版型／尺碼表 vs. 護理規格卡），其排除清單(除毛|護衣|洗衣)會讓除毛刀、護衣袋
+  // 等周邊配件，以及安全褲、三角褲、平口褲、丁字褲等衣物落在 isApparel === false 分支；
+  // 若沿用 isApparel 判斷是否顯示 SAENGAK 品牌／韓國產地，會導致這些非自有品牌商品被誤標
+  // （即本次修復的 BRAND-2 疑慮）。品牌／產地顯示一律以下方 brandCandidate 為準。
+  const brandCandidate = { productType: category, title: productName, tags, vendor };
+  const isNonOwnBrand = isNonSaengakOwnBrandProduct(brandCandidate);
+
+  // 顯示用品牌名稱：全元件僅計算一次並共用，避免各處各自重複呼叫 resolveDisplayVendor。
+  // 非自有品類且無合法第三方 vendor 時一律為空字串，由各區塊自行決定中性替代文案。
+  const legitVendor = resolveDisplayVendor(brandCandidate, { allowSaengakFallbackForOwnBrand: false });
+
+  // 是否應套用「萬用通用商品模板」：非服飾類、且非 SAENGAK 自有保養品類的第三方配件/工具
+  // （例如除毛刀、護衣袋、洗衣袋等）。這類商品既不適用服飾版型卡，也不該套用保養品專屬的
+  // 「主要成分」「韓國原裝進口」等預設文案（此為 BRAND-2 修復後續發現的內容模板缺口）。
+  const isGenericAccessory = !isApparel && isNonOwnBrand;
+
+  // 三分支文案選擇小工具：服飾／萬用通用配件／SAENGAK 自有保養品，全元件共用同一套判斷，
+  // 避免各區塊（生活情境圖文、工藝細節、跨品類自適應卡、使用注意事項）各自重複三元運算子。
+  const pickByCategory = <T,>(apparelValue: T, genericValue: T, careValue: T): T =>
+    isApparel ? apparelValue : isGenericAccessory ? genericValue : careValue;
 
   // 攔截 HTML 內部圖片點擊以支援點擊放大燈箱
   useEffect(() => {
@@ -229,34 +254,46 @@ export default function ShopifyDescriptionViewer({
     }
     return [
       {
-        title: isApparel
-          ? '極致貼身・如同第二層肌膚般舒適'
-          : '專利益生菌生態平衡・溫和守護女性健康',
-        description: isApparel
-          ? '嚴選超細纖維與天然純棉襠部，無痕貼合身型曲線，無論日常活動或睡眠皆能享受零拘束的親膚著感。'
-          : '為女性私密肌膚量身打造，富含高活性益生菌複合成分與天然植萃精華，深層維持微生態弱酸屏障。',
+        title: pickByCategory(
+          '極致貼身・如同第二層肌膚般舒適',
+          '嚴選材質・貼近日常使用需求',
+          '專利益生菌生態平衡・溫和守護女性健康',
+        ),
+        description: pickByCategory(
+          '嚴選超細纖維與天然純棉襠部，無痕貼合身型曲線，無論日常活動或睡眠皆能享受零拘束的親膚著感。',
+          '精心挑選符合實際生活情境的材質與設計，兼顧實用性與耐用度，讓每一次使用都安心順手。',
+          '為女性私密肌膚量身打造，富含高活性益生菌複合成分與天然植萃精華，深層維持微生態弱酸屏障。',
+        ),
         image: contentImagesPool[0] || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=1200',
-        badge: 'CARE 01',
+        badge: pickByCategory('CARE 01', 'FEATURE 01', 'CARE 01'),
       },
       {
-        title: isApparel
-          ? '透氣瞬吸・全天候乾爽自在'
-          : '極致親膚質地・一抹即化零負擔',
-        description: isApparel
-          ? '高透氣立體織造工藝，能迅速排出濕氣與悶熱感，在潮濕悶熱的氣候中依然保持全天候透氣乾爽。'
-          : '水感凝露質地，輕盈水潤好推開，能快速被肌膚吸收並形成透氣鎖水保護膜，告別悶熱黏膩。',
+        title: pickByCategory(
+          '透氣瞬吸・全天候乾爽自在',
+          '細緻做工・操作簡單好上手',
+          '極致親膚質地・一抹即化零負擔',
+        ),
+        description: pickByCategory(
+          '高透氣立體織造工藝，能迅速排出濕氣與悶熱感，在潮濕悶熱的氣候中依然保持全天候透氣乾爽。',
+          '注重細節與人性化設計，操作直覺、好收納好攜帶，輕鬆融入日常生活步驟。',
+          '水感凝露質地，輕盈水潤好推開，能快速被肌膚吸收並形成透氣鎖水保護膜，告別悶熱黏膩。',
+        ),
         image: contentImagesPool[1] || 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=1200',
-        badge: 'TEXTURE 02',
+        badge: pickByCategory('TEXTURE 02', 'DESIGN 02', 'TEXTURE 02'),
       },
       {
-        title: isApparel
-          ? '嚴格耐穿測試・彈性持久不易鬆弛'
-          : '德國 Dermatest 權威檢驗・全成分透明公開',
-        description: isApparel
-          ? '通過多次洗滌與回彈性拉力測試，耐磨耐穿不易變形，細緻無痕收邊技術讓穿著時完美隱形無勒痕。'
-          : '無酒精、無色素、無paraben防腐劑，通過人體皮膚刺激測試，敏感時期與每日日常皆可放心使用。',
+        title: pickByCategory(
+          '嚴格耐穿測試・彈性持久不易鬆弛',
+          '嚴格品質把關・安心信賴之選',
+          '德國 Dermatest 權威檢驗・全成分透明公開',
+        ),
+        description: pickByCategory(
+          '通過多次洗滌與回彈性拉力測試，耐磨耐穿不易變形，細緻無痕收邊技術讓穿著時完美隱形無勒痕。',
+          '出廠前經過多重品質檢驗，確保每件商品皆符合品質標準，讓您安心選購、放心使用。',
+          '無酒精、無色素、無paraben防腐劑，通過人體皮膚刺激測試，敏感時期與每日日常皆可放心使用。',
+        ),
         image: contentImagesPool[2] || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1200',
-        badge: 'SAFETY 03',
+        badge: pickByCategory('SAFETY 03', 'QUALITY 03', 'SAFETY 03'),
       },
     ];
   })();
@@ -275,19 +312,31 @@ export default function ShopifyDescriptionViewer({
     }
     return [
       {
-        category: isApparel ? '剪裁與觸感' : '質地與吸收',
-        title: isApparel ? '人體工學無痕剪裁・極致貼合舒適' : '極致水感凝露・深層滋潤不黏膩',
-        description: isApparel
-          ? '採用高精密熱壓貼合與平整車縫工藝，有效減少肌膚摩擦感，全天候自在無負擔。'
-          : '輕透水潤質地，觸膚即化，快速形成透氣保濕鎖水屏障，維持全天候清新舒適。',
+        category: pickByCategory('剪裁與觸感', '設計與工藝', '質地與吸收'),
+        title: pickByCategory(
+          '人體工學無痕剪裁・極致貼合舒適',
+          '人性化設計・貼合日常使用習慣',
+          '極致水感凝露・深層滋潤不黏膩',
+        ),
+        description: pickByCategory(
+          '採用高精密熱壓貼合與平整車縫工藝，有效減少肌膚摩擦感，全天候自在無負擔。',
+          '從外觀到細節皆經過反覆打磨測試，兼顧美觀與實用，提升每次使用的順手度。',
+          '輕透水潤質地，觸膚即化，快速形成透氣保濕鎖水屏障，維持全天候清新舒適。',
+        ),
         image: contentImagesPool[3] || 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800',
       },
       {
-        category: isApparel ? '衛生防護工藝' : '瓶器與包裝工藝',
-        title: isApparel ? '天然純棉抗菌底襠・細心呵護私密' : '按壓式定量壓頭・隔絕空氣無菌保鮮',
-        description: isApparel
-          ? '底襠嚴選透氣純棉面料，具備抑菌防潮特性，維持私密處全日清爽衛生。'
-          : '特殊氣密式瓶器設計，防止外界水氣與空氣回流，確保每滴成分活性長效新鮮。',
+        category: pickByCategory('衛生防護工藝', '包裝與保固', '瓶器與包裝工藝'),
+        title: pickByCategory(
+          '天然純棉抗菌底襠・細心呵護私密',
+          '完整包裝設計・妥善保護商品品質',
+          '按壓式定量壓頭・隔絕空氣無菌保鮮',
+        ),
+        description: pickByCategory(
+          '底襠嚴選透氣純棉面料，具備抑菌防潮特性，維持私密處全日清爽衛生。',
+          '出貨前妥善包裝並降低運送過程碰撞耗損風險，隨附完整保固資訊與售後聯繫方式。',
+          '特殊氣密式瓶器設計，防止外界水氣與空氣回流，確保每滴成分活性長效新鮮。',
+        ),
         image: contentImagesPool[4] || 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800',
       },
     ];
@@ -322,7 +371,10 @@ export default function ShopifyDescriptionViewer({
   // 萃取容量或包裝單位資訊
   const extractedUnit = (() => {
     const match = productName.match(/\(([^)]+)\)/);
-    return match ? match[1] : (isApparel ? '單件裝 / 多色選' : '150ml (單瓶裝)');
+    if (match) return match[1];
+    if (isApparel) return '單件裝 / 多色選';
+    if (isGenericAccessory) return '單件裝';
+    return '150ml (單瓶裝)';
   })();
 
   return (
@@ -569,6 +621,48 @@ export default function ShopifyDescriptionViewer({
             </div>
           </div>
         </>
+      ) : isGenericAccessory ? (
+        // 萬用通用商品規格卡：適用於「非服飾、非 SAENGAK 自有保養品」之第三方配件／工具
+        // （除毛刀、護衣袋、洗衣袋等）。刻意不預設任何成分、劑型或產地——只呈現商家實際
+        // 填寫的 careSpecs 資料，缺值時一律用不帶品類假設的中性文案，避免與商品實際屬性衝突。
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+            <div className="flex items-center gap-2.5">
+              <i className="ri-price-tag-3-line text-xl text-[#245B50]"></i>
+              <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+                商品規格卡 (Product Specifications)
+              </h3>
+            </div>
+            <span className="text-xs text-gray-400 font-medium">詳見商品標示</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+            <div className="flex justify-between border-b border-gray-100 pb-3">
+              <span className="text-gray-500">規格／包裝 (Specification)</span>
+              <span className="font-semibold text-gray-900">{careSpecs?.volume || extractedUnit}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-3">
+              <span className="text-gray-500">材質／款式 (Material)</span>
+              <span className="font-semibold text-gray-900">{careSpecs?.texture || '請見商品圖文詳細說明'}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-3">
+              <span className="text-gray-500">適用對象／用途 (Application)</span>
+              <span className="font-semibold text-gray-900">{careSpecs?.application || '請見商品圖文詳細說明'}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-3">
+              <span className="text-gray-500">品牌／來源 (Brand)</span>
+              <span className="font-semibold text-gray-900">{legitVendor || '精選生活選品'}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-3">
+              <span className="text-gray-500">產地 (Origin)</span>
+              <span className="font-semibold text-gray-900">{careSpecs?.origin || '請見商品標示'}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-3">
+              <span className="text-gray-500">保存／保固注意事項</span>
+              <span className="font-semibold text-gray-900">{careSpecs?.shelf_life || '請依商品包裝標示或聯繫客服洽詢'}</span>
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
           <div className="flex items-center justify-between border-b border-gray-100 pb-4">
@@ -628,20 +722,16 @@ export default function ShopifyDescriptionViewer({
             <div className="flex justify-between border-b border-gray-100 pb-2.5">
               <dt className="text-gray-500">品牌／進口商</dt>
               <dd className="font-semibold text-gray-900">
-                {(() => {
-                  if (isApparel) {
-                    return (vendor && vendor.toUpperCase() !== 'SAENGAK' && vendor !== 'My Store 7')
-                      ? vendor
-                      : '精選生活選品';
-                  }
-                  return vendor || 'SAENGAK';
-                })()}
+                {/* 品牌／進口商顯示一律以 isNonOwnBrand（brandOwnership 共用模組）為準，
+                    嚴禁使用 isApparel：除毛刀、護衣袋等周邊配件亦屬非自有品牌但不會命中 isApparel。
+                    legitVendor 已於元件頂層計算一次並共用，此處不再重複呼叫。 */}
+                {isNonOwnBrand ? (legitVendor || '精選生活選品') : (legitVendor || 'SAENGAK')}
               </dd>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2.5">
               <dt className="text-gray-500">製造國別 (Origin)</dt>
               <dd className="font-semibold text-gray-900">
-                {careSpecs?.origin || (isApparel ? '嚴選優良工廠製造' : '韓國 (Made in Korea)')}
+                {careSpecs?.origin || (isNonOwnBrand ? '嚴選優良工廠製造' : '韓國 (Made in Korea)')}
               </dd>
             </div>
             <div className="flex justify-between">
@@ -689,6 +779,27 @@ export default function ShopifyDescriptionViewer({
                 <div className="flex items-start gap-2.5">
                   <i className="ri-t-shirt-air-line text-[#245B50] text-base mt-0.5"></i>
                   <span>深淺色衣物請分開洗滌，避免互染。</span>
+                </div>
+              </>
+            ) : isGenericAccessory ? (
+              // 萬用通用使用/保存說明：不預設商品是清潔凝露或任何特定劑型，
+              // 適用於除毛刀、護衣袋等任何非服飾、非自有保養品類的第三方配件／工具。
+              <>
+                <div className="flex items-start gap-2.5">
+                  <i className="ri-book-open-line text-[#245B50] text-base mt-0.5"></i>
+                  <span>請詳閱商品包裝標示或圖文說明，並依指示正確使用。</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <i className="ri-sun-line text-[#245B50] text-base mt-0.5"></i>
+                  <span>請存放於陰涼乾燥處，避免高溫、潮濕與陽光直射。</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <i className="ri-customer-service-2-line text-[#245B50] text-base mt-0.5"></i>
+                  <span>使用上如有任何疑問，歡迎透過官方客服洽詢協助。</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <i className="ri-time-line text-[#245B50] text-base mt-0.5"></i>
+                  <span>請妥善保存商品保固卡或購買憑證，以利後續售後服務。</span>
                 </div>
               </>
             ) : (

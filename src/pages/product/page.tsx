@@ -22,6 +22,7 @@ import { fetchPublishedReviews, fetchProductQA, submitProductQuestion } from '..
 import type { ProductReview, ProductQuestion } from '../../types/reviews-qa';
 import { captureExceptionSafe } from '../../lib/sentry';
 import { formatTwd } from '../../domain/algorithms';
+import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
 
 interface Product {
   id: string;
@@ -176,13 +177,14 @@ export default function ProductPage() {
                 '官方旗艦直營正品保證，享 7 天安心鑑賞期'
               ],
             subtitle: shopifyProduct.subtitle || (() => {
-              const isUnderwear = (shopifyProduct.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(shopifyProduct.title || '');
-              if (isUnderwear) {
-                return (shopifyProduct.vendor && shopifyProduct.vendor.toUpperCase() !== 'SAENGAK' && shopifyProduct.vendor !== 'My Store 7')
-                  ? `${shopifyProduct.vendor} 精選選品 | 品質保證`
+              const brandCandidate = { productType: shopifyProduct.productType, title: shopifyProduct.title, vendor: shopifyProduct.vendor };
+              if (isNonSaengakOwnBrandProduct(brandCandidate)) {
+                const legitVendor = resolveDisplayVendor(brandCandidate, { allowSaengakFallbackForOwnBrand: false });
+                return legitVendor
+                  ? `${legitVendor} 精選選品 | 品質保證`
                   : '親膚舒適・日常優質貼身選品';
               }
-              return `${shopifyProduct.vendor || 'SAENGAK'} 官方旗艦直營 | 原裝正品品質保證`;
+              return `${resolveDisplayVendor(brandCandidate)} 官方旗艦直營 | 原裝正品品質保證`;
             })(),
             promotionBadge: shopifyProduct.promotionBadge || '春季特別優惠・滿 2 件享免運折扣',
             fitGuide: shopifyProduct.fitGuide,
@@ -1175,14 +1177,13 @@ export default function ProductPage() {
               </h1>
               <p className="text-sm text-gray-500 font-medium">
                 {(() => {
-                  const isUnderwear = (product.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(product.name || '');
                   if (product.subtitle) return product.subtitle;
-                  if (isUnderwear) {
-                    return (product.vendor && product.vendor.toUpperCase() !== 'SAENGAK' && product.vendor !== 'My Store 7')
-                      ? product.vendor
-                      : '親膚舒適日常選品';
+                  const brandCandidate = { productType: product.productType, name: product.name, vendor: product.vendor };
+                  const legitVendor = resolveDisplayVendor(brandCandidate, { allowSaengakFallbackForOwnBrand: false });
+                  if (isNonSaengakOwnBrandProduct(brandCandidate)) {
+                    return legitVendor || '親膚舒適日常選品';
                   }
-                  return product.vendor || 'SAENGAK 官方旗艦直營';
+                  return legitVendor || 'SAENGAK 官方旗艦直營';
                 })()}
               </p>
             </div>
@@ -1419,15 +1420,7 @@ export default function ProductPage() {
                 subtitle={product.subtitle}
                 highlights={product.highlights || []}
                 images={productImages}
-                vendor={(() => {
-                  const isUnderwear = (product.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(product.name || '');
-                  if (isUnderwear) {
-                    return (product.vendor && product.vendor.toUpperCase() !== 'SAENGAK' && product.vendor !== 'My Store 7')
-                      ? product.vendor
-                      : '';
-                  }
-                  return product.vendor || 'SAENGAK';
-                })()}
+                vendor={resolveDisplayVendor({ productType: product.productType, name: product.name, vendor: product.vendor })}
                 fitGuide={product.fitGuide}
                 sizeChart={product.sizeChart}
                 careSpecs={product.careSpecs}

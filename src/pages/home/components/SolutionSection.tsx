@@ -5,6 +5,7 @@ import { getShopifyProducts } from '../../../lib/shopify';
 import { mockProducts } from '../../../mocks/products';
 import { rankEditorialProducts } from '../../../domain/algorithms';
 import { captureExceptionSafe } from '../../../lib/sentry';
+import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../../lib/brandOwnership';
 
 interface Product {
   id: string;
@@ -41,11 +42,16 @@ export default function SolutionSection() {
   const isSaengakCareProduct = (p: any) => {
     const title = (p.name || p.title || '').toLowerCase();
     const type = (p.productType || '').toLowerCase();
-    const tags = Array.isArray(p.tags) ? p.tags.join(' ').toLowerCase() : '';
-    const combined = `${title} ${type} ${tags}`;
+    const tags: string[] = Array.isArray(p.tags) ? p.tags : [];
+    const combined = `${title} ${type} ${tags.join(' ').toLowerCase()}`;
 
-    // 嚴格排除所有非 SAENGAK 品牌產品（內著、內褲、除毛刀、護衣袋等選品）
-    if (/(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲|除毛刀|護衣袋|洗衣袋|配件|收腹)/i.test(combined)) {
+    // 首頁「這些日子的解決方案」為 P0 級白名單專區，僅能展示 SAENGAK 私密護理品。
+    // 先以 brandOwnership 共用模組排除所有內著／舒適穿著／除毛刀／護衣袋／洗衣袋等非 SAENGAK
+    // 自有品牌商品，並沿用原本額外排除的「配件」「收腹」關鍵字，維持既有更嚴格的排除範圍不變。
+    if (
+      isNonSaengakOwnBrandProduct({ title: p.name || p.title, productType: p.productType, tags }) ||
+      /(?:配件|收腹)/i.test(combined)
+    ) {
       return false;
     }
 
@@ -241,9 +247,11 @@ export default function SolutionSection() {
                                 {product.name}
                               </h3>
                               {(() => {
-                                const isUnderwear = (product.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(product.name || '');
-                                const displayVendor = (product.vendor && product.vendor !== 'My Store 7') ? product.vendor : '';
-                                if (isUnderwear && displayVendor.toUpperCase() === 'SAENGAK') return null;
+                                // 安全解析顯示用品牌名稱：內著／周邊商品絕不可能得到 'SAENGAK'（見 src/lib/brandOwnership.ts）
+                                const displayVendor = resolveDisplayVendor(
+                                  { productType: product.productType, name: product.name, vendor: product.vendor },
+                                  { allowSaengakFallbackForOwnBrand: false }
+                                );
                                 if (!displayVendor) return null;
                                 return (
                                   <p className="text-xs mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif", marginBottom: "0.675rem", color: "#225B4F" }}>

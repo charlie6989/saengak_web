@@ -1,5 +1,6 @@
 import { createStorefrontApiClient, type StorefrontApiClient } from '@shopify/storefront-api-client';
 import { captureExceptionSafe } from './sentry';
+import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from './brandOwnership';
 
 /**
  * Shopify Storefront GraphQL API Client
@@ -309,18 +310,18 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     images,
     tags: (() => {
       const rawTags = node.tags || [];
-      const isUnderwear = (node.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(node.title || '');
-      return isUnderwear ? rawTags.filter(t => t.toUpperCase() !== 'SAENGAK') : rawTags;
+      // 內著／周邊商品嚴禁攜帶 SAENGAK 標籤，分類判斷統一交由 brandOwnership 共用模組處理
+      return isNonSaengakOwnBrandProduct({ productType: node.productType, title: node.title })
+        ? rawTags.filter((t: string) => t.toUpperCase() !== 'SAENGAK')
+        : rawTags;
     })(),
     productType: node.productType || '',
-    vendor: (() => {
-      const v = node.vendor?.trim();
-      const isUnderwear = (node.productType === '舒適穿著') || /(?:內褲|內著|生理褲|安全褲|三角褲|平口褲|丁字褲)/i.test(node.title || '');
-      if (isUnderwear) {
-        return (v && v.toUpperCase() !== 'SAENGAK' && v !== 'My Store 7') ? v : '';
-      }
-      return (v && v !== 'My Store 7') ? v : '';
-    })(),
+    // 僅做資料正規化（濾除 Shopify 佔位店名 'My Store 7'，並防止內著／周邊商品殘留 SAENGAK 字樣），
+    // 不套用 SAENGAK fallback——是否顯示 SAENGAK 由各展示元件依情境自行決定
+    vendor: resolveDisplayVendor(
+      { productType: node.productType, title: node.title, vendor: node.vendor },
+      { allowSaengakFallbackForOwnBrand: false }
+    ),
     createdAt: node.createdAt || new Date().toISOString(),
     availableForSale: node.availableForSale ?? true,
     variants,
