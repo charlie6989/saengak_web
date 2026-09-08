@@ -220,7 +220,7 @@ export default function AuthConfirmPage() {
         <div className="text-center">
           <button
             onClick={() => navigate('/')}
-            className="text-sm text-teal-600 hover:text-teal-800 cursor-pointer"
+            className="text-sm text-brand hover:text-brand cursor-pointer"
           >
             返回首頁
           </button>

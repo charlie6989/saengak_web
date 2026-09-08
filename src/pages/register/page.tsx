@@ -271,7 +271,7 @@ export default function RegisterPage() {
                   required
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="姓名（必填）"
                 />
               </div>
@@ -285,7 +285,7 @@ export default function RegisterPage() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="電子郵件地址"
                 />
               </div>
@@ -298,7 +298,7 @@ export default function RegisterPage() {
                   required
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="手機號碼（必填，例：0912345678）"
                 />
               </div>
@@ -312,7 +312,7 @@ export default function RegisterPage() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="密碼（至少 12 個字元）"
                   minLength={12}
                 />
@@ -327,7 +327,7 @@ export default function RegisterPage() {
                   required
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="確認密碼"
                   minLength={12}
                 />
@@ -355,7 +355,7 @@ export default function RegisterPage() {
                   type="button"
                   onClick={handleResendConfirmation}
                   disabled={loading || resendCountdown > 0 || !isAuthCaptchaReady(captchaToken)}
-                  className="w-full py-2 border border-teal-200 text-teal-700 rounded-md text-sm font-medium hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="w-full py-2 border border-blush text-brand rounded-md text-sm font-medium hover:bg-blush disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {resendCountdown > 0 ? `${resendCountdown} 秒後可重新寄送` : '重新寄送驗證信'}
                 </button>
@@ -365,7 +365,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={loading || (!useMockData && !isAuthCaptchaReady(captchaToken))}
-                  className="w-full py-3 bg-teal-600 text-white rounded-md font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
+                  className="w-full py-3 bg-brand text-white rounded-md font-medium hover:bg-brand focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center space-x-2">
@@ -385,7 +385,7 @@ export default function RegisterPage() {
                 已經有帳號了？{' '}
                 <Link
                   to="/login"
-                  className="text-teal-600 hover:text-teal-800 font-medium cursor-pointer"
+                  className="text-brand hover:text-brand font-medium cursor-pointer"
                 >
                   立即登入
                 </Link>
@@ -395,11 +395,11 @@ export default function RegisterPage() {
             <div className="mt-4 text-center">
               <p className="text-xs text-gray-500">
                 註冊即表示您同意我們的{' '}
-                <Link to="/terms" className="text-teal-600 hover:text-teal-500 cursor-pointer">
+                <Link to="/terms" className="text-brand hover:text-brand cursor-pointer">
                   服務條款
                 </Link>
                 {' '}和{' '}
-                <Link to="/privacy" className="text-teal-600 hover:text-teal-500 cursor-pointer">
+                <Link to="/privacy" className="text-brand hover:text-brand cursor-pointer">
                   隱私政策
                 </Link>
               </p>

@@ -773,7 +773,7 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
       contentHtml: edge.node.contentHtml || '',
       publishedAt: edge.node.publishedAt,
       image: edge.node.image ? { url: edge.node.image.url, altText: edge.node.image.altText } : null,
-      blog: edge.node.blog ? { handle: edge.node.blog.handle, title: edge.node.blog.title } : null,
+      blog: edge.node.blog ? { handle: edge.node.blog.handle, title: edge.node.blog.title === 'SAENGAK Talk' ? 'LUCISSI Talk' : edge.node.blog.title } : null,
       author: edge.node.authorV2?.name || 'SAENGAK 編輯團隊',
       tags: edge.node.tags || [],
     })).filter(isPublicShopifyArticle);
@@ -830,7 +830,7 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
         url: '/images/blog/daily-feminine-care-guide.jpg',
         altText: '日常私密護理指南',
       },
-      blog: { handle: 'care-talk', title: 'SAENGAK Talk' },
+      blog: { handle: 'care-talk', title: 'LUCISSI Talk' },
       author: 'SAENGAK 編輯團隊',
       tags: ['SAENGAK', '健康知識', '私密護理', '日常保養', '公開'],
     },
@@ -970,7 +970,7 @@ export async function getShopifyArticleByHandle(handle: string): Promise<Shopify
       contentHtml: edge.node.contentHtml || '',
       publishedAt: edge.node.publishedAt,
       image: edge.node.image ? { url: edge.node.image.url, altText: edge.node.image.altText } : null,
-      blog: edge.node.blog ? { handle: edge.node.blog.handle, title: edge.node.blog.title } : null,
+      blog: edge.node.blog ? { handle: edge.node.blog.handle, title: edge.node.blog.title === 'SAENGAK Talk' ? 'LUCISSI Talk' : edge.node.blog.title } : null,
       author: edge.node.authorV2?.name || 'SAENGAK 編輯團隊',
       tags: edge.node.tags || [],
     })).filter(isPublicShopifyArticle);

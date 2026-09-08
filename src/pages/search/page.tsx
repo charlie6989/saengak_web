@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from "framer-motion";
 import Header from '../../components/feature/Header';
+import EditorialHero from '../../components/feature/EditorialHero';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
 import { useShopifyCollectionProducts } from '../../hooks/useShopifyCollections';
@@ -56,12 +57,7 @@ export default function Search() {
   const collectionHandle = searchParams.get('collection') || '';
   const tag = searchParams.get('tag') || '';
 
-  const categories = [
-    '女性護理',
-    '每日清潔',
-    '深層修護',
-    '舒適穿著'
-  ];
+  const categories = ['私密護理', '貼身穿著'];
 
 
   // 新增篩選選項
@@ -287,11 +283,16 @@ export default function Search() {
 
     // 精準分類比對邏輯 (避免單字拆解導致全品項誤判)
     const matchesCategory = selectedCategories.length === 0 ||
-      selectedCategories.some(catName => {
-        const catNorm = catName.trim().toLowerCase();
+      selectedCategories.flatMap(name => name === '私密護理'
+        ? ['女性護理', '每日清潔', '深層修護']
+        : [name]).some(catName => {
+        const catNorm = (catName === '貼身穿著' ? '舒適穿著' : catName).trim().toLowerCase();
         const pType = (product.productType || '').trim().toLowerCase();
         const pName = (product.name || '').toLowerCase();
         const pTags = (product.tags || []).map(t => t.toLowerCase());
+
+        // The new clothing category excludes care tools and laundry accessories even if tagged as wear.
+        if (catName === '貼身穿著' && /除毛刀|護衣袋|洗衣袋|清洗袋/.test(pName)) return false;
 
         // 1. 若 productType 完全相符，或 tags 包含該分類字串
         if (pType === catNorm || pTags.includes(catNorm)) {
@@ -300,6 +301,7 @@ export default function Search() {
 
         // 2. 依具體業務分類進行精確關鍵詞/類型比對 (若商品具備明確的互斥主要 productType 則優先排除)
         switch (catName) {
+          case '貼身穿著':
           case '舒適穿著':
           case '生理褲':
           case '抗菌無痕內褲':
@@ -422,38 +424,56 @@ export default function Search() {
     return "全部商品";
   };
 
-  // 4 大分類專屬橫幅與描述設定 (各分類圖片獨立，不重複)
+  // 分類專屬橫幅與描述。
   const CATEGORY_CONFIG: Record<string, { image: string; description: string }> = {
+    '私密護理': {
+      image: '/images/lucissi-v5/catalog-care.webp',
+      description: '精選清潔、保濕與舒緩護理，為每天的私密日常，多一點舒適與自在。'
+    },
+    '貼身穿著': {
+      image: '/images/lucissi-v5/catalog-wear.webp',
+      description: '每天貼近肌膚的穿著，也是私密日常的一部分。'
+    },
     '女性護理': {
-      image: '/images/categories/feminine-care.jpg',
+      image: '/images/lucissi-v5/catalog-feminine.webp',
       description: '韓國沙龍級極簡護理，給予私密肌膚最溫柔細膩的長效守護'
     },
     '每日清潔': {
-      image: '/images/categories/daily-cleansing.jpg',
+      image: '/images/lucissi-v5/catalog-cleansing.webp',
       description: '弱酸性親膚潔淨配方，綿密慕斯泡沫維持每日微生態平衡'
     },
     '深層修護': {
-      image: '/images/categories/intensive-repair.jpg',
+      image: '/images/lucissi-v5/catalog-repair.webp',
       description: '專利高活性修護精華，深度舒緩乾癢敏弱，長效平衡健康屏障'
     },
     '舒適穿著': {
-      image: '/images/categories/comfort-wear.jpg',
+      image: '/images/lucissi-v5/catalog-comfort.webp',
       description: '頂級親膚純棉與無痕透氣剪裁，細膩貼合日常生活的每個節奏'
     },
     '益生菌私密舒緩凝膠': {
-      image: '/images/categories/intensive-repair.jpg',
+      image: '/images/lucissi-v5/catalog-gel.webp',
       description: '專利益生菌舒緩修護配方，溫和穩定私密肌膚微生態'
     }
   };
 
-  const ORIGINAL_SEARCH_BANNER = "https://readdy.ai/api/search-image?query=Premium%20feminine%20care%20products%20arranged%20elegantly%20on%20wooden%20platform%20with%20soft%20natural%20lighting%2C%20clean%20minimalist%20Korean%20beauty%20style%2C%20warm%20beige%20and%20cream%20tones%2C%20professional%20product%20photography%2C%20simple%20background&width=1349&height=695&seq=search-hero&orientation=landscape";
+  const DEFAULT_SEARCH_BANNER = "/images/lucissi-v5/catalog-all.webp";
+
+  const categoryImageAlt: Record<string, string> = {
+    '私密護理': '透光玫瑰玻璃前的 Saengak 潔淨慕斯與修護噴霧',
+    '貼身穿著': '淺粉抽屜中整齊放置的親膚棉質內著',
+    '女性護理': '梅紫收納包中的隨身護理噴霧與濕巾',
+    '每日清潔': '象牙白洗手檯邊的 Saengak 潔淨慕斯',
+    '深層修護': '透明玻璃稜柱旁的修護精華噴霧',
+    '舒適穿著': '以雙手確認棉質內著腰帶的柔軟度',
+    '益生菌私密舒緩凝膠': '淺藍凝膠包裝與單支產品的日常護理陳列',
+  };
 
   const getPageImage = () => {
     if (collection?.image) return collection.image;
     if (category && CATEGORY_CONFIG[category]) {
       return CATEGORY_CONFIG[category].image;
     }
-    return ORIGINAL_SEARCH_BANNER;
+    return DEFAULT_SEARCH_BANNER;
   };
 
   // 獲取當前頁面描述
@@ -470,7 +490,7 @@ export default function Search() {
     if (q) {
       return `"${q}" 的搜尋結果`;
     }
-    return '專業女性護理產品，呵護您的健康';
+    return '從私密護理，到每天貼近肌膚的舒適穿著，為女性挑選更自在的日常選擇。';
   };
 
   const scrollToProductListTop = () => {
@@ -495,20 +515,31 @@ export default function Search() {
   };
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+    <div className="min-h-screen bg-ivory" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
       <Header />
 
-      {/* Hero Banner Section - 手機版優化 */}
-      <div className="relative w-full overflow-hidden">
+      {/* 選品主圖使用柔和底色；手機將文案移到圖片下方，保留產品全貌。 */}
+      {getPageImage().startsWith('/images/lucissi-v5/') ? (
+        <EditorialHero
+          className="mt-24"
+          preserveImage
+          image={getPageImage()}
+          alt={categoryImageAlt[category || ''] || '象牙白抽屜中以私密護理產品為主的完整日常選品'}
+          eyebrow={category === '私密護理' ? 'LUCISSI CARE · INTIMATE CARE' : 'LUCISSI CARE · DAILY ESSENTIALS'}
+          title={getPageTitle()}
+          description={getPageDescription()}
+        />
+      ) : (
+      <div className="relative mt-24 w-full overflow-hidden">
         <div className="w-full h-[280px] sm:h-[400px] lg:h-[695px]">
           <img
             src={getPageImage()}
             alt={getPageTitle()}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-right"
           />
         </div>
 
-        <div className="pointer-events-none absolute inset-0 flex items-center">
+        <div className="pointer-events-none absolute inset-0 flex items-center bg-gradient-to-r from-black/55 via-black/25 to-transparent">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
             <div className="max-w-full sm:max-w-[70%] lg:max-w-[60%]">
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white drop-shadow-lg mb-2 sm:mb-3">
@@ -521,6 +552,7 @@ export default function Search() {
           </div>
         </div>
       </div>
+      )}
 
       <main className="page-content" ref={productListRef} id="product-list-top">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -531,10 +563,10 @@ export default function Search() {
               <div className="text-xs sm:text-sm text-gray-600">
                 <span className="font-medium">{sortedProducts.length}</span> 件商品
                 {loadingMethod === 'collection' && collection && (
-                  <span className="hidden sm:inline ml-2 text-teal-600">來自 {collection.title}</span>
+                  <span className="hidden sm:inline ml-2 text-brand">來自 {collection.title}</span>
                 )}
                 {loadingMethod === 'tag' && tag && (
-                  <span className="hidden sm:inline ml-2 text-teal-600">標籤: {tag}</span>
+                  <span className="hidden sm:inline ml-2 text-brand">標籤: {tag}</span>
                 )}
               </div>
 
@@ -543,7 +575,7 @@ export default function Search() {
                 {/* Sort By - 手機版簡化 */}
                 <div className="relative">
                   <button
-                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-200 hover:border-teal-500 transition-colors cursor-pointer rounded-lg"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-200 hover:border-brand transition-colors cursor-pointer rounded-lg"
                     onClick={() => {
                       setIsSortOpen(!isSortOpen);
                       setIsFilterOpen(false);
@@ -568,7 +600,7 @@ export default function Search() {
                                 setSortBy(option);
                                 setIsSortOpen(false);
                               }}
-                              className={`w-full px-4 py-2.5 text-left text-sm hover:bg-teal-50 transition-colors ${sortBy === option ? 'bg-teal-50 font-medium text-teal-700' : 'font-normal text-gray-700'
+                              className={`w-full px-4 py-2.5 text-left text-sm hover:bg-blush transition-colors ${sortBy === option ? 'bg-blush font-medium text-brand' : 'font-normal text-gray-700'
                                 }`}
                             >
                               {option}
@@ -583,7 +615,7 @@ export default function Search() {
                 {/* Filter - 手機版優化 */}
                 <div className="relative">
                   <button
-                    className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 transition-colors cursor-pointer rounded-lg"
+                    className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-brand text-white hover:bg-brand transition-colors cursor-pointer rounded-lg"
                     onClick={() => {
                       setIsFilterOpen(!isFilterOpen);
                       setIsSortOpen(false);
@@ -638,11 +670,11 @@ export default function Search() {
                         <div className="px-4 sm:px-6 pb-4">
                           <div className="flex flex-wrap items-center gap-2">
                             {selectedCategories.map((category) => (
-                              <span key={category} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 text-xs sm:text-sm rounded-full">
+                              <span key={category} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blush text-brand text-xs sm:text-sm rounded-full">
                                 {category}
                                 <button
                                   onClick={() => handleCategoryToggle(category)}
-                                  className="hover:text-teal-900 cursor-pointer"
+                                  className="hover:text-brand cursor-pointer"
                                 >
                                   <i className="ri-close-line text-sm"></i>
                                 </button>
@@ -650,11 +682,11 @@ export default function Search() {
                             ))}
 
                             {selectedUsages.map((usage) => (
-                              <span key={usage} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 text-xs sm:text-sm rounded-full">
+                              <span key={usage} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blush text-brand text-xs sm:text-sm rounded-full">
                                 {usage}
                                 <button
                                   onClick={() => handleUsageToggle(usage)}
-                                  className="hover:text-teal-900 cursor-pointer"
+                                  className="hover:text-brand cursor-pointer"
                                 >
                                   <i className="ri-close-line text-sm"></i>
                                 </button>
@@ -662,11 +694,11 @@ export default function Search() {
                             ))}
 
                             {selectedSizes.map((size) => (
-                              <span key={size} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 text-xs sm:text-sm rounded-full">
+                              <span key={size} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blush text-brand text-xs sm:text-sm rounded-full">
                                 {size}
                                 <button
                                   onClick={() => handleSizeToggle(size)}
-                                  className="hover:text-teal-900 cursor-pointer"
+                                  className="hover:text-brand cursor-pointer"
                                 >
                                   <i className="ri-close-line text-sm"></i>
                                 </button>
@@ -674,11 +706,11 @@ export default function Search() {
                             ))}
 
                             {selectedColors.map((color) => (
-                              <span key={color} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 text-xs sm:text-sm rounded-full">
+                              <span key={color} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blush text-brand text-xs sm:text-sm rounded-full">
                                 {color}
                                 <button
                                   onClick={() => handleColorToggle(color)}
-                                  className="hover:text-teal-900 cursor-pointer"
+                                  className="hover:text-brand cursor-pointer"
                                 >
                                   <i className="ri-close-line text-sm"></i>
                                 </button>
@@ -686,11 +718,11 @@ export default function Search() {
                             ))}
 
                             {selectedBrands.map((brand) => (
-                              <span key={brand} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 text-xs sm:text-sm rounded-full">
+                              <span key={brand} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blush text-brand text-xs sm:text-sm rounded-full">
                                 {brand}
                                 <button
                                   onClick={() => handleBrandToggle(brand)}
-                                  className="hover:text-teal-900 cursor-pointer"
+                                  className="hover:text-brand cursor-pointer"
                                 >
                                   <i className="ri-close-line text-sm"></i>
                                 </button>
@@ -698,11 +730,11 @@ export default function Search() {
                             ))}
 
                             {(priceRange[0] > 0 || priceRange[1] < 200000) && (
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 text-xs sm:text-sm rounded-full">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blush text-brand text-xs sm:text-sm rounded-full">
                                 ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
                                 <button
                                   onClick={() => setPriceRange([0, 200000])}
-                                  className="hover:text-teal-900 cursor-pointer"
+                                  className="hover:text-brand cursor-pointer"
                                 >
                                   <i className="ri-close-line text-sm"></i>
                                 </button>
@@ -736,8 +768,8 @@ export default function Search() {
                                     className="sr-only"
                                   />
                                   <div className={`w-5 h-5 border-2 rounded transition-all duration-200 ${selectedCategories.includes(category)
-                                    ? 'border-teal-600 bg-teal-600'
-                                    : 'border-gray-300 bg-white group-hover:border-teal-400'
+                                    ? 'border-brand bg-brand'
+                                    : 'border-gray-300 bg-white group-hover:border-mauve'
                                     }`}>
                                     {selectedCategories.includes(category) && (
                                       <div className="w-full h-full flex items-center justify-center">
@@ -777,8 +809,8 @@ export default function Search() {
                                     className="sr-only"
                                   />
                                   <div className={`w-5 h-5 border-2 rounded transition-all duration-200 ${selectedUsages.includes(usage)
-                                    ? 'border-teal-600 bg-teal-600'
-                                    : 'border-gray-300 bg-white group-hover:border-teal-400'
+                                    ? 'border-brand bg-brand'
+                                    : 'border-gray-300 bg-white group-hover:border-mauve'
                                     }`}>
                                     {selectedUsages.includes(usage) && (
                                       <div className="w-full h-full flex items-center justify-center">
@@ -813,8 +845,8 @@ export default function Search() {
                                 key={size}
                                 onClick={() => handleSizeToggle(size)}
                                 className={`py-2.5 text-sm font-medium border-2 rounded-lg transition-all duration-200 ${selectedSizes.includes(size)
-                                  ? 'border-teal-600 bg-teal-50 text-teal-700'
-                                  : 'border-gray-200 bg-white text-gray-700 hover:border-teal-400'
+                                  ? 'border-brand bg-blush text-brand'
+                                  : 'border-gray-200 bg-white text-gray-700 hover:border-mauve'
                                   }`}
                               >
                                 {size}
@@ -845,8 +877,8 @@ export default function Search() {
                                     className="sr-only"
                                   />
                                   <div className={`w-5 h-5 border-2 rounded transition-all duration-200 ${selectedColors.includes(color)
-                                    ? 'border-teal-600 bg-teal-600'
-                                    : 'border-gray-300 bg-white group-hover:border-teal-400'
+                                    ? 'border-brand bg-brand'
+                                    : 'border-gray-300 bg-white group-hover:border-mauve'
                                     }`}>
                                     {selectedColors.includes(color) && (
                                       <div className="w-full h-full flex items-center justify-center">
@@ -870,7 +902,7 @@ export default function Search() {
                     <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 space-y-3">
                       <button
                         onClick={() => setIsFilterOpen(false)}
-                        className="w-full py-3.5 bg-teal-600 text-white font-medium hover:bg-teal-700 transition-colors cursor-pointer whitespace-nowrap rounded-lg"
+                        className="w-full py-3.5 bg-brand text-white font-medium hover:bg-brand transition-colors cursor-pointer whitespace-nowrap rounded-lg"
                       >
                         查看 {sortedProducts.length} 項結果
                       </button>
@@ -891,7 +923,7 @@ export default function Search() {
 
           {loading && (
             <div className="text-center py-16">
-              <div className="inline-block animate-spin h-8 w-8 border-b-2 border-teal-600 rounded-full"></div>
+              <div className="inline-block animate-spin h-8 w-8 border-b-2 border-brand rounded-full"></div>
               <p className="mt-4 text-sm sm:text-base text-gray-600">載入商品中...</p>
             </div>
           )}
@@ -957,7 +989,7 @@ export default function Search() {
                   aria-current={page === paginatedProducts.page ? 'page' : undefined}
                   onClick={() => handlePageChange(page)}
                   className={`px-3 py-1.5 sm:px-4 sm:py-2 font-medium cursor-pointer rounded-lg text-sm ${page === paginatedProducts.page
-                    ? 'bg-teal-600 text-white'
+                    ? 'bg-brand text-white'
                     : 'text-gray-600 hover:bg-gray-100'}`}
                 >
                   {page}

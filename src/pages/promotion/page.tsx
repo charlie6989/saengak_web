@@ -1,3 +1,5 @@
+import { promotionImage } from '../../content/promotionImages';
+import EditorialHero from '../../components/feature/EditorialHero';
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
@@ -181,7 +183,7 @@ export default function PromotionPage() {
     : promotions.filter((p) => p.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5]" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+    <div className="min-h-screen bg-[#F8F5F1]" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
       <Header />
 
       {/* Toast 提示 */}
@@ -190,19 +192,19 @@ export default function PromotionPage() {
           <div
             className={`flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg text-sm font-medium border ${
               toastMessage.type === 'success'
-                ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                ? 'bg-blush text-brand border-blush'
                 : toastMessage.type === 'error'
                 ? 'bg-red-50 text-red-900 border-red-200'
-                : 'bg-teal-50 text-teal-900 border-teal-200'
+                : 'bg-blush text-brand border-blush'
             }`}
           >
             <i
               className={`text-lg ${
                 toastMessage.type === 'success'
-                  ? 'ri-checkbox-circle-fill text-emerald-600'
+                  ? 'ri-checkbox-circle-fill text-brand'
                   : toastMessage.type === 'error'
                   ? 'ri-error-warning-fill text-red-600'
-                  : 'ri-information-fill text-teal-600'
+                  : 'ri-information-fill text-brand'
               }`}
             ></i>
             <span>{toastMessage.text}</span>
@@ -210,23 +212,17 @@ export default function PromotionPage() {
         </div>
       )}
 
-      <main className="pb-24 pt-32">
+      <main className="pb-24 pt-24">
         {/* Hero 頂部橫幅 */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#225B4F]/10 via-[#225B4F]/5 to-transparent py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-center">
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#225B4F]/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-[#225B4F] uppercase mb-4">
-              <i className="ri-coupon-3-line text-sm"></i>
-              SAENGAK Promotions
-            </span>
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
-              專屬優惠禮遇
-            </h1>
-            <p className="mx-auto max-w-2xl text-base sm:text-lg text-gray-600 leading-relaxed">
-              探索專屬折扣與限時特惠，登入會員一鍵歸戶，為您的日常生活增添優雅與美好提案。
-            </p>
-
+        <EditorialHero
+          image="/images/lucissi-v5/promotion-hero.webp"
+          alt="霧粉禮盒與 Saengak 隨身護理產品"
+          eyebrow="LUCISSI CARE · OFFERS"
+          title="專屬優惠禮遇"
+          description="探索專屬折扣與限時特惠，登入會員一鍵歸戶，為您的日常生活增添優雅與美好提案。"
+        >
             {user ? (
-              <div className="mt-6 inline-flex items-center gap-3 bg-white/80 backdrop-blur-xs border border-teal-200/80 px-4 py-2 rounded-full text-xs sm:text-sm text-teal-800">
+              <div className="mt-6 inline-flex items-center gap-3 bg-white/80 backdrop-blur-xs border border-blush/80 px-4 py-2 rounded-full text-xs sm:text-sm text-brand">
                 <i className="ri-vip-crown-fill text-amber-500 text-base"></i>
                 <span>您已歸戶 <strong>{userCoupons.length}</strong> 張優惠券</span>
                 <Link
@@ -243,17 +239,16 @@ export default function PromotionPage() {
                 <button
                   type="button"
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="font-semibold text-[#225B4F] underline underline-offset-2 hover:text-[#19453c] cursor-pointer"
+                  className="font-semibold text-[#5B3D48] underline underline-offset-2 hover:text-[#48303A] cursor-pointer"
                 >
                   立即登入 / 註冊
                 </button>
               </div>
             )}
-          </div>
-        </section>
+        </EditorialHero>
 
         {/* 分類過濾頁籤 */}
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 mb-10">
+        <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 mb-10 pt-8">
           <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-2 scrollbar-none">
             {categoryTabs.map((tab) => {
               const isActive = selectedCategory === tab.key;
@@ -264,7 +259,7 @@ export default function PromotionPage() {
                   onClick={() => setSelectedCategory(tab.key)}
                   className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap cursor-pointer ${
                     isActive
-                      ? 'bg-[#225B4F] text-white shadow-md shadow-[#225B4F]/20'
+                      ? 'bg-[#5B3D48] text-white shadow-md shadow-[#5B3D48]/20'
                       : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200/80'
                   }`}
                 >
@@ -280,7 +275,7 @@ export default function PromotionPage() {
         <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 mb-20">
           {loading ? (
             <div className="py-20 text-center">
-              <div className="inline-block h-10 w-10 animate-spin rounded-full border-3 border-[#225B4F] border-t-transparent"></div>
+              <div className="inline-block h-10 w-10 animate-spin rounded-full border-3 border-[#5B3D48] border-t-transparent"></div>
               <p className="mt-4 text-sm text-gray-500">載入優惠活動中...</p>
             </div>
           ) : filteredPromotions.length === 0 ? (
@@ -295,6 +290,7 @@ export default function PromotionPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {filteredPromotions.map((promo) => {
                 const userCoupon = getUserCoupon(promo);
+                const campaignImage = promotionImage(promo.code, promo.image_url);
                 const isUserLoggedIn = Boolean(user?.id || (typeof window !== 'undefined' && localStorage.getItem('mockCurrentUser')));
                 const isClaimed = Boolean(userCoupon);
                 const isUsed = userCoupon?.status === 'used';
@@ -311,14 +307,14 @@ export default function PromotionPage() {
                   >
                     {/* 上方視覺圖與徽章 */}
                     <div className="relative h-44 w-full bg-gray-100 overflow-hidden">
-                      {promo.image_url ? (
+                      {campaignImage ? (
                         <img
-                          src={promo.image_url}
+                          src={campaignImage}
                           alt={promo.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-teal-900/10 text-[#225B4F]">
+                        <div className="w-full h-full flex items-center justify-center bg-brand/10 text-[#5B3D48]">
                           <i className="ri-gift-line text-4xl"></i>
                         </div>
                       )}
@@ -326,7 +322,7 @@ export default function PromotionPage() {
 
                       {/* 類別徽章 */}
                       {promo.badge_text && (
-                        <span className="absolute top-3 left-3 rounded-full bg-[#225B4F] px-3 py-1 text-xs font-bold text-white shadow-xs">
+                        <span className="absolute top-3 left-3 rounded-full bg-[#5B3D48] px-3 py-1 text-xs font-bold text-white shadow-xs">
                           {promo.badge_text}
                         </span>
                       )}
@@ -357,21 +353,21 @@ export default function PromotionPage() {
 
                     {/* 票券切口裝飾條 (Ticket Notches & Dashed Divider) */}
                     <div className="relative flex items-center justify-between px-2 bg-white">
-                      <div className="h-5 w-5 -ml-4 rounded-full bg-[#F7F7F5] border-r border-gray-200/90"></div>
+                      <div className="h-5 w-5 -ml-4 rounded-full bg-[#F8F5F1] border-r border-gray-200/90"></div>
                       <div className="w-full border-t border-dashed border-gray-300 mx-2"></div>
-                      <div className="h-5 w-5 -mr-4 rounded-full bg-[#F7F7F5] border-l border-gray-200/90"></div>
+                      <div className="h-5 w-5 -mr-4 rounded-full bg-[#F8F5F1] border-l border-gray-200/90"></div>
                     </div>
 
                     {/* 下方內容與互動區塊 */}
                     <div className="p-6 flex-1 flex flex-col justify-between">
                       <div>
                         <div className="flex items-start justify-between gap-2">
-                          <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#225B4F] transition-colors">
+                          <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#5B3D48] transition-colors">
                             {promo.title}
                           </h3>
                         </div>
                         {promo.subtitle && (
-                          <p className="text-xs font-semibold text-[#225B4F] mt-1">
+                          <p className="text-xs font-semibold text-[#5B3D48] mt-1">
                             {promo.subtitle}
                           </p>
                         )}
@@ -388,8 +384,8 @@ export default function PromotionPage() {
                               每位顧客限用一次
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 bg-teal-50 text-teal-900 border border-teal-200/80 px-2 py-0.5 rounded-md font-medium">
-                              <i className="ri-loop-right-line text-xs text-teal-700"></i>
+                            <span className="inline-flex items-center gap-1 bg-blush text-brand border border-blush/80 px-2 py-0.5 rounded-md font-medium">
+                              <i className="ri-loop-right-line text-xs text-brand"></i>
                               不限每人使用次數
                             </span>
                           )}
@@ -419,8 +415,8 @@ export default function PromotionPage() {
                               滿 NT$ {promo.min_spend.toLocaleString()} 可折
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-900 border border-emerald-200/80 px-2 py-0.5 rounded-md font-medium">
-                              <i className="ri-check-double-line text-xs text-emerald-700"></i>
+                            <span className="inline-flex items-center gap-1 bg-blush text-brand border border-blush/80 px-2 py-0.5 rounded-md font-medium">
+                              <i className="ri-check-double-line text-xs text-brand"></i>
                               全館無門檻
                             </span>
                           )}
@@ -435,8 +431,8 @@ export default function PromotionPage() {
                               if (combines.product_discounts) allowed.push('商品折抵');
                               if (combines.order_discounts) allowed.push('訂單折抵');
                               return (
-                                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200/70 px-2 py-0.5 rounded-md font-medium">
-                                  <i className="ri-links-line text-xs text-emerald-600"></i>
+                                <span className="inline-flex items-center gap-1 bg-blush text-brand border border-blush/70 px-2 py-0.5 rounded-md font-medium">
+                                  <i className="ri-links-line text-xs text-brand"></i>
                                   可與{allowed.join('/')}併用
                                 </span>
                               );
@@ -463,7 +459,7 @@ export default function PromotionPage() {
                           <button
                             type="button"
                             onClick={() => handleCopyCode(promo.code)}
-                            className="inline-flex items-center gap-1 text-xs font-semibold text-[#225B4F] hover:text-[#173e35] cursor-pointer"
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-[#5B3D48] hover:text-[#48303A] cursor-pointer"
                           >
                             <i className="ri-file-copy-line"></i>
                             <span>複製代碼</span>
@@ -484,7 +480,7 @@ export default function PromotionPage() {
                               <button
                                 type="button"
                                 onClick={() => navigate('/search?query=all')}
-                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer"
                               >
                                 前往逛逛
                               </button>
@@ -496,7 +492,7 @@ export default function PromotionPage() {
                                 setPendingPromoToClaim(promo);
                                 setIsAuthModalOpen(true);
                               }}
-                              className="px-4 py-2 text-xs font-bold text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
+                              className="px-4 py-2 text-xs font-bold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
                             >
                               <i className="ri-download-cloud-line text-sm"></i>
                               <span>立即領券歸戶</span>
@@ -510,21 +506,21 @@ export default function PromotionPage() {
                               <button
                                 type="button"
                                 onClick={() => navigate('/search?query=all')}
-                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer"
                               >
                                 前往逛逛
                               </button>
                             </div>
                           ) : isClaimed ? (
                             <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand bg-blush px-3 py-1.5 rounded-lg border border-blush">
                                 <i className="ri-check-line font-bold"></i>
                                 {promo.applies_once_per_customer ? '已歸戶' : '已歸戶（可重複使用）'}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => navigate('/search?query=all')}
-                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer"
                               >
                                 前往逛逛
                               </button>
@@ -534,7 +530,7 @@ export default function PromotionPage() {
                               type="button"
                               onClick={() => handleClaim(promo)}
                               disabled={isClaimingThis}
-                              className="px-4 py-2 text-xs font-bold text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                              className="px-4 py-2 text-xs font-bold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
                             >
                               {isClaimingThis ? (
                                 <>
@@ -573,7 +569,7 @@ export default function PromotionPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-gray-50/70 border border-gray-100">
-                <div className="h-14 w-14 rounded-2xl bg-[#225B4F]/10 text-[#225B4F] flex items-center justify-center text-2xl mb-4 font-bold">
+                <div className="h-14 w-14 rounded-2xl bg-[#5B3D48]/10 text-[#5B3D48] flex items-center justify-center text-2xl mb-4 font-bold">
                   1
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">登入領券歸戶</h3>
@@ -583,7 +579,7 @@ export default function PromotionPage() {
               </div>
 
               <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-gray-50/70 border border-gray-100">
-                <div className="h-14 w-14 rounded-2xl bg-[#225B4F]/10 text-[#225B4F] flex items-center justify-center text-2xl mb-4 font-bold">
+                <div className="h-14 w-14 rounded-2xl bg-[#5B3D48]/10 text-[#5B3D48] flex items-center justify-center text-2xl mb-4 font-bold">
                   2
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">挑選商品加入購物車</h3>
@@ -593,7 +589,7 @@ export default function PromotionPage() {
               </div>
 
               <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-gray-50/70 border border-gray-100">
-                <div className="h-14 w-14 rounded-2xl bg-[#225B4F]/10 text-[#225B4F] flex items-center justify-center text-2xl mb-4 font-bold">
+                <div className="h-14 w-14 rounded-2xl bg-[#5B3D48]/10 text-[#5B3D48] flex items-center justify-center text-2xl mb-4 font-bold">
                   3
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">結帳自動套用折抵</h3>
@@ -627,12 +623,12 @@ export default function PromotionPage() {
                   <button
                     type="button"
                     onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-gray-900 hover:text-[#225B4F] transition-colors cursor-pointer"
+                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-gray-900 hover:text-[#5B3D48] transition-colors cursor-pointer"
                   >
                     <span className="text-sm sm:text-base">{faq.q}</span>
                     <i
                       className={`ri-arrow-down-s-line text-xl transition-transform ${
-                        isOpen ? 'rotate-180 text-[#225B4F]' : 'text-gray-400'
+                        isOpen ? 'rotate-180 text-[#5B3D48]' : 'text-gray-400'
                       }`}
                     ></i>
                   </button>
@@ -649,15 +645,15 @@ export default function PromotionPage() {
 
         {/* 官方客服導流橫幅 */}
         <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-gradient-to-r from-[#225B4F] to-[#2e7465] p-8 sm:p-12 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="rounded-3xl bg-gradient-to-r from-[#5B3D48] to-[#5B3D48] p-8 sm:p-12 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <span className="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold tracking-wider text-emerald-100 uppercase mb-3">
+              <span className="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold tracking-wider text-blush uppercase mb-3">
                 Customer Support
               </span>
               <h3 className="text-2xl sm:text-3xl font-bold tracking-tight">
                 對優惠活動有任何疑問？
               </h3>
-              <p className="mt-2 text-sm text-emerald-100 max-w-xl leading-relaxed">
+              <p className="mt-2 text-sm text-blush max-w-xl leading-relaxed">
                 歡迎透過 SAENGAK LINE 官方客服即時諮詢，客服專員將於營業時間為您迅速解答。
               </p>
             </div>

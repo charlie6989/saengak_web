@@ -1,3 +1,4 @@
+import BrandLogo from '../../components/base/BrandLogo';
 
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
@@ -102,14 +103,7 @@ export default function ResetPasswordPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
           <Link to="/" className="inline-block">
-            <img 
-              src="https://public.readdy.ai/ai/img_res/7abd47af-dc1d-4a06-b368-a8eac6dfbf6a.jpg"
-              alt="Inner Saengak Logo"
-              className="h-12 w-auto mx-auto"
-              style={{ 
-                filter: 'brightness(0.8) contrast(1.2) saturate(1.1)'
-              }}
-            />
+            <BrandLogo className="w-[200px] mx-auto" />
           </Link>
         </div>
         <div className="text-center">
@@ -153,7 +147,7 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={12}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                   placeholder="請輸入新密碼（至少 12 個字元）"
                 />
               </div>
@@ -169,7 +163,7 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   minLength={12}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                   placeholder="請再次輸入新密碼"
                 />
               </div>
@@ -210,7 +204,7 @@ export default function ResetPasswordPage() {
         <div className="text-center">
           <button
             onClick={() => navigate('/')}
-            className="text-sm text-teal-600 hover:text-teal-800 cursor-pointer"
+            className="text-sm text-brand hover:text-brand cursor-pointer"
           >
             返回首頁
           </button>

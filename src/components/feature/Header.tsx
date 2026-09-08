@@ -1,3 +1,4 @@
+import BrandLogo from '../base/BrandLogo';
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
@@ -170,42 +171,39 @@ export default function Header() {
   };
 
   const productCategories = [
-    { name: '女性護理', href: '/search?category=女性護理' },
-    { name: '每日清潔', href: '/search?category=每日清潔' },
-    { name: '深層修護', href: '/search?category=深層修護' },
-    { name: '舒適穿著', href: '/search?category=舒適穿著' },
-    { name: '益生菌私密舒緩凝膠', href: '/search?category=益生菌私密舒緩凝膠' }
+    { name: '私密護理', href: '/search?category=私密護理' },
+    { name: '貼身穿著', href: '/search?category=貼身穿著' }
   ];
 
   return (
     <>
       {/* 頂部橫幅 - 固定在最頂部，固定高度 */}
       <div
-        className="fixed top-0 left-0 w-full bg-gray-900 text-white text-center overflow-hidden z-50"
+        className="fixed top-0 left-0 w-full bg-brand text-white text-center overflow-hidden z-50"
         style={{ height: '32px', fontFamily: "Noto Sans TC, sans-serif" }}
       >
         <div className="animate-marquee whitespace-nowrap flex items-center justify-center h-full text-sm">
-          SAENGAK 正式商店｜結帳由 Shopify Checkout 與 TapPay 安全處理
+          LUCISSI care 正式商店｜結帳由 Shopify Checkout 與 TapPay 安全處理
         </div>
       </div>
 
       {/* 桌面版 - 滿版導覽列選單，去除左右空隙 */}
       <header
-        className="hidden lg:block fixed top-0 left-0 w-full z-50 bg-[#FFFEF2] border-b border-[#E8E6DC]/60"
-        style={{ marginTop: '32px' }}
+        className="hidden lg:block fixed top-0 left-0 w-full z-50 bg-[#E7D6D4]"
+        style={{ marginTop: '32px', height: '64px' }}
       >
         <div
           className="w-full px-6 lg:px-12"
           style={{
-            backgroundColor: '#FFFEF2'
+            backgroundColor: '#E7D6D4'
           }}
         >
           {/* 主導航 - 滿版設計，無左右空隙 */}
           <div
             className="w-full"
             style={{
-              height: 'min(64px, 4.03vw)',
-              backgroundColor: '#FFFEF2',
+              height: '64px',
+              backgroundColor: '#E7D6D4',
               borderRadius: '0px'
             }}
           >
@@ -214,7 +212,7 @@ export default function Header() {
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label={isMobileMenuOpen ? '關閉主選單' : '開啟主選單'}
-                className="lg:hidden flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-teal-600 outline-none focus:outline-none border-none bg-transparent"
+                className="lg:hidden flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-brand outline-none focus:outline-none border-none bg-transparent"
                 style={{
                   width: '48px',
                   height: '48px',
@@ -226,7 +224,7 @@ export default function Header() {
                   className={isMobileMenuOpen ? "ri-close-line" : "ri-menu-line"}
                   style={{
                     fontSize: '32px',
-                    color: '#1F2937'
+                    color: '#34302F'
                   }}
                 ></i>
               </button>
@@ -234,15 +232,7 @@ export default function Header() {
               {/* 中央 - Logo圖片 - 手機版置中 */}
               <div className="flex items-center lg:mr-auto">
                 <Link to="/" className="flex items-center cursor-pointer outline-none focus:outline-none">
-                  <img
-                    src="https://public.readdy.ai/ai/img_res/7abd47af-dc1d-4a06-b368-a8eac6dfbf6a.jpg"
-                    alt="Inner Saengak Logo"
-                    className="w-auto cursor-pointer outline-none focus:outline-none"
-                    style={{
-                      height: 'min(44px, 2.78vw)', // 手機版稍微增加
-                      filter: 'brightness(0.8) contrast(1.2) saturate(1.1)'
-                    }}
-                  />
+                  <BrandLogo className="w-[144px] xl:w-[156px]" />
                 </Link>
               </div>
 
@@ -256,10 +246,10 @@ export default function Header() {
                   <button
                     onClick={handleProductsClick}
                     onMouseEnter={() => setIsProductDropdownOpen(true)}
-                    className="font-semibold flex items-center cursor-pointer transition-colors duration-200 whitespace-nowrap hover:text-teal-600 outline-none focus:outline-none border-none bg-transparent"
+                    className="font-semibold flex items-center cursor-pointer transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none border-none bg-transparent"
                     style={{
                       fontSize: 'min(16px, 1.11vw)',
-                      color: '#1F2937',
+                      color: '#34302F',
                       border: 'none',
                       background: 'transparent'
                     }}
@@ -270,7 +260,7 @@ export default function Header() {
                   {isProductDropdownOpen && (
                     <div
                       className="absolute top-full left-0 mt-2 w-64 shadow-xl border border-gray-100 z-50 rounded-lg overflow-hidden"
-                      style={{ backgroundColor: '#FFFEF2' }}
+                      style={{ backgroundColor: '#E7D6D4' }}
                       onMouseEnter={() => setIsProductDropdownOpen(true)}
                       onMouseLeave={() => setIsProductDropdownOpen(false)}
                     >
@@ -279,8 +269,8 @@ export default function Header() {
                           <Link
                             key={index}
                             to={category.href}
-                            className="block px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-200 border-b border-gray-50 last:border-b-0 hover:text-teal-600 outline-none focus:outline-none"
-                            style={{ color: '#1F2937' }}
+                            className="block px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-200 border-b border-gray-50 last:border-b-0 hover:text-brand outline-none focus:outline-none"
+                            style={{ color: '#34302F' }}
                           >
                             {category.name}
                           </Link>
@@ -291,55 +281,35 @@ export default function Header() {
                 </div>
 
                 <Link
-                  to="/search?category=女性護理"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-teal-600 outline-none focus:outline-none"
+                  to="/search?category=私密護理"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
-                    color: '#1F2937'
+                    color: '#34302F'
                   }}
                 >
-                  女性護理
+                  私密護理
                 </Link>
 
-                <Link
-                  to="/search?category=每日清潔"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-teal-600 outline-none focus:outline-none"
-                  style={{
-                    fontSize: 'min(16px, 1.11vw)',
-                    color: '#1F2937'
-                  }}
-                >
-                  每日清潔
-                </Link>
+
 
                 <Link
-                  to="/search?category=深層修護"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-teal-600 outline-none focus:outline-none"
+                  to="/search?category=貼身穿著"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
-                    color: '#1F2937'
+                    color: '#34302F'
                   }}
                 >
-                  深層修護
-                </Link>
-
-                <Link
-                  to="/search?category=舒適穿著"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-teal-600 outline-none focus:outline-none"
-                  style={{
-                    fontSize: 'min(16px, 1.11vw)',
-                    color: '#1F2937'
-                  }}
-                >
-                  舒適穿著
+                  貼身穿著
                 </Link>
 
                 <Link
                   to="/promotion"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-teal-600 outline-none focus:outline-none"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
-                    color: '#1F2937'
+                    color: '#34302F'
                   }}
                 >
                   優惠活動
@@ -347,10 +317,10 @@ export default function Header() {
 
                 <Link
                   to="/community"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-teal-600 outline-none focus:outline-none"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
-                    color: '#1F2937'
+                    color: '#34302F'
                   }}
                 >
                   社群
@@ -359,10 +329,10 @@ export default function Header() {
                 {/* 關於我們 - 直接連結到品牌故事 */}
                 <Link
                   to="/brand-story"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-teal-600 outline-none focus:outline-none"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
-                    color: '#1F2937'
+                    color: '#34302F'
                   }}
                 >
                   關於我們
@@ -378,7 +348,7 @@ export default function Header() {
                 <button
                   onClick={handleSearchIconClick}
                   aria-label="開啟商品搜尋"
-                  className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-teal-600 outline-none focus:outline-none border-none bg-transparent"
+                  className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-brand outline-none focus:outline-none border-none bg-transparent"
                   style={{
                     width: '44px',
                     height: '44px',
@@ -390,7 +360,7 @@ export default function Header() {
                     className="ri-search-line"
                     style={{
                       fontSize: '28px',
-                      color: '#1F2937'
+                      color: '#34302F'
                     }}
                   ></i>
                 </button>
@@ -400,7 +370,7 @@ export default function Header() {
                   <button
                     onClick={handleUserIconClick}
                     aria-label={user ? '開啟會員選單' : '前往會員登入'}
-                    className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-teal-600 outline-none focus:outline-none border-none bg-transparent"
+                    className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-brand outline-none focus:outline-none border-none bg-transparent"
                     style={{
                       width: 'min(24px, 1.67vw)',
                       height: 'min(24px, 1.67vw)',
@@ -412,7 +382,7 @@ export default function Header() {
                       className="ri-user-line"
                       style={{
                         fontSize: 'min(24px, 1.67vw)',
-                        color: '#1F2937'
+                        color: '#34302F'
                       }}
                     ></i>
                   </button>
@@ -445,9 +415,9 @@ export default function Header() {
                           setIsUserMenuOpen(false);
                           navigate('/profile');
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors cursor-pointer"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand transition-colors cursor-pointer"
                       >
-                        <i className="ri-user-line mr-2 text-teal-600"></i>
+                        <i className="ri-user-line mr-2 text-brand"></i>
                         會員中心
                       </button>
                       <button
@@ -455,9 +425,9 @@ export default function Header() {
                           setIsUserMenuOpen(false);
                           navigate('/profile?tab=orders');
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors cursor-pointer"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand transition-colors cursor-pointer"
                       >
-                        <i className="ri-shopping-bag-line mr-2 text-teal-600"></i>
+                        <i className="ri-shopping-bag-line mr-2 text-brand"></i>
                         訂單查詢
                       </button>
                       <button
@@ -465,9 +435,9 @@ export default function Header() {
                           setIsUserMenuOpen(false);
                           navigate('/profile?tab=favorites');
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors cursor-pointer"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand transition-colors cursor-pointer"
                       >
-                        <i className="ri-heart-line mr-2 text-teal-600"></i>
+                        <i className="ri-heart-line mr-2 text-brand"></i>
                         我的收藏
                       </button>
                       <div className="border-t border-gray-100 mt-1">
@@ -488,7 +458,7 @@ export default function Header() {
                   onClick={handleCartClick}
                   aria-label="開啟購物車"
                   data-testid="desktop-cart-button"
-                  className="flex items-center justify-center cursor-pointer relative transition-colors duration-200 hover:text-teal-600 outline-none focus:outline-none border-none bg-transparent"
+                  className="flex items-center justify-center cursor-pointer relative transition-colors duration-200 hover:text-brand outline-none focus:outline-none border-none bg-transparent"
                   style={{
                     width: '44px',
                     height: '44px',
@@ -500,7 +470,7 @@ export default function Header() {
                     className="ri-shopping-bag-line"
                     style={{
                       fontSize: '28px',
-                      color: '#1F2937'
+                      color: '#34302F'
                     }}
                   ></i>
                   <span
@@ -525,19 +495,12 @@ export default function Header() {
 
       {/* 手機版 - 頂部簡化 Logo 欄 */}
       <header
-        className="lg:hidden fixed top-0 left-0 w-full z-50 bg-white"
-        style={{ marginTop: '32px' }}
+        className="lg:hidden fixed top-0 left-0 w-full z-50 bg-[#E7D6D4]"
+        style={{ marginTop: '32px', height: '64px' }}
       >
         <div className="flex items-center justify-center h-16 px-4">
           <Link to="/" className="flex items-center cursor-pointer">
-            <img
-              src="https://public.readdy.ai/ai/img_res/7abd47af-dc1d-4a06-b368-a8eac6dfbf6a.jpg"
-              alt="Inner Saengak Logo"
-              className="h-10 w-auto"
-              style={{
-                filter: 'brightness(0.8) contrast(1.2) saturate(1.1)'
-              }}
-            />
+            <BrandLogo className="w-[138px]" />
           </Link>
         </div>
       </header>
@@ -558,7 +521,7 @@ export default function Header() {
               className={isMobileMenuOpen ? "ri-close-line" : "ri-menu-line"}
               style={{
                 fontSize: '24px',
-                color: '#1F2937'
+                color: '#34302F'
               }}
             ></i>
             <span className="text-sm font-semibold text-gray-900">選單</span>
@@ -568,13 +531,13 @@ export default function Header() {
           <button
             onClick={handleSearchIconClick}
             aria-label="開啟商品搜尋"
-            className="flex items-center justify-center w-14 h-14 bg-teal-600 rounded-full shadow-lg hover:shadow-xl hover:bg-teal-700 transition-all duration-200 cursor-pointer border-none outline-none focus:outline-none"
+            className="flex items-center justify-center w-14 h-14 bg-brand rounded-full shadow-lg hover:shadow-xl hover:bg-brand transition-all duration-200 cursor-pointer border-none outline-none focus:outline-none"
           >
             <i
               className="ri-search-line"
               style={{
                 fontSize: '24px',
-                color: '#FFFFFF'
+                color: '#FFFDFC'
               }}
             ></i>
           </button>
@@ -593,7 +556,7 @@ export default function Header() {
               className="ri-shopping-bag-line"
               style={{
                 fontSize: '24px',
-                color: '#1F2937'
+                color: '#34302F'
               }}
             ></i>
             <span className="text-sm font-semibold text-gray-900">購物車</span>
@@ -640,7 +603,7 @@ export default function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block w-full text-left px-6 py-4 text-lg font-semibold text-gray-800 hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100"
               >
-                <i className="ri-store-line mr-3 text-xl text-teal-600"></i>
+                <i className="ri-store-line mr-3 text-xl text-brand"></i>
                 全部商品
               </Link>
 
@@ -666,7 +629,7 @@ export default function Header() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block w-full text-left px-6 py-4 text-lg font-semibold text-gray-800 hover:bg-gray-50 transition-colors duration-200"
                 >
-                  <i className="ri-gift-line mr-3 text-xl text-teal-600"></i>
+                  <i className="ri-gift-line mr-3 text-xl text-brand"></i>
                   優惠活動
                 </Link>
 
@@ -675,7 +638,7 @@ export default function Header() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block w-full text-left px-6 py-4 text-lg font-semibold text-gray-800 hover:bg-gray-50 transition-colors duration-200"
                 >
-                  <i className="ri-team-line mr-3 text-xl text-teal-600"></i>
+                  <i className="ri-team-line mr-3 text-xl text-brand"></i>
                   社群
                 </Link>
 
@@ -684,7 +647,7 @@ export default function Header() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block w-full text-left px-6 py-4 text-lg font-semibold text-gray-800 hover:bg-gray-50 transition-colors duration-200"
                 >
-                  <i className="ri-book-open-line mr-3 text-xl text-teal-600"></i>
+                  <i className="ri-book-open-line mr-3 text-xl text-brand"></i>
                   關於我們
                 </Link>
               </div>
@@ -708,7 +671,7 @@ export default function Header() {
                           {user.email}
                         </div>
                       ) : (
-                        <div className="text-sm text-teal-600 mt-1 font-medium">一般會員</div>
+                        <div className="text-sm text-brand mt-1 font-medium">一般會員</div>
                       )}
                     </div>
                     <Link
@@ -716,7 +679,7 @@ export default function Header() {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block w-full text-left px-6 py-4 text-base text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center"
                     >
-                      <i className="ri-user-line mr-3 text-xl text-teal-600"></i>
+                      <i className="ri-user-line mr-3 text-xl text-brand"></i>
                       會員中心
                     </Link>
                     <Link
@@ -724,7 +687,7 @@ export default function Header() {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block w-full text-left px-6 py-4 text-base text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center"
                     >
-                      <i className="ri-shopping-bag-line mr-3 text-xl text-teal-600"></i>
+                      <i className="ri-shopping-bag-line mr-3 text-xl text-brand"></i>
                       訂單查詢
                     </Link>
                     <Link
@@ -732,7 +695,7 @@ export default function Header() {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block w-full text-left px-6 py-4 text-base text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center"
                     >
-                      <i className="ri-heart-line mr-3 text-xl text-teal-600"></i>
+                      <i className="ri-heart-line mr-3 text-xl text-brand"></i>
                       我的收藏
                     </Link>
                     <button
@@ -742,7 +705,7 @@ export default function Header() {
                       }}
                       className="block w-full text-left px-6 py-4 text-base text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center border-t border-gray-200"
                     >
-                      <i className="ri-logout-box-line mr-3 text-xl text-teal-600"></i>
+                      <i className="ri-logout-box-line mr-3 text-xl text-brand"></i>
                       登出
                     </button>
                   </>
@@ -752,7 +715,7 @@ export default function Header() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block w-full text-left px-6 py-4 text-lg font-semibold text-gray-800 hover:bg-gray-50 transition-colors duration-200 flex items-center"
                   >
-                    <i className="ri-user-line mr-3 text-xl text-teal-600"></i>
+                    <i className="ri-user-line mr-3 text-xl text-brand"></i>
                     登入 / 註冊
                   </Link>
                 )}

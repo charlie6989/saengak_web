@@ -119,7 +119,7 @@ export const AdminStaff: React.FC = () => {
         <div>
           <div className="flex items-center space-x-2">
             <h1 className="text-2xl font-bold text-gray-900">🛡️ 後台系統管理員管理</h1>
-            <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
+            <span className="rounded-full bg-blush px-2.5 py-0.5 text-xs font-semibold text-brand">
               最高權限存取控制
             </span>
           </div>
@@ -168,7 +168,7 @@ export const AdminStaff: React.FC = () => {
               placeholder="搜尋管理員姓名、Email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#225B4F] focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
             />
           </div>
         </div>
@@ -194,7 +194,7 @@ export const AdminStaff: React.FC = () => {
               {isLoading && admins.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#225B4F]" />
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#5B3D48]" />
                     <p className="mt-2 text-xs">載入管理員名冊中...</p>
                   </td>
                 </tr>
@@ -211,14 +211,14 @@ export const AdminStaff: React.FC = () => {
                     <tr key={admin.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#225B4F] text-white font-bold text-sm">
+                          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#5B3D48] text-white font-bold text-sm">
                             {admin.name?.charAt(0)?.toUpperCase() || 'A'}
                           </div>
                           <div>
                             <div className="font-semibold text-gray-900 flex items-center space-x-1.5">
                               <span>{admin.name || '管理員'}</span>
                               {isCurrent && (
-                                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                                <span className="rounded-full bg-blush px-2 py-0.5 text-[10px] font-medium text-brand ring-1 ring-inset ring-brand/20">
                                   您目前登入
                                 </span>
                               )}

@@ -1,3 +1,5 @@
+import EditorialHero from '../../components/feature/EditorialHero';
+import { editorialImage } from '../../content/editorialImages';
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
@@ -178,10 +180,10 @@ export default function BlogArticle() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+      <div className="min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
         <Header />
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <div className="inline-block animate-spin h-10 w-10 border-4 border-[#225B4F] border-t-transparent rounded-full mb-4"></div>
+          <div className="inline-block animate-spin h-10 w-10 border-4 border-[#5B3D48] border-t-transparent rounded-full mb-4"></div>
           <p className="text-gray-600 font-medium">專欄文章載入中...</p>
         </div>
         <Footer />
@@ -191,7 +193,7 @@ export default function BlogArticle() {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-white" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+      <div className="min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
         <Header />
         <div className="max-w-4xl mx-auto px-6 py-24 text-center">
           <i className="ri-file-warning-line text-6xl text-gray-300 mb-4 inline-block"></i>
@@ -199,7 +201,7 @@ export default function BlogArticle() {
           <p className="text-gray-600 mb-8">此文章可能已被移動或尚未發布，請瀏覽其他精選文章。</p>
           <button
             onClick={() => navigate('/community')}
-            className="px-8 py-3 bg-[#225B4F] text-white rounded-lg hover:opacity-90 transition-opacity cursor-pointer font-medium"
+            className="px-8 py-3 bg-[#5B3D48] text-white rounded-lg hover:opacity-90 transition-opacity cursor-pointer font-medium"
           >
             返回文章列表
           </button>
@@ -214,70 +216,44 @@ export default function BlogArticle() {
     ? new Date(article.publishedAt).toLocaleDateString()
     : '2026/9/1';
   const categoryName = article.blog?.title || (article.tags && article.tags.length > 0 ? article.tags[0] : '專欄文章');
-  const coverImage = article.image?.url || '/images/blog/daily-feminine-care-guide.jpg';
+  const coverImage = editorialImage(article.handle, article.image?.url, 'hero');
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+    <div className="min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
       {/* 頂部閱讀進度條 */}
       <div
-        className="fixed top-0 left-0 h-1 bg-[#225B4F] z-50 transition-all duration-150 ease-out"
+        className="fixed top-0 left-0 h-1 bg-[#5B3D48] z-50 transition-all duration-150 ease-out"
         style={{ width: `${readingProgress}%` }}
       />
 
       <Header />
 
-      {/* Hero Banner Section */}
-      <div className="relative w-full overflow-hidden bg-[#182C27]">
-        <div className="w-full h-80 sm:h-96 md:h-[440px] lg:h-[480px]">
-          <img
-            src={coverImage}
-            alt={article.image?.altText || article.title}
-            className="w-full h-full object-cover opacity-80"
-          />
+      <EditorialHero
+        className="mt-24"
+        image={coverImage}
+        alt={article.image?.altText || article.title}
+        eyebrow={`LUCISSI CARE JOURNAL · ${categoryName}`}
+        title={article.title}
+        description={article.excerpt || ''}
+      >
+        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-[#5B3D48]/15 pt-4 text-sm text-[#655859]">
+          <span>{readMinutes} 分鐘閱讀</span>
+          <span aria-hidden="true">·</span>
+          <span>{displayDate}</span>
+          <span>{article.author || 'SAENGAK 編輯團隊'}</span>
         </div>
-
-        <div className="absolute inset-0 bg-gradient-to-t from-[#112420] via-[#112420]/50 to-transparent flex items-end">
-          <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 pb-10 md:pb-14">
-            <div className="max-w-4xl text-white">
-              <div className="flex flex-wrap items-center gap-3 mb-4">
-                <span className="px-3.5 py-1 text-xs font-semibold bg-[#225B4F] text-white rounded-full tracking-wide">
-                  {categoryName}
-                </span>
-                <span className="text-sm opacity-90">{readMinutes} 分鐘閱讀</span>
-                <span className="text-sm opacity-60">•</span>
-                <span className="text-sm opacity-90">{displayDate}</span>
-              </div>
-
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-bold mb-5 leading-[1.3] tracking-tight">
-                {article.title}
-              </h1>
-
-              <div className="flex flex-wrap items-center justify-between gap-4 text-sm opacity-90 pt-2 border-t border-white/15">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs">
-                    <i className="ri-user-3-line"></i>
-                  </div>
-                  <span className="font-medium">{article.author || 'SAENGAK 編輯團隊'}</span>
-                </div>
-                <span className="text-xs bg-white/15 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-white/90">
-                  SAENGAK 官方專欄
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </EditorialHero>
 
       {/* Main Content Area */}
-      <main className="page-content bg-[#FBFBFA]">
+      <main className="page-content bg-[#F8F5F1]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
           {/* Breadcrumb Navigation */}
           <nav className="flex items-center space-x-2 text-sm mb-10 text-gray-500">
-            <button onClick={() => navigate('/')} className="cursor-pointer hover:text-[#225B4F] transition-colors">
+            <button onClick={() => navigate('/')} className="cursor-pointer hover:text-[#5B3D48] transition-colors">
               首頁
             </button>
             <i className="ri-arrow-right-s-line text-gray-400"></i>
-            <button onClick={() => navigate('/community')} className="cursor-pointer hover:text-[#225B4F] transition-colors">
+            <button onClick={() => navigate('/community')} className="cursor-pointer hover:text-[#5B3D48] transition-colors">
               健康知識分享
             </button>
             <i className="ri-arrow-right-s-line text-gray-400"></i>
@@ -294,8 +270,8 @@ export default function BlogArticle() {
                     onClick={() => setIsBookmarked(!isBookmarked)}
                     className={`flex items-center space-x-2 px-4 py-2 text-sm rounded-lg transition-all cursor-pointer font-medium ${
                       isBookmarked
-                        ? 'bg-[#225B4F] text-white'
-                        : 'bg-gray-50 text-gray-700 hover:bg-[#EBF3EC] hover:text-[#225B4F]'
+                        ? 'bg-[#5B3D48] text-white'
+                        : 'bg-gray-50 text-gray-700 hover:bg-[#E7D6D4] hover:text-[#5B3D48]'
                     }`}
                   >
                     <i className={isBookmarked ? 'ri-bookmark-fill' : 'ri-bookmark-line'}></i>
@@ -306,7 +282,7 @@ export default function BlogArticle() {
                 <div className="relative">
                   <button
                     onClick={() => setShowShareMenu(!showShareMenu)}
-                    className="flex items-center space-x-2 px-4 py-2 text-sm rounded-lg bg-gray-50 text-gray-700 hover:bg-[#EBF3EC] hover:text-[#225B4F] transition-all cursor-pointer font-medium"
+                    className="flex items-center space-x-2 px-4 py-2 text-sm rounded-lg bg-gray-50 text-gray-700 hover:bg-[#E7D6D4] hover:text-[#5B3D48] transition-all cursor-pointer font-medium"
                   >
                     <i className="ri-share-forward-line"></i>
                     <span>分享</span>
@@ -348,10 +324,10 @@ export default function BlogArticle() {
               </div>
 
               {/* 嚴格法規與非醫療宣稱免責警語 */}
-              <div className="mb-10 p-5 rounded-xl border border-emerald-200/80 bg-emerald-50/50 text-sm leading-relaxed text-emerald-950 flex items-start space-x-3.5">
-                <i className="ri-information-line text-emerald-700 text-xl flex-shrink-0 mt-0.5"></i>
+              <div className="mb-10 p-5 rounded-xl border border-blush/80 bg-blush/50 text-sm leading-relaxed text-emerald-950 flex items-start space-x-3.5">
+                <i className="ri-information-line text-brand text-xl flex-shrink-0 mt-0.5"></i>
                 <div>
-                  <strong className="text-emerald-900 font-semibold block mb-0.5">日常衛教與生活保養說明</strong>
+                  <strong className="text-brand font-semibold block mb-0.5">日常衛教與生活保養說明</strong>
                   本專欄內容為日常衛生清潔習慣與一般生活保養分享，不具備任何醫療與診斷意圖。如有任何個人健康或身體不適疑慮，請儘速諮詢合格婦產科專科醫師。
                 </div>
               </div>
@@ -370,7 +346,7 @@ export default function BlogArticle() {
                     {article.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="px-3.5 py-1.5 text-xs font-medium bg-[#F2F5F3] text-[#225B4F] rounded-full hover:bg-[#225B4F] hover:text-white transition-all cursor-pointer"
+                        className="px-3.5 py-1.5 text-xs font-medium bg-[#E7D6D4] text-[#5B3D48] rounded-full hover:bg-[#5B3D48] hover:text-white transition-all cursor-pointer"
                         onClick={() => navigate('/community')}
                       >
                         #{tag}
@@ -381,14 +357,14 @@ export default function BlogArticle() {
               )}
 
               {/* 作者與編輯承諾區塊 */}
-              <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-[#F7F9F8] border border-emerald-900/10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-[#225B4F] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+              <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-[#F8F5F1] border border-brand/10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                <div className="w-14 h-14 rounded-2xl bg-[#5B3D48] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                   <i className="ri-leaf-line text-2xl"></i>
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1.5">
                     <h4 className="text-base font-bold text-gray-900">{article.author || 'SAENGAK 編輯團隊'}</h4>
-                    <span className="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-medium">
+                    <span className="text-xs bg-blush text-brand px-2.5 py-0.5 rounded-full font-medium">
                       內容審核
                     </span>
                   </div>
@@ -405,17 +381,17 @@ export default function BlogArticle() {
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/90">
                 <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-100">
                   <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                    <i className="ri-flashlight-line text-[#225B4F] text-lg"></i>
+                    <i className="ri-flashlight-line text-[#5B3D48] text-lg"></i>
                     本篇核心速讀
                   </h3>
-                  <span className="text-xs text-[#225B4F] bg-[#EBF3EC] px-2.5 py-1 rounded-full font-medium">
+                  <span className="text-xs text-[#5B3D48] bg-[#E7D6D4] px-2.5 py-1 rounded-full font-medium">
                     重點整理
                   </span>
                 </div>
                 <div className="space-y-3.5">
                   {keyHighlights.map((item, idx) => (
                     <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-gray-50/80 transition-colors">
-                      <div className="w-8 h-8 rounded-lg bg-[#EBF3EC] text-[#225B4F] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-8 h-8 rounded-lg bg-[#E7D6D4] text-[#5B3D48] flex items-center justify-center flex-shrink-0 mt-0.5">
                         <i className={`${item.icon} text-base`}></i>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -432,7 +408,7 @@ export default function BlogArticle() {
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/90">
                   <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-100">
                     <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                      <i className="ri-list-check text-[#225B4F] text-lg"></i>
+                      <i className="ri-list-check text-[#5B3D48] text-lg"></i>
                       文章章節目錄
                     </h3>
                     <span className="text-xs text-gray-400 font-normal">
@@ -450,14 +426,14 @@ export default function BlogArticle() {
                             item.level === 3 ? 'pl-6 text-gray-500' : 'font-medium text-gray-700'
                           } ${
                             isActive
-                              ? 'bg-[#EBF3EC] text-[#225B4F] font-bold border-l-2 border-[#225B4F]'
+                              ? 'bg-[#E7D6D4] text-[#5B3D48] font-bold border-l-2 border-[#5B3D48]'
                               : 'hover:bg-gray-50 hover:text-gray-900'
                           }`}
                         >
                           <i
                             className={`text-xs ${
                               isActive
-                                ? 'ri-arrow-right-s-fill text-[#225B4F]'
+                                ? 'ri-arrow-right-s-fill text-[#5B3D48]'
                                 : 'ri-checkbox-blank-circle-line text-gray-300'
                             }`}
                           ></i>
@@ -473,7 +449,7 @@ export default function BlogArticle() {
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/90">
                 <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-100">
                   <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                    <i className="ri-heart-3-line text-[#225B4F] text-lg"></i>
+                    <i className="ri-heart-3-line text-[#5B3D48] text-lg"></i>
                     推薦日常護理
                   </h3>
                   <span className="text-xs text-gray-400 font-normal">編輯推薦</span>
@@ -493,11 +469,11 @@ export default function BlogArticle() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-[#225B4F] transition-colors mb-1">
+                        <h4 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-[#5B3D48] transition-colors mb-1">
                           {product.name}
                         </h4>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-xs text-[#225B4F]">{formatTwd(product.price)}</span>
+                          <span className="font-bold text-xs text-[#5B3D48]">{formatTwd(product.price)}</span>
                           {product.originalPrice && product.originalPrice > product.price && (
                             <span className="text-[10px] line-through text-gray-400">{formatTwd(product.originalPrice)}</span>
                           )}
@@ -513,7 +489,7 @@ export default function BlogArticle() {
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/90">
                   <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-100">
                     <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                      <i className="ri-book-open-line text-[#225B4F] text-lg"></i>
+                      <i className="ri-book-open-line text-[#5B3D48] text-lg"></i>
                       更多精選專欄
                     </h3>
                   </div>
@@ -526,16 +502,16 @@ export default function BlogArticle() {
                       >
                         <div className="w-16 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                           <img
-                            src={related.image?.url || '/images/blog/daily-feminine-care-guide.jpg'}
+                            src={editorialImage(related.handle, related.image?.url)}
                             alt={related.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <span className="text-[10px] font-bold text-[#225B4F] uppercase tracking-wider block mb-0.5">
+                          <span className="text-[10px] font-bold text-[#5B3D48] uppercase tracking-wider block mb-0.5">
                             {related.tags && related.tags.length > 0 ? related.tags[0] : '專欄'}
                           </span>
-                          <h4 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-[#225B4F] transition-colors">
+                          <h4 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-[#5B3D48] transition-colors">
                             {related.title}
                           </h4>
                         </div>
@@ -551,14 +527,14 @@ export default function BlogArticle() {
           <div className="flex items-center justify-between mt-14 pt-8 border-t border-gray-200">
             <button
               onClick={() => navigate('/community')}
-              className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-[#225B4F] transition-colors cursor-pointer bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:shadow"
+              className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-[#5B3D48] transition-colors cursor-pointer bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:shadow"
             >
               <i className="ri-arrow-left-line mr-2 text-base"></i>
               返回健康知識社群
             </button>
             <button
               onClick={() => navigate('/')}
-              className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-[#225B4F] transition-colors cursor-pointer bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:shadow"
+              className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-[#5B3D48] transition-colors cursor-pointer bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:shadow"
             >
               回首頁探索目錄
               <i className="ri-arrow-right-line ml-2 text-base"></i>

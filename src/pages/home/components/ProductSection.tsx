@@ -172,7 +172,7 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
               <p className="text-gray-400 text-sm mb-4">請檢查網絡連接或稍後再試</p>
               <button
                 onClick={handleRefresh}
-                className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition-colors"
+                className="px-4 py-2 bg-brand text-white rounded hover:bg-brand transition-colors"
               >
                 重新載入
               </button>

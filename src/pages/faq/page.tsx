@@ -1,3 +1,4 @@
+import EditorialHero from '../../components/feature/EditorialHero';
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -116,40 +117,34 @@ export default function FAQPage() {
   });
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+    <div className="min-h-screen bg-ivory" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
       <Header />
       
-      {/* Hero Section */}
-      <div 
-        className="relative pt-32 pb-20 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `linear-gradient(rgba(34, 91, 79, 0.8), rgba(36, 91, 79, 0.8)), url('https://readdy.ai/api/search-image?query=Professional%20customer%20service%20representative%20helping%20customers%20with%20questions%20in%20modern%20office%20environment%2C%20clean%20minimalist%20design%2C%20soft%20natural%20lighting%2C%20business%20consultation%20atmosphere%2C%20professional%20photography%20style&width=1920&height=600&seq=faq-hero-bg&orientation=landscape')`
-        }}
+      <EditorialHero
+        className="mt-24"
+        image="/images/lucissi-v5/faq-hero.webp"
+        alt="備有筆記與耳機的日常客服工作桌"
+        eyebrow="LUCISSI CARE · HERE TO HELP"
+        title="常見問題"
+        description="快速找到您需要的答案，我們整理了最常見的問題與解答"
       >
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold text-white mb-6">常見問題</h1>
-          <p className="text-xl text-white/90 mb-8">快速找到您需要的答案，我們整理了最常見的問題與解答</p>
-          
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="搜尋問題關鍵字..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-6 py-4 text-lg border-0 bg-white/95 backdrop-blur-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50"
-              />
-              <i className="ri-search-line absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"></i>
-            </div>
-          </div>
+        <div className="relative mt-7">
+          <input
+            type="text"
+            aria-label="搜尋常見問題"
+            placeholder="搜尋問題關鍵字..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full border border-[#5B3D48]/20 bg-white px-5 py-4 pr-12 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#5B3D48]/30"
+          />
+          <i className="ri-search-line absolute right-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
         </div>
-      </div>
+      </EditorialHero>
 
       <main className="pb-16">
         <div className="max-w-6xl mx-auto px-4">
           {/* Category Filter */}
-          <div className="bg-white shadow-lg -mt-10 relative z-10 mb-12 overflow-hidden">
+          <div className="bg-white shadow-lg mt-8 relative z-10 mb-12 overflow-hidden">
             <div className="p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">問題分類</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
@@ -159,7 +154,7 @@ export default function FAQPage() {
                     onClick={() => setActiveCategory(category.id)}
                     className={`p-4 text-center transition-all duration-200 ${
                       activeCategory === category.id
-                        ? 'bg-teal-600 text-white'
+                        ? 'bg-brand text-white'
                         : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                     }`}
                   >
@@ -181,7 +176,7 @@ export default function FAQPage() {
                     className="w-full px-6 py-5 text-left hover:bg-gray-50 transition-colors flex items-center justify-between"
                   >
                     <div className="flex items-center">
-                      <div className="w-8 h-8 bg-teal-100 text-teal-600 flex items-center justify-center mr-4 font-bold text-sm">
+                      <div className="w-8 h-8 bg-blush text-brand flex items-center justify-center mr-4 font-bold text-sm">
                         Q
                       </div>
                       <h3 className="text-lg font-semibold text-gray-900">{item.question}</h3>
@@ -223,7 +218,7 @@ export default function FAQPage() {
               <i className="ri-information-line text-3xl text-amber-600 mb-4"></i>
               <h3 className="font-semibold text-gray-900 mb-2">正式客服管道確認中</h3>
               <p className="text-gray-600 text-sm mb-5">本站不顯示示範電話、跨品牌信箱或未啟用的即時聊天。</p>
-              <Link to="/customer-service" className="inline-block bg-teal-700 text-white px-5 py-3 hover:bg-teal-800 transition-colors text-sm">
+              <Link to="/customer-service" className="inline-block bg-brand text-white px-5 py-3 hover:bg-brand transition-colors text-sm">
                 查看客服狀態
               </Link>
             </div>

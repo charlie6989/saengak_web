@@ -137,6 +137,8 @@ export async function POST(request: Request): Promise<Response> {
             badge_text: dbPromo.badge_text ?? undefined,
             image_url: dbPromo.image_url ?? undefined,
             is_active: dbPromo.is_active,
+            is_exhausted: dbPromo.usage_limit != null
+              && Number(dbPromo.async_usage_count ?? 0) >= Number(dbPromo.usage_limit),
             applies_once_per_customer: dbPromo.applies_once_per_customer ?? true,
             usage_limit: dbPromo.usage_limit ?? null,
             async_usage_count: dbPromo.async_usage_count ?? 0,

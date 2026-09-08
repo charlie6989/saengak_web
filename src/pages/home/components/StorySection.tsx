@@ -8,7 +8,7 @@ export default function StorySection() {
         {/* 標題區域 */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4" style={{ fontFamily: '"Noto Sans TC", sans-serif' }}>
-            SAENGAK Talk｜私密對話
+            LUCISSI Talk｜私密對話
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed" style={{ fontFamily: '"Noto Sans TC", sans-serif' }}>
             談身體，也談心
@@ -49,18 +49,18 @@ export default function StorySection() {
                 className="inline-flex items-center justify-center px-8 py-3 font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap border"
                 style={{ 
                   fontFamily: "Noto Sans TC, sans-serif",
-                  backgroundColor: '#225B4F',
-                  color: '#FFFFFF',
-                  borderColor: '#225B4F',
+                  backgroundColor: '#5B3D48',
+                  color: '#FFFDFC',
+                  borderColor: '#5B3D48',
                   fontSize: '16px'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#1a4a3f';
-                  e.currentTarget.style.borderColor = '#1a4a3f';
+                  e.currentTarget.style.backgroundColor = '#48303A';
+                  e.currentTarget.style.borderColor = '#48303A';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#225B4F';
-                  e.currentTarget.style.borderColor = '#225B4F';
+                  e.currentTarget.style.backgroundColor = '#5B3D48';
+                  e.currentTarget.style.borderColor = '#5B3D48';
                 }}
               >
                 了解更多健康知識
@@ -74,8 +74,8 @@ export default function StorySection() {
         <div className="mt-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: '#EBF3EC' }}>
-                <i className="ri-heart-line text-2xl" style={{ color: '#225B4F' }}></i>
+              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: '#E7D6D4' }}>
+                <i className="ri-heart-line text-2xl" style={{ color: '#5B3D48' }}></i>
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 用心關懷
@@ -86,8 +86,8 @@ export default function StorySection() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: '#EBF3EC' }}>
-                <i className="ri-leaf-line text-2xl" style={{ color: '#225B4F' }}></i>
+              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: '#E7D6D4' }}>
+                <i className="ri-leaf-line text-2xl" style={{ color: '#5B3D48' }}></i>
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 成分透明
@@ -98,8 +98,8 @@ export default function StorySection() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: '#EBF3EC' }}>
-                <i className="ri-award-line text-2xl" style={{ color: '#225B4F' }}></i>
+              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: '#E7D6D4' }}>
+                <i className="ri-award-line text-2xl" style={{ color: '#5B3D48' }}></i>
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 資料審核

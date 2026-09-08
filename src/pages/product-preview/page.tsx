@@ -365,7 +365,7 @@ export default function ProductPreviewPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F7F7F5' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#F8F5F1' }}>
       <Header />
 
       <main className="mx-auto max-w-[1280px] px-4 pb-16 pt-[108px] sm:pt-[116px] md:pt-[124px] lg:pt-[132px]">
@@ -426,7 +426,7 @@ export default function ProductPreviewPage() {
                             aria-label={`切換至第 ${idx + 1} 張圖片`}
                             className={`block w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer ${
                               isSelected
-                                ? 'border-[#245B50] ring-1 ring-[#245B50] shadow-xs'
+                                ? 'border-[#5B3D48] ring-1 ring-[#5B3D48] shadow-xs'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
                             }`}
                           >
@@ -477,7 +477,7 @@ export default function ProductPreviewPage() {
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F7F7F5] shadow-xs"
+                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F8F5F1] shadow-xs"
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -538,7 +538,7 @@ export default function ProductPreviewPage() {
           <aside className="min-w-0 w-full space-y-6">
             {/* 1. 商品類別 (實心淡雅底色標籤) */}
             <div>
-              <span className="inline-block bg-[#E3EFEA] text-[#245B50] px-3 py-1 text-xs sm:text-sm font-bold rounded-md tracking-wider">
+              <span className="inline-block bg-[#E7D6D4] text-[#5B3D48] px-3 py-1 text-xs sm:text-sm font-bold rounded-md tracking-wider">
                 {product.category}
               </span>
             </div>
@@ -559,19 +559,19 @@ export default function ProductPreviewPage() {
                 原價 {formatTwd(product.originalPrice)}
               </div>
               <div className="flex items-baseline gap-3">
-                <span className="text-2xl font-extrabold text-[#245B50]">
+                <span className="text-2xl font-extrabold text-[#5B3D48]">
                   -{product.discountPercentage}%
                 </span>
                 <span className="text-3xl sm:text-4xl font-black text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                   {formatTwd(product.price)}
                 </span>
-                <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full ml-1">
+                <span className="text-xs bg-blush text-brand font-semibold px-2 py-0.5 rounded-full ml-1">
                   現省 NT$ {product.originalPrice - product.price}
                 </span>
               </div>
 
               {product.promotionBadge && (
-                <div className="pt-1.5 flex items-center gap-1.5 text-xs text-[#245B50] font-medium">
+                <div className="pt-1.5 flex items-center gap-1.5 text-xs text-[#5B3D48] font-medium">
                   <i className="ri-gift-line"></i>
                   <span>{product.promotionBadge}</span>
                 </div>
@@ -584,7 +584,7 @@ export default function ProductPreviewPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium text-gray-800">容量規格：</span>
-                  <span className="text-[#245B50] font-semibold text-xs">{selectedOption1}</span>
+                  <span className="text-[#5B3D48] font-semibold text-xs">{selectedOption1}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {product.options[0].values.map((val) => {
@@ -596,8 +596,8 @@ export default function ProductPreviewPage() {
                         onClick={() => setSelectedOption1(val)}
                         className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-[#245B50] text-white shadow-xs ring-2 ring-[#245B50] ring-offset-1'
-                            : 'bg-white text-gray-700 border border-gray-300 hover:border-[#245B50] hover:bg-emerald-50/40'
+                            ? 'bg-[#5B3D48] text-white shadow-xs ring-2 ring-[#5B3D48] ring-offset-1'
+                            : 'bg-white text-gray-700 border border-gray-300 hover:border-[#5B3D48] hover:bg-blush/40'
                         }`}
                       >
                         {val}
@@ -611,7 +611,7 @@ export default function ProductPreviewPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium text-gray-800">香氛類型：</span>
-                  <span className="text-[#245B50] font-semibold text-xs">{selectedOption2}</span>
+                  <span className="text-[#5B3D48] font-semibold text-xs">{selectedOption2}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {product.options[1].values.map((val) => {
@@ -623,8 +623,8 @@ export default function ProductPreviewPage() {
                         onClick={() => setSelectedOption2(val)}
                         className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-[#245B50] text-white shadow-xs ring-2 ring-[#245B50] ring-offset-1'
-                            : 'bg-white text-gray-700 border border-gray-300 hover:border-[#245B50] hover:bg-emerald-50/40'
+                            ? 'bg-[#5B3D48] text-white shadow-xs ring-2 ring-[#5B3D48] ring-offset-1'
+                            : 'bg-white text-gray-700 border border-gray-300 hover:border-[#5B3D48] hover:bg-blush/40'
                         }`}
                       >
                         {val}
@@ -643,8 +643,8 @@ export default function ProductPreviewPage() {
               <ul className="space-y-2">
                 {product.highlights.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm leading-relaxed text-gray-700">
-                    <span className="flex-shrink-0 text-[#245B50] mt-0.5" aria-hidden="true">
-                      <svg className="w-4 h-4 text-[#245B50]" viewBox="0 0 20 20" fill="currentColor">
+                    <span className="flex-shrink-0 text-[#5B3D48] mt-0.5" aria-hidden="true">
+                      <svg className="w-4 h-4 text-[#5B3D48]" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     </span>
@@ -682,14 +682,14 @@ export default function ProductPreviewPage() {
               <div className="flex gap-3 pt-1">
                 <button
                   type="button"
-                  className="flex-1 h-12 border-2 border-[#245B50] text-[#245B50] hover:bg-emerald-50/60 font-semibold rounded-xl shadow-2xs transition-all cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2 bg-white"
+                  className="flex-1 h-12 border-2 border-[#5B3D48] text-[#5B3D48] hover:bg-blush/60 font-semibold rounded-xl shadow-2xs transition-all cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2 bg-white"
                 >
                   <i className="ri-shopping-bag-line text-lg"></i>
                   加入購物車
                 </button>
                 <button
                   type="button"
-                  className="flex-1 h-12 bg-[#245B50] hover:bg-[#1a4239] text-white font-semibold rounded-xl shadow-xs transition-all cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2"
+                  className="flex-1 h-12 bg-[#5B3D48] hover:bg-[#48303A] text-white font-semibold rounded-xl shadow-xs transition-all cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2"
                 >
                   <i className="ri-flashlight-fill text-lg"></i>
                   立即購買
@@ -699,15 +699,15 @@ export default function ProductPreviewPage() {
               {/* 官方保證小標籤 */}
               <div className="pt-2 flex items-center justify-between text-xs text-gray-500">
                 <div className="flex items-center gap-1.5">
-                  <i className="ri-shield-check-line text-[#245B50]"></i>
+                  <i className="ri-shield-check-line text-[#5B3D48]"></i>
                   <span>正品原廠保證</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <i className="ri-truck-line text-[#245B50]"></i>
+                  <i className="ri-truck-line text-[#5B3D48]"></i>
                   <span>超商 / 宅配 快速出貨</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <i className="ri-refresh-line text-[#245B50]"></i>
+                  <i className="ri-refresh-line text-[#5B3D48]"></i>
                   <span>7 天安心鑑賞期</span>
                 </div>
               </div>
@@ -789,7 +789,7 @@ export default function ProductPreviewPage() {
                           </span>
                         </div>
                         <div className="w-full md:w-1/2 space-y-3 text-left">
-                          <span className="text-xs font-bold text-[#245B50] tracking-widest uppercase">
+                          <span className="text-xs font-bold text-[#5B3D48] tracking-widest uppercase">
                             Lifestyle & Feature
                           </span>
                           <h3 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
@@ -805,7 +805,7 @@ export default function ProductPreviewPage() {
 
                   {/* 2. 商品其他功能與細節圖片 (包含尺寸、功能等) */}
                   <div className="space-y-6">
-                    <div className="border-l-4 border-[#245B50] pl-3">
+                    <div className="border-l-4 border-[#5B3D48] pl-3">
                       <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                         商品其他功能與細節圖片
                       </h3>
@@ -824,7 +824,7 @@ export default function ProductPreviewPage() {
                           />
                         </div>
                         <div className="p-5 space-y-1.5">
-                          <span className="text-xs font-bold text-[#245B50]">質地與吸收</span>
+                          <span className="text-xs font-bold text-[#5B3D48]">質地與吸收</span>
                           <h4 className="text-base font-bold text-gray-900">極致水感凝露・深層滋潤不黏膩</h4>
                           <p className="text-xs text-gray-600 leading-relaxed">輕透水潤質地，觸膚即化，快速形成透氣保濕鎖水屏障，維持全天候清新舒適。</p>
                         </div>
@@ -841,7 +841,7 @@ export default function ProductPreviewPage() {
                           />
                         </div>
                         <div className="p-5 space-y-1.5">
-                          <span className="text-xs font-bold text-[#245B50]">瓶器與包裝工藝</span>
+                          <span className="text-xs font-bold text-[#5B3D48]">瓶器與包裝工藝</span>
                           <h4 className="text-base font-bold text-gray-900">按壓式定量壓頭・隔絕空氣無菌保鮮</h4>
                           <p className="text-xs text-gray-600 leading-relaxed">特殊氣密式瓶器設計，防止外界水氣與空氣回流，確保每滴成分活性長效新鮮。</p>
                         </div>
@@ -853,7 +853,7 @@ export default function ProductPreviewPage() {
                   <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
                     <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                       <div className="flex items-center gap-2.5">
-                        <i className="ri-dashboard-line text-xl text-[#245B50]"></i>
+                        <i className="ri-dashboard-line text-xl text-[#5B3D48]"></i>
                         <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                           版型與著感指標 (Fit & Feeling Guide)
                         </h3>
@@ -866,11 +866,11 @@ export default function ProductPreviewPage() {
                       <div className="space-y-2">
                         <div className="flex justify-between text-xs font-semibold text-gray-700">
                           <span>版型 (Fit)</span>
-                          <span className="text-[#245B50]">合身 (Regular Fit)</span>
+                          <span className="text-[#5B3D48]">合身 (Regular Fit)</span>
                         </div>
                         <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
                           <div className="py-2 rounded-lg bg-gray-100 text-gray-400">緊身 (Slim)</div>
-                          <div className="py-2 rounded-lg bg-[#245B50] text-white font-bold shadow-xs">合身 (Regular)</div>
+                          <div className="py-2 rounded-lg bg-[#5B3D48] text-white font-bold shadow-xs">合身 (Regular)</div>
                           <div className="py-2 rounded-lg bg-gray-100 text-gray-400">寬鬆 (Oversized)</div>
                         </div>
                       </div>
@@ -879,11 +879,11 @@ export default function ProductPreviewPage() {
                       <div className="space-y-2">
                         <div className="flex justify-between text-xs font-semibold text-gray-700">
                           <span>厚度 (Thickness)</span>
-                          <span className="text-[#245B50]">適中 (Moderate)</span>
+                          <span className="text-[#5B3D48]">適中 (Moderate)</span>
                         </div>
                         <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
                           <div className="py-2 rounded-lg bg-gray-100 text-gray-400">輕薄 (Light)</div>
-                          <div className="py-2 rounded-lg bg-[#245B50] text-white font-bold shadow-xs">適中 (Moderate)</div>
+                          <div className="py-2 rounded-lg bg-[#5B3D48] text-white font-bold shadow-xs">適中 (Moderate)</div>
                           <div className="py-2 rounded-lg bg-gray-100 text-gray-400">厚實 (Heavy)</div>
                         </div>
                       </div>
@@ -892,12 +892,12 @@ export default function ProductPreviewPage() {
                       <div className="space-y-2">
                         <div className="flex justify-between text-xs font-semibold text-gray-700">
                           <span>彈性 (Elasticity)</span>
-                          <span className="text-[#245B50]">彈性良好 (High)</span>
+                          <span className="text-[#5B3D48]">彈性良好 (High)</span>
                         </div>
                         <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
                           <div className="py-2 rounded-lg bg-gray-100 text-gray-400">無彈性 (None)</div>
                           <div className="py-2 rounded-lg bg-gray-100 text-gray-400">微彈 (Slight)</div>
-                          <div className="py-2 rounded-lg bg-[#245B50] text-white font-bold shadow-xs">良好 (High)</div>
+                          <div className="py-2 rounded-lg bg-[#5B3D48] text-white font-bold shadow-xs">良好 (High)</div>
                         </div>
                       </div>
 
@@ -905,10 +905,10 @@ export default function ProductPreviewPage() {
                       <div className="space-y-2">
                         <div className="flex justify-between text-xs font-semibold text-gray-700">
                           <span>透膚度 (Sheerness)</span>
-                          <span className="text-[#245B50]">不透 (Opaque)</span>
+                          <span className="text-[#5B3D48]">不透 (Opaque)</span>
                         </div>
                         <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                          <div className="py-2 rounded-lg bg-[#245B50] text-white font-bold shadow-xs">不透 (Opaque)</div>
+                          <div className="py-2 rounded-lg bg-[#5B3D48] text-white font-bold shadow-xs">不透 (Opaque)</div>
                           <div className="py-2 rounded-lg bg-gray-100 text-gray-400">微透 (Slight)</div>
                           <div className="py-2 rounded-lg bg-gray-100 text-gray-400">透膚 (Sheer)</div>
                         </div>
@@ -966,22 +966,22 @@ export default function ProductPreviewPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                          <tr className="hover:bg-emerald-50/30 transition-colors">
-                            <td className="px-5 py-4 font-bold text-[#245B50]">S (01)</td>
+                          <tr className="hover:bg-blush/30 transition-colors">
+                            <td className="px-5 py-4 font-bold text-[#5B3D48]">S (01)</td>
                             <td className="px-5 py-4">{sizeUnit === 'cm' ? '68.0' : '26.7'}</td>
                             <td className="px-5 py-4">{sizeUnit === 'cm' ? '50.0' : '19.6'}</td>
                             <td className="px-5 py-4">{sizeUnit === 'cm' ? '54.0' : '21.2'}</td>
                             <td className="px-5 py-4 text-xs text-gray-600">155 ~ 165 cm / 45 ~ 55 kg</td>
                           </tr>
-                          <tr className="hover:bg-emerald-50/30 transition-colors bg-gray-50/40">
-                            <td className="px-5 py-4 font-bold text-[#245B50]">M (02)</td>
+                          <tr className="hover:bg-blush/30 transition-colors bg-gray-50/40">
+                            <td className="px-5 py-4 font-bold text-[#5B3D48]">M (02)</td>
                             <td className="px-5 py-4">{sizeUnit === 'cm' ? '71.0' : '27.9'}</td>
                             <td className="px-5 py-4">{sizeUnit === 'cm' ? '52.5' : '20.6'}</td>
                             <td className="px-5 py-4">{sizeUnit === 'cm' ? '56.5' : '22.2'}</td>
                             <td className="px-5 py-4 text-xs text-gray-600">165 ~ 175 cm / 55 ~ 68 kg</td>
                           </tr>
-                          <tr className="hover:bg-emerald-50/30 transition-colors">
-                            <td className="px-5 py-4 font-bold text-[#245B50]">L (03)</td>
+                          <tr className="hover:bg-blush/30 transition-colors">
+                            <td className="px-5 py-4 font-bold text-[#5B3D48]">L (03)</td>
                             <td className="px-5 py-4">{sizeUnit === 'cm' ? '74.0' : '29.1'}</td>
                             <td className="px-5 py-4">{sizeUnit === 'cm' ? '55.0' : '21.6'}</td>
                             <td className="px-5 py-4">{sizeUnit === 'cm' ? '59.0' : '23.2'}</td>
@@ -1030,19 +1030,19 @@ export default function ProductPreviewPage() {
                       </h4>
                       <div className="space-y-3 text-xs sm:text-sm text-gray-600">
                         <div className="flex items-start gap-2.5">
-                          <i className="ri-hand-sanitizer-line text-[#245B50] text-base mt-0.5"></i>
+                          <i className="ri-hand-sanitizer-line text-[#5B3D48] text-base mt-0.5"></i>
                           <span>建議使用 30°C 以下冷水手洗或放入洗衣袋慢速弱洗。</span>
                         </div>
                         <div className="flex items-start gap-2.5">
-                          <i className="ri-sun-line text-[#245B50] text-base mt-0.5"></i>
+                          <i className="ri-sun-line text-[#5B3D48] text-base mt-0.5"></i>
                           <span>請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬。</span>
                         </div>
                         <div className="flex items-start gap-2.5">
-                          <i className="ri-prohibited-line text-[#245B50] text-base mt-0.5"></i>
+                          <i className="ri-prohibited-line text-[#5B3D48] text-base mt-0.5"></i>
                           <span>請勿使用含漂白成分或螢光劑之強效洗劑，切勿高溫烘乾。</span>
                         </div>
                         <div className="flex items-start gap-2.5">
-                          <i className="ri-t-shirt-air-line text-[#245B50] text-base mt-0.5"></i>
+                          <i className="ri-t-shirt-air-line text-[#5B3D48] text-base mt-0.5"></i>
                           <span>深淺色衣物請分開洗滌，避免互染。</span>
                         </div>
                       </div>
@@ -1122,7 +1122,7 @@ export default function ProductPreviewPage() {
                           }}
                         >
                           {/* 3:4 直長型長方形圖片 (對齊第 1 版規格) */}
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#F5F5F3]">
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#F8F5F1]">
                             <img
                               src={item.image}
                               alt={item.name}
@@ -1137,7 +1137,7 @@ export default function ProductPreviewPage() {
                                   e.stopPropagation();
                                   window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }}
-                                className="w-full py-2.5 bg-white/95 hover:bg-[#245B50] hover:text-white text-gray-900 text-xs sm:text-sm font-medium shadow-sm transition-all text-center cursor-pointer"
+                                className="w-full py-2.5 bg-white/95 hover:bg-[#5B3D48] hover:text-white text-gray-900 text-xs sm:text-sm font-medium shadow-sm transition-all text-center cursor-pointer"
                                 style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
                               >
                                 查看商品
@@ -1174,7 +1174,7 @@ export default function ProductPreviewPage() {
 
                             {/* 商品名稱 */}
                             <h4
-                              className="font-bold text-gray-900 text-sm sm:text-base group-hover:text-[#245B50] transition-colors line-clamp-1"
+                              className="font-bold text-gray-900 text-sm sm:text-base group-hover:text-[#5B3D48] transition-colors line-clamp-1"
                               style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
                             >
                               {item.name}
@@ -1194,7 +1194,7 @@ export default function ProductPreviewPage() {
                               )}
                               <div className="flex items-baseline gap-2">
                                 {item.discountPercentage && (
-                                  <span className="text-sm font-bold text-[#245B50]">
+                                  <span className="text-sm font-bold text-[#5B3D48]">
                                     -{item.discountPercentage}%
                                   </span>
                                 )}
@@ -1223,8 +1223,8 @@ export default function ProductPreviewPage() {
                     </h3>
 
                     {showSuccessNotice && (
-                      <div className="p-3.5 bg-emerald-50 text-[#245B50] text-xs font-semibold rounded-xl border border-emerald-200 flex items-center gap-2 animate-fadeIn">
-                        <i className="ri-checkbox-circle-fill text-base text-emerald-600"></i>
+                      <div className="p-3.5 bg-blush text-[#5B3D48] text-xs font-semibold rounded-xl border border-blush flex items-center gap-2 animate-fadeIn">
+                        <i className="ri-checkbox-circle-fill text-base text-brand"></i>
                         <span>提問已成功送出！客服人員將於 24 小時內回覆並公開於下方列表。</span>
                       </div>
                     )}
@@ -1236,7 +1236,7 @@ export default function ProductPreviewPage() {
                             您的問題
                           </label>
                           <span className="text-[11px] text-gray-400 flex items-center gap-1">
-                            <i className="ri-shield-user-line text-[#245B50]"></i>
+                            <i className="ri-shield-user-line text-[#5B3D48]"></i>
                             <span>為保護隱私，提問將以部分遮蔽之 Email 帳號公開</span>
                           </span>
                         </div>
@@ -1245,14 +1245,14 @@ export default function ProductPreviewPage() {
                           value={questionInput}
                           onChange={(e) => setQuestionInput(e.target.value)}
                           placeholder="在此輸入您的問題..."
-                          className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:border-[#245B50] focus:ring-1 focus:ring-[#245B50] focus:outline-none bg-white placeholder-gray-400 resize-none transition-all shadow-2xs"
+                          className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:border-[#5B3D48] focus:ring-1 focus:ring-[#5B3D48] focus:outline-none bg-white placeholder-gray-400 resize-none transition-all shadow-2xs"
                         />
                       </div>
 
                       <button
                         type="submit"
                         disabled={!questionInput.trim()}
-                        className="w-full py-3.5 bg-[#245B50] hover:bg-[#1a4239] text-white text-sm font-bold rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="w-full py-3.5 bg-[#5B3D48] hover:bg-[#48303A] text-white text-sm font-bold rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         提交問題
                       </button>
@@ -1271,7 +1271,7 @@ export default function ProductPreviewPage() {
                           {/* 會員資訊列 (遮蔽之 Email 與提問日期) */}
                           <div className="flex items-center justify-between text-xs text-gray-500">
                             <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-50 text-[#245B50] text-[11px]">
+                              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blush text-[#5B3D48] text-[11px]">
                                 <i className="ri-mail-line"></i>
                               </span>
                               <span className="font-mono text-gray-700 font-medium">{item.author}</span>
@@ -1293,12 +1293,12 @@ export default function ProductPreviewPage() {
                           </div>
 
                           {/* 回覆 */}
-                          <div className="flex items-start gap-3 bg-[#F9FBFA] p-3.5 rounded-xl border border-gray-100">
-                            <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-[#E3EFEA] text-[#245B50] text-xs font-bold flex-shrink-0 mt-0.5 select-none">
+                          <div className="flex items-start gap-3 bg-[#F8F5F1] p-3.5 rounded-xl border border-gray-100">
+                            <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-[#E7D6D4] text-[#5B3D48] text-xs font-bold flex-shrink-0 mt-0.5 select-none">
                               A
                             </span>
                             <div className="space-y-1">
-                              <span className="text-xs font-bold text-[#245B50]">
+                              <span className="text-xs font-bold text-[#5B3D48]">
                                 SAENGAK 官方專業團隊回覆
                               </span>
                               <p className="text-sm text-gray-600 leading-relaxed">
@@ -1314,14 +1314,14 @@ export default function ProductPreviewPage() {
                               onClick={() => handleToggleHelpful(item.id)}
                               className={`inline-flex items-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${
                                 isLiked
-                                  ? 'text-[#245B50] font-bold'
-                                  : 'text-gray-500 hover:text-[#245B50]'
+                                  ? 'text-[#5B3D48] font-bold'
+                                  : 'text-gray-500 hover:text-[#5B3D48]'
                               }`}
                             >
                               <i
                                 className={
                                   isLiked
-                                    ? 'ri-thumb-up-fill text-sm text-[#245B50]'
+                                    ? 'ri-thumb-up-fill text-sm text-[#5B3D48]'
                                     : 'ri-thumb-up-line text-sm'
                                 }
                               ></i>

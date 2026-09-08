@@ -210,7 +210,7 @@ export const AdminQA: React.FC = () => {
     switch (status) {
       case 'answered':
         return (
-          <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+          <span className="inline-flex items-center rounded-full bg-blush px-2.5 py-0.5 text-xs font-semibold text-brand border border-blush">
             ● 已回覆
           </span>
         );
@@ -267,7 +267,7 @@ export const AdminQA: React.FC = () => {
         <div
           className={`rounded-xl border p-4 text-xs font-semibold ${
             statusMessage.type === 'success'
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+              ? 'border-blush bg-blush text-brand'
               : 'border-red-200 bg-red-50 text-red-800'
           }`}
         >
@@ -286,9 +286,9 @@ export const AdminQA: React.FC = () => {
           <div className="text-xs font-medium text-amber-700">待回覆數</div>
           <div className="mt-1 text-2xl font-bold text-amber-900">{stats.pending}</div>
         </div>
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-xs">
-          <div className="text-xs font-medium text-emerald-700">已回覆數</div>
-          <div className="mt-1 text-2xl font-bold text-emerald-900">{stats.answered}</div>
+        <div className="rounded-xl border border-blush bg-blush/50 p-4 shadow-xs">
+          <div className="text-xs font-medium text-brand">已回覆數</div>
+          <div className="mt-1 text-2xl font-bold text-brand">{stats.answered}</div>
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-xs">
           <div className="text-xs font-medium text-gray-500">已隱藏數</div>
@@ -305,7 +305,7 @@ export const AdminQA: React.FC = () => {
             onClick={() => setActiveTab('all')}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
               activeTab === 'all'
-                ? 'bg-[#225B4F] text-white'
+                ? 'bg-[#5B3D48] text-white'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
             }`}
           >
@@ -327,8 +327,8 @@ export const AdminQA: React.FC = () => {
             onClick={() => setActiveTab('answered')}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
               activeTab === 'answered'
-                ? 'bg-emerald-700 text-white'
-                : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-800'
+                ? 'bg-brand text-white'
+                : 'text-gray-600 hover:bg-blush hover:text-brand'
             }`}
           >
             已回覆 ({stats.answered})
@@ -353,7 +353,7 @@ export const AdminQA: React.FC = () => {
             placeholder="搜尋提問、回答、商品 ID 或會員..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#225B4F] focus:outline-none"
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
           />
         </div>
       </div>
@@ -375,7 +375,7 @@ export const AdminQA: React.FC = () => {
               {isLoading && questions.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#225B4F]" />
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#5B3D48]" />
                     <p className="mt-2 text-xs">載入商品問答資料中...</p>
                   </td>
                 </tr>
@@ -403,8 +403,8 @@ export const AdminQA: React.FC = () => {
                           </div>
 
                           {q.answer ? (
-                            <div className="rounded-lg bg-emerald-50/70 p-3 border border-emerald-100 text-xs space-y-1">
-                              <div className="flex items-center space-x-1.5 text-emerald-800 font-bold text-[11px]">
+                            <div className="rounded-lg bg-blush/70 p-3 border border-blush text-xs space-y-1">
+                              <div className="flex items-center space-x-1.5 text-brand font-bold text-[11px]">
                                 <span>💬 SAENGAK 官方客服回覆：</span>
                               </div>
                               <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">
@@ -475,7 +475,7 @@ export const AdminQA: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleOpenReplyModal(q)}
-                            className="rounded bg-[#225B4F] px-2.5 py-1 text-xs font-medium text-white hover:bg-[#1b483f] transition-colors cursor-pointer shadow-xs"
+                            className="rounded bg-[#5B3D48] px-2.5 py-1 text-xs font-medium text-white hover:bg-[#48303A] transition-colors cursor-pointer shadow-xs"
                           >
                             {q.answer ? '✏️ 修改回覆' : '💬 撰寫回覆'}
                           </button>
@@ -551,7 +551,7 @@ export const AdminQA: React.FC = () => {
                   value={replyAnswer}
                   onChange={(e) => setReplyAnswer(e.target.value)}
                   placeholder="請輸入專業、親切的客服回覆內容..."
-                  className="w-full rounded-lg border border-gray-300 p-3 text-xs focus:border-[#225B4F] focus:outline-none resize-none leading-relaxed"
+                  className="w-full rounded-lg border border-gray-300 p-3 text-xs focus:border-[#5B3D48] focus:outline-none resize-none leading-relaxed"
                   required
                 />
               </div>
@@ -562,7 +562,7 @@ export const AdminQA: React.FC = () => {
                   id="replyIsPublicCheckbox"
                   checked={replyIsPublic}
                   onChange={(e) => setReplyIsPublic(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-[#225B4F] focus:ring-[#225B4F]"
+                  className="h-4 w-4 rounded border-gray-300 text-[#5B3D48] focus:ring-[#5B3D48]"
                 />
                 <label htmlFor="replyIsPublicCheckbox" className="text-xs text-gray-700 font-medium cursor-pointer">
                   在前台商品頁公開展示此問答回覆
@@ -580,7 +580,7 @@ export const AdminQA: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmittingReply || !replyAnswer.trim()}
-                  className="rounded-lg bg-[#225B4F] px-5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#1b483f] disabled:opacity-50 cursor-pointer"
+                  className="rounded-lg bg-[#5B3D48] px-5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#48303A] disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmittingReply ? '發布中...' : '發布客服回覆'}
                 </button>

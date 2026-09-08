@@ -157,7 +157,7 @@ export const SiteSettings: React.FC = () => {
       </div>
 
       {savedMessage && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-semibold text-emerald-800">
+        <div className="rounded-xl border border-blush bg-blush p-4 text-xs font-semibold text-brand">
           ✓ {savedMessage}
         </div>
       )}
@@ -189,7 +189,7 @@ export const SiteSettings: React.FC = () => {
                     step="50"
                     value={settings.freeShippingThreshold}
                     onChange={(e) => handleChange('freeShippingThreshold', Number(e.target.value))}
-                    className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#225B4F] focus:outline-none"
+                    className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
                   />
                 </div>
                 <p className="mt-1 text-[11px] text-gray-400">
@@ -211,7 +211,7 @@ export const SiteSettings: React.FC = () => {
                     step="10"
                     value={settings.defaultShippingFee}
                     onChange={(e) => handleChange('defaultShippingFee', Number(e.target.value))}
-                    className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#225B4F] focus:outline-none"
+                    className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
                   />
                 </div>
                 <p className="mt-1 text-[11px] text-gray-400">
@@ -229,7 +229,7 @@ export const SiteSettings: React.FC = () => {
                   max="50"
                   value={settings.lowStockThreshold}
                   onChange={(e) => handleChange('lowStockThreshold', Number(e.target.value))}
-                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#225B4F] focus:outline-none"
+                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
                 />
                 <p className="mt-1 text-[11px] text-gray-400">
                   當單一 Variant 可售庫存低於此數值時，於商品看板標註警示。
@@ -250,7 +250,7 @@ export const SiteSettings: React.FC = () => {
                   type="email"
                   value={settings.contactEmail}
                   onChange={(e) => handleChange('contactEmail', e.target.value)}
-                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#225B4F] focus:outline-none"
+                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
                 />
               </div>
               <div>
@@ -259,7 +259,7 @@ export const SiteSettings: React.FC = () => {
                   type="text"
                   value={settings.supportPhone}
                   onChange={(e) => handleChange('supportPhone', e.target.value)}
-                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#225B4F] focus:outline-none"
+                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
                 />
               </div>
             </div>
@@ -286,7 +286,7 @@ export const SiteSettings: React.FC = () => {
                     onChange={(e) => handleChange('allowProductQa', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#225B4F]"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#5B3D48]"></div>
                 </label>
               </div>
 
@@ -300,7 +300,7 @@ export const SiteSettings: React.FC = () => {
                   value={settings.lineOaUrl}
                   onChange={(e) => handleChange('lineOaUrl', e.target.value)}
                   placeholder="https://line.me/R/ti/p/@saengak"
-                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#225B4F] focus:outline-none font-mono"
+                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none font-mono"
                 />
                 <p className="mt-1 text-[11px] text-gray-400">
                   前台商品頁、客服中心與頁尾導引之官方 LINE OA 連結網址。
@@ -344,7 +344,7 @@ export const SiteSettings: React.FC = () => {
                     正式站已公開；管理員頁面仍由 Supabase Auth 與角色權限保護，不使用舊版全站測試通行碼。
                   </div>
                 </div>
-                <span className="rounded-md bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">
+                <span className="rounded-md bg-blush px-2.5 py-1 text-xs font-semibold text-brand">
                   已啟用保護
                 </span>
               </div>
@@ -384,7 +384,7 @@ export const SiteSettings: React.FC = () => {
             <button
               type="submit"
               disabled={isSaving || isLoading}
-              className="rounded-lg bg-[#225B4F] px-6 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-[#1b483f] transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-[#5B3D48] px-6 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-[#48303A] transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSaving ? '儲存中...' : '儲存營運參數'}
             </button>

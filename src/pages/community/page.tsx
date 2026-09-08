@@ -1,3 +1,5 @@
+import EditorialHero from '../../components/feature/EditorialHero';
+import { editorialImage } from '../../content/editorialImages';
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +24,7 @@ interface CommunityArticle {
   url?: string | null;
 }
 
-const editorialFallbackImage = 'https://readdy.ai/api/search-image?query=calm%20minimal%20women%20wellness%20editorial%20still%20life%20soft%20natural%20light%20green%20and%20white%20palette&width=800&height=600&seq=saengak-editorial-fallback&orientation=landscape';
+const editorialFallbackImage = '/images/lucissi-v5/thumb-standards.webp';
 
 const localArticles: CommunityArticle[] = [
   {
@@ -35,7 +37,7 @@ const localArticles: CommunityArticle[] = [
     author: 'SAENGAK 編輯團隊',
     date: '2026/9/1',
     readTime: '3 分鐘',
-    image: '/images/blog/daily-feminine-care-guide.jpg',
+    image: '/images/lucissi-v5/thumb-care.webp',
     tags: ['健康知識', '私密護理', '日常保養'],
     url: '/blog/daily-feminine-care-guide'
   },
@@ -49,7 +51,7 @@ const localArticles: CommunityArticle[] = [
     author: 'SAENGAK 編輯團隊',
     date: '2026/9/1',
     readTime: '3 分鐘',
-    image: '/images/blog/how-to-choose-seamless-underwear.jpg',
+    image: '/images/lucissi-v5/thumb-wear.webp',
     tags: ['生活美學', '選購指南', '親膚材質'],
     url: '/blog/how-to-choose-seamless-underwear'
   },
@@ -63,7 +65,7 @@ const localArticles: CommunityArticle[] = [
     author: 'SAENGAK 編輯團隊',
     date: '2026/9/1',
     readTime: '3 分鐘',
-    image: '/images/blog/how-we-review-products-and-content.jpg',
+    image: '/images/lucissi-v5/thumb-standards.webp',
     tags: ['品牌方法', '透明原則', '編輯守則'],
     url: '/blog/how-we-review-products-and-content'
   },
@@ -95,7 +97,7 @@ export default function Community() {
           author: article.author || 'SAENGAK 編輯團隊',
           date: new Date(article.publishedAt).toLocaleDateString(),
           readTime: `${estimateReadingMinutes(article.contentHtml || article.excerpt || '')} 分鐘`,
-          image: article.image?.url || '/images/blog/daily-feminine-care-guide.jpg',
+          image: editorialImage(article.handle, article.image?.url),
           tags: article.tags || [],
           handle: article.handle,
           blogHandle: article.blog?.handle,
@@ -113,32 +115,32 @@ export default function Community() {
   const instagramPosts = [
     {
       id: 1,
-      image: 'https://readdy.ai/api/search-image?query=Instagram%20style%20feminine%20care%20product%20flat%20lay%20photography%2C%20aesthetic%20pink%20and%20white%20background%2C%20Korean%20beauty%20products%20arranged%20beautifully%2C%20social%20media%20content%20style&width=400&height=400&seq=ig1&orientation=squarish',
+      image: '/images/lucissi-v5/social-daily-square.webp',
       caption: '每日護理小貼士 💕 選擇溫和的私密護理產品，讓妳每天都充滿自信！ #私密護理 #女性健康 #內心想法',
     },
     {
       id: 2,
-      image: 'https://readdy.ai/api/search-image?query=Healthy%20lifestyle%20flat%20lay%20with%20feminine%20care%20products%2C%20natural%20ingredients%2C%20wellness%20concept%2C%20Instagram%20aesthetic%20photography%2C%20clean%20minimalist%20style&width=400&height=400&seq=ig2&orientation=squarish',
+      image: '/images/lucissi-v5/social-gentle-square.webp',
       caption: '純淨植萃配方 🌿 嚴選天然溫和成分，給私密肌膚最安心無負擔的溫柔守護。 #純淨保養 #安心植萃',
     },
     {
       id: 3,
-      image: 'https://readdy.ai/api/search-image?query=Educational%20infographic%20about%20feminine%20health%20tips%2C%20modern%20design%2C%20pastel%20colors%2C%20Instagram%20post%20style%2C%20Korean%20healthcare%20education%20content&width=400&height=400&seq=ig3&orientation=squarish',
+      image: '/images/lucissi-v5/social-knowledge-square.webp',
       caption: '健康小知識分享 📚 正確的私密護理方式，讓妳遠離不適困擾 #健康教育 #護理知識',
     },
     {
       id: 4,
-      image: 'https://readdy.ai/api/search-image?query=Customer%20testimonial%20and%20review%20concept%2C%20happy%20Asian%20woman%20with%20feminine%20care%20products%2C%20authentic%20user%20experience%2C%20Instagram%20story%20style&width=400&height=400&seq=ig4&orientation=squarish',
+      image: '/images/lucissi-v5/social-listening-square.webp',
       caption: '真實愛用心得 💬 聆聽每一位使用者的真實感受，陪伴探索最舒適自信的日常。 #真實口碑 #溫柔陪伴',
     },
     {
       id: 5,
-      image: 'https://readdy.ai/api/search-image?query=Menstrual%20care%20and%20period%20comfort%20products%2C%20soft%20feminine%20colors%2C%20caring%20atmosphere%2C%20Instagram%20wellness%20content%2C%20Korean%20feminine%20care%20brand&width=400&height=400&seq=ig5&orientation=squarish',
+      image: '/images/lucissi-v5/social-period-square.webp',
       caption: '生理期護理指南 🌸 溫柔呵護每個特殊的日子，讓妳舒適度過 #生理期護理 #女性關懷',
     },
     {
       id: 6,
-      image: 'https://readdy.ai/api/search-image?query=Professional%20healthcare%20consultation%2C%20female%20doctor%20and%20patient%20discussion%2C%20medical%20advice%20about%20womens%20health%2C%20Instagram%20educational%20content&width=400&height=400&seq=ig6&orientation=squarish',
+      image: '/images/lucissi-v5/social-consult-square.webp',
       caption: '專家建議時間 👩‍⚕️ 定期諮詢專業醫師，是維護健康的重要步驟 #專家建議 #健康諮詢',
     }
   ];
@@ -166,25 +168,21 @@ export default function Community() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5]">
+    <div className="min-h-screen bg-[#F8F5F1]">
       <Header />
 
       {/* Hero Section - 手機版優化 */}
-      <section className="pt-28 md:pt-36 lg:pt-48 pb-8 md:pb-12 bg-[#F7F7F5]">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center">
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-[#000000] mb-4 md:mb-6 leading-tight">
-              健康知識分享社群
-            </h1>
-            <p className="text-base md:text-xl lg:text-2xl text-[#555555] max-w-3xl mx-auto leading-relaxed">
-              專業的私密護理知識、使用心得與健康觀念分享，讓妳在社群中獲得支持與啟發
-            </p>
-          </div>
-        </div>
-      </section>
+      <EditorialHero
+        className="mt-24"
+        image="/images/lucissi-v5/community-hero.webp"
+        alt="三位成年女性在自在的小聚中交流彼此的日常心得"
+        eyebrow="LUCISSI CARE · COMMUNITY"
+        title="健康知識分享社群"
+        description="專業的私密護理知識、使用心得與健康觀念分享，讓妳在社群中獲得支持與啟發"
+      />
 
-      <main className="page-content bg-[#F7F7F5]">
-        <section className="py-4 px-4 bg-[#F7F7F5] mt-[-1px]">
+      <main className="page-content bg-[#F8F5F1]">
+        <section className="py-4 px-4 bg-[#F8F5F1] mt-[-1px]">
           <div className="max-w-7xl mx-auto">
             {/* Tab Navigation - 手機版優化 */}
             <div className="flex items-center justify-center mb-6 md:mb-8">
@@ -196,7 +194,7 @@ export default function Community() {
                     : 'text-gray-600 hover:text-gray-900'
                     }`}
                   style={{
-                    backgroundColor: activeTab === 'blog' ? '#225B4F' : 'transparent'
+                    backgroundColor: activeTab === 'blog' ? '#5B3D48' : 'transparent'
                   }}
                 >
                   <i className="ri-article-line mr-1 md:mr-2"></i>
@@ -209,7 +207,7 @@ export default function Community() {
                     : 'text-gray-600 hover:text-gray-900'
                     }`}
                   style={{
-                    backgroundColor: activeTab === 'instagram' ? '#225B4F' : 'transparent'
+                    backgroundColor: activeTab === 'instagram' ? '#5B3D48' : 'transparent'
                   }}
                 >
                   <i className="ri-instagram-line mr-1 md:mr-2"></i>
@@ -230,14 +228,14 @@ export default function Community() {
                       placeholder="搜尋文章..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full px-4 py-3 pl-11 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="w-full px-4 py-3 pl-11 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                     />
                     <i className="ri-search-line absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-base"></i>
                   </div>
 
                   {/* Article Count */}
                   <div className="text-sm text-gray-600 text-center md:text-left">
-                    找到 <span className="font-semibold" style={{ color: '#225B4F' }}>{filteredArticles.length}</span> 篇文章
+                    找到 <span className="font-semibold" style={{ color: '#5B3D48' }}>{filteredArticles.length}</span> 篇文章
                   </div>
                 </div>
 
@@ -253,19 +251,19 @@ export default function Community() {
                           : 'bg-white text-gray-600 hover:text-white border border-gray-200'
                           }`}
                         style={{
-                          backgroundColor: (selectedTag === tag) || (selectedTag === '' && tag === '全部') ? '#225B4F' : undefined,
-                          borderColor: (selectedTag === tag) || (selectedTag === '' && tag === '全部') ? '#225B4F' : undefined
+                          backgroundColor: (selectedTag === tag) || (selectedTag === '' && tag === '全部') ? '#5B3D48' : undefined,
+                          borderColor: (selectedTag === tag) || (selectedTag === '' && tag === '全部') ? '#5B3D48' : undefined
                         }}
                         onMouseEnter={(e) => {
                           if (!((selectedTag === tag) || (selectedTag === '' && tag === '全部'))) {
-                            e.currentTarget.style.backgroundColor = '#EBF3EC';
-                            e.currentTarget.style.color = '#225B4F';
+                            e.currentTarget.style.backgroundColor = '#E7D6D4';
+                            e.currentTarget.style.color = '#5B3D48';
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (!((selectedTag === tag) || (selectedTag === '' && tag === '全部'))) {
                             e.currentTarget.style.backgroundColor = 'white';
-                            e.currentTarget.style.color = '#555555';
+                            e.currentTarget.style.color = '#655859';
                           }
                         }}
                       >
@@ -352,13 +350,13 @@ export default function Community() {
 
                         <div className="p-4 md:p-5 lg:p-6">
                           <div className="flex items-center justify-between mb-3">
-                            <span className="inline-block px-2.5 md:px-3 py-1 text-xs font-medium text-white rounded-full" style={{ backgroundColor: '#225B4F' }}>
+                            <span className="inline-block px-2.5 md:px-3 py-1 text-xs font-medium text-white rounded-full" style={{ backgroundColor: '#5B3D48' }}>
                               {article.category}
                             </span>
                             <span className="text-xs text-gray-500">{article.readTime}</span>
                           </div>
 
-                          <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-3 line-clamp-2 group-hover:text-teal-600 transition-colors leading-snug">
+                          <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-3 line-clamp-2 group-hover:text-brand transition-colors leading-snug">
                             {article.title}
                           </h3>
 
@@ -370,7 +368,7 @@ export default function Community() {
                             {article.tags.slice(0, 2).map((tag: string, index: number) => (
                               <span
                                 key={index}
-                                className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-teal-100 hover:text-teal-600 transition-colors"
+                                className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-blush hover:text-brand transition-colors"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedTag(tag);
@@ -391,7 +389,7 @@ export default function Community() {
                           </div>
 
                           <div className="flex items-center justify-end">
-                            <div className="font-medium text-xs md:text-sm transition-colors whitespace-nowrap" style={{ color: '#225B4F' }}>
+                            <div className="font-medium text-xs md:text-sm transition-colors whitespace-nowrap" style={{ color: '#5B3D48' }}>
                               閱讀更多
                               <i className="ri-arrow-right-line ml-1"></i>
                             </div>
@@ -414,7 +412,7 @@ export default function Community() {
                         setSelectedTag('');
                       }}
                       className="inline-flex items-center justify-center px-6 py-2.5 text-white text-sm md:text-base font-medium rounded-lg hover:opacity-90 transition-colors duration-300 cursor-pointer whitespace-nowrap"
-                      style={{ backgroundColor: '#225B4F' }}
+                      style={{ backgroundColor: '#5B3D48' }}
                     >
                       重置搜尋
                     </button>
@@ -430,7 +428,7 @@ export default function Community() {
                 {/* Instagram Header */}
                 <div className="text-center mb-8 md:mb-12">
                   <div className="flex items-center justify-center mb-4">
-                    <i className="ri-instagram-line text-3xl md:text-4xl mr-2 md:mr-3" style={{ color: '#225B4F' }}></i>
+                    <i className="ri-instagram-line text-3xl md:text-4xl mr-2 md:mr-3" style={{ color: '#5B3D48' }}></i>
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900">社群內容主題</h2>
                   </div>
                   <p className="text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4">
@@ -445,7 +443,7 @@ export default function Community() {
                       <div className="aspect-square overflow-hidden">
                         <img
                           src={post.image}
-                          alt="Instagram post"
+                          alt={post.caption.split("#")[0].trim()}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
@@ -455,7 +453,7 @@ export default function Community() {
                           {post.caption}
                         </p>
 
-                        <span className="text-xs font-medium text-[#225B4F]">內容主題</span>
+                        <span className="text-xs font-medium text-[#5B3D48]">內容主題</span>
                       </div>
                     </div>
                   ))}
@@ -467,7 +465,7 @@ export default function Community() {
         </section>
 
         {/* Member Registration Section - 手機版優化 */}
-        <section className="py-12 md:py-16 px-4" style={{ backgroundColor: '#EBF3EC' }}>
+        <section className="py-12 md:py-16 px-4" style={{ backgroundColor: '#E7D6D4' }}>
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6">
               加入我們的健康社群
@@ -480,7 +478,7 @@ export default function Community() {
               <button
                 onClick={handleRegister}
                 className="w-full sm:w-auto px-8 py-3 text-sm md:text-base text-white font-medium rounded-lg hover:opacity-90 transition-colors duration-300 cursor-pointer whitespace-nowrap"
-                style={{ backgroundColor: '#225B4F' }}
+                style={{ backgroundColor: '#5B3D48' }}
               >
                 立即註冊會員
               </button>
@@ -489,7 +487,7 @@ export default function Community() {
                 <button
                   onClick={() => navigate('/login')}
                   className="ml-1 cursor-pointer hover:opacity-80"
-                  style={{ color: '#225B4F' }}
+                  style={{ color: '#5B3D48' }}
                 >
                   立即登入
                 </button>
@@ -498,24 +496,24 @@ export default function Community() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-left">
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
-                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
-                  <i className="ri-mail-line text-xl" style={{ color: '#225B4F' }}></i>
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#E7D6D4' }}>
+                  <i className="ri-mail-line text-xl" style={{ color: '#5B3D48' }}></i>
                 </div>
                 <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">專屬會員禮遇</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">隨時掌握專屬優惠、新品首發資訊與品牌最新動態。</p>
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
-                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
-                  <i className="ri-user-heart-line text-xl" style={{ color: '#225B4F' }}></i>
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#E7D6D4' }}>
+                  <i className="ri-user-heart-line text-xl" style={{ color: '#5B3D48' }}></i>
                 </div>
                 <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">安全隱私保障</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">以最嚴格的加密標準保護您的個人資料與收藏清單。</p>
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
-                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#BED2C0' }}>
-                  <i className="ri-vip-crown-line text-xl" style={{ color: '#225B4F' }}></i>
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#E7D6D4' }}>
+                  <i className="ri-vip-crown-line text-xl" style={{ color: '#5B3D48' }}></i>
                 </div>
                 <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">即時訂單查詢</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">登入會員中心即可隨時輕鬆查詢物流配送與購買紀錄。</p>

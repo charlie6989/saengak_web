@@ -3,7 +3,7 @@ import { siteContent } from '../../content/site';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200" style={{ backgroundColor: '#FFFEF2' }}>
+    <footer className="border-t border-gray-200" style={{ backgroundColor: '#F8F5F1' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* 主要內容區域 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
@@ -61,7 +61,7 @@ export default function Footer() {
               <li>
                 <a 
                   href={`mailto:${siteContent.companyEmail}`}
-                  className="text-base text-gray-600 hover:text-teal-700 transition-colors flex items-center gap-1.5"
+                  className="text-base text-gray-600 hover:text-brand transition-colors flex items-center gap-1.5"
                   style={{ fontFamily: "Noto Sans TC, sans-serif" }}
                 >
                   <i className="ri-mail-line text-lg"></i>

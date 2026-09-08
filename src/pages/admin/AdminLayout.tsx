@@ -22,18 +22,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-gray-900">
+    <div className="min-h-screen bg-[#F8F5F1] text-gray-900">
       {/* 頂部管理員導覽列 */}
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md shadow-xs">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-3">
             <Link to="/admin/dashboard" className="flex items-center space-x-2">
-              <span className="rounded-md bg-[#225B4F] px-2.5 py-1 text-sm font-black tracking-widest text-white">
+              <span className="rounded-md bg-[#5B3D48] px-2.5 py-1 text-sm font-black tracking-widest text-white">
                 SAENGAK
               </span>
               <span className="text-sm font-bold text-gray-800">管理後台系統</span>
             </Link>
-            <span className="hidden rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 md:inline-block">
+            <span className="hidden rounded-full bg-blush px-2.5 py-0.5 text-xs font-semibold text-brand md:inline-block">
               第 1 階段：商品展示與上線
             </span>
           </div>
@@ -72,7 +72,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 className={({ isActive }) =>
                   `whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs font-medium transition-colors ${
                     isActive
-                      ? 'bg-[#225B4F] text-white shadow-xs'
+                      ? 'bg-[#5B3D48] text-white shadow-xs'
                       : 'text-gray-600 hover:bg-gray-200/70 hover:text-gray-900'
                   }`
                 }

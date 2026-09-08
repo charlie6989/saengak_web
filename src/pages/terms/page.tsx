@@ -8,9 +8,9 @@ export default function TermsPage() {
     <div className="min-h-screen bg-stone-50 text-gray-800">
       <Header />
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
-        <p className="mb-3 text-sm font-medium tracking-wide text-teal-700">內容盤點日期：{siteContent.contentReviewedAt}</p>
+        <p className="mb-3 text-sm font-medium tracking-wide text-brand">內容盤點日期：{siteContent.contentReviewedAt}</p>
         <h1 className="mb-5 text-4xl font-bold text-gray-950">網站使用與訂購條款</h1>
-        <div className="mb-10 rounded-xl border border-teal-200 bg-teal-50 p-5 text-teal-950">
+        <div className="mb-10 rounded-xl border border-blush bg-blush p-5 text-teal-950">
           <p className="font-semibold">正式結帳已啟用</p>
           <p className="mt-2 text-sm leading-6">本站使用 Shopify Checkout 與 TapPay 正式金流；可用付款方式、運費、配送條件與最終金額以當次結帳頁面顯示為準。物流、發票、客服與本條款仍會依實際營運狀態持續更新。</p>
         </div>
@@ -45,9 +45,9 @@ export default function TermsPage() {
             <h2 className="text-2xl font-semibold">退換貨與個人資料</h2>
             <p className="mt-4 leading-7">消費者權益依適用法令及正式交易條款辦理。個人衛生用品是否屬合理例外，須依商品性質、密封狀態、事前告知與主管機關規範判斷，不能僅以「已拆封」一概排除。</p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link to="/return-policy" className="rounded-md border border-teal-800 px-4 py-2 text-sm font-medium text-teal-800 hover:bg-teal-50">退換貨說明</Link>
-              <Link to="/privacy" className="rounded-md border border-teal-800 px-4 py-2 text-sm font-medium text-teal-800 hover:bg-teal-50">隱私權政策</Link>
-              <Link to="/customer-service" className="rounded-md bg-teal-800 px-4 py-2 text-sm font-medium text-white hover:bg-teal-900">客服狀態</Link>
+              <Link to="/return-policy" className="rounded-md border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-blush">退換貨說明</Link>
+              <Link to="/privacy" className="rounded-md border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-blush">隱私權政策</Link>
+              <Link to="/customer-service" className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand">客服狀態</Link>
             </div>
           </section>
         </div>

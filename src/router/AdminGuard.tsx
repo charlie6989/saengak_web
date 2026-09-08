@@ -22,10 +22,10 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
     return (
       <div
         data-testid="admin-guard-loading"
-        className="flex min-h-screen flex-col items-center justify-center bg-[#F7F7F5] px-4"
+        className="flex min-h-screen flex-col items-center justify-center bg-[#F8F5F1] px-4"
       >
         <div className="flex flex-col items-center space-y-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#225B4F] border-t-transparent"></div>
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#5B3D48] border-t-transparent"></div>
           <p className="text-sm font-medium text-gray-600">正在驗證管理員安全憑證...</p>
         </div>
       </div>
@@ -42,7 +42,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
     return (
       <div
         data-testid="admin-guard-forbidden"
-        className="flex min-h-screen flex-col items-center justify-center bg-[#F7F7F5] px-4 text-center"
+        className="flex min-h-screen flex-col items-center justify-center bg-[#F8F5F1] px-4 text-center"
       >
         <div className="w-full max-w-md rounded-2xl border border-red-200 bg-white p-8 shadow-sm">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
@@ -76,7 +76,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
           <div className="mt-6 flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0">
             <Link
               to="/"
-              className="inline-flex w-full items-center justify-center rounded-lg bg-[#225B4F] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#1b483f]"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-[#5B3D48] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#48303A]"
             >
               返回商城首頁
             </Link>

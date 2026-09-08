@@ -39,8 +39,6 @@ export default function ShopifyDescriptionViewer({
   category = '',
   tags = [],
   productName = 'SAENGAK 商品',
-  subtitle,
-  highlights = [],
   images = [],
   vendor = '',
   contentSections,
@@ -245,7 +243,7 @@ export default function ShopifyDescriptionViewer({
         badge: item.badge || `CARE 0${idx + 1}`,
         title: item.title,
         description: item.description,
-        image: contentImagesPool[idx] || item.image || (idx === 0
+        image: item.image || contentImagesPool[idx] || (idx === 0
           ? 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=1200'
           : idx === 1
             ? 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=1200'
@@ -305,7 +303,7 @@ export default function ShopifyDescriptionViewer({
         category: c.category,
         title: c.title,
         description: c.description,
-        image: contentImagesPool[3 + idx] || c.image || (idx === 0
+        image: c.image || contentImagesPool[3 + idx] || (idx === 0
           ? 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800'
           : 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800'),
       }));
@@ -383,12 +381,12 @@ export default function ShopifyDescriptionViewer({
       {hasLeadContent ? (
         <div
           ref={containerRef}
-          className="bg-white p-6 sm:p-10 rounded-2xl border border-gray-200/70 shadow-2xs space-y-6 overflow-hidden [&_.editorial-preface]:p-6 [&_.editorial-preface]:sm:p-8 [&_.editorial-preface]:bg-[#FAF9F5] [&_.editorial-preface]:border-l-4 [&_.editorial-preface]:border-[#245B50] [&_.editorial-preface]:rounded-r-2xl [&_.editorial-preface]:shadow-2xs [&_.editorial-preface_p]:text-gray-700 [&_.editorial-preface_p]:text-base [&_.editorial-preface_p]:leading-relaxed [&_.editorial-preface_p]:mb-3.5 last:[&_.editorial-preface_p]:mb-0 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:border-l-4 [&_h2]:border-[#245B50] [&_h2]:pl-3.5 [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-gray-800 [&_h3]:mt-8 [&_h3]:mb-3 [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:text-gray-800 [&_h4]:mt-6 [&_h4]:mb-2 [&_p]:text-base [&_p]:text-gray-700 [&_p]:leading-relaxed [&_p]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-5 [&_ul]:space-y-2.5 [&_li]:text-gray-700 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-5 [&_ol]:space-y-2.5 [&_li]:text-gray-700 [&_table]:w-full [&_table]:border-collapse [&_table]:my-8 [&_table]:rounded-xl [&_table]:overflow-hidden [&_table]:border [&_table]:border-gray-200 [&_table]:shadow-2xs [&_th]:bg-stone-100 [&_th]:text-[#245B50] [&_th]:p-3.5 [&_th]:font-bold [&_th]:text-left [&_th]:text-sm [&_td]:p-3.5 [&_td]:border-t [&_td]:border-gray-100 [&_td]:text-gray-700 [&_td]:text-sm [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-600/60 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:bg-emerald-50/40 [&_blockquote]:rounded-r-xl [&_blockquote]:italic [&_blockquote]:text-gray-700"
+          className="bg-white p-6 sm:p-10 rounded-2xl border border-gray-200/70 shadow-2xs space-y-6 overflow-hidden [&_.editorial-preface]:p-6 [&_.editorial-preface]:sm:p-8 [&_.editorial-preface]:bg-[#F8F5F1] [&_.editorial-preface]:border-l-4 [&_.editorial-preface]:border-[#5B3D48] [&_.editorial-preface]:rounded-r-2xl [&_.editorial-preface]:shadow-2xs [&_.editorial-preface_p]:text-gray-700 [&_.editorial-preface_p]:text-base [&_.editorial-preface_p]:leading-relaxed [&_.editorial-preface_p]:mb-3.5 last:[&_.editorial-preface_p]:mb-0 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:border-l-4 [&_h2]:border-[#5B3D48] [&_h2]:pl-3.5 [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-gray-800 [&_h3]:mt-8 [&_h3]:mb-3 [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:text-gray-800 [&_h4]:mt-6 [&_h4]:mb-2 [&_p]:text-base [&_p]:text-gray-700 [&_p]:leading-relaxed [&_p]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-5 [&_ul]:space-y-2.5 [&_li]:text-gray-700 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-5 [&_ol]:space-y-2.5 [&_li]:text-gray-700 [&_table]:w-full [&_table]:border-collapse [&_table]:my-8 [&_table]:rounded-xl [&_table]:overflow-hidden [&_table]:border [&_table]:border-gray-200 [&_table]:shadow-2xs [&_th]:bg-stone-100 [&_th]:text-[#5B3D48] [&_th]:p-3.5 [&_th]:font-bold [&_th]:text-left [&_th]:text-sm [&_td]:p-3.5 [&_td]:border-t [&_td]:border-gray-100 [&_td]:text-gray-700 [&_td]:text-sm [&_blockquote]:border-l-4 [&_blockquote]:border-brand/60 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:bg-blush/40 [&_blockquote]:rounded-r-xl [&_blockquote]:italic [&_blockquote]:text-gray-700"
           dangerouslySetInnerHTML={{ __html: leadTextHtml }}
         />
       ) : (
         <div className="bg-white p-8 sm:p-12 rounded-2xl border border-gray-200/70 shadow-2xs text-center space-y-4">
-          <div className="w-14 h-14 mx-auto rounded-full bg-[#245B50]/10 flex items-center justify-center text-[#245B50] text-2xl">
+          <div className="w-14 h-14 mx-auto rounded-full bg-[#5B3D48]/10 flex items-center justify-center text-[#5B3D48] text-2xl">
             <i className="ri-shield-check-line"></i>
           </div>
           <h3 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
@@ -401,8 +399,8 @@ export default function ShopifyDescriptionViewer({
       )}
 
       {/* 2. 品牌美學故事專區 */}
-      <div className="rounded-2xl border border-gray-200/70 bg-gradient-to-br from-stone-50 via-white to-emerald-50/20 p-6 sm:p-10 shadow-2xs space-y-4 text-left">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#245B50]">
+      <div className="rounded-2xl border border-gray-200/70 bg-gradient-to-br from-stone-50 via-white to-blush/20 p-6 sm:p-10 shadow-2xs space-y-4 text-left">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#5B3D48]">
           <i className="ri-leaf-line text-sm"></i>
           <span>Brand Philosophy</span>
         </div>
@@ -434,7 +432,7 @@ export default function ShopifyDescriptionViewer({
               </span>
             </div>
             <div className="w-full md:w-1/2 space-y-3 text-left">
-              <span className="text-xs font-bold text-[#245B50] tracking-widest uppercase">
+              <span className="text-xs font-bold text-[#5B3D48] tracking-widest uppercase">
                 Lifestyle & Feature
               </span>
               <h4 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
@@ -450,7 +448,7 @@ export default function ShopifyDescriptionViewer({
 
       {/* 4. 工藝細節與特點解析 */}
       <div className="space-y-6">
-        <div className="border-l-4 border-[#245B50] pl-3.5">
+        <div className="border-l-4 border-[#5B3D48] pl-3.5">
           <h3 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
             工藝細節與特點解析
           </h3>
@@ -469,7 +467,7 @@ export default function ShopifyDescriptionViewer({
                 />
               </div>
               <div className="p-5 space-y-1.5">
-                <span className="text-xs font-bold text-[#245B50]">
+                <span className="text-xs font-bold text-[#5B3D48]">
                   {craft.category}
                 </span>
                 <h4 className="text-base font-bold text-gray-900">
@@ -490,7 +488,7 @@ export default function ShopifyDescriptionViewer({
           <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
               <div className="flex items-center gap-2.5">
-                <i className="ri-dashboard-line text-xl text-[#245B50]"></i>
+                <i className="ri-dashboard-line text-xl text-[#5B3D48]"></i>
                 <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                   版型與著感指標 (Fit & Feeling Guide)
                 </h3>
@@ -502,48 +500,80 @@ export default function ShopifyDescriptionViewer({
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-semibold text-gray-700">
                   <span>版型 (Fit)</span>
-                  <span className="text-[#245B50]">合身 (Regular Fit)</span>
+                  <span className="text-[#5B3D48]">
+                    {fitValue.includes('合身')
+                      ? '合身 (Regular Fit)'
+                      : fitValue.includes('緊身')
+                        ? '緊身 (Slim Fit)'
+                        : fitValue.includes('寬鬆')
+                          ? '寬鬆 (Loose Fit)'
+                          : fitValue}
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">緊身 (Slim)</div>
-                  <div className="py-2 rounded-lg bg-[#245B50] text-white font-bold shadow-xs">合身 (Regular)</div>
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">寬鬆 (Oversized)</div>
+                  <div className={`py-2 rounded-lg ${fitValue.includes('緊身') || fitValue.toLowerCase().includes('slim') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>緊身 (Slim)</div>
+                  <div className={`py-2 rounded-lg ${fitValue.includes('合身') || (!fitValue.includes('緊身') && !fitValue.includes('寬鬆')) ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>合身 (Regular)</div>
+                  <div className={`py-2 rounded-lg ${fitValue.includes('寬鬆') || fitValue.toLowerCase().includes('loose') || fitValue.toLowerCase().includes('oversized') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>寬鬆 (Oversized)</div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-semibold text-gray-700">
                   <span>厚薄度 (Thickness)</span>
-                  <span className="text-[#245B50]">適中 (Moderate)</span>
+                  <span className="text-[#5B3D48]">
+                    {thicknessValue.includes('適中')
+                      ? '適中 (Moderate)'
+                      : thicknessValue.includes('輕薄') || thicknessValue.includes('薄')
+                        ? '輕薄 (Light)'
+                        : thicknessValue.includes('厚')
+                          ? '厚實 (Heavy)'
+                          : thicknessValue}
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">輕薄 (Light)</div>
-                  <div className="py-2 rounded-lg bg-[#245B50] text-white font-bold shadow-xs">適中 (Moderate)</div>
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">厚實 (Heavy)</div>
+                  <div className={`py-2 rounded-lg ${thicknessValue.includes('薄') || thicknessValue.toLowerCase().includes('light') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>輕薄 (Light)</div>
+                  <div className={`py-2 rounded-lg ${thicknessValue.includes('中') || (!thicknessValue.includes('薄') && !thicknessValue.includes('厚')) ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>適中 (Moderate)</div>
+                  <div className={`py-2 rounded-lg ${thicknessValue.includes('厚') || thicknessValue.toLowerCase().includes('heavy') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>厚實 (Heavy)</div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-semibold text-gray-700">
                   <span>彈性 (Elasticity)</span>
-                  <span className="text-[#245B50]">高彈力 (High)</span>
+                  <span className="text-[#5B3D48]">
+                    {elasticityValue.includes('無')
+                      ? '無彈 (None)'
+                      : elasticityValue.includes('微')
+                        ? '微彈 (Slight)'
+                        : elasticityValue.includes('高') || elasticityValue.includes('彈')
+                          ? '高彈力 (High)'
+                          : elasticityValue}
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">無彈 (None)</div>
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">微彈 (Slight)</div>
-                  <div className="py-2 rounded-lg bg-[#245B50] text-white font-bold shadow-xs">高彈力 (High)</div>
+                  <div className={`py-2 rounded-lg ${elasticityValue.includes('無') || elasticityValue.toLowerCase().includes('none') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>無彈 (None)</div>
+                  <div className={`py-2 rounded-lg ${elasticityValue.includes('微') || elasticityValue.toLowerCase().includes('slight') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>微彈 (Slight)</div>
+                  <div className={`py-2 rounded-lg ${elasticityValue.includes('高') || (!elasticityValue.includes('無') && !elasticityValue.includes('微')) ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>高彈力 (High)</div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-semibold text-gray-700">
                   <span>透氣度 (Breathability)</span>
-                  <span className="text-[#245B50]">極佳 (Excellent)</span>
+                  <span className="text-[#5B3D48]">
+                    {breathabilityValue.includes('極佳') || breathabilityValue.includes('佳')
+                      ? '極佳 (Excellent)'
+                      : breathabilityValue.includes('良好')
+                        ? '良好 (Good)'
+                        : breathabilityValue.includes('一般')
+                          ? '一般 (Normal)'
+                          : breathabilityValue}
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">一般 (Normal)</div>
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">良好 (Good)</div>
-                  <div className="py-2 rounded-lg bg-[#245B50] text-white font-bold shadow-xs">極佳 (Excellent)</div>
+                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('一般') || breathabilityValue.toLowerCase().includes('normal') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>一般 (Normal)</div>
+                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('良好') || breathabilityValue.toLowerCase().includes('good') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>良好 (Good)</div>
+                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('極佳') || (!breathabilityValue.includes('一般') && !breathabilityValue.includes('良好')) ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>極佳 (Excellent)</div>
                 </div>
               </div>
             </div>
@@ -588,34 +618,18 @@ export default function ShopifyDescriptionViewer({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  <tr className="hover:bg-emerald-50/30 transition-colors">
-                    <td className="px-5 py-4 font-bold text-[#245B50]">S (90)</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '60 - 66' : '23.6 - 26.0'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '82 - 88' : '32.3 - 34.6'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '21.5' : '8.5'}</td>
-                    <td className="px-5 py-4 text-xs text-gray-600 font-medium">40 ~ 50 kg</td>
-                  </tr>
-                  <tr className="hover:bg-emerald-50/30 transition-colors bg-gray-50/40">
-                    <td className="px-5 py-4 font-bold text-[#245B50]">M (95)</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '66 - 72' : '26.0 - 28.3'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '88 - 94' : '34.6 - 37.0'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '22.5' : '8.9'}</td>
-                    <td className="px-5 py-4 text-xs text-gray-600 font-medium">50 ~ 58 kg</td>
-                  </tr>
-                  <tr className="hover:bg-emerald-50/30 transition-colors">
-                    <td className="px-5 py-4 font-bold text-[#245B50]">L (100)</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '72 - 78' : '28.3 - 30.7'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '94 - 100' : '37.0 - 39.4'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '23.5' : '9.3'}</td>
-                    <td className="px-5 py-4 text-xs text-gray-600 font-medium">58 ~ 66 kg</td>
-                  </tr>
-                  <tr className="hover:bg-emerald-50/30 transition-colors bg-gray-50/40">
-                    <td className="px-5 py-4 font-bold text-[#245B50]">XL (105)</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '78 - 84' : '30.7 - 33.1'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '100 - 106' : '39.4 - 41.7'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '24.5' : '9.6'}</td>
-                    <td className="px-5 py-4 text-xs text-gray-600 font-medium">66 ~ 75 kg</td>
-                  </tr>
+                  {activeSizeChart.map((row, idx) => (
+                    <tr
+                      key={row.size || idx}
+                      className={`hover:bg-blush/30 transition-colors ${idx % 2 === 1 ? 'bg-gray-50/40' : ''}`}
+                    >
+                      <td className="px-5 py-4 font-bold text-[#5B3D48]">{row.size}</td>
+                      <td className="px-5 py-4">{formatSizeValue(row.waist, sizeUnit)}</td>
+                      <td className="px-5 py-4">{formatSizeValue(row.hips, sizeUnit)}</td>
+                      <td className="px-5 py-4">{formatSizeValue(row.crotch, sizeUnit)}</td>
+                      <td className="px-5 py-4 text-xs text-gray-600 font-medium">{row.weight}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -628,7 +642,7 @@ export default function ShopifyDescriptionViewer({
         <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
           <div className="flex items-center justify-between border-b border-gray-100 pb-4">
             <div className="flex items-center gap-2.5">
-              <i className="ri-price-tag-3-line text-xl text-[#245B50]"></i>
+              <i className="ri-price-tag-3-line text-xl text-[#5B3D48]"></i>
               <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                 商品規格卡 (Product Specifications)
               </h3>
@@ -667,7 +681,7 @@ export default function ShopifyDescriptionViewer({
         <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
           <div className="flex items-center justify-between border-b border-gray-100 pb-4">
             <div className="flex items-center gap-2.5">
-              <i className="ri-flask-line text-xl text-[#245B50]"></i>
+              <i className="ri-flask-line text-xl text-[#5B3D48]"></i>
               <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                 護理規格與成分參數卡 (Specifications)
               </h3>
@@ -736,7 +750,7 @@ export default function ShopifyDescriptionViewer({
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-500">品質檢驗</dt>
-              <dd className="font-semibold text-[#245B50]">原廠合格出廠檢驗</dd>
+              <dd className="font-semibold text-[#5B3D48]">原廠合格出廠檢驗</dd>
             </div>
           </dl>
         </div>
@@ -757,7 +771,7 @@ export default function ShopifyDescriptionViewer({
                       : 'ri-time-line';
                 return (
                   <div key={idx} className="flex items-start gap-2.5">
-                    <i className={`${iconClass} text-[#245B50] text-base mt-0.5`}></i>
+                    <i className={`${iconClass} text-[#5B3D48] text-base mt-0.5`}></i>
                     <span>{instruction}</span>
                   </div>
                 );
@@ -765,19 +779,19 @@ export default function ShopifyDescriptionViewer({
             ) : isApparel ? (
               <>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-hand-sanitizer-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-hand-sanitizer-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>建議使用 30°C 以下冷水手洗或放入洗衣袋慢速弱洗。</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-sun-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-sun-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬。</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-prohibited-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-prohibited-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>請勿使用含漂白成分或螢光劑之強效洗劑，切勿高溫烘乾。</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-t-shirt-air-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-t-shirt-air-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>深淺色衣物請分開洗滌，避免互染。</span>
                 </div>
               </>
@@ -786,38 +800,38 @@ export default function ShopifyDescriptionViewer({
               // 適用於除毛刀、護衣袋等任何非服飾、非自有保養品類的第三方配件／工具。
               <>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-book-open-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-book-open-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>請詳閱商品包裝標示或圖文說明，並依指示正確使用。</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-sun-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-sun-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>請存放於陰涼乾燥處，避免高溫、潮濕與陽光直射。</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-customer-service-2-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-customer-service-2-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>使用上如有任何疑問，歡迎透過官方客服洽詢協助。</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-time-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-time-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>請妥善保存商品保固卡或購買憑證，以利後續售後服務。</span>
                 </div>
               </>
             ) : (
               <>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-drop-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-drop-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>按壓約 1~2 下凝膠於掌心起泡，輕柔清潔外陰部位後以溫水洗淨。</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-sun-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-sun-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>請存放於陰涼乾燥通風處，避免高溫及陽光直射。</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-shield-cross-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-shield-cross-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>僅供外用清潔，如皮膚出現紅腫或異常不適，請停止使用並洽詢醫師。</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <i className="ri-time-line text-[#245B50] text-base mt-0.5"></i>
+                  <i className="ri-time-line text-[#5B3D48] text-base mt-0.5"></i>
                   <span>開封後為維持益生菌活性與配方新鮮度，建議於 6 至 12 個月內用畢。</span>
                 </div>
               </>
@@ -830,7 +844,7 @@ export default function ShopifyDescriptionViewer({
       {extractedDescriptionImages.length > 0 && (
         <div className="space-y-6 animate-fadeIn" data-testid="product-description-images-section">
           <div className="flex items-center gap-2.5 pb-2 border-b border-gray-100">
-            <span className="w-1.5 h-5 rounded-full bg-[#245B50]"></span>
+            <span className="w-1.5 h-5 rounded-full bg-[#5B3D48]"></span>
             <h4 className="text-lg sm:text-xl font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
               常見問答與詳細圖文說明 (Q&A & Details)
             </h4>
@@ -857,9 +871,9 @@ export default function ShopifyDescriptionViewer({
       )}
 
       {/* 7. 正品保證與安心守護承諾 */}
-      <div className="rounded-2xl border border-[#245B50]/20 bg-[#245B50]/5 p-6 sm:p-8 space-y-4">
+      <div className="rounded-2xl border border-[#5B3D48]/20 bg-[#5B3D48]/5 p-6 sm:p-8 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#245B50] text-white flex items-center justify-center text-xl shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-[#5B3D48] text-white flex items-center justify-center text-xl shadow-xs">
             <i className="ri-award-line"></i>
           </div>
           <div>
@@ -871,15 +885,15 @@ export default function ShopifyDescriptionViewer({
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-gray-600">
           <div className="flex items-center gap-2">
-            <i className="ri-checkbox-circle-fill text-[#245B50] text-base"></i>
+            <i className="ri-checkbox-circle-fill text-[#5B3D48] text-base"></i>
             <span>100% 韓國總部授權進口原裝正品</span>
           </div>
           <div className="flex items-center gap-2">
-            <i className="ri-checkbox-circle-fill text-[#245B50] text-base"></i>
+            <i className="ri-checkbox-circle-fill text-[#5B3D48] text-base"></i>
             <span>通過國際權威機構安全檢驗標準</span>
           </div>
           <div className="flex items-center gap-2">
-            <i className="ri-checkbox-circle-fill text-[#245B50] text-base"></i>
+            <i className="ri-checkbox-circle-fill text-[#5B3D48] text-base"></i>
             <span>全站享有 7 天安心鑑賞售後保障</span>
           </div>
         </div>

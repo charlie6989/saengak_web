@@ -211,7 +211,7 @@ export default function LoginPage() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="電子郵件"
                 />
               </div>
@@ -225,7 +225,7 @@ export default function LoginPage() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="密碼"
                 />
               </div>
@@ -250,7 +250,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || (!useMockData && !isAuthCaptchaReady(captchaToken))}
-                  className="w-full py-3 bg-teal-600 text-white rounded-md font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
+                  className="w-full py-3 bg-brand text-white rounded-md font-medium hover:bg-brand focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center space-x-2">
@@ -268,13 +268,13 @@ export default function LoginPage() {
             <div className="mt-6 flex justify-between text-sm">
               <Link
                 to="/forgot-password"
-                className="text-teal-600 hover:text-teal-800 cursor-pointer"
+                className="text-brand hover:text-brand cursor-pointer"
               >
                 忘記密碼
               </Link>
               <Link
                 to="/register"
-                className="text-teal-600 hover:text-teal-800 cursor-pointer"
+                className="text-brand hover:text-brand cursor-pointer"
               >
                 加入會員
               </Link>

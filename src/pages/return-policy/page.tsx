@@ -8,7 +8,7 @@ export default function ReturnPolicyPage() {
     <div className="min-h-screen bg-stone-50 text-gray-800">
       <Header />
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
-        <p className="mb-3 text-sm font-medium tracking-wide text-teal-700">內容盤點日期：{siteContent.contentReviewedAt}</p>
+        <p className="mb-3 text-sm font-medium tracking-wide text-brand">內容盤點日期：{siteContent.contentReviewedAt}</p>
         <h1 className="mb-5 text-4xl font-bold text-gray-950">退換貨說明</h1>
         <div className="mb-10 rounded-xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
           <p className="font-semibold">正式流程尚未開放</p>
@@ -35,7 +35,7 @@ export default function ReturnPolicyPage() {
           <section className="rounded-2xl bg-white p-7 shadow-sm">
             <h2 className="text-2xl font-semibold">目前聯絡狀態</h2>
             <p className="mt-4 leading-7">{siteContent.supportStatus}。請勿自行將商品寄至公司登記地址；應等待官方受理與退貨指示。{siteContent.supportSafetyNotice}</p>
-            <Link to="/customer-service" className="mt-5 inline-flex rounded-md bg-teal-800 px-5 py-3 text-sm font-medium text-white hover:bg-teal-900">查看客服狀態</Link>
+            <Link to="/customer-service" className="mt-5 inline-flex rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">查看客服狀態</Link>
           </section>
         </div>
       </main>

@@ -1,3 +1,4 @@
+import EditorialHero from '../../../components/feature/EditorialHero';
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +24,9 @@ interface Product {
   productType?: string;
   vendor?: string;
   availableForSale?: boolean;
+  subtitle?: string;
+  promotionBadge?: string;
+  tags?: string[];
   variants?: Array<{
     id?: string;
     availableForSale?: boolean;
@@ -34,6 +38,7 @@ export default function SolutionSection() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'bundles' | 'singles' | 'all'>('bundles');
 
   useEffect(() => {
     fetchShopifyProducts();
@@ -45,7 +50,7 @@ export default function SolutionSection() {
     const tags: string[] = Array.isArray(p.tags) ? p.tags : [];
     const combined = `${title} ${type} ${tags.join(' ').toLowerCase()}`;
 
-    // 首頁「這些日子的解決方案」為 P0 級白名單專區，僅能展示 SAENGAK 私密護理品。
+    // 首頁「私密照護，從日常開始。」為 P0 級白名單專區，僅能展示 SAENGAK 私密護理品。
     // 先以 brandOwnership 共用模組排除所有內著／舒適穿著／除毛刀／護衣袋／洗衣袋等非 SAENGAK
     // 自有品牌商品，並沿用原本額外排除的「配件」「收腹」關鍵字，維持既有更嚴格的排除範圍不變。
     if (
@@ -56,7 +61,7 @@ export default function SolutionSection() {
     }
 
     // 必須為 SAENGAK 女性私密保養護理系列
-    return /(?:清潔露|慕斯|噴霧|濕巾|凝膠|女性護理|深層修護|每日清潔|私密|保養)/i.test(combined);
+    return /(?:清潔露|慕斯|噴霧|濕巾|凝膠|女性護理|深層修護|每日清潔|私密|保養|組合|套裝|組)/i.test(combined);
   };
 
   const fetchShopifyProducts = async () => {
@@ -80,6 +85,9 @@ export default function SolutionSection() {
         vendor: 'SAENGAK',
         availableForSale: p.availableForSale,
         variants: p.variants,
+        subtitle: p.subtitle,
+        promotionBadge: p.promotionBadge,
+        tags: p.tags,
       }));
 
       // 若 Shopify 後台的 SAENGAK 核心護理品不足 4 款，以 SAENGAK 官方經典品項補足
@@ -97,10 +105,10 @@ export default function SolutionSection() {
         }
       }
 
-      setProducts(displayList.slice(0, 4));
+      setProducts(displayList);
     } catch (err) {
       captureExceptionSafe(err, { source: 'SolutionSection', fallback: 'mockProducts' });
-      setProducts(rankEditorialProducts(mockProducts).filter(isSaengakCareProduct).slice(0, 4));
+      setProducts(rankEditorialProducts(mockProducts).filter(isSaengakCareProduct));
     } finally {
       setLoading(false);
     }
@@ -126,26 +134,46 @@ export default function SolutionSection() {
     handleProductClick(product);
   };
 
+  const isBundle = (p: Product) => {
+    const title = (p.name || '').toLowerCase();
+    const tags = (p.tags || []).map((t) => t.toLowerCase());
+    return (
+      title.includes('組') ||
+      title.includes('套裝') ||
+      tags.includes('超值組合') ||
+      tags.includes('shopify bundles') ||
+      tags.includes('組合包')
+    );
+  };
+
+  const bundles = products.filter(isBundle);
+  const singles = products.filter((p) => !isBundle(p));
+
+  const displayedProducts = (() => {
+    if (activeTab === 'bundles') return bundles.length > 0 ? bundles : products;
+    if (activeTab === 'singles') return singles.length > 0 ? singles : products;
+    return products;
+  })();
+
   return (
     <>
-      <section className="py-16 px-4" style={{ backgroundColor: '#BED2C0' }}>
+      <section className="py-16 px-4" style={{ backgroundColor: '#E7D6D4' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-4">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                這些日子的解決方案
+                私密照護，從日常開始。
               </h2>
               <button
                 onClick={handleRefresh}
-                className="p-2 text-gray-700 hover:text-gray-900 transition-colors"
+                className="p-2 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
                 title="重新載入產品"
               >
                 <i className="ri-refresh-line text-xl"></i>
               </button>
             </div>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-              專為不同生活節奏打造的專屬私密保養方案<br />
-              溫和植萃配方，陪伴妳的每一個自在日常
+              精選清潔、保濕與舒緩護理，為每天的私密日常，多一點舒適與自在。
             </p>
           </div>
 
@@ -154,8 +182,8 @@ export default function SolutionSection() {
             <div className="relative lg:sticky lg:top-32 lg:self-start">
               <div className="aspect-[4/5] overflow-hidden">
                 <img
-                  src="https://readdy.ai/api/search-image?query=Beautiful%20feminine%20wellness%20and%20self-care%20lifestyle%20image%2C%20elegant%20Korean%20woman%20in%20comfortable%20modern%20home%20setting%2C%20soft%20natural%20lighting%2C%20pastel%20colors%2C%20minimalist%20aesthetic%2C%20peaceful%20and%20serene%20atmosphere%2C%20clean%20and%20modern%20interior%20design%2C%20wellness%20routine%2C%20self-care%20moment%2C%20aspirational%20lifestyle%20photography&width=800&height=1000&seq=solution-lifestyle&orientation=portrait"
-                  alt="Solutions lifestyle"
+                  src="/images/lucissi-v5/home-solution-portrait.webp"
+                  alt="手持 Saengak 修護噴霧的日常護理情境"
                   className="w-full h-full object-cover object-center"
                 />
                 <div
@@ -175,6 +203,52 @@ export default function SolutionSection() {
 
             {/* 右側產品網格 */}
             <div className="space-y-6">
+              {/* 分類切換按鈕 */}
+              <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#D5C2C0]">
+                <span className="text-xs sm:text-sm font-bold text-[#5B3D48] tracking-wider">
+                  {activeTab === 'bundles' ? '✨ 官方推薦特惠組合' : activeTab === 'singles' ? '🌿 日常基礎護理單品' : '全系列私密護理品項'}
+                </span>
+
+                <div className="inline-flex bg-white/80 backdrop-blur-xs p-1 rounded-xl shadow-2xs border border-gray-200/60 text-xs sm:text-sm">
+                  <button
+                    onClick={() => setActiveTab('bundles')}
+                    className={`px-3 py-1.5 rounded-lg transition-all font-semibold flex items-center gap-1.5 cursor-pointer ${
+                      activeTab === 'bundles'
+                        ? 'bg-[#5B3D48] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <span>✨ 超值優惠組</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === 'bundles' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                      {bundles.length}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('singles')}
+                    className={`px-3 py-1.5 rounded-lg transition-all font-semibold flex items-center gap-1.5 cursor-pointer ${
+                      activeTab === 'singles'
+                        ? 'bg-[#5B3D48] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <span>經典單品</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === 'singles' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                      {singles.length}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('all')}
+                    className={`px-3 py-1.5 rounded-lg transition-all font-semibold cursor-pointer ${
+                      activeTab === 'all'
+                        ? 'bg-[#5B3D48] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    全部 ({products.length})
+                  </button>
+                </div>
+              </div>
+
               {loading ? (
                 <div className="h-96 flex items-center justify-center">
                   <div className="text-center">
@@ -184,7 +258,7 @@ export default function SolutionSection() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4" data-product-shop>
-                  {products.map((product) => {
+                  {displayedProducts.map((product) => {
                     const discountRate = calculateDiscountRate(product.price, product.originalPrice);
                     const isSoldOut =
                       product.availableForSale === false ||
@@ -215,10 +289,15 @@ export default function SolutionSection() {
                           )}
                           {/* Labels */}
                           <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+                            {isBundle(product) && (
+                              <span className="bg-[#5B3D48] text-white text-[11px] px-2 py-0.5 font-bold rounded shadow-xs tracking-wider">
+                                組合特惠
+                              </span>
+                            )}
                             {product.isBest && (
                               <span className="bg-red-500 text-white text-xs px-2 py-1 font-medium">BEST</span>
                             )}
-                            {product.isNew && (
+                            {product.isNew && !isBundle(product) && (
                               <span className="bg-blue-500 text-white text-xs px-2 py-1 font-medium">NEW</span>
                             )}
                           </div>
@@ -243,7 +322,7 @@ export default function SolutionSection() {
                               <p className="text-xs text-gray-500" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                                 {product.productType || '女性護理'}
                               </p>
-                              <h3 className="text-base font-semibold line-clamp-2 leading-tight mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#225B4F" }}>
+                              <h3 className="text-base font-semibold line-clamp-2 leading-tight mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
                                 {product.name}
                               </h3>
                               {(() => {
@@ -254,12 +333,24 @@ export default function SolutionSection() {
                                 );
                                 if (!displayVendor) return null;
                                 return (
-                                  <p className="text-xs mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif", marginBottom: "0.675rem", color: "#225B4F" }}>
+                                  <p className="text-xs mb-1" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
                                     {displayVendor}
                                   </p>
                                 );
                               })()}
-                              <p className="text-sm line-clamp-3 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#BBBBBB" }}>
+                              {product.promotionBadge && (
+                                <div className="mb-1.5">
+                                  <span className="inline-block text-[11px] font-bold text-[#8C3A4D] bg-[#F5E6E8] px-2 py-0.5 rounded border border-[#EAC9CE]">
+                                    {product.promotionBadge}
+                                  </span>
+                                </div>
+                              )}
+                              {product.subtitle && (
+                                <p className="text-[11px] text-gray-500 line-clamp-1 mb-1 font-medium">
+                                  {product.subtitle}
+                                </p>
+                              )}
+                              <p className="text-sm line-clamp-3 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#655859" }}>
                                 {product.description}
                               </p>
                             </div>
@@ -288,9 +379,9 @@ export default function SolutionSection() {
                                 )}
                                 <div className="flex items-center gap-2">
                                   {discountRate > 0 ? (
-                                    <span className="text-lg font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#225B4F" }}>-{discountRate}%</span>
+                                    <span className="text-lg font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>-{discountRate}%</span>
                                   ) : null}
-                                  <span className="text-lg font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#225B4F" }}>
+                                  <span className="text-lg font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
                                     ${product.price.toLocaleString()}
                                   </span>
                                 </div>
@@ -302,22 +393,22 @@ export default function SolutionSection() {
                           <button
                             onClick={(e) => handleViewProductClick(e, product)}
                             aria-label={`查看 ${product.name} 商品詳情`}
-                            className="add-to-cart-btn mt-auto"
+                            className="add-to-cart-btn mt-auto cursor-pointer"
                             style={{
-                              backgroundColor: isSoldOut ? '#F3F4F6' : '#E9F1EC',
-                              color: isSoldOut ? '#888888' : '#222222',
+                              backgroundColor: isSoldOut ? '#F8F5F1' : '#E7D6D4',
+                              color: isSoldOut ? '#655859' : '#34302F',
                               fontFamily: "Noto Sans TC, sans-serif"
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = isSoldOut ? '#E5E7EB' : '#245B50';
-                              e.currentTarget.style.color = isSoldOut ? '#444444' : '#ffffff';
+                              e.currentTarget.style.backgroundColor = isSoldOut ? '#DDD6D1' : '#5B3D48';
+                              e.currentTarget.style.color = isSoldOut ? '#655859' : '#FFFDFC';
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = isSoldOut ? '#F3F4F6' : '#E9F1EC';
-                              e.currentTarget.style.color = isSoldOut ? '#888888' : '#222222';
+                              e.currentTarget.style.backgroundColor = isSoldOut ? '#F8F5F1' : '#E7D6D4';
+                              e.currentTarget.style.color = isSoldOut ? '#655859' : '#34302F';
                             }}
                           >
-                            {isSoldOut ? '已售完・查看詳情' : '查看商品'}
+                            {isSoldOut ? '已售完・查看詳情' : isBundle(product) ? '查看特惠組合' : '查看商品'}
                           </button>
                         </div>
                       </div>
@@ -330,51 +421,19 @@ export default function SolutionSection() {
         </div>
       </section>
 
-      {/* 舒適無菌內褲 Banner */}
-      {/* 白色色塊 - 3公分高 */}
-      <div className="w-full h-[3cm] bg-white"></div>
-
-      <section className="relative overflow-hidden">
-        <div className="w-full">
-          <div className="relative h-[300px] md:h-[400px]">
-            <img
-              src="https://readdy.ai/api/search-image?query=Premium%20comfortable%20antibacterial%20underwear%20banner%20design%2C%20elegant%20Korean%20woman%20wearing%20comfortable%20white%20cotton%20underwear%2C%20soft%20pastel%20background%2C%20clean%20minimalist%20aesthetic%2C%20health%20and%20wellness%20theme%2C%20modern%20lifestyle%20photography%2C%20gentle%20lighting%2C%20serene%20and%20comfortable%20atmosphere%2C%20premium%20quality%20fabric%20texture&width=1440&height=400&seq=underwear-banner&orientation=landscape"
-              alt="SAENGAK 舒適生活系列"
-              className="w-full h-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent"></div>
-            <div className="absolute inset-0 flex items-center">
-              <div className="max-w-7xl mx-auto px-4 w-full">
-                <div className="max-w-2xl">
-                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    親膚透氣 舒適生活
-                  </h2>
-                  <p className="text-lg md:text-xl text-white/90 mb-6 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    精選天然純棉與親膚面料，讓肌膚自在呼吸<br />
-                    回歸純粹自然的極致舒適享受
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <a
-                      href="/search?category=舒適穿著"
-                      className="inline-flex items-center justify-center px-8 py-3 bg-white text-gray-900 font-semibold hover:bg-gray-100 transition-colors duration-300 whitespace-nowrap"
-                      style={{ fontFamily: "Noto Sans TC, sans-serif" }}
-                    >
-                      立即選購
-                    </a>
-                    <a
-                      href="/community"
-                      className="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-white font-semibold hover:bg-white hover:text-gray-900 transition-colors duration-300 whitespace-nowrap"
-                      style={{ fontFamily: "Noto Sans TC, sans-serif" }}
-                    >
-                      了解更多
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <EditorialHero
+        image="/images/lucissi-v5/home-wear-banner.webp"
+        alt="親膚棉質內著的蝴蝶結、織紋與車縫細節"
+        eyebrow="LUCISSI CARE · EVERYDAY COMFORT"
+        headingLevel="h2"
+        title="貼身穿著"
+        description="每天貼近肌膚的穿著，也是私密日常的一部分。"
+      >
+        <div className="mt-7 flex flex-wrap gap-4">
+          <a href="/search?category=貼身穿著" className="bg-[#5B3D48] px-6 py-3 text-sm font-semibold text-white">立即選購</a>
+          <a href="/community" className="border border-[#5B3D48]/30 px-6 py-3 text-sm font-semibold text-[#5B3D48]">了解更多</a>
         </div>
-      </section>
+      </EditorialHero>
     </>
   );
 }
