@@ -397,17 +397,29 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
 
 const TEST_PRODUCT_PATTERN = /驗收測試|請勿購買|測試商品|payment\s*test|test\s*product/i;
 
-// 權威決策：全站嚴格僅展示 SAENGAK 4 大核心保養商品，排除其他非相關商品
+// 權威決策：全站嚴格僅展示 SAENGAK 核心私密保養商品，排除其他非相關商品
 export const CORE_SAENGAK_KEYWORDS = [
   '深層修護私密清潔露',
   '私密雙層修護精華噴霧',
   '益生菌私密養膚濕巾',
   '平衡調理私密潔淨慕斯',
+  '益生菌私密舒緩凝膠',
   'deep-repair-wash',
   'calming-mist',
   'refreshing-wipes',
   'cleansing-mousse',
+  'soothing-gel',
 ];
+
+export const FEATURED_PRODUCT_TAG_PATTERN = /^(featured|精選|精選商品|featured[-_]?product|人氣推薦)$/i;
+
+/**
+ * 智慧識別是否為精選商品（優先讀取 Shopify Tags 標籤）
+ */
+export function isFeaturedShopifyProduct(product: ShopifyProduct): boolean {
+  const tags = Array.isArray(product.tags) ? product.tags : [];
+  return tags.some((tag) => typeof tag === 'string' && FEATURED_PRODUCT_TAG_PATTERN.test(tag.trim()));
+}
 
 export function isPublicShopifyProduct(product: ShopifyProduct): boolean {
   const searchable = [product.title, product.name, product.handle, product.vendor, ...(product.tags || [])].join(' ').toLowerCase();
