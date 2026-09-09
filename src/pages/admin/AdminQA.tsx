@@ -96,7 +96,7 @@ export const AdminQA: React.FC = () => {
     setIsSubmittingReply(true);
     setStatusMessage(null);
     try {
-      const adminUserId = user?.id || 'saengak-admin';
+      const adminUserId = user?.id || 'lucissi-care-admin';
       const { success, error } = await replyProductQuestion({
         question_id: replyingQuestion.id,
         answer: replyAnswer.trim(),
@@ -405,7 +405,7 @@ export const AdminQA: React.FC = () => {
                           {q.answer ? (
                             <div className="rounded-lg bg-blush/70 p-3 border border-blush text-xs space-y-1">
                               <div className="flex items-center space-x-1.5 text-brand font-bold text-[11px]">
-                                <span>💬 SAENGAK 官方客服回覆：</span>
+                                <span>💬 LUCISSI CARE 官方客服回覆：</span>
                               </div>
                               <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">
                                 {q.answer}
@@ -441,7 +441,7 @@ export const AdminQA: React.FC = () => {
                       {/* 提問會員 / 時間 */}
                       <td className="px-6 py-4">
                         <div className="text-xs font-medium text-gray-900">
-                          {q.user_name || q.display_name || 'SAENGAK 會員'}
+                          {q.user_name || q.display_name || 'LUCISSI CARE 會員'}
                         </div>
                         {q.user_email && (
                           <div className="text-[11px] text-gray-500">{q.user_email}</div>
@@ -537,7 +537,7 @@ export const AdminQA: React.FC = () => {
                 {replyingQuestion.question}
               </p>
               <div className="text-[11px] text-gray-400">
-                提問者：{replyingQuestion.user_name || replyingQuestion.display_name || 'SAENGAK 會員'}
+                提問者：{replyingQuestion.user_name || replyingQuestion.display_name || 'LUCISSI CARE 會員'}
               </div>
             </div>
 

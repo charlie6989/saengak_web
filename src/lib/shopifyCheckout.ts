@@ -2,7 +2,7 @@ import type { ShopifyCheckoutLine } from '../domain/algorithms';
 import type { InvoicePreference } from '../domain/invoice';
 import { isSupabaseConfigured, supabase } from './supabase';
 
-export const SAENGAK_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
+export const LUCISSI_CARE_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
 
 export const isShopifyCheckoutConfigured = true;
 
@@ -80,7 +80,7 @@ export function validateShopifyCheckoutUrl(rawCheckoutUrl: string): string {
   if (checkoutUrl.protocol !== 'https:') {
     throw new Error('Shopify 回傳了不安全的結帳網址');
   }
-  if (checkoutUrl.hostname.toLowerCase() !== SAENGAK_SHOPIFY_DOMAIN) {
+  if (checkoutUrl.hostname.toLowerCase() !== LUCISSI_CARE_SHOPIFY_DOMAIN) {
     throw new Error('Shopify 結帳商店不符，已停止導向以保護訂單');
   }
   return checkoutUrl.toString();

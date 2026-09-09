@@ -1,5 +1,5 @@
 /**
- * SAENGAK 商品評價 (Reviews) 與問答 (Q&A) 資料存取與商業邏輯函式庫
+ * LUCISSI CARE 商品評價 (Reviews) 與問答 (Q&A) 資料存取與商業邏輯函式庫
  * 遵循 docs/00_DECISION_LOG.md、繁體中文規範與 Sentry 安全脫敏標準
  */
 
@@ -29,7 +29,7 @@ import type {
  */
 export function maskUserIdentifier(emailOrId?: string | null): string {
   if (!emailOrId || typeof emailOrId !== 'string' || !emailOrId.trim()) {
-    return 'SAENGAK 會員';
+    return 'LUCISSI CARE 會員';
   }
 
   const trimmed = emailOrId.trim();

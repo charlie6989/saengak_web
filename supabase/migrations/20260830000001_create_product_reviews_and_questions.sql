@@ -1,4 +1,4 @@
--- SAENGAK Database Migration: 建立商品評價 (product_reviews) 與商品問答 (product_questions) 資料表
+-- LUCISSI CARE Database Migration: 建立商品評價 (product_reviews) 與商品問答 (product_questions) 資料表
 -- 規範來源: docs/00_DECISION_LOG.md & 繁體中文開發規範
 -- 權威判定: app_metadata.role = 'admin' 為唯一管理員角色判定；前台會員遵循 auth.uid() 隔離。
 

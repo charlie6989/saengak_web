@@ -25,7 +25,7 @@ const mockAdminContext = {
   refreshSession: vi.fn().mockResolvedValue(undefined),
 };
 
-describe('SAENGAK 後台商品評價審核、問答客服與營運設定測試 (Admin Reviews, QA & Settings)', () => {
+describe('LUCISSI CARE 後台商品評價審核、問答客服與營運設定測試 (Admin Reviews, QA & Settings)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

@@ -40,12 +40,17 @@ export function getAmegoCredentials(): AmegoCredentials | null {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
+  const issuerNote = (process.env.AmegoIssuerNote || '').trim().slice(0, 100);
+  if (process.env.AmegoInvoiceReleaseEnabled === 'true' && !issuerNote) {
+    return null;
+  }
 
   return {
     sellerTaxId,
     appKey,
     mode,
     allowedSellerTaxIds,
+    issuerNote,
   };
 }
 

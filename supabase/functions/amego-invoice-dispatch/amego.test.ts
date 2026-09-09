@@ -25,12 +25,18 @@ const credentials = {
   appKey: 'fixture-only-app-key-0001',
   mode: 'test' as const,
   allowedSellerTaxIds: ['12345678'],
+  issuerNote: 'LUCISSI CARE 商店開立',
 };
 
 const response = (value: unknown) => new Response(JSON.stringify(value), {
   status: 200,
   headers: { 'Content-Type': 'application/json' },
 });
+
+const assertIssueMainRemark = (serialized: string | null) => {
+  expect(serialized).toBeTruthy();
+  expect(JSON.parse(serialized ?? '{}').MainRemark).toBe('LUCISSI CARE 商店開立');
+};
 
 describe('Amego invoice dispatch', () => {
   it('uses the provider-required lowercase UTF-8 MD5 signature', () => {
@@ -48,6 +54,12 @@ describe('Amego invoice dispatch', () => {
         { Description: '深層修護私密清潔露', Amount: '650' },
         { Description: '運費／訂單調整', Amount: '30' },
       ],
+    });
+  });
+
+  it('writes the issuing storefront into Amego MainRemark', () => {
+    expect(buildAmegoInvoicePayload(job, 'LUCISSI CARE 商店開立')).toMatchObject({
+      MainRemark: 'LUCISSI CARE 商店開立',
     });
   });
 
@@ -177,6 +189,8 @@ describe('Amego invoice dispatch', () => {
     });
     expect(fetcher).toHaveBeenCalledTimes(3);
     expect(fetcher.mock.calls[1][0]).toBe('https://invoice-api.amego.tw/json/f0401');
+    const issueBody = new URLSearchParams(String(fetcher.mock.calls[1][1]?.body));
+    assertIssueMainRemark(issueBody.get('data'));
   });
 
   it('does not mutate provider state when preflight reconciliation is unavailable', async () => {

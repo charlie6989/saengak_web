@@ -52,7 +52,7 @@ describe('Sentry Sanitizer & Security Redaction (資安脫敏測試)', () => {
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-ae9oGA',
         access_token: 'acctok_xyz123456789',
         authorization: 'Bearer secret_auth_token_999',
-        public_info: 'SAENGAK Organic Store',
+        public_info: 'LUCISSI CARE Organic Store',
       };
 
       const sanitized = sanitizeObject(sensitiveData);
@@ -65,7 +65,7 @@ describe('Sentry Sanitizer & Security Redaction (資安脫敏測試)', () => {
       expect(sanitized.token).toBe(REDACTED_SENSITIVE);
       expect(sanitized.access_token).toBe(REDACTED_SENSITIVE);
       expect(sanitized.authorization).toBe(REDACTED_SENSITIVE);
-      expect(sanitized.public_info).toBe('SAENGAK Organic Store');
+      expect(sanitized.public_info).toBe('LUCISSI CARE Organic Store');
     });
   });
 

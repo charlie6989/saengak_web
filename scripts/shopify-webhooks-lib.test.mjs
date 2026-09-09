@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   REQUIRED_ORDER_WEBHOOK_TOPICS,
-  SAENGAK_ORDER_WEBHOOK_URI,
+  LUCISSI_CARE_ORDER_WEBHOOK_URI,
   buildWebhookSubscriptionPlan,
   normalizeShopifyDomain,
   redactWebhookSubscriptionPlan,
@@ -10,13 +10,13 @@ import {
 } from './shopify-webhooks-lib.mjs';
 
 describe('Shopify webhook subscription plan', () => {
-  it('normalizes and locks configuration to the dedicated SAENGAK shop and Vercel API', () => {
+  it('normalizes and locks configuration to the dedicated LUCISSI CARE shop and Vercel API', () => {
     expect(normalizeShopifyDomain('https://GH2XGS-ZF.myshopify.com/'))
       .toBe('gh2xgs-zf.myshopify.com');
     expect(validateWebhookConfiguration({
       shopDomain: 'gh2xgs-zf.myshopify.com',
       apiVersion: '2026-07',
-      webhookUri: SAENGAK_ORDER_WEBHOOK_URI,
+      webhookUri: LUCISSI_CARE_ORDER_WEBHOOK_URI,
     })).toMatchObject({
       shopDomain: 'gh2xgs-zf.myshopify.com',
       apiVersion: '2026-07',
@@ -24,42 +24,42 @@ describe('Shopify webhook subscription plan', () => {
     expect(validateWebhookConfiguration({
       shopDomain: 'gh2xgs-zf.myshopify.com',
       apiVersion: '2026-07',
-      webhookUri: SAENGAK_ORDER_WEBHOOK_URI.replace('www.saengak.com.tw/', 'www.saengak.com.tw:443/'),
-    }).webhookUri).toBe(SAENGAK_ORDER_WEBHOOK_URI);
+      webhookUri: LUCISSI_CARE_ORDER_WEBHOOK_URI.replace('www.saengak.com.tw/', 'www.saengak.com.tw:443/'),
+    }).webhookUri).toBe(LUCISSI_CARE_ORDER_WEBHOOK_URI);
   });
 
   it('refuses another shop or webhook destination', () => {
     expect(() => validateWebhookConfiguration({
       shopDomain: 'lucissi.myshopify.com',
       apiVersion: '2026-07',
-      webhookUri: SAENGAK_ORDER_WEBHOOK_URI,
-    })).toThrow('非 SAENGAK');
+      webhookUri: LUCISSI_CARE_ORDER_WEBHOOK_URI,
+    })).toThrow('非 LUCISSI CARE');
 
     expect(() => validateWebhookConfiguration({
       shopDomain: 'gh2xgs-zf.myshopify.com',
       apiVersion: '2026-07',
       webhookUri: 'https://example.com/webhook',
-    })).toThrow('SAENGAK Production');
+    })).toThrow('LUCISSI CARE Production');
   });
 
   it.each([
-    `https://user:secret@${new URL(SAENGAK_ORDER_WEBHOOK_URI).host}${new URL(SAENGAK_ORDER_WEBHOOK_URI).pathname}`,
-    `${SAENGAK_ORDER_WEBHOOK_URI}?token=secret`,
-    `${SAENGAK_ORDER_WEBHOOK_URI}#secret`,
-    SAENGAK_ORDER_WEBHOOK_URI.replace('www.saengak.com.tw/', 'www.saengak.com.tw:444/'),
+    `https://user:secret@${new URL(LUCISSI_CARE_ORDER_WEBHOOK_URI).host}${new URL(LUCISSI_CARE_ORDER_WEBHOOK_URI).pathname}`,
+    `${LUCISSI_CARE_ORDER_WEBHOOK_URI}?token=secret`,
+    `${LUCISSI_CARE_ORDER_WEBHOOK_URI}#secret`,
+    LUCISSI_CARE_ORDER_WEBHOOK_URI.replace('www.saengak.com.tw/', 'www.saengak.com.tw:444/'),
   ])('refuses sensitive or non-default URI components: %s', (webhookUri) => {
     expect(() => validateWebhookConfiguration({
       shopDomain: 'gh2xgs-zf.myshopify.com',
       apiVersion: '2026-07',
       webhookUri,
-    })).toThrow('SAENGAK Production');
+    })).toThrow('LUCISSI CARE Production');
   });
 
   it('creates only missing topics and never duplicates existing subscriptions', () => {
     const plan = buildWebhookSubscriptionPlan([
-      { topic: 'ORDERS_CREATE', uri: SAENGAK_ORDER_WEBHOOK_URI },
+      { topic: 'ORDERS_CREATE', uri: LUCISSI_CARE_ORDER_WEBHOOK_URI },
       { topic: 'ORDERS_PAID', uri: 'https://old.example.com/webhook' },
-    ], SAENGAK_ORDER_WEBHOOK_URI);
+    ], LUCISSI_CARE_ORDER_WEBHOOK_URI);
 
     expect(plan).toContainEqual({ topic: 'ORDERS_CREATE', action: 'present' });
     expect(plan).toContainEqual({
@@ -74,9 +74,9 @@ describe('Shopify webhook subscription plan', () => {
   it('reports a conflict when desired and stale URIs coexist for one topic', () => {
     const staleUri = 'https://old.example.com/webhook?token=secret';
     const plan = buildWebhookSubscriptionPlan([
-      { topic: 'ORDERS_PAID', uri: SAENGAK_ORDER_WEBHOOK_URI },
+      { topic: 'ORDERS_PAID', uri: LUCISSI_CARE_ORDER_WEBHOOK_URI },
       { topic: 'ORDERS_PAID', uri: staleUri },
-    ], SAENGAK_ORDER_WEBHOOK_URI);
+    ], LUCISSI_CARE_ORDER_WEBHOOK_URI);
 
     expect(plan).toContainEqual({
       topic: 'ORDERS_PAID',

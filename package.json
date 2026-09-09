@@ -35,8 +35,8 @@
     "vite": "7.3.6",
     "vitest": "4.1.10"
   },
-  "name": "saengak-web",
-  "description": "SAENGAK pre-launch commerce website and release verification baseline",
+  "name": "lucissi-care-web",
+  "description": "LUCISSI CARE pre-launch commerce website and release verification baseline",
   "homepage": "https://saengak.com.tw",
   "repository": {
     "type": "git",

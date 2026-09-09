@@ -73,7 +73,7 @@ export default function WelcomePage() {
               <i className="ri-user-smile-line text-3xl text-brand"></i>
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              歡迎加入 SAENGAK！
+              歡迎加入 LUCISSI CARE！
             </h1>
             <p className="text-xl text-gray-600 mb-2">
               嗨 {user?.name || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email}，您的電子郵件會員已完成登入

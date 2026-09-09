@@ -13,7 +13,7 @@ export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   return (
-    <section aria-label="LUCISSI care 日常照護主題" aria-roledescription="輪播" className="relative h-[650px] md:h-[640px] overflow-hidden bg-[#F8F5F1]">
+    <section aria-label="LUCISSI CARE 日常照護主題" aria-roledescription="輪播" className="relative h-[650px] md:h-[640px] overflow-hidden bg-[#F8F5F1]">
       {heroSlides.map((slide, index) => (
         <div key={slide.image} aria-hidden={index !== currentSlide} inert={index !== currentSlide} className={`absolute inset-0 flex flex-col md:block ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0'}`}>
           <div className="h-[330px] shrink-0 md:h-full">

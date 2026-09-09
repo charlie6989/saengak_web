@@ -1,5 +1,5 @@
 /**
- * SAENGAK 商品評價 (Reviews) 與商品問答 (Q&A) 型別定義
+ * LUCISSI CARE 商品評價 (Reviews) 與商品問答 (Q&A) 型別定義
  * 規範來源: docs/00_DECISION_LOG.md
  */
 

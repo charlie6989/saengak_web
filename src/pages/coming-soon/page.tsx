@@ -9,7 +9,7 @@ function ComingSoonPage({ children }: ComingSoonPageProps) {
   return (
     <main className="coming-soon" aria-labelledby="coming-soon-title">
       <div className="coming-soon__content">
-        <p className="coming-soon__brand">SAENGAK</p>
+        <p className="coming-soon__brand">LUCISSI CARE</p>
         <h1 id="coming-soon-title" className="coming-soon__title">
           Coming Soon
         </h1>

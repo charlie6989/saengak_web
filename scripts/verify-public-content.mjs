@@ -6,7 +6,16 @@ const projectRoot = process.cwd();
 const checkedExtensions = new Set(['.css', '.html', '.js', '.map', '.ts', '.tsx']);
 const forbiddenContent = [
   ['legacy Shopify shop', 'ekfvih-rz.myshopify.com'],
-  ['legacy brand', 'LUCISSI'],
+  // LUCISSI CARE 是目前商店名稱；只封鎖已知的 SAENGAK 舊商店文案，
+  // 保留 SAENGAK 韓國原裝私密護理商品品牌的合法公開文字。
+  ['legacy storefront title', 'SAENGAK 質感生活選品'],
+  ['legacy storefront description', 'SAENGAK 韓國質感生活選品'],
+  ['legacy storefront policy copy', 'SAENGAK 現階段'],
+  ['legacy storefront support label', 'SAENGAK 官方客服'],
+  ['legacy storefront member label', 'SAENGAK 會員'],
+  ['legacy storefront editorial label', 'SAENGAK 編輯團隊'],
+  ['legacy storefront Shopify label', 'SAENGAK Shopify'],
+  ['legacy storefront invoice label', 'SAENGAK 商店開立'],
   ['legacy brand', 'VAGI'],
   ['unrelated brand email', '@innercare.com'],
   ['placeholder telephone', '0800-123-456'],

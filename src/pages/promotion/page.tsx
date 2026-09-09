@@ -574,7 +574,7 @@ export default function PromotionPage() {
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">登入領券歸戶</h3>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  註冊或登入 SAENGAK 會員，在本頁面點擊「立即領券歸戶」，票券立即綁定至您的個人中心。
+                  註冊或登入 LUCISSI CARE 會員，在本頁面點擊「立即領券歸戶」，票券立即綁定至您的個人中心。
                 </p>
               </div>
 
@@ -654,7 +654,7 @@ export default function PromotionPage() {
                 對優惠活動有任何疑問？
               </h3>
               <p className="mt-2 text-sm text-blush max-w-xl leading-relaxed">
-                歡迎透過 SAENGAK LINE 官方客服即時諮詢，客服專員將於營業時間為您迅速解答。
+                歡迎透過 LUCISSI CARE LINE 官方客服即時諮詢，客服專員將於營業時間為您迅速解答。
               </p>
             </div>
             <a

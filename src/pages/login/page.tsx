@@ -124,7 +124,7 @@ export default function LoginPage() {
 
   const fillDemoAccount = () => {
     setFormData({
-      email: 'mock1@saengak.invalid',
+      email: 'mock1@lucissi-care.invalid',
       password: 'development-only-1'
     });
   };

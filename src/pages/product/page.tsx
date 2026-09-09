@@ -1468,7 +1468,7 @@ export default function ProductPage() {
                     </div>
                   </div>
                   <div className="text-xs text-gray-500 max-w-xs sm:text-right">
-                    所有評價皆來自完成訂單之會員真實反饋，並通過 SAENGAK 內容審查機制。
+                    所有評價皆來自完成訂單之會員真實反饋，並通過 LUCISSI CARE 內容審查機制。
                   </div>
                 </div>
 
@@ -1524,7 +1524,7 @@ export default function ProductPage() {
 
                         <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
                           <span className="font-medium text-gray-600">
-                            {review.display_name || 'SAENGAK 會員'}
+                            {review.display_name || 'LUCISSI CARE 會員'}
                           </span>
                         </div>
                       </div>
@@ -1885,7 +1885,7 @@ export default function ProductPage() {
                               <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blush text-[#5B3D48] text-[11px]">
                                 <i className="ri-mail-line"></i>
                               </span>
-                              <span className="font-mono text-gray-700 font-medium">{item.display_name || 'SAENGAK 會員'}</span>
+                              <span className="font-mono text-gray-700 font-medium">{item.display_name || 'LUCISSI CARE 會員'}</span>
                             </div>
                             <span className="text-gray-400 text-xs font-mono">{formatDate(item.created_at)}</span>
                           </div>
@@ -1914,7 +1914,7 @@ export default function ProductPage() {
                                   className="text-xs font-bold text-[#5B3D48]"
                                   data-testid="official-reply-badge"
                                 >
-                                  SAENGAK 官方專業團隊回覆
+                                  LUCISSI CARE 官方專業團隊回覆
                                 </span>
                                 <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
                                   {item.answer}

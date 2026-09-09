@@ -1,5 +1,5 @@
 export const siteContent = {
-  brandName: 'SAENGAK',
+  brandName: 'LUCISSI CARE',
   legalName: '拜悠衣品有限公司',
   taxId: '90014835',
   registeredAddress: '新北市汐止區長興街1段14號',

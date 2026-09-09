@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { computePostDiscountShippingWarning } from '../src/lib/promotions';
 
-describe('SAENGAK 折扣後免運門檻警示純函式測試 (src/lib/promotions.ts computePostDiscountShippingWarning)', () => {
+describe('LUCISSI CARE 折扣後免運門檻警示純函式測試 (src/lib/promotions.ts computePostDiscountShippingWarning)', () => {
   it('折扣前後皆達免運門檻時，willLoseFreeShipping 為 false', () => {
     const result = computePostDiscountShippingWarning(2000, 100, 1500);
     expect(result.willLoseFreeShipping).toBe(false);

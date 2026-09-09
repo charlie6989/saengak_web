@@ -4,7 +4,7 @@ export default function BrandLogo({ className = '' }: { className?: string }) {
     <span className={`relative block overflow-hidden shrink-0 mix-blend-multiply ${className}`} style={{ aspectRatio: '964 / 256' }}>
       <img
         src="/images/brand/lucissi-care-logo.png"
-        alt="LUCISSI care"
+        alt="LUCISSI CARE"
         width={2172}
         height={724}
         className="absolute h-auto"

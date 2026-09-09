@@ -81,7 +81,7 @@ export const Dashboard: React.FC = () => {
             <p className="font-semibold">架構與資料源權威說明 (docs/00_DECISION_LOG.md)：</p>
             <p className="text-xs text-amber-800 leading-5">
               1. 實體商品售價與庫存權威源為 <strong>SiteGiant ERP</strong>，透過 Shopify App 自動雙向同步。<br />
-              2. 結帳交易已由 <strong>Shopify Checkout</strong> 全權處理，TapPay 以 Shopify Payment App 身分於 Shopify 頁面內扣款；SAENGAK 前端與後台皆不經手卡號。<br />
+              2. 結帳交易已由 <strong>Shopify Checkout</strong> 全權處理，TapPay 以 Shopify Payment App 身分於 Shopify 頁面內扣款；LUCISSI CARE 前端與後台皆不經手卡號。<br />
               3. 本主控台嚴格依據真實系統回讀指標呈現，不顯示偽造的示範營收或假訂單數據。
             </p>
           </div>

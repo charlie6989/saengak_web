@@ -349,7 +349,7 @@ export const AdminReviews: React.FC = () => {
                       {/* 提交會員 / 時間 */}
                       <td className="px-6 py-4">
                         <div className="text-xs font-medium text-gray-900">
-                          {review.user_name || review.display_name || 'SAENGAK 會員'}
+                          {review.user_name || review.display_name || 'LUCISSI CARE 會員'}
                         </div>
                         {review.user_email && (
                           <div className="text-[11px] text-gray-500">{review.user_email}</div>

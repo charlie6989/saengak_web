@@ -6,7 +6,7 @@ import {
 } from './shopifyCheckout';
 
 describe('Shopify checkout safeguards', () => {
-  it('accepts only the active SAENGAK Shopify checkout host', () => {
+  it('accepts only the active LUCISSI CARE Shopify checkout host', () => {
     expect(validateShopifyCheckoutUrl(
       'https://gh2xgs-zf.myshopify.com/checkouts/cn/example',
     )).toBe('https://gh2xgs-zf.myshopify.com/checkouts/cn/example');

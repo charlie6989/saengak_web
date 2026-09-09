@@ -1,8 +1,8 @@
 import {
   REQUIRED_ORDER_WEBHOOK_TOPICS,
-  SAENGAK_ORDER_WEBHOOK_URI,
-  SAENGAK_SHOPIFY_API_VERSION,
-  SAENGAK_SHOPIFY_DOMAIN,
+  LUCISSI_CARE_ORDER_WEBHOOK_URI,
+  LUCISSI_CARE_SHOPIFY_API_VERSION,
+  LUCISSI_CARE_SHOPIFY_DOMAIN,
   buildWebhookSubscriptionPlan,
   redactWebhookSubscriptionPlan,
   validateWebhookConfiguration,
@@ -10,9 +10,9 @@ import {
 
 const apply = process.argv.includes('--apply');
 const config = validateWebhookConfiguration({
-  shopDomain: process.env.SHOPIFY_SHOP_DOMAIN || SAENGAK_SHOPIFY_DOMAIN,
-  apiVersion: process.env.SHOPIFY_API_VERSION || SAENGAK_SHOPIFY_API_VERSION,
-  webhookUri: process.env.SHOPIFY_WEBHOOK_URI || SAENGAK_ORDER_WEBHOOK_URI,
+  shopDomain: process.env.SHOPIFY_SHOP_DOMAIN || LUCISSI_CARE_SHOP_DOMAIN,
+  apiVersion: process.env.SHOPIFY_API_VERSION || LUCISSI_CARE_SHOPIFY_API_VERSION,
+  webhookUri: process.env.SHOPIFY_WEBHOOK_URI || LUCISSI_CARE_ORDER_WEBHOOK_URI,
 });
 
 const endpoint = `https://${config.shopDomain}/admin/api/${config.apiVersion}/graphql.json`;

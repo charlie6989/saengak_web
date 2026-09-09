@@ -3,7 +3,7 @@ import { siteContent } from '../src/content/site';
 
 describe('Site Content & Brand Alignment', () => {
   it('should maintain the reviewed legal and support information', () => {
-    expect(siteContent.brandName).toBe('SAENGAK');
+    expect(siteContent.brandName).toBe('LUCISSI CARE');
     expect(siteContent.legalName).toBe('拜悠衣品有限公司');
     expect(siteContent.taxId).toBe('90014835');
     expect(siteContent.companyEmail).toBe('Company@lucissi.com');

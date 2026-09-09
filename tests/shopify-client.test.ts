@@ -9,6 +9,7 @@ import {
   getShopifyCollections,
   getShopifyCollectionByHandle,
   getShopifyArticles,
+  normalizeShopifyArticle,
   isPublicShopifyArticle,
   isPublicShopifyProduct,
   checkCartVariantsAvailability,
@@ -244,7 +245,7 @@ describe('Shopify Storefront SDK Client', () => {
       })).toBe(false);
     });
 
-    it('requires an explicit SAENGAK/public tag before exposing Shopify articles', () => {
+    it('requires an explicit brand/public tag before exposing Shopify articles', () => {
       const article = {
         id: 'article-1',
         title: '品牌文章',
@@ -254,6 +255,30 @@ describe('Shopify Storefront SDK Client', () => {
       };
       expect(isPublicShopifyArticle(article)).toBe(false);
       expect(isPublicShopifyArticle({ ...article, tags: ['SAENGAK'] })).toBe(true);
+    });
+
+    it('normalizes legacy storefront copy without rewriting the SAENGAK product-brand tag', () => {
+      const article = normalizeShopifyArticle({
+        id: 'article-legacy-store-name',
+        title: '我們如何整理產品與內容：SAENGAK 編輯團隊的透明度承諾',
+        handle: 'how-we-review-products-and-content',
+        excerpt: 'SAENGAK 韓國質感生活選品的內容說明',
+        contentHtml: '<p>SAENGAK 堅持透明，也會介紹 SAENGAK 商品。</p>',
+        publishedAt: '2026-09-01T00:00:00Z',
+        image: { url: '/article.jpg', altText: 'SAENGAK 品牌編輯標準' },
+        blog: { handle: 'care-talk', title: 'SAENGAK Talk' },
+        authorV2: { name: 'SAENGAK 編輯團隊' },
+        tags: ['SAENGAK', '公開'],
+      });
+
+      expect(article.title).toBe('我們如何整理產品與內容：LUCISSI CARE 編輯團隊的透明度承諾');
+      expect(article.excerpt).toBe('LUCISSI CARE 韓國質感生活選品的內容說明');
+      expect(article.contentHtml).toContain('LUCISSI CARE 堅持透明');
+      expect(article.contentHtml).toContain('SAENGAK 商品');
+      expect(article.image?.altText).toBe('LUCISSI CARE 品牌編輯標準');
+      expect(article.blog?.title).toBe('LUCISSI Talk');
+      expect(article.author).toBe('LUCISSI CARE 編輯團隊');
+      expect(article.tags).toEqual(['LUCISSI CARE', '公開']);
     });
   });
 

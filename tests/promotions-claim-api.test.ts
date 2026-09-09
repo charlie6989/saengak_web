@@ -91,7 +91,7 @@ function createAdminClientMock(options: {
   return { from, __mocks: { promotionsUpsert, couponsInsert } };
 }
 
-describe('SAENGAK 會員領券歸戶 API 測試 (api/promotions/claim.ts)', () => {
+describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     process.env.SUPABASE_URL = 'https://example.supabase.co';

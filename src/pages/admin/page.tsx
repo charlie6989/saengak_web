@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const modules = [
-  ['商品目錄', '正式啟用', 'Storefront API 已連接 SAENGAK Shopify，價格、庫存與可售狀態以 Shopify 為準'],
+  ['商品目錄', '正式啟用', 'Storefront API 已連接 LUCISSI CARE Shopify，價格、庫存與可售狀態以 Shopify 為準'],
   ['搜尋排序', '可用', '繁中同義詞與加權相關性已啟用'],
   ['編輯精選', '可用', '尚未宣稱為真實五星評分'],
   ['購物車／金流', '正式啟用', 'Shopify Checkout 已解鎖；TapPay 作用中且測試模式關閉，結帳前須登入會員'],

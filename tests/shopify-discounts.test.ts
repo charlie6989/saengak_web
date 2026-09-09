@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { mapDiscountNodeToPromotion } from '../api/shopify/discounts.js';
 
-describe('SAENGAK Shopify 折扣轉換純函式測試 (api/shopify/discounts.ts mapDiscountNodeToPromotion)', () => {
+describe('LUCISSI CARE Shopify 折扣轉換純函式測試 (api/shopify/discounts.ts mapDiscountNodeToPromotion)', () => {
   describe('1. 折扣類型判斷 (percentage / fixed_amount / free_shipping) 與分類 (category)', () => {
     it('DiscountCodeBasic 固定金額折扣且代碼以 WELCOME 開頭時，判定為 fixed_amount 與 welcome 分類', () => {
       const node = {

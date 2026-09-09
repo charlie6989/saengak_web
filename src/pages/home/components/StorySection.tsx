@@ -33,7 +33,7 @@ export default function StorySection() {
             </h3>
             <div className="space-y-6 text-gray-600" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               <p className="leading-relaxed">
-                SAENGAK 希望以清楚、容易理解的方式整理女性日常護理商品資訊，讓每個人都能依自己的需求做選擇。
+                LUCISSI CARE 希望以清楚、容易理解的方式整理女性日常護理商品資訊，讓每個人都能依自己的需求做選擇。
               </p>
               <p className="leading-relaxed">
                 商品成分、測試、認證與使用方式，以原廠文件、正式商品欄位及包裝標示為準；尚未取得來源的資訊不自行推定。

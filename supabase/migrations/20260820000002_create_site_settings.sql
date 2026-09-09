@@ -1,4 +1,4 @@
--- SAENGAK Database Migration: 建立全站系統設定表 (site_settings)
+-- LUCISSI CARE Database Migration: 建立全站系統設定表 (site_settings)
 -- 規範來源: docs/00_DECISION_LOG.md & docs/CHECKOUT_PAYMENT_SPEC.md
 
 begin;

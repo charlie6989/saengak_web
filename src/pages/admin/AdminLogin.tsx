@@ -75,7 +75,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess }) => {
         {/* 標頭與 Logo */}
         <div className="mb-8 text-center">
           <div className="mx-auto inline-flex items-center space-x-2 rounded-xl bg-[#5B3D48] px-4 py-2 text-white shadow-md">
-            <span className="text-base font-black tracking-widest">SAENGAK</span>
+            <span className="text-base font-black tracking-widest">LUCISSI CARE</span>
             <span className="text-xs font-semibold opacity-90">| 管理後台</span>
           </div>
           <h1 className="mt-4 text-2xl font-bold text-gray-900">管理員安全登入</h1>
