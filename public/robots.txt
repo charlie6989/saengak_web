@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /profile
 
-Sitemap: https://www.saengak.com.tw/sitemap.xml
+Sitemap: https://lucissicare.com/sitemap.xml
