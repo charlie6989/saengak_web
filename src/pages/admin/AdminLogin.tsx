@@ -128,7 +128,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess }) => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@saengak.com.tw"
+                placeholder="管理員電子郵件"
                 disabled={isLoading}
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-[#5B3D48] focus:outline-none focus:ring-2 focus:ring-[#5B3D48]/20 disabled:bg-gray-100"
               />

@@ -24,7 +24,7 @@ describe('Shopify webhook subscription plan', () => {
     expect(validateWebhookConfiguration({
       shopDomain: 'gh2xgs-zf.myshopify.com',
       apiVersion: '2026-07',
-      webhookUri: LUCISSI_CARE_ORDER_WEBHOOK_URI.replace('www.saengak.com.tw/', 'www.saengak.com.tw:443/'),
+      webhookUri: LUCISSI_CARE_ORDER_WEBHOOK_URI.replace('lucissicare.com/', 'lucissicare.com:443/'),
     }).webhookUri).toBe(LUCISSI_CARE_ORDER_WEBHOOK_URI);
   });
 
@@ -46,7 +46,7 @@ describe('Shopify webhook subscription plan', () => {
     `https://user:secret@${new URL(LUCISSI_CARE_ORDER_WEBHOOK_URI).host}${new URL(LUCISSI_CARE_ORDER_WEBHOOK_URI).pathname}`,
     `${LUCISSI_CARE_ORDER_WEBHOOK_URI}?token=secret`,
     `${LUCISSI_CARE_ORDER_WEBHOOK_URI}#secret`,
-    LUCISSI_CARE_ORDER_WEBHOOK_URI.replace('www.saengak.com.tw/', 'www.saengak.com.tw:444/'),
+    LUCISSI_CARE_ORDER_WEBHOOK_URI.replace('lucissicare.com/', 'lucissicare.com:444/'),
   ])('refuses sensitive or non-default URI components: %s', (webhookUri) => {
     expect(() => validateWebhookConfiguration({
       shopDomain: 'gh2xgs-zf.myshopify.com',

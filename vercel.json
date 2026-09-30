@@ -47,5 +47,29 @@
             "path": "/api/invoice/guangmao",
             "schedule": "0 1 * * *"
         }
+    ],
+    "redirects": [
+        {
+            "source": "/:path((?!api(?:/|$)|auth/confirm(?:/|$)|reset-password(?:/|$)).*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "saengak.com.tw"
+                }
+            ],
+            "destination": "https://lucissicare.com/:path",
+            "permanent": true
+        },
+        {
+            "source": "/:path((?!api(?:/|$)|auth/confirm(?:/|$)|reset-password(?:/|$)).*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "www.saengak.com.tw"
+                }
+            ],
+            "destination": "https://lucissicare.com/:path",
+            "permanent": true
+        }
     ]
 }

@@ -1,7 +1,7 @@
 export const LUCISSI_CARE_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
 export const LUCISSI_CARE_SHOPIFY_API_VERSION = '2026-07';
 export const LUCISSI_CARE_ORDER_WEBHOOK_URI =
-  'https://www.saengak.com.tw/api/webhooks/shopify';
+  'https://lucissicare.com/api/webhooks/shopify';
 
 export const REQUIRED_ORDER_WEBHOOK_TOPICS = [
   'ORDERS_CREATE',
@@ -33,7 +33,7 @@ export function validateWebhookConfiguration({ shopDomain, apiVersion, webhookUr
   }
   if (
     parsedUri.protocol !== 'https:' ||
-    parsedUri.hostname !== 'www.saengak.com.tw' ||
+    parsedUri.hostname !== 'lucissicare.com' ||
     parsedUri.pathname !== '/api/webhooks/shopify' ||
     parsedUri.username !== '' ||
     parsedUri.password !== '' ||
