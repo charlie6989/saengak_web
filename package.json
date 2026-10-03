@@ -33,7 +33,7 @@
     "unplugin-auto-import": "^19.3.0",
     "vercel": "^59.4.0",
     "vite": "7.3.6",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   },
   "name": "lucissi-care-web",
   "description": "LUCISSI CARE pre-launch commerce website and release verification baseline",
