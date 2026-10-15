@@ -141,13 +141,6 @@ supabase/FULL_DATABASE_SCHEMA.sql
 # Supabase CLI local link/session state
 supabase/.temp/
 
-# Excluded Docs from remote GitHub repository
-docs/
-AGENTS.md
-CONTRIBUTING.md
-README.md
-SECURITY.md
-SUPPORT.md
 .env*
 /product/
 .agents/
@@ -216,5 +209,9 @@ scripts/upload-vercel-env.mjs
 scripts/*.ps1
 scripts/final_comprehensive_audit.mjs
 scripts/query_last_product.mjs
-scripts/*.mjs
-creative/
+
+# Keep project knowledge, source assets and the empty environment template versioned.
+!.env.example
+
+# Local browser diagnostics
+.playwright-cli/
