@@ -1,0 +1,82 @@
+{
+  "createdAt": "2026-09-07T16:04:14.194Z",
+  "assets": [
+    {
+      "output": "public/images/editorial-v2/hero-care.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Editorial photography for SAENGAK Korean feminine daily care. Warm ivory, muted sage, pale oak, restrained dusty rose accents. Realistic soft window light from left, coherent contact shadows, natural tactile texture, calm lived-in minimalist home, neutral white balance. No text, logos, fake product bottles, certificates, clinical claims, collage or exaggerated bokeh. Wide home bathroom still life, clean folded ivory cotton towel and muted sage linen on right third beside a small ceramic basin with clean water, soft window shadows. Left 55 percent is softly lit empty warm ivory wall for headline. No plant leaves touching the water. No person. Clean credible daily hygiene, quiet morning.",
+      "reference": null,
+      "createdAt": "2026-09-07T15:58:26.804Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "output": "public/images/editorial-v2/hero-comfort.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Editorial photography for SAENGAK Korean feminine daily care. Warm ivory, muted sage, pale oak, restrained dusty rose accents. Realistic soft window light from left, coherent contact shadows, natural tactile texture, calm lived-in minimalist home, neutral white balance. No text, logos, fake product bottles, certificates, clinical claims, collage or exaggerated bokeh. Wide close detail of folded ivory and sage cotton clothing on right third of an oak bedroom bench with light linen curtain. Visible natural weave, clean not rumpled. Left half largely uncluttered ivory negative space for heading. Communicate everyday comfort, not fashion glamour.",
+      "reference": null,
+      "createdAt": "2026-09-07T15:58:26.233Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "output": "public/images/editorial-v2/conversation.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Editorial photography for SAENGAK Korean feminine daily care. Warm ivory, muted sage, pale oak, restrained dusty rose accents. Realistic soft window light from left, coherent contact shadows, natural tactile texture, calm lived-in minimalist home, neutral white balance. No text, logos, fake product bottles, certificates, clinical claims, collage or exaggerated bokeh. Two adult East Asian women in their late twenties and forties in relaxed neutral casual clothes sitting in an ivory living room, candid warm conversation, natural expressions and anatomically correct hands holding ceramic mugs. Not looking at camera. No doctor or clinic. Both faces within central half, bottom quarter uncluttered for a website caption card. Wide photograph.",
+      "reference": null,
+      "createdAt": "2026-09-07T15:58:28.193Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "output": "public/images/editorial-v2/balance-portrait.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Editorial photography for SAENGAK Korean feminine daily care. Warm ivory, muted sage, pale oak, restrained dusty rose accents. Realistic soft window light from left, coherent contact shadows, natural tactile texture, calm lived-in minimalist home, neutral white balance. No text, logos, fake product bottles, certificates, clinical claims, collage or exaggerated bokeh. Adult East Asian woman comfortably sitting at a window in ivory cotton clothes, taking a quiet mindful pause with eyes softly looking outside, hands relaxed on lap. Natural side profile, no beauty treatment, no makeup advertisement pose. Muted sage linen, pale wood. Portrait composition.",
+      "reference": null,
+      "createdAt": "2026-09-07T15:58:25.899Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "output": "public/images/editorial-v2/editorial.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Editorial photography for SAENGAK Korean feminine daily care. Warm ivory, muted sage, pale oak, restrained dusty rose accents. Realistic soft window light from left, coherent contact shadows, natural tactile texture, calm lived-in minimalist home, neutral white balance. No text, logos, fake product bottles, certificates, clinical claims, collage or exaggerated bokeh. Overhead still life of an open blank notebook, wooden pencil, folded paper and blank tag on pale oak desk, edge of an ivory sleeve and natural adult hand about to write. Communicate careful editorial review and transparency. No visible writing or fake research evidence. Wide, restrained, no bottles.",
+      "reference": null,
+      "createdAt": "2026-09-07T15:58:25.925Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "output": "public/images/editorial-v2/home-portrait.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create an editorial lifestyle photograph for SAENGAK, a Korean feminine daily care brand. An adult East Asian woman in relaxed ivory cotton loungewear, naturally placing a folded clean towel on a pale oak bathroom shelf in a lived-in but tidy home. Candid three-quarter rear/side angle, natural hands, no posed skincare gesture, no product bottles or packaging. Warm ivory plaster, small muted sage towel, restrained pale wood. Soft morning window light from left with physically coherent shadows, natural skin and textile detail, calm everyday care. Portrait composition, subject in middle upper half with clear lower quarter for an existing website caption. No embedded text, no logos, no medical setting, no artificial plastic skin, no flowers in foreground, no collage. Premium but believable Korean editorial photography, subtle film grain, neutral white balance, not orange.\n",
+      "reference": null,
+      "createdAt": "2026-09-07T15:56:16.097Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "output": "public/images/editorial-v2/product-hero.webp",
+      "source": {
+        "title": "Saengak 私密雙層修護精華噴霧",
+        "handle": "私密雙層修護精華噴霧-ph平衡保濕-30ml",
+        "vendor": "SAENGAK",
+        "featuredImage": {
+          "url": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e7742379-2812-46ac-9cb2-de9072a99053.jpg?v=1788327263"
+        }
+      },
+      "background": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Editorial photography for SAENGAK Korean feminine daily care. Warm ivory, muted sage, pale oak, restrained dusty rose accents. Realistic soft window light from left, coherent contact shadows, natural tactile texture, calm lived-in minimalist home, neutral white balance. No text, logos, fake product bottles, certificates, clinical claims, collage or exaggerated bokeh. An empty warm ivory ceramic bathroom counter occupying lower quarter with a gently curving seamless warm ivory plaster wall behind. Soft window light left, restrained sage fabric in far right background only. No bottles, objects or products at all. Leave right central area clear for later real product insertion and left half clear for text. Camera straight on, subtle natural surface detail. Wide commercial background plate.",
+        "reference": null,
+        "createdAt": "2026-09-07T15:58:27.364Z",
+        "mimeType": "image/jpeg"
+      },
+      "provider": "Photoroom v2/edit production",
+      "parameters": {
+        "removeBackground": true,
+        "outputSize": "1920x1080",
+        "padding": 0.18,
+        "paddingLeft": 0.45,
+        "paddingRight": 0.04,
+        "horizontalAlignment": "right",
+        "shadow.mode": "ai.soft"
+      },
+      "note": "Original product pixels retained by background removal and compositing. No relight, text removal, beautifier or product regeneration."
+    }
+  ]
+}

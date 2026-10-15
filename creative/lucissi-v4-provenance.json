@@ -1,0 +1,55 @@
+{
+  "records": [
+    {
+      "asset": "public/images/lucissi-v4/all-products.webp",
+      "initial": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create a sophisticated photographic campaign image for the full product assortment of LUCISSI care, a women's intimate daily care shop. Use the attached reference photographs as exact PRODUCT IDENTITY references only, not composition or lighting references. Reference 1 is the tall dark green Saengak FEMININE FOAMING WASH bottle. Reference 2 is the smaller translucent white and green Saengak FEMININE CALMING MIST with transparent cap. Reference 3 is the green Saengak FEMININE CLEANSING WIPES square carton. Preserve these actual product shapes, packaging colors, proportions and printed Saengak typography. Only one of each product. The wash should be about twice as tall as the mist. Re-photograph them together naturally in one believable, beautiful still life with cohesive light, perspective and realistic contact shadows. Do not paste in the source backgrounds or hands.\n\nArt direction: refined boutique apothecary meets contemporary feminine design. An ivory lacquer vanity with a low oval porcelain tray, creamy ivory wall in subtle shadow and a translucent dusty rose glass panel in the far right background. Put the three care products in a composed, asymmetric group on the right half. A SMALL neatly folded cream cotton brief at the far right behind the tray is the only clothing element, a secondary accent, maximum ten percent of the visual. Personal care products must be the unmistakable main subject. No people, model, wardrobe, hangers, fashion setting, gift box, flowers, decorative stones or spa towels.\n\nPhotographic quality: premium still life shot with a 90mm lens, crisp legible labels, authentic matte paper grain, delicate glass reflections, neutral natural morning side light, very gentle shadows. Restrained palette warm ivory, dusty rose, muted plum detail, retaining true green product packaging. Sophisticated tonal depth, airy but not washed out, no yellow cast, no grey haze, no vignette, no collage, no CGI plastic look. Wide 16:9 full bleed image, products fully inside x58%-89% and y22%-82%, enough margin above caps and below tray. Left 48 percent is uninterrupted softly lit ivory space for website copy. No text or typography anywhere except the authentic printing ON the referenced products. Do not include a website, heading, caption, logo overlay, border or watermark.\n",
+        "reference": ".tmp/image-audit/product-wash.jpg",
+        "references": [
+          ".tmp/image-audit/product-wash.jpg",
+          ".tmp/image-audit/product-spray.jpg",
+          ".tmp/image-audit/product-wipes.jpg"
+        ],
+        "createdAt": "2026-09-07T17:48:45.033Z",
+        "mimeType": "image/jpeg"
+      },
+      "refinement": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit reference image 1. Keep its composition, background, lighting, palette, vanity, tray, mist bottle, packaging label text and folded cotton exactly the same. Fix just two product details: (1) the tall green wash bottle should have the simple CLOSED glossy black cylindrical cap exactly as seen on the wash bottle in reference image 2. No exposed pump spout, no gold hardware, no gold ring or neck. Keep bottle body green and Saengak label intact. (2) Place the green wipes carton UPRIGHT on its flat bottom on the tray, naturally standing behind and to the right of the mist bottle. It must not balance or levitate on its corner. Clear believable contact shadow. Preserve the carton size and label text. Everything else stays unchanged. No new text anywhere. Return the complete wide 16:9 photograph with same quiet left space.\n",
+        "reference": ".tmp/image-audit/v4-all-products.jpg",
+        "references": [
+          ".tmp/image-audit/v4-all-products.jpg",
+          ".tmp/image-audit/product-wash.jpg"
+        ],
+        "createdAt": "2026-09-07T17:49:39.425Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "asset": "public/images/lucissi-v4/intimate-care.webp",
+      "initial": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create a beautiful high-end beauty editorial product photograph for the intimate care collection of LUCISSI care. Attached images are precise PRODUCT IDENTITY references. Reference 1: Saengak tall dark green FEMININE FOAMING WASH pump bottle with black cap. Reference 2: Saengak small frosted white and green FEMININE CALMING MIST bottle with clear cap. Preserve their actual silhouette, cap structure, label layout, typography and colors. Re-photograph these two real products together, with the taller wash at the back right and the smaller mist forward left. Wash height about twice the mist. Do not bring in the source background, hands or soap foam. Do not invent additional cosmetics.\n\nScene: beautifully composed still life on a smooth warm ivory ceramic vanity shelf. A thin sheet of textured translucent glass rises in the right background; soft reflected daylight passes through it with delicate water-like caustic light on the wall and counter, understated and physically believable. One small shallow clear glass dish in front carries a few clear water droplets, offering a sense of clean daily care. A very subtle dusty rose plane is visible far right. Products look grounded and naturally photographed in the scene, no cutout edges. The scene should feel exceptionally clean, tactile, calm and refined. No sink faucet, hands, people, fabric, clothing, towels, plants, stones, fake luxury gold props, medical symbols, text claims or powdery filter.\n\n90mm commercial still-life lens, precise label detail, nuanced specular highlights on caps and real glass, natural soft directional studio daylight. Warm ivory and restrained blush, with green from the real products only. Clear contrast without harshness, NO fog or grey overlay, no yellow lighting. Landscape 16:9, all objects grouped inside right half x60%-89%, y20%-82%, generous breathing space. Left 48 percent clean luminous ivory wall and surface for plum website text. Never add any title, slogan, website copy or logo overlay. Text may appear ONLY as the correct existing labels on the referenced products. Single seamless photograph, not collage, no borders.\n",
+        "reference": ".tmp/image-audit/product-wash.jpg",
+        "references": [
+          ".tmp/image-audit/product-wash.jpg",
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T17:48:37.580Z",
+        "mimeType": "image/jpeg"
+      },
+      "refinement": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit reference image 1. Keep the beautiful composition, products' positions, warm ivory scene, textured glass, water light patterns, clear glass dish, mist bottle and all product labels identical. Only correct the tall green wash bottle's top: replace the exposed pump with the simple CLOSED glossy black cylindrical protective cap seen in reference image 2, matching that authentic product's cap structure. No visible spout, no exposed dispenser neck, no gold elements. Keep the actual green bottle body and Saengak label unchanged. Cap highlights must match the scene's existing natural light. No other changes. No text overlay. Output full wide 16:9 photograph.\n",
+        "reference": ".tmp/image-audit/v4-intimate-care.jpg",
+        "references": [
+          ".tmp/image-audit/v4-intimate-care.jpg",
+          ".tmp/image-audit/product-wash.jpg"
+        ],
+        "createdAt": "2026-09-07T17:49:40.973Z",
+        "mimeType": "image/jpeg"
+      }
+    }
+  ]
+}

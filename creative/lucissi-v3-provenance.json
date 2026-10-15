@@ -1,0 +1,108 @@
+{
+  "date": "2026-09-07T17:40:43.441Z",
+  "records": [
+    {
+      "asset": "public/images/lucissi-v3/daily.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create a premium photographic website banner for LUCISSI care, a curated women daily intimate care and comfortable underwear shop. Contemporary quiet feminine editorial, sophisticated but approachable. Palette warm ivory #F8F5F1, muted dusty rose #E7D6D4 and restrained plum #5B3D48. Neutral soft daylight, subtle film texture, true material details. Not yellow or orange, no green spa aesthetic, no excessive towels or flowers. Single coherent photograph, no collage, no words, no logos, no invented cosmetic bottles, no labels, no certificates. Wide 16:9. Keep subjects in right half and quiet lightly textured ivory negative space in left 45 percent, for dark website text. Edges must be composed for a full bleed banner; no borders. An adult East Asian woman in a simple white cotton shirt, naturally choosing a neatly folded blush camisole from a shallow wardrobe drawer. Right half shows her upper body from three-quarter back angle and tactile cotton garments. Relaxed private daily routine, believable home interior, pale ivory wardrobe and muted rose curtain. Show ordinary comfort, not a fashion pose or seduction. No face near frame edges.",
+      "reference": null,
+      "createdAt": "2026-09-07T17:36:30.809Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "asset": "public/images/lucissi-v3/wear.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create a premium photographic website banner for LUCISSI care, a curated women daily intimate care and comfortable underwear shop. Contemporary quiet feminine editorial, sophisticated but approachable. Palette warm ivory #F8F5F1, muted dusty rose #E7D6D4 and restrained plum #5B3D48. Neutral soft daylight, subtle film texture, true material details. Not yellow or orange, no green spa aesthetic, no excessive towels or flowers. Single coherent photograph, no collage, no words, no logos, no invented cosmetic bottles, no labels, no certificates. Wide 16:9. Keep subjects in right half and quiet lightly textured ivory negative space in left 45 percent, for dark website text. Edges must be composed for a full bleed banner; no borders. Elegant overhead flat lay of unbranded simple ivory cotton briefs with a tiny matching fabric bow and muted dusty rose cotton camisole on softly draped ivory bedding, placed on right half. No body or model, no packaging. Fine knit texture, natural seams and gentle wrinkles, refined shopping editorial. Left half is smooth ivory bedding with delicate shadows.",
+      "reference": null,
+      "createdAt": "2026-09-07T17:36:34.632Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "asset": "public/images/lucissi-v3/cleansing.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create a premium photographic website banner for LUCISSI care, a curated women daily intimate care and comfortable underwear shop. Contemporary quiet feminine editorial, sophisticated but approachable. Palette warm ivory #F8F5F1, muted dusty rose #E7D6D4 and restrained plum #5B3D48. Neutral soft daylight, subtle film texture, true material details. Not yellow or orange, no green spa aesthetic, no excessive towels or flowers. Single coherent photograph, no collage, no words, no logos, no invented cosmetic bottles, no labels, no certificates. Wide 16:9. Keep subjects in right half and quiet lightly textured ivory negative space in left 45 percent, for dark website text. Edges must be composed for a full bleed banner; no borders. Quiet bathroom scene on right half: two adult feminine hands under a thin stream of clean water from a brushed silver faucet above an ivory ceramic sink, with a small folded dusty rose facecloth in background. Gentle everyday washing. No soap bars or brushes, no bottles. Anatomically correct hands, no extra fingers. Left half clean warm ivory wall.",
+      "reference": null,
+      "createdAt": "2026-09-07T17:36:30.522Z",
+      "mimeType": "image/jpeg",
+      "postProcess": {
+        "provider": "Photoroom",
+        "endpoint": "v2/edit",
+        "removeBackground": false,
+        "textRemovalMode": "ai.artificial",
+        "reason": "Remove unintended generated English copy before use."
+      }
+    },
+    {
+      "asset": "public/images/lucissi-v3/promotion.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create a premium photographic website banner for LUCISSI care, a curated women daily intimate care and comfortable underwear shop. Contemporary quiet feminine editorial, sophisticated but approachable. Palette warm ivory #F8F5F1, muted dusty rose #E7D6D4 and restrained plum #5B3D48. Neutral soft daylight, subtle film texture, true material details. Not yellow or orange, no green spa aesthetic, no excessive towels or flowers. Single coherent photograph, no collage, no words, no logos, no invented cosmetic bottles, no labels, no certificates. Wide 16:9. Keep subjects in right half and quiet lightly textured ivory negative space in left 45 percent, for dark website text. Edges must be composed for a full bleed banner; no borders. A beautiful open warm ivory gift box lined with dusty rose tissue, with a folded ivory cotton camisole and an unbranded rose fabric pouch inside. A loose deep plum ribbon rests on the tabletop. All objects clustered in right half, ample left ivory background. Feels like a thoughtful everyday care gift, not luxury jewelry. Realistic contact shadows, no price tags or holiday decorations.",
+      "reference": null,
+      "createdAt": "2026-09-07T17:36:31.103Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "asset": "public/images/lucissi-v3/community.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create a premium photographic website banner for LUCISSI care, a curated women daily intimate care and comfortable underwear shop. Contemporary quiet feminine editorial, sophisticated but approachable. Palette warm ivory #F8F5F1, muted dusty rose #E7D6D4 and restrained plum #5B3D48. Neutral soft daylight, subtle film texture, true material details. Not yellow or orange, no green spa aesthetic, no excessive towels or flowers. Single coherent photograph, no collage, no words, no logos, no invented cosmetic bottles, no labels, no certificates. Wide 16:9. Keep subjects in right half and quiet lightly textured ivory negative space in left 45 percent, for dark website text. Edges must be composed for a full bleed banner; no borders. Two adult East Asian women of different ages having an easy thoughtful conversation at a small round table in a welcoming cream living room. One wearing ivory cotton, one dusty rose. Natural eye contact and candid gestures, hands relaxed on table. Put both women together within right 55 percent so left side is quiet wall and soft curtain. No medical props, no professional credentials or clinical setting.",
+      "reference": null,
+      "createdAt": "2026-09-07T17:36:31.076Z",
+      "mimeType": "image/jpeg",
+      "postProcess": {
+        "provider": "Photoroom",
+        "endpoint": "v2/edit",
+        "removeBackground": false,
+        "textRemovalMode": "ai.artificial",
+        "reason": "Remove unintended generated English copy before use."
+      }
+    },
+    {
+      "asset": "public/images/lucissi-v3/about.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create a premium photographic website banner for LUCISSI care, a curated women daily intimate care and comfortable underwear shop. Contemporary quiet feminine editorial, sophisticated but approachable. Palette warm ivory #F8F5F1, muted dusty rose #E7D6D4 and restrained plum #5B3D48. Neutral soft daylight, subtle film texture, true material details. Not yellow or orange, no green spa aesthetic, no excessive towels or flowers. Single coherent photograph, no collage, no words, no logos, no invented cosmetic bottles, no labels, no certificates. Wide 16:9. Keep subjects in right half and quiet lightly textured ivory negative space in left 45 percent, for dark website text. Edges must be composed for a full bleed banner; no borders. An adult female shop editor seen from shoulder down carefully arranging folded cotton underwear, a soft rose fabric pouch and a blank ivory note on a clean worktable. Careful hands and textile details within right half. Shows thoughtful product selection for women, not laboratory testing. No person looking at camera. No bottles, fake writing, charts or certificates.",
+      "reference": null,
+      "createdAt": "2026-09-07T17:36:31.845Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "asset": "public/images/lucissi-v3/editorial.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create a premium photographic website banner for LUCISSI care, a curated women daily intimate care and comfortable underwear shop. Contemporary quiet feminine editorial, sophisticated but approachable. Palette warm ivory #F8F5F1, muted dusty rose #E7D6D4 and restrained plum #5B3D48. Neutral soft daylight, subtle film texture, true material details. Not yellow or orange, no green spa aesthetic, no excessive towels or flowers. Single coherent photograph, no collage, no words, no logos, no invented cosmetic bottles, no labels, no certificates. Wide 16:9. Keep subjects in right half and quiet lightly textured ivory negative space in left 45 percent, for dark website text. Edges must be composed for a full bleed banner; no borders. An adult female editor at a neat ivory desk on right half, hands using pencil over a blank notebook alongside fabric swatches in cream and dusty rose. Show thoughtful reviewing and selection, overhead three-quarter angle. Left half empty warm ivory desk surface. No printed text, fake charts, certificates or claim of research.",
+      "reference": null,
+      "createdAt": "2026-09-07T17:36:34.039Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "asset": "public/images/lucissi-v3/balance-portrait.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create a premium photographic website banner for LUCISSI care, a curated women daily intimate care and comfortable underwear shop. Contemporary quiet feminine editorial, sophisticated but approachable. Palette warm ivory #F8F5F1, muted dusty rose #E7D6D4 and restrained plum #5B3D48. Neutral soft daylight, subtle film texture, true material details. Not yellow or orange, no green spa aesthetic, no excessive towels or flowers. Single coherent photograph, no collage, no words, no logos, no invented cosmetic bottles, no labels, no certificates. Wide 16:9. Keep subjects in right half and quiet lightly textured ivory negative space in left 45 percent, for dark website text. Edges must be composed for a full bleed banner; no borders. Portrait crop: adult East Asian woman in ivory cotton pajamas sitting comfortably on the edge of her bed, stretching arms gently and looking toward daylight. Plum throw at bottom and dusty rose pillow. Peaceful ordinary pause, honest skin texture. No yoga gym, no beauty treatment. Centered upper body and hands, clear background.",
+      "reference": null,
+      "createdAt": "2026-09-07T17:36:30.081Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "asset": "public/images/lucissi-v3/backdrop.webp",
+      "model": "gemini-3.1-flash-image",
+      "prompt": "Create a premium photographic website banner for LUCISSI care, a curated women daily intimate care and comfortable underwear shop. Contemporary quiet feminine editorial, sophisticated but approachable. Palette warm ivory #F8F5F1, muted dusty rose #E7D6D4 and restrained plum #5B3D48. Neutral soft daylight, subtle film texture, true material details. Not yellow or orange, no green spa aesthetic, no excessive towels or flowers. Single coherent photograph, no collage, no words, no logos, no invented cosmetic bottles, no labels, no certificates. Wide 16:9. Keep subjects in right half and quiet lightly textured ivory negative space in left 45 percent, for dark website text. Edges must be composed for a full bleed banner; no borders. Empty still life backdrop for later insertion of one real skincare spray bottle. Smooth warm ivory surface below and softly curved muted blush plaster wall behind, a graceful soft shadow on the left, very faint plum textile edge in far right background. Absolutely no products or objects on the surface. Entire scene in focus, minimal, physically plausible soft commercial lighting from upper left. Ground plane at bottom 20 percent.",
+      "reference": null,
+      "createdAt": "2026-09-07T17:36:28.146Z",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "asset": "public/images/lucissi-v3/product.webp",
+      "provider": "Photoroom",
+      "parameters": {
+        "removeBackground": "true",
+        "outputSize": "1920x1080",
+        "padding": "0.18",
+        "paddingLeft": "0.45",
+        "paddingRight": "0.04",
+        "horizontalAlignment": "right",
+        "shadow.mode": "ai.soft",
+        "outputFormat": "webp"
+      },
+      "source": ".tmp/image-audit/product-spray.jpg",
+      "background": ".tmp/image-audit/v3-backdrop.jpg",
+      "createdAt": "2026-09-07T17:39:02.940Z"
+    }
+  ]
+}

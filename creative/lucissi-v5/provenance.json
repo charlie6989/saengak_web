@@ -1,0 +1,743 @@
+{
+  "createdAt": "2026-09-07T18:07:22.946Z",
+  "records": [
+    {
+      "id": "home-welcome",
+      "placement": "首頁輪播 1",
+      "asset": "public/images/lucissi-v5/home-welcome.webp",
+      "bytes": 62862,
+      "sha256": "389bcfd06770fec7480954783796db42a2fa8832de4987bd73d08b102614376a",
+      "source": ".tmp/image-audit/v5-home-welcome.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: mist, wipes. An intimate care morning ritual, not a fashion scene: a cropped adult woman in an ivory long sleeve blouse places the referenced small mist into an open plum toiletry pouch on a pale pink vanity ledge. The referenced green wipes carton stands nearby. Only her graceful forearm enters from upper right, anatomically correct hand. Products are the visual anchor. Calm welcoming everyday care, no wardrobe or clothes display.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg",
+          ".tmp/image-audit/product-wipes.jpg"
+        ],
+        "createdAt": "2026-09-07T17:57:41.292Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "home-care",
+      "placement": "首頁輪播 2",
+      "asset": "public/images/lucissi-v5/home-care.webp",
+      "bytes": 107192,
+      "sha256": "de282178670481d490d58d970714e334d39070dd5135d16e633229e176db4d5f",
+      "source": ".tmp/image-audit/v5-home-care-refined.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit image 1. Remove the extra green soft wipes pouch entirely; only the tall dark GREEN wash with closed BLACK cylindrical cap and the smaller frosted white mist remain. Match their body colors and labels to reference images 2 and 3. Wash is dark forest green, not turquoise. No gold, no extra product. Keep the two bottles on the pink shelf and preserve water and glass background. Preserve all other composition, lighting, palette and real details. No invented text, typography, slogans or overlays. Output a single complete wide 16:9 photograph. No border. Do not add new props.",
+        "reference": ".tmp/image-audit/v5-home-care.jpg",
+        "references": [
+          ".tmp/image-audit/v5-home-care.jpg",
+          ".tmp/image-audit/product-wash.jpg",
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T18:01:26.259Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "home-wear",
+      "placement": "首頁輪播 3",
+      "asset": "public/images/lucissi-v5/home-wear.webp",
+      "bytes": 75530,
+      "sha256": "8994d92dd24cc1f1c237e67284c58eae653fc7dc89740adf74e80665ff967d2f",
+      "source": ".tmp/image-audit/v5-home-wear-refined.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit image 1. Remove EVERY cosmetic bottle, carton and pouch from the floor. Only the ivory cotton briefs on the stool and a folded cotton brief on the floor remain. No packaging and no products other than these garments. Keep the daylight, stool and fabric. Do not add anything. Preserve all other composition, lighting, palette and real details. No invented text, typography, slogans or overlays. Output a single complete wide 16:9 photograph. No border. Do not add new props.",
+        "reference": ".tmp/image-audit/v5-home-wear.jpg",
+        "references": [
+          ".tmp/image-audit/v5-home-wear.jpg"
+        ],
+        "createdAt": "2026-09-07T18:01:20.240Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "home-conversation",
+      "placement": "首頁輪播 4",
+      "asset": "public/images/lucissi-v5/home-conversation.webp",
+      "bytes": 97680,
+      "sha256": "969ebcfb6997dda891dae811bcac4813f9b1f189a74b08907b67c51dbd4bf4da",
+      "source": ".tmp/image-audit/v5-home-conversation.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Two adult East Asian women in their thirties, one with a short bob and one with shoulder-length hair, at a curved cream breakfast counter sharing a warm casual conversation. Cropped medium-wide candid scene, relaxed gestures, understated blush and ivory clothing, one transparent drinking glass. Subjects fully right half, no products, no generic office.",
+        "reference": null,
+        "references": [],
+        "createdAt": "2026-09-07T17:57:43.756Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "home-philosophy",
+      "placement": "首頁輪播 5",
+      "asset": "public/images/lucissi-v5/home-philosophy.webp",
+      "bytes": 131178,
+      "sha256": "88d17d3508c931bb6e116580b36a99ae3198b2fcb563d59886f94f00cacc14b0",
+      "source": ".tmp/image-audit/v5-home-philosophy-refined.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit image 1. Remove ALL cosmetic products from the little side table. Keep the same woman, journal, chair, doorway and daylight. The side table must be empty. No bottles, tubes or packages anywhere. Preserve all other composition, lighting, palette and real details. No invented text, typography, slogans or overlays. Output a single complete wide 16:9 photograph. No border. Do not add new props.",
+        "reference": ".tmp/image-audit/v5-home-philosophy.jpg",
+        "references": [
+          ".tmp/image-audit/v5-home-philosophy.jpg"
+        ],
+        "createdAt": "2026-09-07T18:01:20.874Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "home-solution-portrait",
+      "placement": "首頁護理推薦直式圖",
+      "asset": "public/images/lucissi-v5/home-solution-portrait.webp",
+      "bytes": 63572,
+      "sha256": "7b977747d0c02916699ddb4bbb2dafe81a11a776885b4f38bd75f837c1b01838",
+      "source": ".tmp/image-audit/v5-home-solution-portrait.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Portrait 3:4. Center subjects, all heads, hands and products inside safe 15%-85% frame. Leave lower 20% uncluttered for a small caption. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: mist, wash. A close-up of an adult hand holding the referenced mist gently above a smooth cream bathroom counter; the referenced wash sits in the background on the same counter. Elegant daylight, clean soft reflections. Correct hands, no soap bubbles, no anatomical body areas. Centered vertical photograph with whole bottles visible.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg",
+          ".tmp/image-audit/product-wash.jpg"
+        ],
+        "createdAt": "2026-09-07T17:57:59.655Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "home-wear-banner",
+      "placement": "首頁貼身穿著 banner",
+      "asset": "public/images/lucissi-v5/home-wear-banner.webp",
+      "bytes": 192304,
+      "sha256": "75db596a098d26aab3b9412824ba9b6bc7c7c4f37075192a96683c50964300a1",
+      "source": ".tmp/image-audit/v5-home-wear-banner-refined.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit image 1. Remove ALL bottles, tubes, cartons and wipes packs. Only the ivory cotton brief, its bow, and the dusty rose fabric remain. Increase the tactile clarity of stitching slightly. No cosmetic product anywhere. Preserve all other composition, lighting, palette and real details. No invented text, typography, slogans or overlays. Output a single complete wide 16:9 photograph. No border. Do not add new props.",
+        "reference": ".tmp/image-audit/v5-home-wear-banner.jpg",
+        "references": [
+          ".tmp/image-audit/v5-home-wear-banner.jpg"
+        ],
+        "createdAt": "2026-09-07T18:01:41.410Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "home-brand",
+      "placement": "首頁品牌選品 banner",
+      "asset": "public/images/lucissi-v5/home-brand.webp",
+      "bytes": 97558,
+      "sha256": "74bc48418e1938a8b569ab5fa0fdd9643c4b4f64ea372d29cfce430c3aa86107",
+      "source": ".tmp/image-audit/v5-home-brand.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: mist, wipes, wear. Overhead photographic composition of the referenced small mist, one green wipes carton, and one folded cream brief on three separate ivory paper sheets, arranged as an elegant curated assortment on a dusty rose worktable. One small plain plum fabric swatch. No stationery or text outside packaging, no round tray, no gift box.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg",
+          ".tmp/image-audit/product-wipes.jpg",
+          ".tmp/image-audit/product-underwear.jpg"
+        ],
+        "createdAt": "2026-09-07T17:58:11.273Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "home-talk-portrait",
+      "placement": "首頁私密對話直式圖",
+      "asset": "public/images/lucissi-v5/home-talk-portrait.webp",
+      "bytes": 73174,
+      "sha256": "e7a3b6a1e981b35a8aa8d4fd1d22705db8d270add66acbc436149be173c8ab0e",
+      "source": ".tmp/image-audit/v5-home-talk-portrait-refined.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit image 1. Remove all product cartons and cosmetic tubes from the table, keep just the drinking glass. Remove the thin white rectangular frame overlay and all margins or borders. Extend the actual cafe photograph naturally to every image edge. Keep the woman speaking and second person shoulder in foreground unchanged. Preserve all other composition, lighting, palette and real details. No invented text, typography, slogans or overlays. Output a single complete portrait 3:4 photograph. No border. Do not add new props.",
+        "reference": ".tmp/image-audit/v5-home-talk-portrait.jpg",
+        "references": [
+          ".tmp/image-audit/v5-home-talk-portrait.jpg"
+        ],
+        "createdAt": "2026-09-07T18:01:35.235Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "catalog-all",
+      "placement": "全部商品主圖",
+      "asset": "public/images/lucissi-v5/catalog-all.webp",
+      "bytes": 86604,
+      "sha256": "a272e48b2e1696b92455968b788a14ebc42301f7037942a72a367db39ea82ec3",
+      "source": ".tmp/image-audit/v5-catalog-all.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wash, mist, wipes, wear. An elegantly organized open ivory drawer photographed from a high three-quarter angle, with the referenced wash, mist, and green wipes carton in an inset cream compartment, and one SMALL folded cream brief in a separate slim side compartment. Drawer occupies right half. Three personal care products clearly dominate; garments less than ten percent of scene. Matte ivory vanity, warm neutral daylight and thin plum drawer lining. No wardrobe, no fashion model, no round tray.",
+        "reference": ".tmp/image-audit/product-wash.jpg",
+        "references": [
+          ".tmp/image-audit/product-wash.jpg",
+          ".tmp/image-audit/product-spray.jpg",
+          ".tmp/image-audit/product-wipes.jpg",
+          ".tmp/image-audit/product-underwear.jpg"
+        ],
+        "createdAt": "2026-09-07T17:58:27.707Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "catalog-care",
+      "placement": "私密護理主圖",
+      "asset": "public/images/lucissi-v5/catalog-care.webp",
+      "bytes": 38212,
+      "sha256": "79477dca1997cf2f763b99e4be035c21f755f4b3aeb0f96eeab815a1d9511758",
+      "source": ".tmp/image-audit/v5-catalog-care.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wash, mist. A carefully lit pair of the referenced wash and mist on two connected low ivory ceramic levels, a translucent curved rose glass sheet behind them. Close high-end intimate skincare still life with tiny clean water beads on ceramic only. Crisp labels, quiet graceful curves, natural contact shadows. No round dish, no fabric, no hands.",
+        "reference": ".tmp/image-audit/product-wash.jpg",
+        "references": [
+          ".tmp/image-audit/product-wash.jpg",
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T17:58:22.263Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "catalog-wear",
+      "placement": "貼身穿著主圖",
+      "asset": "public/images/lucissi-v5/catalog-wear.webp",
+      "bytes": 67518,
+      "sha256": "ad20ebb025ae674054d00f2b1aba41da5c3f4c856009ac33f655d212fe7f3fa1",
+      "source": ".tmp/image-audit/v5-catalog-wear.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wear. One ivory cotton brief matching reference laid flat inside a shallow pale blush drawer on the right, with a second folded pale pink brief behind it. Fine knit stitches and tiny bow visible; no labels or stickers. Top-down boutique underwear editorial, tidy and calm, no product bottle and no stool.",
+        "reference": ".tmp/image-audit/product-underwear.jpg",
+        "references": [
+          ".tmp/image-audit/product-underwear.jpg"
+        ],
+        "createdAt": "2026-09-07T17:58:26.328Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "catalog-feminine",
+      "placement": "女性護理分類主圖",
+      "asset": "public/images/lucissi-v5/catalog-feminine.webp",
+      "bytes": 122480,
+      "sha256": "66548ee2cbab4955977ad0a740e6363fcc946ec73df4f552b5352b55466e5df2",
+      "source": ".tmp/image-audit/v5-catalog-feminine.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wipes, mist. The referenced green wipes carton beside the referenced small mist in a standing open muted plum fabric toiletry case on a cream dressing table. Natural sunlight from a narrow window casts a clear soft diagonal shadow. On-the-go feminine care, no clothing.",
+        "reference": ".tmp/image-audit/product-wipes.jpg",
+        "references": [
+          ".tmp/image-audit/product-wipes.jpg",
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T17:58:34.253Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "catalog-cleansing",
+      "placement": "每日清潔分類主圖",
+      "asset": "public/images/lucissi-v5/catalog-cleansing.webp",
+      "bytes": 31696,
+      "sha256": "c4f21a21f0fb79e6bbb21faf879e6f1611e9ba27bda8f492c5d54bec5d5f6c13",
+      "source": ".tmp/image-audit/v5-catalog-cleansing.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wash. Only the referenced green wash bottle, closed glossy black cap, beside a thin line of water on an ivory ceramic sink ledge. Reflective pale blush wall, a few glistening droplets, pristine glasslike reflections. Close photograph showing material and package typography, no handwashing, no towels, no faucet.",
+        "reference": ".tmp/image-audit/product-wash.jpg",
+        "references": [
+          ".tmp/image-audit/product-wash.jpg"
+        ],
+        "createdAt": "2026-09-07T17:58:39.760Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "catalog-repair",
+      "placement": "深層修護分類主圖",
+      "asset": "public/images/lucissi-v5/catalog-repair.webp",
+      "bytes": 29850,
+      "sha256": "59ad4804209602346efca827d2d05d17c35274056f2ee6e6e59dbb60d78af41e",
+      "source": ".tmp/image-audit/v5-catalog-repair.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: mist. Only the referenced small mist standing in front of an upright clear rectangular prism on an ivory surface. Subtle reflected light creates a faint pale green highlight from the actual bottle, deep plum background sliver far right. Macro commercial detail with soft bright highlights, clean calm hydration theme. No other bottles, no bowl.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T17:58:44.855Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "catalog-comfort",
+      "placement": "舒適穿著分類主圖",
+      "asset": "public/images/lucissi-v5/catalog-comfort.webp",
+      "bytes": 82254,
+      "sha256": "46669ea952e8909e62513fff7d6ff74e61d608d8e9520f39e74b2b7b1899aa51",
+      "source": ".tmp/image-audit/v5-catalog-comfort-refined.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit image 1. Remove the inset rectangular photo effect and white border. Extend the same cream table and adult hands scene naturally to ALL edges in one seamless photograph. Keep hands and brief on right half, left clean cream table surface, no photograph inside a photograph. Preserve all other composition, lighting, palette and real details. No invented text, typography, slogans or overlays. Output a single complete wide 16:9 photograph. No border. Do not add new props.",
+        "reference": ".tmp/image-audit/v5-catalog-comfort.jpg",
+        "references": [
+          ".tmp/image-audit/v5-catalog-comfort.jpg"
+        ],
+        "createdAt": "2026-09-07T18:01:43.986Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "catalog-gel",
+      "placement": "凝膠分類主圖",
+      "asset": "public/images/lucissi-v5/catalog-gel.webp",
+      "bytes": 45362,
+      "sha256": "f05361dc852e554a24a204365eb7d5e3f71f65a385eda0c0921d7c497118e8a5",
+      "source": ".tmp/image-audit/v5-catalog-gel.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: gel. A faithful still life of the turquoise rectangular packaging and one slim turquoise capped applicator from the reference photograph. Product identity only: keep actual package proportions and color, rotate into a clean natural product presentation; do not copy original background. The box stands on ivory surface, applicator lies horizontally in front, subtle pale rose acrylic plane at far right. No human, no medical instruments beyond the reference product, no invented bottles.",
+        "reference": ".tmp/image-audit/product-gel.jpg",
+        "references": [
+          ".tmp/image-audit/product-gel.jpg"
+        ],
+        "createdAt": "2026-09-07T17:58:56.897Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "promotion-hero",
+      "placement": "優惠活動主圖",
+      "asset": "public/images/lucissi-v5/promotion-hero.webp",
+      "bytes": 70238,
+      "sha256": "aae9191632b92a47702d7e016da67b8d6362566bcf2879ea82666717773e5995",
+      "source": ".tmp/image-audit/v5-promotion-hero.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: mist, wipes. Thoughtful care gift: a CLOSED matte dusty rose rectangular gift box with a loosely tied plum ribbon, beside the referenced small mist and one referenced green wipes carton, all on a bright ivory ledge. Ribbon drapes naturally over ledge. Understated invitation to shop, no gift contents claims, no discount numbers, no garments.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg",
+          ".tmp/image-audit/product-wipes.jpg"
+        ],
+        "createdAt": "2026-09-07T17:58:57.957Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "promotion-welcome",
+      "placement": "新客優惠 banner",
+      "asset": "public/images/lucissi-v5/promotion-welcome.webp",
+      "bytes": 132958,
+      "sha256": "d7d64728287a7d4b95313d168c587d34122e3bb5eb15cf5002ff4df367b80ec0",
+      "source": ".tmp/image-audit/v5-promotion-welcome.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Landscape 16:9. Center objects compactly, all subjects inside middle 70 percent of width and height to allow wide banner crop. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: mist. A plain ivory envelope with a blank dusty rose card partly visible, a plum cord and the referenced small mist lying diagonally on a cream surface. Overhead still life, crisp simple welcoming composition. No written greeting, no coupon numbers, no gift box.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T17:59:02.796Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "promotion-discount",
+      "placement": "折扣優惠 banner",
+      "asset": "public/images/lucissi-v5/promotion-discount.webp",
+      "bytes": 74920,
+      "sha256": "c68c0ce75dff96d8fe822864e5ffdb68b0bd0593363bd463da71cc8affbe6d99",
+      "source": ".tmp/image-audit/v5-promotion-discount.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Landscape 16:9. Center objects compactly, all subjects inside middle 70 percent of width and height to allow wide banner crop. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wash, wipes. The referenced wash and green wipes carton arranged diagonally on alternating ivory and muted pink flat paper layers. Graphic but physically photographed product pairing, directional daylight, no ribbon, no envelope, no text outside product labels.",
+        "reference": ".tmp/image-audit/product-wash.jpg",
+        "references": [
+          ".tmp/image-audit/product-wash.jpg",
+          ".tmp/image-audit/product-wipes.jpg"
+        ],
+        "createdAt": "2026-09-07T17:59:02.346Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "promotion-shipping",
+      "placement": "免運優惠 banner",
+      "asset": "public/images/lucissi-v5/promotion-shipping.webp",
+      "bytes": 110218,
+      "sha256": "8c85dbb3ea5cd5ed3a82c8eb3608adf8c438cad4bcf540d83516a267e3d225f4",
+      "source": ".tmp/image-audit/v5-promotion-shipping.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Landscape 16:9. Center objects compactly, all subjects inside middle 70 percent of width and height to allow wide banner crop. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wipes. A natural adult hand folds ivory tissue into an open small cream shipping carton on a clean packing desk. The referenced wipes carton visible inside the tissue, plum paper tape roll at the side. Thoughtful delivery preparation, no address label, no writing, no tape dispenser.",
+        "reference": ".tmp/image-audit/product-wipes.jpg",
+        "references": [
+          ".tmp/image-audit/product-wipes.jpg"
+        ],
+        "createdAt": "2026-09-07T17:59:13.043Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "promotion-member",
+      "placement": "會員優惠 banner",
+      "asset": "public/images/lucissi-v5/promotion-member.webp",
+      "bytes": 48288,
+      "sha256": "5516d5c4a383ee256c39226b880cb5345f4c3c8235fc05893484c6088f2f0201",
+      "source": ".tmp/image-audit/v5-promotion-member.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Landscape 16:9. Center objects compactly, all subjects inside middle 70 percent of width and height to allow wide banner crop. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: mist. A refined solid plum blank membership card leaning against a small frosted pink rectangular acrylic block, the referenced small mist beside it on ivory surface. One subtle curved contact shadow, intimate considered privilege. No text on card, no gold, no giftbox, no discount numbers.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T17:59:15.244Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "community-hero",
+      "placement": "社群主圖",
+      "asset": "public/images/lucissi-v5/community-hero.webp",
+      "bytes": 217224,
+      "sha256": "6ddb81bad4be84b9e786056069f98f6d6737fa02c0359ff73e0364fe2b73a57f",
+      "source": ".tmp/image-audit/v5-community-hero.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. A small informal circle of THREE adult East Asian women of different adult ages, twenties to forties, sitting around a low pale round table with one closed notebook. Warm open listening, cream and muted rose casual shirts, daylight in a quiet living room, natural smiles without advertising poses. Fully inside right half. No office, no medical coats, no products.",
+        "reference": null,
+        "references": [],
+        "createdAt": "2026-09-07T17:59:23.850Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "about-hero",
+      "placement": "關於我們主圖",
+      "asset": "public/images/lucissi-v5/about-hero.webp",
+      "bytes": 77316,
+      "sha256": "996015af656aa6a47c9ee8f4de1fe65dc030e7f6930b52a926310d3e99da07e6",
+      "source": ".tmp/image-audit/v5-about-hero.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wash. An adult female curator seen from shoulders down in an ivory blouse examining the referenced green wash packaging with both hands at a long pale oak selection table. One folded cream textile sample and plum folder at edge. The focus is careful selection and attention, no lab or scientist, no certificates, no clipboard text. Product geometry accurate. Right-half subject.",
+        "reference": ".tmp/image-audit/product-wash.jpg",
+        "references": [
+          ".tmp/image-audit/product-wash.jpg"
+        ],
+        "createdAt": "2026-09-07T17:59:19.792Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "about-saengak-portrait",
+      "placement": "關於 Saengak 品牌直式圖",
+      "asset": "public/images/lucissi-v5/about-saengak-portrait.webp",
+      "bytes": 74192,
+      "sha256": "8e3416206f9c351558c2a23e44863ca7e51c1f4989a592c774159bd2beb85535",
+      "source": ".tmp/image-audit/v5-about-saengak-portrait.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Portrait 3:4. Center subjects, all heads, hands and products inside safe 15%-85% frame. Leave lower 20% uncluttered for a small caption. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wash, mist, wipes. The referenced wash, mist and green wipes carton in a quiet narrow alcove with a light ivory ceramic shelf and subtle vertical rose plaster edge. Eye-level, intimate scale, crisp label detail, natural Korean beauty product editorial. Centered vertical composition of the real care collection. No wardrobe, no gift box.",
+        "reference": ".tmp/image-audit/product-wash.jpg",
+        "references": [
+          ".tmp/image-audit/product-wash.jpg",
+          ".tmp/image-audit/product-spray.jpg",
+          ".tmp/image-audit/product-wipes.jpg"
+        ],
+        "createdAt": "2026-09-07T17:59:33.564Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "about-daily-portrait",
+      "placement": "關於我們日常陪伴直式圖",
+      "asset": "public/images/lucissi-v5/about-daily-portrait.webp",
+      "bytes": 165328,
+      "sha256": "2b2a845e20cc1c2b7e51e1624b5176a4190ef9b0a0e171a1f3dfc69ec87bd5b4",
+      "source": ".tmp/image-audit/v5-about-daily-portrait-refined.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit image 1. There must be only ONE adult woman preparing her own bag. Remove the second woman on the left and any extra arms. The one woman with the plum shoulder bag uses her own two hands to place the small mist into the open bag. Correct anatomy, no other person or disembodied hand. Keep bright cream entryway console. Preserve all other composition, lighting, palette and real details. No invented text, typography, slogans or overlays. Output a single complete portrait 3:4 photograph. No border. Do not add new props.",
+        "reference": ".tmp/image-audit/v5-about-daily-portrait.jpg",
+        "references": [
+          ".tmp/image-audit/v5-about-daily-portrait.jpg"
+        ],
+        "createdAt": "2026-09-07T18:01:58.207Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "about-balance-portrait",
+      "placement": "關於我們身心平衡直式圖",
+      "asset": "public/images/lucissi-v5/about-balance-portrait.webp",
+      "bytes": 136064,
+      "sha256": "db26183ff7e95639f4ed4eed15941d0daf4afa5b9f1f9436a4270baa04710f82",
+      "source": ".tmp/image-audit/v5-about-balance-portrait-refined.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit image 1. Remove any white border or margin at bottom and extend the photograph fully to every image edge. Keep the same adult woman seated calmly on the floor cushion. Exactly one woman, no product and no other objects added. Preserve all other composition, lighting, palette and real details. No invented text, typography, slogans or overlays. Output a single complete portrait 3:4 photograph. No border. Do not add new props.",
+        "reference": ".tmp/image-audit/v5-about-balance-portrait.jpg",
+        "references": [
+          ".tmp/image-audit/v5-about-balance-portrait.jpg"
+        ],
+        "createdAt": "2026-09-07T18:01:58.777Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "best-rated",
+      "placement": "精選商品主圖",
+      "asset": "public/images/lucissi-v5/best-rated.webp",
+      "bytes": 44594,
+      "sha256": "34f6a351cf5130395d07be08335e547c19664329c047c1828ca605c23875decf",
+      "source": ".tmp/image-audit/v5-best-rated.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wash, mist. A careful edit of the referenced wash and small mist on a light ivory rectangular display shelf with two offset matte blush paper panels behind, crisp editorial side lighting. A single adult hand enters from right to gently straighten the wash bottle. Careful selection, precise simple composition, no award badges, no stars, no fake reviews.",
+        "reference": ".tmp/image-audit/product-wash.jpg",
+        "references": [
+          ".tmp/image-audit/product-wash.jpg",
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T17:59:42.505Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "faq-hero",
+      "placement": "常見問題主圖",
+      "asset": "public/images/lucissi-v5/faq-hero.webp",
+      "bytes": 71576,
+      "sha256": "ae7966083cf205573520a8b8a4546dc0a669d59bdc6fdea367216829e1317e27",
+      "source": ".tmp/image-audit/v5-faq-hero-final.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "A single wide photograph of a quiet customer service desk for a refined women's daily care boutique. On the RIGHT THIRD of the photograph, a pair of ivory over-ear headphones rests beside one open blank ivory notebook, one simple wooden pencil and a closed matte plum laptop with absolutely no logo. A neatly folded cream fabric sample sits at far right. No person, no hands, no product bottle, no packaging. Pale ivory desk and cream plaster wall, a muted dusty rose vertical panel at right edge. Natural soft morning side light, precise real material details, sophisticated warm neutral photograph. Entire LEFT HALF is uninterrupted lightly textured ivory wall and desktop for website copy. One coherent single camera view only. NO duplicated scene, no comparison, no panels, no split image, no collage, no frame, no borders, no captions or text. Full bleed landscape 16:9.\n",
+        "reference": null,
+        "references": [],
+        "createdAt": "2026-09-07T18:06:34.275Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "article-care",
+      "placement": "私密日常文章主圖",
+      "asset": "public/images/lucissi-v5/article-care.webp",
+      "bytes": 77156,
+      "sha256": "8cf983c877256f1d39d9edcd177c17057bee33b0bc4b07e9c986b40f6bbeb75d",
+      "source": ".tmp/image-audit/v5-article-care.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: mist. Overhead realistic editorial photograph of an adult woman jotting in a BLANK daily notebook at an ivory breakfast table, the referenced small mist at upper right, clear water glass and a soft pale blush sleeve. A quiet daily routine planning scene, hands natural, no charts, no written text or claims. Visual subject in right half and ample ivory left.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T17:59:53.982Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "article-wear",
+      "placement": "貼身材質文章主圖",
+      "asset": "public/images/lucissi-v5/article-wear.webp",
+      "bytes": 140208,
+      "sha256": "5d1cd5e30313a0ce24b6af0babbb940f83add285e2acd889abd7511e7530edff",
+      "source": ".tmp/image-audit/v5-article-wear.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wear. An adult hand comparing the seams of two different ivory and muted blush cotton briefs on a clean cream table, close macro fabric study with a small simple magnifying lens beside stitching. Inspired by reference garment, no garment stickers or price labels, no body model. Right half object study with quiet ivory left.",
+        "reference": ".tmp/image-audit/product-underwear.jpg",
+        "references": [
+          ".tmp/image-audit/product-underwear.jpg"
+        ],
+        "createdAt": "2026-09-07T17:59:57.470Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "article-standards",
+      "placement": "編輯透明度文章主圖",
+      "asset": "public/images/lucissi-v5/article-standards.webp",
+      "bytes": 88956,
+      "sha256": "d989f98e0a1318b87200dbdbf3331e75bac9ca429022af2c3f94e3f62a415732",
+      "source": ".tmp/image-audit/v5-article-standards.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Wide landscape 16:9. Left 48 percent luminous softly textured ivory negative space for dark website copy. Subject grouping confined to right half x55%-88%, y22%-78%, generous clear margins. Do not crop caps, heads, hands or products. Full bleed seamless photograph. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wipes. A female editor checking the BACK label of the referenced green wipes carton beside an open blank notebook and a plain pencil, viewed over her shoulder at an ivory table. No invented certificates, scientific lab, chart, badge or endorsement. Quiet honest information review, cream blouse and subtle plum folder, hands and packaging at right.",
+        "reference": ".tmp/image-audit/product-wipes.jpg",
+        "references": [
+          ".tmp/image-audit/product-wipes.jpg"
+        ],
+        "createdAt": "2026-09-07T18:00:00.477Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "thumb-care",
+      "placement": "私密日常文章預覽圖",
+      "asset": "public/images/lucissi-v5/thumb-care.webp",
+      "bytes": 52704,
+      "sha256": "cba97f6871650a1dbfb71f224f6b9946abb4e05868c0b7b28aed0d5a0fe03122",
+      "source": ".tmp/image-audit/v5-thumb-care.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Landscape 16:9. Center objects compactly, all subjects inside middle 70 percent of width and height to allow wide banner crop. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: mist. A clean ivory bathroom shelf with the referenced small mist, a folded small dusty rose facecloth and soft morning window shadows. Closer still life, no notebook, no hands, no waterglass. Products centered and fully visible.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T18:00:10.086Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "thumb-wear",
+      "placement": "貼身材質文章預覽圖",
+      "asset": "public/images/lucissi-v5/thumb-wear.webp",
+      "bytes": 240058,
+      "sha256": "c1b99b01531f0a8fc8fae3e19fdadc2e191382ced49fb7e0b92d47c91a70280e",
+      "source": ".tmp/image-audit/v5-thumb-wear-refined.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Precisely edit image 1: Remove the pink rectangular border and photo-within-photo effect. Extend the same macro textile photograph seamlessly to all four edges. Keep the bow and stitching in the center. No margins and no frame. Keep all other details and lighting unchanged. Output a single wide 16:9 photograph.",
+        "reference": ".tmp/image-audit/v5-thumb-wear.jpg",
+        "references": [
+          ".tmp/image-audit/v5-thumb-wear.jpg"
+        ],
+        "createdAt": "2026-09-07T18:04:13.684Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "thumb-standards",
+      "placement": "編輯透明度文章預覽圖",
+      "asset": "public/images/lucissi-v5/thumb-standards.webp",
+      "bytes": 258824,
+      "sha256": "8551bda2332dae221eeb0a68329e7ac0fcc9f0f892700b09c020f93e65c1d68f",
+      "source": ".tmp/image-audit/v5-thumb-standards.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "Create ONE exceptionally refined photographic image for LUCISSI care, a women's intimate care and comfortable daily underwear shop. Brand palette luminous ivory #F8F5F1, muted dusty rose #E7D6D4, restrained plum #5B3D48. Actual product green and turquoise packaging must retain true colors. Premium natural commercial photography, precise material details, real contact shadows, coherent perspective and directional soft daylight. No grey haze, muddy filter, artificial plastic rendering, yellow cast, collage, split-screen, border or watermark. Do not print a heading, slogan, website text, brand overlay or any typography outside authentic product packaging. Avoid fake medical or scientific claims. Landscape 16:9. Center objects compactly, all subjects inside middle 70 percent of width and height to allow wide banner crop. Attached images are PRODUCT IDENTITY references only, never copy their backgrounds or collage. Match actual product geometry, proportions, label layout and Saengak typography carefully. Wash must have CLOSED glossy black cylindrical cap, no exposed pump and no gold. Mist has a frosted clear cap. Green wipes carton must stand on its FLAT bottom, not a corner. No levitating products. Garment reference only for shape and fabric: no stickers, papers, price labels or certification badges. References in order: wipes. Neat overhead scene of a closed plum editorial notebook, one sharpened ivory pencil and two plain cream blank paper sheets with the referenced green wipes carton at edge, precise considered selection atmosphere. No hand, no reading, no written content or invented certifications.",
+        "reference": ".tmp/image-audit/product-wipes.jpg",
+        "references": [
+          ".tmp/image-audit/product-wipes.jpg"
+        ],
+        "createdAt": "2026-09-07T18:00:15.907Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "social-daily-square",
+      "placement": "社群日常照護",
+      "asset": "public/images/lucissi-v5/social-daily-square.webp",
+      "bytes": 152856,
+      "sha256": "bec84d81990928eeb9ba26688b2c697b87897685ea4d1320cabeb83b7ac43d37",
+      "source": ".tmp/image-audit/v5-social-daily-square.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "One seamless full-bleed square editorial photograph. Sophisticated material detail, neutral natural daylight, harmonious ivory #F8F5F1, dusty rose #E7D6D4 and muted plum #5B3D48. No decorative border, no inset photo, no text overlay, no logos except reference product packaging. Only the explicitly described subjects, do NOT invent cosmetics or packaging. Centered composition safe for square card. A single authentic small mist bottle from attached reference resting beside a closed ivory daily journal and a simple plum pencil on a bedside table. Overhead square still life. Keep the exact bottle and Saengak label. No extra cosmetic.",
+        "reference": ".tmp/image-audit/product-spray.jpg",
+        "references": [
+          ".tmp/image-audit/product-spray.jpg"
+        ],
+        "createdAt": "2026-09-07T18:03:40.907Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "social-gentle-square",
+      "placement": "社群溫和護理",
+      "asset": "public/images/lucissi-v5/social-gentle-square.webp",
+      "bytes": 30228,
+      "sha256": "6b8102210ba9d26e65d5e0cd1cc740de1c2be135f307e76dded7bb7d4aeff9d2",
+      "source": ".tmp/image-audit/v5-social-gentle-square.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "One seamless full-bleed square editorial photograph. Sophisticated material detail, neutral natural daylight, harmonious ivory #F8F5F1, dusty rose #E7D6D4 and muted plum #5B3D48. No decorative border, no inset photo, no text overlay, no logos except reference product packaging. Only the explicitly described subjects, do NOT invent cosmetics or packaging. Centered composition safe for square card. An abstract close photograph of one clear water droplet on translucent pale rose glass, a soft tiny leaf shadow on ivory background. Refined visual metaphor for gentleness. No actual ingredient, product, packaging, body or scientific claims.",
+        "reference": null,
+        "references": [],
+        "createdAt": "2026-09-07T18:03:42.277Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "social-knowledge-square",
+      "placement": "社群護理知識",
+      "asset": "public/images/lucissi-v5/social-knowledge-square.webp",
+      "bytes": 124242,
+      "sha256": "e2c5ef495c65bb2d845e2ea148977de34f445dec6108e11e538d7fa11f16080f",
+      "source": ".tmp/image-audit/v5-social-knowledge-square.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "One seamless full-bleed square editorial photograph. Sophisticated material detail, neutral natural daylight, harmonious ivory #F8F5F1, dusty rose #E7D6D4 and muted plum #5B3D48. No decorative border, no inset photo, no text overlay, no logos except reference product packaging. Only the explicitly described subjects, do NOT invent cosmetics or packaging. Centered composition safe for square card. A neat stack of open cream blank reference books with plain plum bookmarks and ivory reading glasses on a blush tabletop, close overhead square editorial. No writing or diagrams, no bottle, no human.",
+        "reference": null,
+        "references": [],
+        "createdAt": "2026-09-07T18:03:38.063Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "social-listening-square",
+      "placement": "社群聆聽心得",
+      "asset": "public/images/lucissi-v5/social-listening-square.webp",
+      "bytes": 131278,
+      "sha256": "6383e275a8ddb8a9d4af1d7ca402d6f25715c57d88ab9c75ccd407b4be909da6",
+      "source": ".tmp/image-audit/v5-social-listening-square.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "One seamless full-bleed square editorial photograph. Sophisticated material detail, neutral natural daylight, harmonious ivory #F8F5F1, dusty rose #E7D6D4 and muted plum #5B3D48. No decorative border, no inset photo, no text overlay, no logos except reference product packaging. Only the explicitly described subjects, do NOT invent cosmetics or packaging. Centered composition safe for square card. A simple small cream voice recorder lying next to an open blank notebook and wired plum earphones on a warm ivory table. A quiet visual metaphor for listening to personal experiences. No real reviewer, no testimony, no bottle, no text.",
+        "reference": null,
+        "references": [],
+        "createdAt": "2026-09-07T18:03:56.457Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "social-period-square",
+      "placement": "社群生理日常",
+      "asset": "public/images/lucissi-v5/social-period-square.webp",
+      "bytes": 173218,
+      "sha256": "d68da604a2c33e8783ce39f317adfd96e5c5f6053fffe84b3464eca426c58bf2",
+      "source": ".tmp/image-audit/v5-social-period-square.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "One seamless full-bleed square editorial photograph. Sophisticated material detail, neutral natural daylight, harmonious ivory #F8F5F1, dusty rose #E7D6D4 and muted plum #5B3D48. No decorative border, no inset photo, no text overlay, no logos except reference product packaging. Only the explicitly described subjects, do NOT invent cosmetics or packaging. Centered composition safe for square card. An ivory knitted hot water bottle cover and one gently folded rose cotton throw at the edge of a cream armchair. Cozy everyday comfort, softly lit, close square still life. No human, no medical product, no writing.",
+        "reference": null,
+        "references": [],
+        "createdAt": "2026-09-07T18:03:59.872Z",
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "social-consult-square",
+      "placement": "社群諮詢提醒",
+      "asset": "public/images/lucissi-v5/social-consult-square.webp",
+      "bytes": 59638,
+      "sha256": "e8f422e7177d1a073af0629528e206896c3800edbde540fdd411fefd430eb80f",
+      "source": ".tmp/image-audit/v5-social-consult-square.jpg",
+      "generation": {
+        "model": "gemini-3.1-flash-image",
+        "prompt": "One seamless full-bleed square editorial photograph. Sophisticated material detail, neutral natural daylight, harmonious ivory #F8F5F1, dusty rose #E7D6D4 and muted plum #5B3D48. No decorative border, no inset photo, no text overlay, no logos except reference product packaging. Only the explicitly described subjects, do NOT invent cosmetics or packaging. Centered composition safe for square card. An adult hand entering a plain blank calendar notebook with an ivory pen next to a closed plum phone on a bright cream desk, simple preparation for a consultation appointment. No dates or writing, no clinician, no medicine, no product, no endorsement.",
+        "reference": null,
+        "references": [],
+        "createdAt": "2026-09-07T18:03:56.943Z",
+        "mimeType": "image/jpeg"
+      }
+    }
+  ]
+}
