@@ -4,9 +4,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
-import { mockProducts } from '../../mocks/products';
-import { formatTwd, estimateReadingMinutes } from '../../domain/algorithms';
-import { getShopifyArticles, getShopifyArticleByHandle, type ShopifyArticle } from '../../lib/shopify';
+import { formatTwd, estimateReadingMinutes, sortAvailableFirst } from '../../domain/algorithms';
+import { formatPageTitle } from '../../lib/pageTitle';
+import { getShopifyArticles, getShopifyArticleByHandle, getShopifyProducts, type ShopifyArticle, type ShopifyProduct } from '../../lib/shopify';
 
 interface TocItem {
   id: string;
@@ -20,6 +20,9 @@ export default function BlogArticle() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [article, setArticle] = useState<ShopifyArticle | null>(null);
+  useEffect(() => {
+    if (article?.title) document.title = formatPageTitle(article.title);
+  }, [article?.title]);
   const [relatedArticles, setRelatedArticles] = useState<ShopifyArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTocId, setActiveTocId] = useState<string>('');
@@ -146,7 +149,21 @@ export default function BlogArticle() {
     }
   }, [activeHandle]);
 
-  const recommendedProducts = mockProducts.slice(0, 3);
+  // 推薦商品改用 Shopify 真實商品（有貨優先）；讀取失敗時整張卡片不顯示
+  const [recommendedProducts, setRecommendedProducts] = useState<ShopifyProduct[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    getShopifyProducts({ first: 12 })
+      .then((items) => {
+        if (!cancelled) setRecommendedProducts(sortAvailableFirst(items || []).slice(0, 3));
+      })
+      .catch(() => {
+        if (!cancelled) setRecommendedProducts([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
@@ -446,6 +463,7 @@ export default function BlogArticle() {
               )}
 
               {/* 卡片 3: 🌿 推薦日常護理品 (Recommended Products) */}
+              {recommendedProducts.length > 0 && (
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/90">
                 <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-100">
                   <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
@@ -470,7 +488,7 @@ export default function BlogArticle() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-[#5B3D48] transition-colors mb-1">
-                          {product.name}
+                          {product.name || product.title}
                         </h4>
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-xs text-[#5B3D48]">{formatTwd(product.price)}</span>
@@ -483,6 +501,7 @@ export default function BlogArticle() {
                   ))}
                 </div>
               </div>
+              )}
 
               {/* 卡片 4: 📖 更多專欄 (Related Articles) */}
               {relatedArticles.length > 0 && (

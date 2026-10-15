@@ -3,8 +3,7 @@ import EditorialHero from '../../../components/feature/EditorialHero';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getShopifyProducts } from '../../../lib/shopify';
-import { mockProducts } from '../../../mocks/products';
-import { rankEditorialProducts } from '../../../domain/algorithms';
+import { deriveCatalogSignals, isProductSoldOut, sortAvailableFirst } from '../../../domain/algorithms';
 import { captureExceptionSafe } from '../../../lib/sentry';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../../lib/brandOwnership';
 
@@ -71,7 +70,7 @@ export default function SolutionSection() {
       const items = await getShopifyProducts({ first: 50 });
       const saengakItems = (items || []).filter(isSaengakCareProduct);
 
-      let displayList: Product[] = saengakItems.map((p) => ({
+      const displayList: Product[] = saengakItems.map((p) => ({
         id: p.id,
         name: p.name || p.title,
         image: p.image,
@@ -80,7 +79,7 @@ export default function SolutionSection() {
         originalPrice: p.originalPrice,
         description: p.description,
         model: p.handle,
-        isNew: true,
+        isNew: deriveCatalogSignals({ tags: p.tags }).isNew,
         productType: p.productType || '女性護理',
         vendor: 'SAENGAK',
         availableForSale: p.availableForSale,
@@ -90,33 +89,13 @@ export default function SolutionSection() {
         tags: p.tags,
       }));
 
-      // 若 Shopify 後台的 SAENGAK 核心護理品不足 4 款，以 SAENGAK 官方經典品項補足
-      if (displayList.length < 4) {
-        const canonicalSaengak = rankEditorialProducts(mockProducts).filter(isSaengakCareProduct);
-        const existingNames = new Set(displayList.map(p => p.name));
-        for (const item of canonicalSaengak) {
-          if (!existingNames.has(item.name) && displayList.length < 4) {
-            displayList.push({
-              ...item,
-              vendor: 'SAENGAK'
-            });
-            existingNames.add(item.name);
-          }
-        }
-      }
-
-      setProducts(displayList);
+      setProducts(sortAvailableFirst(displayList));
     } catch (err) {
-      captureExceptionSafe(err, { source: 'SolutionSection', fallback: 'mockProducts' });
-      setProducts(rankEditorialProducts(mockProducts).filter(isSaengakCareProduct));
+      captureExceptionSafe(err, { source: 'SolutionSection' });
+      setProducts([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  // Add manual refresh function
-  const handleRefresh = () => {
-    fetchShopifyProducts();
   };
 
   const calculateDiscountRate = (price: number, originalPrice?: number) => {
@@ -164,13 +143,6 @@ export default function SolutionSection() {
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 私密照護，從日常開始。
               </h2>
-              <button
-                onClick={handleRefresh}
-                className="p-2 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
-                title="重新載入產品"
-              >
-                <i className="ri-refresh-line text-xl"></i>
-              </button>
             </div>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               精選清潔、保濕與舒緩護理，為每天的私密日常，多一點舒適與自在。
@@ -260,11 +232,7 @@ export default function SolutionSection() {
                 <div className="grid grid-cols-2 gap-4" data-product-shop>
                   {displayedProducts.map((product) => {
                     const discountRate = calculateDiscountRate(product.price, product.originalPrice);
-                    const isSoldOut =
-                      product.availableForSale === false ||
-                      (Array.isArray(product.variants) &&
-                        product.variants.length > 0 &&
-                        product.variants.every((v) => v.availableForSale === false));
+                    const isSoldOut = isProductSoldOut(product);
 
                     return (
                       <div
@@ -422,6 +390,7 @@ export default function SolutionSection() {
       </section>
 
       <EditorialHero
+        priority={false}
         image="/images/lucissi-v5/home-wear-banner.webp"
         alt="親膚棉質內著的蝴蝶結、織紋與車縫細節"
         eyebrow="LUCISSI CARE · EVERYDAY COMFORT"

@@ -7,7 +7,6 @@ import HeroSection from './components/HeroSection';
 import ProductSection from './components/ProductSection';
 import BrandSection from './components/BrandSection';
 import SolutionSection from './components/SolutionSection';
-import ReviewSection from './components/ReviewSection';
 import { getShopifyArticles } from '../../lib/shopify';
 
 const fallbackArticles = [
@@ -125,25 +124,7 @@ export default function Home() {
                         </h4>
                         <p className="text-gray-600 leading-relaxed text-lg" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                           整理女性健康與私密護理主題，<br />
-                          專業內容完成審閱後，才標示作者與資格。
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Instagram 動態 */}
-                  <div className="bg-white p-8 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
-                    <div className="flex items-start space-x-6">
-                      <div className="w-16 h-16 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#E7D6D4', borderRadius: '12px' }}>
-                        <i className="ri-instagram-line text-2xl" style={{ color: '#5B3D48' }}></i>
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                          社群內容規劃
-                        </h4>
-                        <p className="text-gray-600 leading-relaxed text-lg" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                          規劃保養知識、產品教學與品牌更新，<br />
-                          正式帳號串接後再顯示貼文與互動數據。
+                          從日常習慣到選購重點，一次讀懂。
                         </p>
                       </div>
                     </div>
@@ -163,20 +144,6 @@ export default function Home() {
                     >
                       探索更多內容
                       <i className="ri-arrow-right-line ml-2"></i>
-                    </a>
-                    <a
-                      href="/community?tab=instagram"
-                      className="inline-flex items-center justify-center px-8 py-4 font-semibold text-lg transition-all duration-300 cursor-pointer whitespace-nowrap border-2 hover:transform hover:scale-105 shadow-sm"
-                      style={{
-                        fontFamily: "Noto Sans TC, sans-serif",
-                        backgroundColor: 'transparent',
-                        color: '#5B3D48',
-                        borderColor: '#5B3D48',
-                        borderRadius: '12px'
-                      }}
-                    >
-                      <i className="ri-instagram-line mr-2"></i>
-                      查看社群主題
                     </a>
                   </div>
                 </div>
@@ -255,10 +222,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 白色間隔區域 */}
-        <section className="py-12 bg-white"></section>
-
-        <ReviewSection />
       </main>
 
       <Footer />

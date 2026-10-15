@@ -129,7 +129,7 @@ export default function WelcomePage() {
                       <i className="ri-shield-check-line text-2xl text-brand"></i>
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">資料可追溯</h3>
-                    <p className="text-sm text-gray-600">未接入的認證不自行推定</p>
+                    <p className="text-sm text-gray-600">認證資訊以原廠文件為準</p>
                   </div>
                   <div className="text-center p-4">
                     <div className="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-full flex items-center justify-center">
@@ -142,8 +142,8 @@ export default function WelcomePage() {
                     <div className="w-16 h-16 mx-auto mb-3 bg-purple-100 rounded-full flex items-center justify-center">
                       <i className="ri-customer-service-2-line text-2xl text-purple-600"></i>
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">專業服務</h3>
-                    <p className="text-sm text-gray-600">客服管道確認中</p>
+                    <h3 className="font-semibold text-gray-900 mb-2">客服信箱</h3>
+                    <p className="text-sm text-gray-600">Company@lucissi.com</p>
                   </div>
                 </div>
               </div>
