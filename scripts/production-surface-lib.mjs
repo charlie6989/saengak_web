@@ -1,4 +1,4 @@
-export const PRODUCTION_BASE_URL = 'https://www.saengak.com.tw';
+export const PRODUCTION_BASE_URL = 'https://lucissicare.com';
 export const SUPABASE_FUNCTIONS_BASE_URL = 'https://tmqzkagkrzhioftvwbqo.supabase.co/functions/v1';
 
 export const REQUIRED_PRODUCTION_ROUTES = [

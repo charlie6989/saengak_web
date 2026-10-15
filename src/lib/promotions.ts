@@ -78,7 +78,22 @@ export const DEFAULT_PROMOTIONS: Promotion[] = [
   },
 ];
 
-const LOCAL_STORAGE_COUPONS_KEY = 'saengak_mock_user_coupons';
+const LUCISSI_CARE_MOCK_COUPONS_KEY = 'lucissi_care_mock_user_coupons';
+const LEGACY_MOCK_COUPONS_KEY = 'saengak_mock_user_coupons';
+
+function readMockCouponsCache(userId: string): { key: string; value: string | null } {
+  const key = `${LUCISSI_CARE_MOCK_COUPONS_KEY}_${userId}`;
+  const value = localStorage.getItem(key);
+  if (value !== null) return { key, value };
+
+  // 一次性承接舊商店名稱的本機 mock 快取，之後只使用 LUCISSI CARE key。
+  const legacyKey = `${LEGACY_MOCK_COUPONS_KEY}_${userId}`;
+  const legacyValue = localStorage.getItem(legacyKey);
+  if (legacyValue !== null) {
+    localStorage.setItem(key, legacyValue);
+  }
+  return { key, value: legacyValue };
+}
 
 /**
  * 查詢所有有效進行中的促銷活動（優先自 Shopify Admin API 即時抓取最新折扣）
@@ -146,7 +161,7 @@ export async function fetchUserCoupons(userId: string): Promise<UserCoupon[]> {
   );
 
   if (isMockAuth) {
-    const saved = localStorage.getItem(`${LOCAL_STORAGE_COUPONS_KEY}_${userId}`);
+    const { value: saved } = readMockCouponsCache(userId);
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -169,7 +184,7 @@ export async function fetchUserCoupons(userId: string): Promise<UserCoupon[]> {
 
     if (error) {
       // 若資料表尚未建立或查詢異常，退回本地快取
-      const saved = localStorage.getItem(`${LOCAL_STORAGE_COUPONS_KEY}_${userId}`);
+      const { value: saved } = readMockCouponsCache(userId);
       return saved ? JSON.parse(saved) : [];
     }
 
@@ -221,8 +236,7 @@ export async function claimPromotionCoupon(
   );
 
   if (isMockAuth) {
-    const key = `${LOCAL_STORAGE_COUPONS_KEY}_${userId}`;
-    const raw = localStorage.getItem(key);
+    const { key, value: raw } = readMockCouponsCache(userId);
     const list: UserCoupon[] = raw ? JSON.parse(raw) : [];
 
     const existing = list.find((c) => c.promotion_id === promotion.id || c.coupon_code === promotion.code);

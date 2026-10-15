@@ -37,6 +37,8 @@ export interface AmegoCredentials {
   appKey: string;
   mode: 'test' | 'production';
   allowedSellerTaxIds: string[];
+  /** Provider-visible note identifying the issuing storefront. */
+  issuerNote?: string;
 }
 
 export type AmegoDispatchResult =
@@ -64,6 +66,7 @@ const unixSecondsToIso = (value: unknown): string => {
 export function validateAmegoCredentials(credentials: AmegoCredentials): void {
   if (!/^\d{8}$/.test(credentials.sellerTaxId)) throw new Error('Invalid Amego seller tax ID');
   if (credentials.appKey.length < 16 || credentials.appKey.length > 200) throw new Error('Invalid Amego App Key');
+  if (credentials.issuerNote !== undefined && credentials.issuerNote.length > 100) throw new Error('Invalid Amego issuer note');
   if (!credentials.allowedSellerTaxIds.includes(credentials.sellerTaxId)) {
     throw new Error('Amego seller tax ID is not allowlisted');
   }
@@ -79,7 +82,7 @@ export function amegoMd5(value: string): string {
   return createHash('md5').update(value, 'utf8').digest('hex');
 }
 
-export function buildAmegoInvoicePayload(job: AmegoJob): UnknownRecord {
+export function buildAmegoInvoicePayload(job: AmegoJob, issuerNote = ''): UnknownRecord {
   const request = job.request_payload;
   if (request.currencyCode !== 'TWD') throw new Error('Only TWD invoices are supported');
   const totalAmount = integerMoney(request.totalAmount, 'Total amount');
@@ -160,7 +163,7 @@ export function buildAmegoInvoicePayload(job: AmegoJob): UnknownRecord {
     BuyerAddress: '',
     BuyerTelephoneNumber: '',
     BuyerEmailAddress: preference.notificationEmail,
-    MainRemark: '',
+    MainRemark: issuerNote.trim().slice(0, 100),
     CarrierType: '',
     CarrierId1: '',
     CarrierId2: '',
@@ -424,7 +427,7 @@ export async function dispatchAmegoJob(
 
     let invoicePayload: UnknownRecord;
     try {
-      invoicePayload = buildAmegoInvoicePayload(job);
+      invoicePayload = buildAmegoInvoicePayload(job, credentials.issuerNote);
     } catch (error) {
       return {
         outcome: 'failed',

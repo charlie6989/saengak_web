@@ -10,7 +10,7 @@ import ProductCard, {
 } from '../src/components/feature/ProductCard';
 import FacebookLoginButton from '../src/components/feature/FacebookLoginButton';
 
-describe('SAENGAK 官網修改檢查清單單元測試', () => {
+describe('LUCISSI CARE 官網修改檢查清單單元測試', () => {
   describe('一、商品標題規範 (核心產品保留 Saengak 品牌 & 清洗前綴)', () => {
     it('核心產品應保留 Saengak 品牌名稱並標準化', () => {
       const title1 = sanitizeProductTitle('SAENGAK｜平衡調理私密潔淨慕斯');

@@ -7,7 +7,7 @@ const migrationFiles = readdirSync(migrationDirectory)
 
 const baselineFile = migrationFiles.find((file) => file.includes('saengak_membership_orders'));
 if (!baselineFile) {
-  console.error('ERROR: 找不到 SAENGAK 會員／訂單 baseline migration');
+  console.error('ERROR: 找不到 LUCISSI CARE 會員／訂單 baseline migration');
   process.exit(1);
 }
 
@@ -80,10 +80,10 @@ const storefrontConfigSource = readFileSync(
   'supabase/functions/_shared/shopify-storefront.ts',
   'utf8',
 );
-if (!storefrontConfigSource.includes("SAENGAK_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com'")) {
-  errors.push('Storefront 預設網域不是 SAENGAK 專用 Shopify 商店');
+if (!storefrontConfigSource.includes("LUCISSI_CARE_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com'")) {
+  errors.push('Storefront 預設網域不是 LUCISSI CARE 專用 Shopify 商店');
 }
-if (!storefrontConfigSource.includes("SAENGAK_STOREFRONT_API_VERSION = '2026-07'")) {
+if (!storefrontConfigSource.includes("LUCISSI_CARE_STOREFRONT_API_VERSION = '2026-07'")) {
   errors.push('Storefront API version 未固定為 2026-07 基線');
 }
 

@@ -1,5 +1,5 @@
 /**
- * SAENGAK Sentry 資安脫敏與安全錯誤捕獲模組
+ * LUCISSI CARE Sentry 資安脫敏與安全錯誤捕獲模組
  * 嚴格遵循 PCI-DSS 與個資保護法規，確保前端錯誤回報與 Breadcrumb 絕不洩漏敏感機密與未脫敏個資。
  */
 
@@ -311,7 +311,7 @@ export function captureExceptionSafe(error: any, context?: any): string {
 
   // 安全記錄於開發環境 console
   if (process.env.NODE_ENV !== 'production' || typeof window === 'undefined') {
-    console.error(`[SAENGAK Safe Exception Track] ${eventId}:`, safeError, safeContext);
+    console.error(`[LUCISSI CARE Safe Exception Track] ${eventId}:`, safeError, safeContext);
   }
 
   return eventId;

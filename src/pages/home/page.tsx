@@ -34,12 +34,12 @@ const fallbackArticles = [
   {
     id: 'fallback-article-3',
     handle: 'how-we-review-products-and-content',
-    title: '我們如何整理產品與內容：SAENGAK 編輯團隊的透明度承諾',
+    title: '我們如何整理產品與內容：LUCISSI CARE 編輯團隊的透明度承諾',
     excerpt: '所有產品資訊堅持來源透明與成分公開；沒有即時評價時，就以編輯精選清楚標示。',
     contentHtml: '',
     tags: ['品牌方法', '透明原則'],
     publishedAt: '2026-09-01T10:37:36Z',
-    image: { url: '/images/lucissi-v5/thumb-standards.webp', altText: 'SAENGAK 品牌編輯標準' }
+    image: { url: '/images/lucissi-v5/thumb-standards.webp', altText: 'LUCISSI CARE 品牌編輯標準' }
   },
 ];
 

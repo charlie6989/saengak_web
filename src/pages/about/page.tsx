@@ -36,7 +36,7 @@ export default function AboutPage() {
           alt="選品工作桌前，仔細閱讀護理產品包裝的女性"
           eyebrow="ABOUT LUCISSI CARE"
           title="把照顧自己，放回日常裡。"
-          description="LUCISSI care 從私密護理，到每天貼近肌膚的舒適穿著，為女性挑選更自在的日常選擇。"
+          description="LUCISSI CARE 從私密護理，到每天貼近肌膚的舒適穿著，為女性挑選更自在的日常選擇。"
         >
           <a href="#our-story" className={`${textLink} mt-6`}>
             認識 LUCISSI <span aria-hidden="true">↓</span>
@@ -53,7 +53,7 @@ export default function AboutPage() {
             </div>
             <div className="space-y-5 text-base leading-8">
               <p>忙碌的生活裡，我們常常把時間留給工作、家人與待辦事項。留給自己的照顧，可以從每天用的護理品、早晨換上的貼身衣物開始。</p>
-              <p>LUCISSI care 是為女性日常而生的選品品牌。我們把私密護理與貼身穿著放在一起，因為它們都貼近身體，也貼近生活。</p>
+              <p>LUCISSI CARE 是為女性日常而生的選品品牌。我們把私密護理與貼身穿著放在一起，因為它們都貼近身體，也貼近生活。</p>
               <p>我們希望，當妳想多照顧自己一點時，這裡有清楚的方向，也有適合妳的日常選擇。</p>
             </div>
           </div>

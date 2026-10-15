@@ -51,10 +51,10 @@ describe('reviews-qa 資料存取與脫敏模組測試', () => {
     });
 
     it('應正確處理空值與無效字串', () => {
-      expect(maskUserIdentifier(null)).toBe('SAENGAK 會員');
-      expect(maskUserIdentifier(undefined)).toBe('SAENGAK 會員');
-      expect(maskUserIdentifier('')).toBe('SAENGAK 會員');
-      expect(maskUserIdentifier('   ')).toBe('SAENGAK 會員');
+      expect(maskUserIdentifier(null)).toBe('LUCISSI CARE 會員');
+      expect(maskUserIdentifier(undefined)).toBe('LUCISSI CARE 會員');
+      expect(maskUserIdentifier('')).toBe('LUCISSI CARE 會員');
+      expect(maskUserIdentifier('   ')).toBe('LUCISSI CARE 會員');
     });
   });
 

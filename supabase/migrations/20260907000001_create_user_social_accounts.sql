@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS public.user_social_accounts (
     provider TEXT NOT NULL,                  -- 'facebook' | 'google' | 'line' | 'apple'
     provider_user_id TEXT NOT NULL,         -- 第三方平台唯一代碼 (sub / openid)
     provider_email TEXT,                    -- 該社群帳號的 Email
-    provider_name TEXT,                     -- 該社群顯示姓名 (如 "Saengak Chen")
+    provider_name TEXT,                     -- 該社群顯示姓名 (如 "Lucissi Chen")
     avatar_url TEXT,                        -- 該社群大頭照網址
     raw_data JSONB DEFAULT '{}'::jsonb,     -- 第三方中繼資料備用
     last_sign_in_at TIMESTAMPTZ DEFAULT now(),

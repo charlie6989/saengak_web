@@ -20,7 +20,7 @@ import { AdminLayout } from '../src/pages/admin/AdminLayout';
  * 過去雖有元件層級測試，但從未真正被 src/router/config.tsx 引用，
  * 導致 /admin/* 路由長期未受保護且無法存取，測試卻始終全數通過。
  */
-describe('SAENGAK /admin 路由接線驗證 (Admin Route Wiring)', () => {
+describe('LUCISSI CARE /admin 路由接線驗證 (Admin Route Wiring)', () => {
   const createMockAuthContext = (overrides: Partial<AuthContextType>): AuthContextType => ({
     user: null,
     session: null,

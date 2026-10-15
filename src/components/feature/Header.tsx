@@ -183,7 +183,7 @@ export default function Header() {
         style={{ height: '32px', fontFamily: "Noto Sans TC, sans-serif" }}
       >
         <div className="animate-marquee whitespace-nowrap flex items-center justify-center h-full text-sm">
-          LUCISSI care 正式商店｜結帳由 Shopify Checkout 與 TapPay 安全處理
+          LUCISSI CARE 正式商店｜結帳由 Shopify Checkout 與 TapPay 安全處理
         </div>
       </div>
 

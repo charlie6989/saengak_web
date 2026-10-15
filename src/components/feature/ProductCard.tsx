@@ -49,11 +49,12 @@ export function sanitizeProductTitle(rawName: string): string {
     .replace(/\s*(現貨|現貨\s*\d*|_images|_URL|\.jpg|\.png).*$/gi, '')
     .trim();
 
-  // 4 大核心產品保留 Saengak 原品牌名稱
+  // 5 大核心產品保留 Saengak 原品牌名稱
   if (cleaned.includes('慕斯') || cleaned.includes('潔淨慕斯')) return 'Saengak 平衡調理私密潔淨慕斯';
   if (cleaned.includes('養膚濕巾') || cleaned.includes('私密濕巾') || (cleaned.includes('益生菌') && cleaned.includes('濕巾'))) return 'Saengak 益生菌私密養膚濕巾';
   if (cleaned.includes('精華噴霧') || cleaned.includes('修護噴霧') || cleaned.includes('雙層修護')) return 'Saengak 私密雙層修護精華噴霧';
   if (cleaned.includes('清潔露') || cleaned.includes('深層修護')) return 'Saengak 深層修護私密清潔露';
+  if (cleaned.includes('舒緩凝膠') || (cleaned.includes('益生菌') && cleaned.includes('凝膠'))) return 'Saengak 益生菌私密舒緩凝膠';
 
   // 核心產品若以 SAENGAK 開頭則標準化
   if (/^saengak\s*/i.test(rawName)) {
@@ -87,6 +88,9 @@ export function extractSingleSentenceDescription(product: Product): string {
   }
   if (name.includes('清潔露') || name.includes('深層修護')) {
     return '專利植萃溫和淨膚 深層舒緩修護';
+  }
+  if (name.includes('凝膠') || name.includes('舒緩凝膠')) {
+    return '益生菌精華深層導入 密集舒緩修護';
   }
 
   const rawDesc = (product.description || '').trim();

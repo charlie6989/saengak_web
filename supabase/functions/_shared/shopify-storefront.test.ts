@@ -6,20 +6,20 @@ import {
   resolveShopifyDomain,
   resolveStorefrontApiVersion,
   shouldIncludeStorefrontInventory,
-  SAENGAK_SHOPIFY_DOMAIN,
+  LUCISSI_CARE_SHOPIFY_DOMAIN,
 } from './shopify-storefront';
 
-describe('SAENGAK Shopify Storefront configuration', () => {
-  it('uses the dedicated SAENGAK shop when no environment override exists', () => {
-    expect(resolveShopifyDomain(undefined)).toBe(SAENGAK_SHOPIFY_DOMAIN);
-    expect(resolveShopifyDomain('')).toBe(SAENGAK_SHOPIFY_DOMAIN);
+describe('LUCISSI CARE Shopify Storefront configuration', () => {
+  it('uses the dedicated LUCISSI CARE shop when no environment override exists', () => {
+    expect(resolveShopifyDomain(undefined)).toBe(LUCISSI_CARE_SHOPIFY_DOMAIN);
+    expect(resolveShopifyDomain('')).toBe(LUCISSI_CARE_SHOPIFY_DOMAIN);
   });
 
-  it('ignores overrides that do not match the active SAENGAK shop', () => {
+  it('ignores overrides that do not match the active LUCISSI CARE shop', () => {
     expect(resolveShopifyDomain(' https://example.myshopify.com/ '))
-      .toBe(SAENGAK_SHOPIFY_DOMAIN);
+      .toBe(LUCISSI_CARE_SHOPIFY_DOMAIN);
     expect(resolveShopifyDomain('https://example.com'))
-      .toBe(SAENGAK_SHOPIFY_DOMAIN);
+      .toBe(LUCISSI_CARE_SHOPIFY_DOMAIN);
     expect(isValidShopifyDomain(resolveShopifyDomain('https://example.com'))).toBe(true);
   });
 

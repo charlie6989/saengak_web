@@ -2,7 +2,7 @@
 export const mockUsers = [
   {
     id: 'user-001',
-    email: 'mock1@saengak.invalid',
+    email: 'mock1@lucissi-care.invalid',
     password: 'development-only-1',
     name: '測試使用者一',
     phone: '',
@@ -14,7 +14,7 @@ export const mockUsers = [
   },
   {
     id: 'user-002',
-    email: 'mock2@saengak.invalid',
+    email: 'mock2@lucissi-care.invalid',
     password: 'development-only-2',
     name: '測試使用者二',
     phone: '',
@@ -26,7 +26,7 @@ export const mockUsers = [
   },
   {
     id: 'user-003',
-    email: 'mock3@saengak.invalid',
+    email: 'mock3@lucissi-care.invalid',
     password: 'development-only-3',
     name: '測試使用者三',
     phone: '',

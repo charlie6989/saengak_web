@@ -1,5 +1,5 @@
-export const SAENGAK_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
-export const SAENGAK_STOREFRONT_API_VERSION = '2026-07';
+export const LUCISSI_CARE_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
+export const LUCISSI_CARE_STOREFRONT_API_VERSION = '2026-07';
 
 export function normalizeShopifyDomain(rawDomain: string | undefined): string {
   return (rawDomain ?? '')
@@ -11,12 +11,12 @@ export function normalizeShopifyDomain(rawDomain: string | undefined): string {
 export function resolveShopifyDomain(rawDomain: string | undefined): string {
   const configuredDomain = normalizeShopifyDomain(rawDomain);
 
-  // SAENGAK checkout is intentionally pinned to one Shopify store. Ignore an
+  // LUCISSI CARE checkout is intentionally pinned to one Shopify store. Ignore an
   // obsolete override so a stale Edge Function secret cannot send customers
   // to a different merchant account.
-  return configuredDomain.toLowerCase() === SAENGAK_SHOPIFY_DOMAIN
+  return configuredDomain.toLowerCase() === LUCISSI_CARE_SHOPIFY_DOMAIN
     ? configuredDomain.toLowerCase()
-    : SAENGAK_SHOPIFY_DOMAIN;
+    : LUCISSI_CARE_SHOPIFY_DOMAIN;
 }
 
 export function isValidShopifyDomain(domain: string): boolean {
@@ -27,7 +27,7 @@ export function resolveStorefrontApiVersion(rawVersion: string | undefined): str
   const version = rawVersion?.trim();
   return version && /^20\d{2}-(01|04|07|10)$/.test(version)
     ? version
-    : SAENGAK_STOREFRONT_API_VERSION;
+    : LUCISSI_CARE_STOREFRONT_API_VERSION;
 }
 
 export function shouldIncludeStorefrontInventory(rawFlag: string | undefined): boolean {

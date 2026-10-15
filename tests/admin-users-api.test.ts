@@ -95,7 +95,7 @@ function buildRequest(init: {
   });
 }
 
-describe('SAENGAK 後台管理員名冊查詢與角色指派 API 測試 (api/admin-users.ts)', () => {
+describe('LUCISSI CARE 後台管理員名冊查詢與角色指派 API 測試 (api/admin-users.ts)', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     process.env.SUPABASE_URL = 'https://example.supabase.co';

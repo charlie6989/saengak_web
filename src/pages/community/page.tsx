@@ -34,7 +34,7 @@ const localArticles: CommunityArticle[] = [
     title: '日常私密護理：先理解身體，再選擇產品',
     excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的溫和照護原則。',
     category: '健康知識',
-    author: 'SAENGAK 編輯團隊',
+    author: 'LUCISSI CARE 編輯團隊',
     date: '2026/9/1',
     readTime: '3 分鐘',
     image: '/images/lucissi-v5/thumb-care.webp',
@@ -48,7 +48,7 @@ const localArticles: CommunityArticle[] = [
     title: '貼身衣物材質怎麼選？透氣、摩擦與清潔頻率的日常指南',
     excerpt: '用透氣度、摩擦感與清潔頻率三個面向，整理日常挑選貼身衣物的實用重點。',
     category: '生活美學',
-    author: 'SAENGAK 編輯團隊',
+    author: 'LUCISSI CARE 編輯團隊',
     date: '2026/9/1',
     readTime: '3 分鐘',
     image: '/images/lucissi-v5/thumb-wear.webp',
@@ -59,10 +59,10 @@ const localArticles: CommunityArticle[] = [
     id: 'fallback-article-3',
     handle: 'how-we-review-products-and-content',
     blogHandle: 'brand',
-    title: '我們如何整理產品與內容：SAENGAK 編輯團隊的透明度承諾',
+    title: '我們如何整理產品與內容：LUCISSI CARE 編輯團隊的透明度承諾',
     excerpt: '所有產品資訊堅持來源透明與成分公開；沒有即時評價時，就以編輯精選清楚標示。',
     category: '品牌方法',
-    author: 'SAENGAK 編輯團隊',
+    author: 'LUCISSI CARE 編輯團隊',
     date: '2026/9/1',
     readTime: '3 分鐘',
     image: '/images/lucissi-v5/thumb-standards.webp',
@@ -94,7 +94,7 @@ export default function Community() {
           title: article.title,
           excerpt: article.excerpt || article.contentHtml?.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...',
           category: article.blog?.title || (article.tags && article.tags.length > 0 ? article.tags[0] : '精彩文章'),
-          author: article.author || 'SAENGAK 編輯團隊',
+          author: article.author || 'LUCISSI CARE 編輯團隊',
           date: new Date(article.publishedAt).toLocaleDateString(),
           readTime: `${estimateReadingMinutes(article.contentHtml || article.excerpt || '')} 分鐘`,
           image: editorialImage(article.handle, article.image?.url),
@@ -471,7 +471,7 @@ export default function Community() {
               加入我們的健康社群
             </h2>
             <p className="text-sm md:text-base lg:text-lg text-gray-600 mb-6 md:mb-8 leading-relaxed px-4">
-              加入 SAENGAK 會員，掌握最新護理專欄、專屬優惠與個人化貼心購物體驗。
+              加入 LUCISSI CARE 會員，掌握最新護理專欄、專屬優惠與個人化貼心購物體驗。
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">

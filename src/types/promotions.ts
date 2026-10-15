@@ -1,5 +1,5 @@
 /**
- * SAENGAK 優惠券與促銷活動型別定義
+ * LUCISSI CARE 優惠券與促銷活動型別定義
  * 對齊 Shopify Discounts 與 Supabase 資料結構
  */
 

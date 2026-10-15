@@ -150,7 +150,7 @@ export default function BlogArticle() {
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
-    const title = article?.title || 'SAENGAK 專欄文章';
+    const title = article?.title || 'LUCISSI CARE 專欄文章';
 
     switch (platform) {
       case 'facebook':
@@ -240,7 +240,7 @@ export default function BlogArticle() {
           <span>{readMinutes} 分鐘閱讀</span>
           <span aria-hidden="true">·</span>
           <span>{displayDate}</span>
-          <span>{article.author || 'SAENGAK 編輯團隊'}</span>
+          <span>{article.author || 'LUCISSI CARE 編輯團隊'}</span>
         </div>
       </EditorialHero>
 
@@ -363,13 +363,13 @@ export default function BlogArticle() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <h4 className="text-base font-bold text-gray-900">{article.author || 'SAENGAK 編輯團隊'}</h4>
+                    <h4 className="text-base font-bold text-gray-900">{article.author || 'LUCISSI CARE 編輯團隊'}</h4>
                     <span className="text-xs bg-blush text-brand px-2.5 py-0.5 rounded-full font-medium">
                       內容審核
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                    SAENGAK 編輯團隊致力於提供成分透明、不誇大療效的日常女性生活保養指引。以溫柔而科學的視角，陪伴妳探索更舒適的自己。
+                    LUCISSI CARE 編輯團隊致力於提供成分透明、不誇大療效的日常女性生活保養指引。以溫柔而科學的視角，陪伴妳探索更舒適的自己。
                   </p>
                 </div>
               </div>

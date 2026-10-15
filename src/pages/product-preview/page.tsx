@@ -1299,7 +1299,7 @@ export default function ProductPreviewPage() {
                             </span>
                             <div className="space-y-1">
                               <span className="text-xs font-bold text-[#5B3D48]">
-                                SAENGAK 官方專業團隊回覆
+                                LUCISSI CARE 官方專業團隊回覆
                               </span>
                               <p className="text-sm text-gray-600 leading-relaxed">
                                 {item.answer}

@@ -1,4 +1,4 @@
--- SAENGAK Database Migration: 建立交易日誌狀態機 (transaction_logs)
+-- LUCISSI CARE Database Migration: 建立交易日誌狀態機 (transaction_logs)
 -- 規範來源: docs/00_DECISION_LOG.md & docs/CHECKOUT_PAYMENT_SPEC.md §5.1
 
 begin;

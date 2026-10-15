@@ -336,7 +336,7 @@ describe('商品詳情頁評價/問答與會員中心已購評價單元測試', 
       );
 
       expect(html).toBeDefined();
-      expect(html).toContain('border-teal-600');
+      expect(html).toContain('animate-spin');
     });
 
     it('ProductPage 渲染時應包含評論與詢問標籤導覽', () => {

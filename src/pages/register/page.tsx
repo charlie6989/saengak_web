@@ -71,7 +71,7 @@ export default function RegisterPage() {
       mockAuthState.isLoggedIn = true;
       mockAuthState.currentUser = newUser;
 
-      setMessage('註冊成功！歡迎加入 SAENGAK');
+      setMessage('註冊成功！歡迎加入 LUCISSI CARE');
       setTimeout(() => {
         navigate('/welcome');
       }, 1000);

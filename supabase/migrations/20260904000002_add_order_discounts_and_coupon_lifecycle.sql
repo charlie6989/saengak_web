@@ -1,4 +1,4 @@
--- SAENGAK Database Migration: 補上訂單折扣碼／運費解析與會員優惠券生命週期管理
+-- LUCISSI CARE Database Migration: 補上訂單折扣碼／運費解析與會員優惠券生命週期管理
 -- 問題: Shopify 折扣碼購物車折抵功能上線後，訂單 webhook（sync_shopify_order_webhook）
 -- 完全沒有解析 discount_codes / total_discounts / total_shipping_price_set，導致
 -- (1) orders 表看不出這筆訂單用了哪些折扣碼、折了多少、運費多少；

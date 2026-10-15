@@ -24,6 +24,9 @@ interface Product {
   productType?: string;
   vendor?: string;
   availableForSale?: boolean;
+  subtitle?: string;
+  promotionBadge?: string;
+  tags?: string[];
   variants?: Array<{
     id?: string;
     availableForSale?: boolean;
@@ -35,6 +38,7 @@ export default function SolutionSection() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'bundles' | 'singles' | 'all'>('bundles');
 
   useEffect(() => {
     fetchShopifyProducts();
@@ -57,7 +61,7 @@ export default function SolutionSection() {
     }
 
     // 必須為 SAENGAK 女性私密保養護理系列
-    return /(?:清潔露|慕斯|噴霧|濕巾|凝膠|女性護理|深層修護|每日清潔|私密|保養)/i.test(combined);
+    return /(?:清潔露|慕斯|噴霧|濕巾|凝膠|女性護理|深層修護|每日清潔|私密|保養|組合|套裝|組)/i.test(combined);
   };
 
   const fetchShopifyProducts = async () => {
@@ -81,6 +85,9 @@ export default function SolutionSection() {
         vendor: 'SAENGAK',
         availableForSale: p.availableForSale,
         variants: p.variants,
+        subtitle: p.subtitle,
+        promotionBadge: p.promotionBadge,
+        tags: p.tags,
       }));
 
       // 若 Shopify 後台的 SAENGAK 核心護理品不足 4 款，以 SAENGAK 官方經典品項補足
@@ -98,10 +105,10 @@ export default function SolutionSection() {
         }
       }
 
-      setProducts(displayList.slice(0, 4));
+      setProducts(displayList);
     } catch (err) {
       captureExceptionSafe(err, { source: 'SolutionSection', fallback: 'mockProducts' });
-      setProducts(rankEditorialProducts(mockProducts).filter(isSaengakCareProduct).slice(0, 4));
+      setProducts(rankEditorialProducts(mockProducts).filter(isSaengakCareProduct));
     } finally {
       setLoading(false);
     }
@@ -127,6 +134,27 @@ export default function SolutionSection() {
     handleProductClick(product);
   };
 
+  const isBundle = (p: Product) => {
+    const title = (p.name || '').toLowerCase();
+    const tags = (p.tags || []).map((t) => t.toLowerCase());
+    return (
+      title.includes('組') ||
+      title.includes('套裝') ||
+      tags.includes('超值組合') ||
+      tags.includes('shopify bundles') ||
+      tags.includes('組合包')
+    );
+  };
+
+  const bundles = products.filter(isBundle);
+  const singles = products.filter((p) => !isBundle(p));
+
+  const displayedProducts = (() => {
+    if (activeTab === 'bundles') return bundles.length > 0 ? bundles : products;
+    if (activeTab === 'singles') return singles.length > 0 ? singles : products;
+    return products;
+  })();
+
   return (
     <>
       <section className="py-16 px-4" style={{ backgroundColor: '#E7D6D4' }}>
@@ -138,7 +166,7 @@ export default function SolutionSection() {
               </h2>
               <button
                 onClick={handleRefresh}
-                className="p-2 text-gray-700 hover:text-gray-900 transition-colors"
+                className="p-2 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
                 title="重新載入產品"
               >
                 <i className="ri-refresh-line text-xl"></i>
@@ -175,6 +203,52 @@ export default function SolutionSection() {
 
             {/* 右側產品網格 */}
             <div className="space-y-6">
+              {/* 分類切換按鈕 */}
+              <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#D5C2C0]">
+                <span className="text-xs sm:text-sm font-bold text-[#5B3D48] tracking-wider">
+                  {activeTab === 'bundles' ? '✨ 官方推薦特惠組合' : activeTab === 'singles' ? '🌿 日常基礎護理單品' : '全系列私密護理品項'}
+                </span>
+
+                <div className="inline-flex bg-white/80 backdrop-blur-xs p-1 rounded-xl shadow-2xs border border-gray-200/60 text-xs sm:text-sm">
+                  <button
+                    onClick={() => setActiveTab('bundles')}
+                    className={`px-3 py-1.5 rounded-lg transition-all font-semibold flex items-center gap-1.5 cursor-pointer ${
+                      activeTab === 'bundles'
+                        ? 'bg-[#5B3D48] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <span>✨ 超值優惠組</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === 'bundles' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                      {bundles.length}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('singles')}
+                    className={`px-3 py-1.5 rounded-lg transition-all font-semibold flex items-center gap-1.5 cursor-pointer ${
+                      activeTab === 'singles'
+                        ? 'bg-[#5B3D48] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <span>經典單品</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === 'singles' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                      {singles.length}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('all')}
+                    className={`px-3 py-1.5 rounded-lg transition-all font-semibold cursor-pointer ${
+                      activeTab === 'all'
+                        ? 'bg-[#5B3D48] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    全部 ({products.length})
+                  </button>
+                </div>
+              </div>
+
               {loading ? (
                 <div className="h-96 flex items-center justify-center">
                   <div className="text-center">
@@ -184,7 +258,7 @@ export default function SolutionSection() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4" data-product-shop>
-                  {products.map((product) => {
+                  {displayedProducts.map((product) => {
                     const discountRate = calculateDiscountRate(product.price, product.originalPrice);
                     const isSoldOut =
                       product.availableForSale === false ||
@@ -215,10 +289,15 @@ export default function SolutionSection() {
                           )}
                           {/* Labels */}
                           <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+                            {isBundle(product) && (
+                              <span className="bg-[#5B3D48] text-white text-[11px] px-2 py-0.5 font-bold rounded shadow-xs tracking-wider">
+                                組合特惠
+                              </span>
+                            )}
                             {product.isBest && (
                               <span className="bg-red-500 text-white text-xs px-2 py-1 font-medium">BEST</span>
                             )}
-                            {product.isNew && (
+                            {product.isNew && !isBundle(product) && (
                               <span className="bg-blue-500 text-white text-xs px-2 py-1 font-medium">NEW</span>
                             )}
                           </div>
@@ -254,11 +333,23 @@ export default function SolutionSection() {
                                 );
                                 if (!displayVendor) return null;
                                 return (
-                                  <p className="text-xs mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif", marginBottom: "0.675rem", color: "#5B3D48" }}>
+                                  <p className="text-xs mb-1" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
                                     {displayVendor}
                                   </p>
                                 );
                               })()}
+                              {product.promotionBadge && (
+                                <div className="mb-1.5">
+                                  <span className="inline-block text-[11px] font-bold text-[#8C3A4D] bg-[#F5E6E8] px-2 py-0.5 rounded border border-[#EAC9CE]">
+                                    {product.promotionBadge}
+                                  </span>
+                                </div>
+                              )}
+                              {product.subtitle && (
+                                <p className="text-[11px] text-gray-500 line-clamp-1 mb-1 font-medium">
+                                  {product.subtitle}
+                                </p>
+                              )}
                               <p className="text-sm line-clamp-3 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#655859" }}>
                                 {product.description}
                               </p>
@@ -302,7 +393,7 @@ export default function SolutionSection() {
                           <button
                             onClick={(e) => handleViewProductClick(e, product)}
                             aria-label={`查看 ${product.name} 商品詳情`}
-                            className="add-to-cart-btn mt-auto"
+                            className="add-to-cart-btn mt-auto cursor-pointer"
                             style={{
                               backgroundColor: isSoldOut ? '#F8F5F1' : '#E7D6D4',
                               color: isSoldOut ? '#655859' : '#34302F',
@@ -317,7 +408,7 @@ export default function SolutionSection() {
                               e.currentTarget.style.color = isSoldOut ? '#655859' : '#34302F';
                             }}
                           >
-                            {isSoldOut ? '已售完・查看詳情' : '查看商品'}
+                            {isSoldOut ? '已售完・查看詳情' : isBundle(product) ? '查看特惠組合' : '查看商品'}
                           </button>
                         </div>
                       </div>

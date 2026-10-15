@@ -1,5 +1,5 @@
-export const SAENGAK_SHOP_DOMAIN = 'gh2xgs-zf.myshopify.com';
-export const SAENGAK_SUPABASE_PROJECT = 'tmqzkagkrzhioftvwbqo';
+export const LUCISSI_CARE_SHOP_DOMAIN = 'gh2xgs-zf.myshopify.com';
+export const LUCISSI_CARE_SUPABASE_PROJECT = 'tmqzkagkrzhioftvwbqo';
 export const REQUIRED_TAPPAY_DOMAINS = [
   'link-pay.tappaysdk.com',
   'shopify-pay.tappaysdk.com',
@@ -303,18 +303,18 @@ export function evaluateSandboxCase(evidence) {
     ),
     gate(
       'store_identity',
-      shopify.storeDomain === SAENGAK_SHOP_DOMAIN ? 'pass' : 'fail',
-      shopify.storeDomain === SAENGAK_SHOP_DOMAIN ? 'SAENGAK Shopify 商店正確' : 'Shopify 商店必須是 SAENGAK 專用商店',
+      shopify.storeDomain === LUCISSI_CARE_SHOP_DOMAIN ? 'pass' : 'fail',
+      shopify.storeDomain === LUCISSI_CARE_SHOP_DOMAIN ? 'LUCISSI CARE Shopify 商店正確' : 'Shopify 商店必須是 LUCISSI CARE 專用商店',
     ),
     booleanGate('shopify_plan', shopify.planActive, 'Shopify 方案已啟用', 'Shopify 方案尚未啟用'),
     booleanGate('online_store', shopify.onlineStoreEnabled, 'Online Store 已啟用', 'Online Store 尚未解鎖'),
     booleanGate('variant_checkout', shopify.variantCheckoutVerified, '真實 Variant 已取得 checkoutUrl', '尚未用真實 Variant 驗證 checkoutUrl'),
     gate(
       'checkout_url',
-      isPublicHttpsUrl(shopify.checkoutUrl, SAENGAK_SHOP_DOMAIN) ? 'pass' : 'fail',
-      isPublicHttpsUrl(shopify.checkoutUrl, SAENGAK_SHOP_DOMAIN)
-        ? 'checkoutUrl 使用 SAENGAK Shopify HTTPS 網域'
-        : 'checkoutUrl 必須使用 SAENGAK Shopify HTTPS 網域',
+      isPublicHttpsUrl(shopify.checkoutUrl, LUCISSI_CARE_SHOP_DOMAIN) ? 'pass' : 'fail',
+      isPublicHttpsUrl(shopify.checkoutUrl, LUCISSI_CARE_SHOP_DOMAIN)
+        ? 'checkoutUrl 使用 LUCISSI CARE Shopify HTTPS 網域'
+        : 'checkoutUrl 必須使用 LUCISSI CARE Shopify HTTPS 網域',
     ),
     booleanGate('tappay_app', tappay.appInstalled, 'TapPay Payment App 已安裝', 'TapPay Payment App 尚未安裝'),
     booleanGate('tappay_merchant', tappay.merchantConfigured, 'TapPay Shopify 商家設定已完成', 'TapPay Shopify 商家設定尚未完成'),
@@ -337,8 +337,8 @@ export function evaluateSandboxCase(evidence) {
     booleanGate('webhook_delivery', webhook.eventAccepted, '本案例 webhook 已驗簽接受', '缺少本案例 webhook 成功投遞證據'),
     gate(
       'supabase_project',
-      supabase.projectRef === SAENGAK_SUPABASE_PROJECT ? 'pass' : 'fail',
-      supabase.projectRef === SAENGAK_SUPABASE_PROJECT ? 'SAENGAK Supabase 專案正確' : 'Supabase project ref 不正確',
+      supabase.projectRef === LUCISSI_CARE_SUPABASE_PROJECT ? 'pass' : 'fail',
+      supabase.projectRef === LUCISSI_CARE_SUPABASE_PROJECT ? 'LUCISSI CARE Supabase 專案正確' : 'Supabase project ref 不正確',
     ),
     gate(
       'logistics_provider',

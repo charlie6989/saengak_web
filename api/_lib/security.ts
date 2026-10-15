@@ -11,7 +11,7 @@ export function getEffectiveOrigin(request: Request): string {
   try {
     return new URL(request.url).origin;
   } catch {
-    return 'https://saengak.com.tw';
+    return 'https://lucissicare.com';
   }
 }
 
@@ -30,6 +30,8 @@ export function getEffectiveOrigin(request: Request): string {
 export function isOriginAllowed(requestOrigin: string | null, request: Request): boolean {
   // 預設允許清單
   const defaultAllowed = [
+    'https://lucissicare.com',
+    'https://www.lucissicare.com',
     'https://saengak.com.tw',
     'https://www.saengak.com.tw',
     'http://localhost:3000',

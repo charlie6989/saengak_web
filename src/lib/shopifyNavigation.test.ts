@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildShopifyArticleUrl } from './shopifyNavigation';
 
 describe('buildShopifyArticleUrl', () => {
-  it('builds only the fixed SAENGAK Shopify host', () => {
+  it('builds only the fixed LUCISSI CARE Shopify host', () => {
     expect(buildShopifyArticleUrl('news', 'daily-care')).toBe(
       'https://gh2xgs-zf.myshopify.com/blogs/news/daily-care',
     );

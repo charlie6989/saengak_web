@@ -52,11 +52,14 @@ Deno.serve(async (request: Request) => {
 
   const mode = Deno.env.get('AmegoMode');
   if (mode !== 'test' && mode !== 'production') return json({ error: 'Invalid Amego mode' }, 503);
+  const issuerNote = (Deno.env.get('AmegoIssuerNote') ?? '').trim().slice(0, 100);
+  if (!issuerNote) return json({ error: 'Missing Amego issuer note' }, 503);
   const credentials: AmegoCredentials = {
     sellerTaxId: Deno.env.get('AmegoSellerTaxId') ?? '',
     appKey: Deno.env.get('AmegoAppKey') ?? '',
     mode,
     allowedSellerTaxIds: (Deno.env.get('AmegoAllowedSellerTaxIds') ?? '').split(',').map((value) => value.trim()).filter(Boolean),
+    issuerNote,
   };
 
   const declaredLength = Number(request.headers.get('content-length'));

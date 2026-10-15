@@ -149,6 +149,63 @@ export interface ShopifyArticle {
   tags?: string[];
 }
 
+const LEGACY_STOREFRONT_NAME = 'SAENGAK';
+const CURRENT_STOREFRONT_NAME = 'LUCISSI CARE';
+const LEGACY_STOREFRONT_COPY_REPLACEMENTS = [
+  [`${LEGACY_STOREFRONT_NAME} 韓國質感生活選品`, `${CURRENT_STOREFRONT_NAME} 韓國質感生活選品`],
+  [`${LEGACY_STOREFRONT_NAME} 質感生活選品`, `${CURRENT_STOREFRONT_NAME} 質感生活選品`],
+  [`${LEGACY_STOREFRONT_NAME} 編輯團隊`, `${CURRENT_STOREFRONT_NAME} 編輯團隊`],
+  [`${LEGACY_STOREFRONT_NAME} 官方客服`, `${CURRENT_STOREFRONT_NAME} 官方客服`],
+  [`${LEGACY_STOREFRONT_NAME} 商店開立`, `${CURRENT_STOREFRONT_NAME} 商店開立`],
+  [`${LEGACY_STOREFRONT_NAME} 品牌編輯標準`, `${CURRENT_STOREFRONT_NAME} 品牌編輯標準`],
+  [`${LEGACY_STOREFRONT_NAME} 會員`, `${CURRENT_STOREFRONT_NAME} 會員`],
+  [`${LEGACY_STOREFRONT_NAME} Shopify`, `${CURRENT_STOREFRONT_NAME} Shopify`],
+  [`${LEGACY_STOREFRONT_NAME} Talk`, 'LUCISSI Talk'],
+  [`${LEGACY_STOREFRONT_NAME} 的編輯守則`, `${CURRENT_STOREFRONT_NAME} 的編輯守則`],
+  [`${LEGACY_STOREFRONT_NAME} 堅持`, `${CURRENT_STOREFRONT_NAME} 堅持`],
+  [`${LEGACY_STOREFRONT_NAME} 期待成為`, `${CURRENT_STOREFRONT_NAME} 期待成為`],
+  [`${LEGACY_STOREFRONT_NAME} 現階段`, `${CURRENT_STOREFRONT_NAME} 現階段`],
+] as const;
+
+function normalizeLegacyStorefrontCopy(value: unknown): string {
+  if (typeof value !== 'string') return '';
+
+  return LEGACY_STOREFRONT_COPY_REPLACEMENTS.reduce(
+    (normalized, [legacyText, currentText]) => normalized.replaceAll(legacyText, currentText),
+    value,
+  );
+}
+
+/**
+ * 將 Shopify 文章的舊商店層級文案正規化為目前商店名稱。
+ * SAENGAK 商品品牌與文章標籤不在此處改寫，避免誤傷品牌歸屬資料。
+ */
+export function normalizeShopifyArticle(node: any): ShopifyArticle {
+  const blogTitle = normalizeLegacyStorefrontCopy(node?.blog?.title);
+
+  return {
+    id: node?.id || '',
+    title: normalizeLegacyStorefrontCopy(node?.title),
+    handle: node?.handle || '',
+    excerpt: normalizeLegacyStorefrontCopy(node?.excerpt || ''),
+    contentHtml: normalizeLegacyStorefrontCopy(node?.contentHtml || ''),
+    publishedAt: node?.publishedAt || '',
+    image: node?.image
+      ? { url: node.image.url, altText: normalizeLegacyStorefrontCopy(node.image.altText) }
+      : null,
+    blog: node?.blog
+      ? {
+          handle: node.blog.handle,
+          title: blogTitle,
+        }
+      : null,
+    author: normalizeLegacyStorefrontCopy(node?.authorV2?.name) || 'LUCISSI CARE 編輯團隊',
+    tags: (node?.tags || []).map((tag: unknown) =>
+      typeof tag === 'string' && tag.trim().toUpperCase() === 'SAENGAK' ? 'LUCISSI CARE' : String(tag),
+    ),
+  };
+}
+
 /**
  * 智慧解析商品重點亮點 (Highlights / Bullet Points)
  * 優先讀取 Shopify Metafield (custom.highlights)，若無則自 descriptionHtml 萃取商品特色清單
@@ -340,17 +397,29 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
 
 const TEST_PRODUCT_PATTERN = /驗收測試|請勿購買|測試商品|payment\s*test|test\s*product/i;
 
-// 權威決策：全站嚴格僅展示 SAENGAK 4 大核心保養商品，排除其他非相關商品
+// 權威決策：全站嚴格僅展示 SAENGAK 核心私密保養商品，排除其他非相關商品
 export const CORE_SAENGAK_KEYWORDS = [
   '深層修護私密清潔露',
   '私密雙層修護精華噴霧',
   '益生菌私密養膚濕巾',
   '平衡調理私密潔淨慕斯',
+  '益生菌私密舒緩凝膠',
   'deep-repair-wash',
   'calming-mist',
   'refreshing-wipes',
   'cleansing-mousse',
+  'soothing-gel',
 ];
+
+export const FEATURED_PRODUCT_TAG_PATTERN = /^(featured|精選|精選商品|featured[-_]?product|人氣推薦)$/i;
+
+/**
+ * 智慧識別是否為精選商品（優先讀取 Shopify Tags 標籤）
+ */
+export function isFeaturedShopifyProduct(product: ShopifyProduct): boolean {
+  const tags = Array.isArray(product.tags) ? product.tags : [];
+  return tags.some((tag) => typeof tag === 'string' && FEATURED_PRODUCT_TAG_PATTERN.test(tag.trim()));
+}
 
 export function isPublicShopifyProduct(product: ShopifyProduct): boolean {
   const searchable = [product.title, product.name, product.handle, product.vendor, ...(product.tags || [])].join(' ').toLowerCase();
@@ -359,7 +428,7 @@ export function isPublicShopifyProduct(product: ShopifyProduct): boolean {
 
 
 export function isPublicShopifyArticle(article: ShopifyArticle): boolean {
-  return (article.tags || []).some((tag) => /^(saengak|公開|public)$/i.test(tag.trim()));
+  return (article.tags || []).some((tag) => /^(saengak|lucissi care|公開|public)$/i.test(tag.trim()));
 }
 
 const PRODUCT_FRAGMENT = `
@@ -765,18 +834,9 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
       variables: { first },
     });
 
-    const articles: ShopifyArticle[] = (data.articles?.edges || []).map((edge) => ({
-      id: edge.node.id,
-      title: edge.node.title,
-      handle: edge.node.handle,
-      excerpt: edge.node.excerpt || '',
-      contentHtml: edge.node.contentHtml || '',
-      publishedAt: edge.node.publishedAt,
-      image: edge.node.image ? { url: edge.node.image.url, altText: edge.node.image.altText } : null,
-      blog: edge.node.blog ? { handle: edge.node.blog.handle, title: edge.node.blog.title === 'SAENGAK Talk' ? 'LUCISSI Talk' : edge.node.blog.title } : null,
-      author: edge.node.authorV2?.name || 'SAENGAK 編輯團隊',
-      tags: edge.node.tags || [],
-    })).filter(isPublicShopifyArticle);
+    const articles: ShopifyArticle[] = (data.articles?.edges || [])
+      .map((edge) => normalizeShopifyArticle(edge.node))
+      .filter(isPublicShopifyArticle);
 
     if (articles.length > 0) {
       return articles;
@@ -831,7 +891,7 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
         altText: '日常私密護理指南',
       },
       blog: { handle: 'care-talk', title: 'LUCISSI Talk' },
-      author: 'SAENGAK 編輯團隊',
+      author: 'LUCISSI CARE 編輯團隊',
       tags: ['SAENGAK', '健康知識', '私密護理', '日常保養', '公開'],
     },
     {
@@ -876,18 +936,18 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
         altText: '貼身衣物材質指南',
       },
       blog: { handle: 'lifestyle', title: '生活美學' },
-      author: 'SAENGAK 編輯團隊',
+      author: 'LUCISSI CARE 編輯團隊',
       tags: ['SAENGAK', '選購指南', '生活美學', '親膚材質', '公開'],
     },
     {
       id: 'fallback-article-3',
-      title: '我們如何整理產品與內容：SAENGAK 編輯團隊的透明度承諾',
+      title: '我們如何整理產品與內容：LUCISSI CARE 編輯團隊的透明度承諾',
       handle: 'how-we-review-products-and-content',
       excerpt: '所有產品資訊堅持來源透明與成分公開；沒有即時評價時，就以編輯精選清楚標示。',
       contentHtml: `
-<p class="lead text-lg mb-6 leading-relaxed">在資訊繁雜的現代生活中，SAENGAK 堅持以透明、真實與科學尊重的態度，為每一位女性整理真正需要的日常好物與知識內容。</p>
+<p class="lead text-lg mb-6 leading-relaxed">在資訊繁雜的現代生活中，LUCISSI CARE 堅持以透明、真實與科學尊重的態度，為每一位女性整理真正需要的日常好物與知識內容。</p>
 
-<h2 class="text-2xl font-bold mb-4 mt-8" style="color: #225B4F;">一、 SAENGAK 的編輯守則與透明度承諾</h2>
+<h2 class="text-2xl font-bold mb-4 mt-8" style="color: #225B4F;">一、 LUCISSI CARE 的編輯守則與透明度承諾</h2>
 <p class="mb-4 leading-relaxed">我們相信，好的生活品牌不需要誇張的話術，而是透過誠實的資訊傳遞，讓使用者能安心做決定：</p>
 
 <h3 class="text-xl font-semibold mb-2 mt-4" style="color: #333333;">1. 來源清楚，成分完全透明</h3>
@@ -907,15 +967,15 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
 </ul>
 
 <h2 class="text-2xl font-bold mb-4 mt-8" style="color: #225B4F;">三、 陪伴妳的每一個日常</h2>
-<p class="mb-6 leading-relaxed">SAENGAK 期待成為妳生活裡最值得信賴的溫柔力量。在照顧身體的路上，我們與妳一同用心聆聽身體的真實聲音。</p>
+<p class="mb-6 leading-relaxed">LUCISSI CARE 期待成為妳生活裡最值得信賴的溫柔力量。在照顧身體的路上，我們與妳一同用心聆聽身體的真實聲音。</p>
       `.trim(),
       publishedAt: '2026-09-01T10:37:36Z',
       image: {
         url: '/images/blog/how-we-review-products-and-content.jpg',
-        altText: 'SAENGAK 品牌編輯標準',
+        altText: 'LUCISSI CARE 品牌編輯標準',
       },
       blog: { handle: 'brand', title: '品牌方法' },
-      author: 'SAENGAK 編輯團隊',
+      author: 'LUCISSI CARE 編輯團隊',
       tags: ['SAENGAK', '品牌方法', '透明原則', '編輯守則', '公開'],
     },
   ];
@@ -962,18 +1022,9 @@ export async function getShopifyArticleByHandle(handle: string): Promise<Shopify
       variables: { first: 50 },
     });
 
-    const articles = (data.articles?.edges || []).map((edge) => ({
-      id: edge.node.id,
-      title: edge.node.title,
-      handle: edge.node.handle,
-      excerpt: edge.node.excerpt || '',
-      contentHtml: edge.node.contentHtml || '',
-      publishedAt: edge.node.publishedAt,
-      image: edge.node.image ? { url: edge.node.image.url, altText: edge.node.image.altText } : null,
-      blog: edge.node.blog ? { handle: edge.node.blog.handle, title: edge.node.blog.title === 'SAENGAK Talk' ? 'LUCISSI Talk' : edge.node.blog.title } : null,
-      author: edge.node.authorV2?.name || 'SAENGAK 編輯團隊',
-      tags: edge.node.tags || [],
-    })).filter(isPublicShopifyArticle);
+    const articles = (data.articles?.edges || [])
+      .map((edge) => normalizeShopifyArticle(edge.node))
+      .filter(isPublicShopifyArticle);
 
     const found = articles.find((a) => a.handle === handle || a.id === handle);
     if (found) return found;

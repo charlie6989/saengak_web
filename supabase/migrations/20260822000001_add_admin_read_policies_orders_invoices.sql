@@ -1,4 +1,4 @@
--- SAENGAK Database Migration: 後台管理員唯讀存取真實訂單／發票資料 + 補齊 site_settings 營運參數
+-- LUCISSI CARE Database Migration: 後台管理員唯讀存取真實訂單／發票資料 + 補齊 site_settings 營運參數
 -- 規範來源: docs/00_DECISION_LOG.md（app_metadata.role='admin' 為唯一權威角色判定）
 --
 -- 背景：orders / order_items / order_invoices 目前只有「擁有者本人可讀」的 RLS policy，

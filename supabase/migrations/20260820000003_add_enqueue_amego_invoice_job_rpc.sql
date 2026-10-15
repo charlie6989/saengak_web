@@ -1,4 +1,4 @@
--- SAENGAK Database Migration: 修正發票 Outbox 寫入路徑
+-- LUCISSI CARE Database Migration: 修正發票 Outbox 寫入路徑
 -- 問題: api/_lib/supabase-admin.ts 的 enqueueAmegoInvoiceJob() 先前透過
 -- PostgREST 直接 .from('amego_invoice_jobs') 存取，但該表實際位於
 -- private.amego_invoice_jobs（未曝露於 PostgREST 的 public schema），

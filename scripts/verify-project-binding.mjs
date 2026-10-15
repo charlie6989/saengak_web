@@ -27,8 +27,8 @@ if (scope === 'all' || scope === 'supabase') {
     const owner = forbiddenSupabaseRefs.get(linkedRef);
     errors.push(
       owner
-        ? `Supabase ref ${linkedRef} 屬於${owner}，不可部署 SAENGAK`
-        : `Supabase ref ${linkedRef} 不是 SAENGAK 預期的 ${expectedSupabaseRef}`,
+        ? `Supabase ref ${linkedRef} 屬於${owner}，不可部署 LUCISSI CARE`
+        : `Supabase ref ${linkedRef} 不是 LUCISSI CARE 預期的 ${expectedSupabaseRef}`,
     );
   }
 }
@@ -58,7 +58,7 @@ if (scope === 'all' || scope === 'vercel') {
   for (const envName of ['VITE_PUBLIC_SUPABASE_URL']) {
     const value = process.env[envName] ?? '';
     if (!value) {
-      errors.push(`缺少 ${envName}，無法證明 Vercel 綁定到 SAENGAK Supabase`);
+      errors.push(`缺少 ${envName}，無法證明 LUCISSI CARE 綁定到 Supabase`);
       continue;
     }
     try {

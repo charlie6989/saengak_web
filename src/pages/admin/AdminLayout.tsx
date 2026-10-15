@@ -29,7 +29,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <div className="flex items-center space-x-3">
             <Link to="/admin/dashboard" className="flex items-center space-x-2">
               <span className="rounded-md bg-[#5B3D48] px-2.5 py-1 text-sm font-black tracking-widest text-white">
-                SAENGAK
+                LUCISSI CARE
               </span>
               <span className="text-sm font-bold text-gray-800">管理後台系統</span>
             </Link>

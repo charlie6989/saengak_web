@@ -1,7 +1,7 @@
-export const SAENGAK_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
-export const SAENGAK_SHOPIFY_API_VERSION = '2026-07';
-export const SAENGAK_ORDER_WEBHOOK_URI =
-  'https://www.saengak.com.tw/api/webhooks/shopify';
+export const LUCISSI_CARE_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
+export const LUCISSI_CARE_SHOPIFY_API_VERSION = '2026-07';
+export const LUCISSI_CARE_ORDER_WEBHOOK_URI =
+  'https://lucissicare.com/api/webhooks/shopify';
 
 export const REQUIRED_ORDER_WEBHOOK_TOPICS = [
   'ORDERS_CREATE',
@@ -18,8 +18,8 @@ export function normalizeShopifyDomain(value = '') {
 
 export function validateWebhookConfiguration({ shopDomain, apiVersion, webhookUri }) {
   const normalizedDomain = normalizeShopifyDomain(shopDomain);
-  if (normalizedDomain !== SAENGAK_SHOPIFY_DOMAIN) {
-    throw new Error(`拒絕操作非 SAENGAK Shopify 商店：${normalizedDomain || '(empty)'}`);
+  if (normalizedDomain !== LUCISSI_CARE_SHOPIFY_DOMAIN) {
+    throw new Error(`拒絕操作非 LUCISSI CARE Shopify 商店：${normalizedDomain || '(empty)'}`);
   }
   if (!/^20\d{2}-(01|04|07|10)$/.test(apiVersion)) {
     throw new Error(`無效的 Shopify API version：${apiVersion}`);
@@ -33,16 +33,16 @@ export function validateWebhookConfiguration({ shopDomain, apiVersion, webhookUr
   }
   if (
     parsedUri.protocol !== 'https:' ||
-    parsedUri.hostname !== 'www.saengak.com.tw' ||
+    parsedUri.hostname !== 'lucissicare.com' ||
     parsedUri.pathname !== '/api/webhooks/shopify' ||
     parsedUri.username !== '' ||
     parsedUri.password !== '' ||
     parsedUri.search !== '' ||
     parsedUri.hash !== '' ||
     parsedUri.port !== '' ||
-    parsedUri.toString() !== SAENGAK_ORDER_WEBHOOK_URI
+    parsedUri.toString() !== LUCISSI_CARE_ORDER_WEBHOOK_URI
   ) {
-    throw new Error('Webhook URI 必須指向 SAENGAK Production 的 Vercel Shopify webhook');
+    throw new Error('Webhook URI 必須指向 LUCISSI CARE Production 的 Vercel Shopify webhook');
   }
 
   return {

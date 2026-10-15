@@ -105,4 +105,36 @@ describe('ShopifyDescriptionViewer 跨品類自適應卡（萬用通用商品模
     expect(html).toContain('保固 1 年');
     expect(html).not.toContain('請見商品標示');
   });
+
+  it('服飾商品傳入自訂 fitGuide 與 sizeChart 時，正確動態渲染指標與尺碼數值', () => {
+    const html = renderToString(
+      <ShopifyDescriptionViewer
+        productName="無痕生理褲"
+        category="舒適穿著"
+        fitGuide={{
+          fit: '寬鬆',
+          thickness: '輕薄',
+          elasticity: '微彈',
+          breathability: '良好',
+        }}
+        sizeChart={[
+          { size: '2XL (110)', waist: '84 - 90', hips: '106 - 112', crotch: '25.5', weight: '75 ~ 85 kg' },
+        ]}
+      />
+    );
+
+    // 驗證自訂 fitGuide 正確啟用與渲染
+    expect(html).toContain('寬鬆 (Loose Fit)');
+    expect(html).toContain('輕薄 (Light)');
+    expect(html).toContain('微彈 (Slight)');
+    expect(html).toContain('良好 (Good)');
+
+    // 驗證自訂 sizeChart 列正確呈現
+    expect(html).toContain('2XL (110)');
+    expect(html).toContain('84 - 90');
+    expect(html).toContain('106 - 112');
+    expect(html).toContain('25.5');
+    expect(html).toContain('75 ~ 85 kg');
+  });
 });
+

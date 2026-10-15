@@ -23,7 +23,7 @@ import {
   resetMemoryDatabase,
 } from '../api/_lib/supabase-admin.js';
 
-describe('SAENGAK Shopify Cart 結帳 API 整合與維護模式測試 (api/create-shopify-cart.ts)', () => {
+describe('LUCISSI CARE Shopify Cart 結帳 API 整合與維護模式測試 (api/create-shopify-cart.ts)', () => {
   beforeEach(() => {
     resetMemoryDatabase();
     delete process.env.MAINTENANCE_MODE;

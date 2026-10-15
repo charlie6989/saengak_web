@@ -15,7 +15,7 @@ import { ProductList } from '../src/pages/admin/ProductList';
 import { OrderList } from '../src/pages/admin/OrderList';
 import { SiteSettings } from '../src/pages/admin/SiteSettings';
 
-describe('SAENGAK 後台管理系統與權限隔離測試 (Admin Portal & Role Isolation)', () => {
+describe('LUCISSI CARE 後台管理系統與權限隔離測試 (Admin Portal & Role Isolation)', () => {
   describe('1. 角色權限判定與資安不變量 (Auth Role & Invariants)', () => {
     it('未登入 (user 為 null) 時，角色為 null 且非管理員', () => {
       expect(extractUserRole(null)).toBeNull();

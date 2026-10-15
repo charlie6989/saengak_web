@@ -39,8 +39,6 @@ export default function ShopifyDescriptionViewer({
   category = '',
   tags = [],
   productName = 'SAENGAK 商品',
-  subtitle,
-  highlights = [],
   images = [],
   vendor = '',
   contentSections,
@@ -245,7 +243,7 @@ export default function ShopifyDescriptionViewer({
         badge: item.badge || `CARE 0${idx + 1}`,
         title: item.title,
         description: item.description,
-        image: contentImagesPool[idx] || item.image || (idx === 0
+        image: item.image || contentImagesPool[idx] || (idx === 0
           ? 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=1200'
           : idx === 1
             ? 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=1200'
@@ -305,7 +303,7 @@ export default function ShopifyDescriptionViewer({
         category: c.category,
         title: c.title,
         description: c.description,
-        image: contentImagesPool[3 + idx] || c.image || (idx === 0
+        image: c.image || contentImagesPool[3 + idx] || (idx === 0
           ? 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800'
           : 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=800'),
       }));
@@ -502,48 +500,80 @@ export default function ShopifyDescriptionViewer({
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-semibold text-gray-700">
                   <span>版型 (Fit)</span>
-                  <span className="text-[#5B3D48]">合身 (Regular Fit)</span>
+                  <span className="text-[#5B3D48]">
+                    {fitValue.includes('合身')
+                      ? '合身 (Regular Fit)'
+                      : fitValue.includes('緊身')
+                        ? '緊身 (Slim Fit)'
+                        : fitValue.includes('寬鬆')
+                          ? '寬鬆 (Loose Fit)'
+                          : fitValue}
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">緊身 (Slim)</div>
-                  <div className="py-2 rounded-lg bg-[#5B3D48] text-white font-bold shadow-xs">合身 (Regular)</div>
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">寬鬆 (Oversized)</div>
+                  <div className={`py-2 rounded-lg ${fitValue.includes('緊身') || fitValue.toLowerCase().includes('slim') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>緊身 (Slim)</div>
+                  <div className={`py-2 rounded-lg ${fitValue.includes('合身') || (!fitValue.includes('緊身') && !fitValue.includes('寬鬆')) ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>合身 (Regular)</div>
+                  <div className={`py-2 rounded-lg ${fitValue.includes('寬鬆') || fitValue.toLowerCase().includes('loose') || fitValue.toLowerCase().includes('oversized') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>寬鬆 (Oversized)</div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-semibold text-gray-700">
                   <span>厚薄度 (Thickness)</span>
-                  <span className="text-[#5B3D48]">適中 (Moderate)</span>
+                  <span className="text-[#5B3D48]">
+                    {thicknessValue.includes('適中')
+                      ? '適中 (Moderate)'
+                      : thicknessValue.includes('輕薄') || thicknessValue.includes('薄')
+                        ? '輕薄 (Light)'
+                        : thicknessValue.includes('厚')
+                          ? '厚實 (Heavy)'
+                          : thicknessValue}
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">輕薄 (Light)</div>
-                  <div className="py-2 rounded-lg bg-[#5B3D48] text-white font-bold shadow-xs">適中 (Moderate)</div>
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">厚實 (Heavy)</div>
+                  <div className={`py-2 rounded-lg ${thicknessValue.includes('薄') || thicknessValue.toLowerCase().includes('light') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>輕薄 (Light)</div>
+                  <div className={`py-2 rounded-lg ${thicknessValue.includes('中') || (!thicknessValue.includes('薄') && !thicknessValue.includes('厚')) ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>適中 (Moderate)</div>
+                  <div className={`py-2 rounded-lg ${thicknessValue.includes('厚') || thicknessValue.toLowerCase().includes('heavy') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>厚實 (Heavy)</div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-semibold text-gray-700">
                   <span>彈性 (Elasticity)</span>
-                  <span className="text-[#5B3D48]">高彈力 (High)</span>
+                  <span className="text-[#5B3D48]">
+                    {elasticityValue.includes('無')
+                      ? '無彈 (None)'
+                      : elasticityValue.includes('微')
+                        ? '微彈 (Slight)'
+                        : elasticityValue.includes('高') || elasticityValue.includes('彈')
+                          ? '高彈力 (High)'
+                          : elasticityValue}
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">無彈 (None)</div>
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">微彈 (Slight)</div>
-                  <div className="py-2 rounded-lg bg-[#5B3D48] text-white font-bold shadow-xs">高彈力 (High)</div>
+                  <div className={`py-2 rounded-lg ${elasticityValue.includes('無') || elasticityValue.toLowerCase().includes('none') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>無彈 (None)</div>
+                  <div className={`py-2 rounded-lg ${elasticityValue.includes('微') || elasticityValue.toLowerCase().includes('slight') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>微彈 (Slight)</div>
+                  <div className={`py-2 rounded-lg ${elasticityValue.includes('高') || (!elasticityValue.includes('無') && !elasticityValue.includes('微')) ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>高彈力 (High)</div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-semibold text-gray-700">
                   <span>透氣度 (Breathability)</span>
-                  <span className="text-[#5B3D48]">極佳 (Excellent)</span>
+                  <span className="text-[#5B3D48]">
+                    {breathabilityValue.includes('極佳') || breathabilityValue.includes('佳')
+                      ? '極佳 (Excellent)'
+                      : breathabilityValue.includes('良好')
+                        ? '良好 (Good)'
+                        : breathabilityValue.includes('一般')
+                          ? '一般 (Normal)'
+                          : breathabilityValue}
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">一般 (Normal)</div>
-                  <div className="py-2 rounded-lg bg-gray-100 text-gray-400">良好 (Good)</div>
-                  <div className="py-2 rounded-lg bg-[#5B3D48] text-white font-bold shadow-xs">極佳 (Excellent)</div>
+                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('一般') || breathabilityValue.toLowerCase().includes('normal') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>一般 (Normal)</div>
+                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('良好') || breathabilityValue.toLowerCase().includes('good') ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>良好 (Good)</div>
+                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('極佳') || (!breathabilityValue.includes('一般') && !breathabilityValue.includes('良好')) ? 'bg-[#5B3D48] text-white font-bold shadow-xs' : 'bg-gray-100 text-gray-400'}`}>極佳 (Excellent)</div>
                 </div>
               </div>
             </div>
@@ -588,34 +618,18 @@ export default function ShopifyDescriptionViewer({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  <tr className="hover:bg-blush/30 transition-colors">
-                    <td className="px-5 py-4 font-bold text-[#5B3D48]">S (90)</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '60 - 66' : '23.6 - 26.0'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '82 - 88' : '32.3 - 34.6'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '21.5' : '8.5'}</td>
-                    <td className="px-5 py-4 text-xs text-gray-600 font-medium">40 ~ 50 kg</td>
-                  </tr>
-                  <tr className="hover:bg-blush/30 transition-colors bg-gray-50/40">
-                    <td className="px-5 py-4 font-bold text-[#5B3D48]">M (95)</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '66 - 72' : '26.0 - 28.3'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '88 - 94' : '34.6 - 37.0'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '22.5' : '8.9'}</td>
-                    <td className="px-5 py-4 text-xs text-gray-600 font-medium">50 ~ 58 kg</td>
-                  </tr>
-                  <tr className="hover:bg-blush/30 transition-colors">
-                    <td className="px-5 py-4 font-bold text-[#5B3D48]">L (100)</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '72 - 78' : '28.3 - 30.7'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '94 - 100' : '37.0 - 39.4'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '23.5' : '9.3'}</td>
-                    <td className="px-5 py-4 text-xs text-gray-600 font-medium">58 ~ 66 kg</td>
-                  </tr>
-                  <tr className="hover:bg-blush/30 transition-colors bg-gray-50/40">
-                    <td className="px-5 py-4 font-bold text-[#5B3D48]">XL (105)</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '78 - 84' : '30.7 - 33.1'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '100 - 106' : '39.4 - 41.7'}</td>
-                    <td className="px-5 py-4">{sizeUnit === 'cm' ? '24.5' : '9.6'}</td>
-                    <td className="px-5 py-4 text-xs text-gray-600 font-medium">66 ~ 75 kg</td>
-                  </tr>
+                  {activeSizeChart.map((row, idx) => (
+                    <tr
+                      key={row.size || idx}
+                      className={`hover:bg-blush/30 transition-colors ${idx % 2 === 1 ? 'bg-gray-50/40' : ''}`}
+                    >
+                      <td className="px-5 py-4 font-bold text-[#5B3D48]">{row.size}</td>
+                      <td className="px-5 py-4">{formatSizeValue(row.waist, sizeUnit)}</td>
+                      <td className="px-5 py-4">{formatSizeValue(row.hips, sizeUnit)}</td>
+                      <td className="px-5 py-4">{formatSizeValue(row.crotch, sizeUnit)}</td>
+                      <td className="px-5 py-4 text-xs text-gray-600 font-medium">{row.weight}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
