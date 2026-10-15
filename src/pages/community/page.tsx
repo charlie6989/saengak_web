@@ -182,7 +182,7 @@ export default function Community() {
       />
 
       <main className="page-content bg-[#F8F5F1]">
-        <section className="py-4 px-4 bg-[#F8F5F1] mt-[-1px]">
+        <section className="py-4 px-4 bg-[#F8F5F1] -mt-px">
           <div className="max-w-7xl mx-auto">
             {/* Tab Navigation - 手機版優化 */}
             <div className="flex items-center justify-center mb-6 md:mb-8">
@@ -190,7 +190,7 @@ export default function Community() {
                 <button
                   onClick={() => setActiveTab('blog')}
                   className={`flex-1 px-4 md:px-6 py-2.5 md:py-2 rounded-full text-sm md:text-base font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${activeTab === 'blog'
-                    ? 'text-white shadow-sm'
+                    ? 'text-white shadow-xs'
                     : 'text-gray-600 hover:text-gray-900'
                     }`}
                   style={{
@@ -203,7 +203,7 @@ export default function Community() {
                 <button
                   onClick={() => setActiveTab('instagram')}
                   className={`flex-1 px-4 md:px-6 py-2.5 md:py-2 rounded-full text-sm md:text-base font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${activeTab === 'instagram'
-                    ? 'text-white shadow-sm'
+                    ? 'text-white shadow-xs'
                     : 'text-gray-600 hover:text-gray-900'
                     }`}
                   style={{
@@ -228,7 +228,7 @@ export default function Community() {
                       placeholder="搜尋文章..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full px-4 py-3 pl-11 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+                      className="w-full px-4 py-3 pl-11 text-sm border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent"
                     />
                     <i className="ri-search-line absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-base"></i>
                   </div>
@@ -278,7 +278,7 @@ export default function Community() {
                   <div className="mb-8 md:mb-16">
                     <div className="relative overflow-hidden rounded-lg cursor-pointer group" onClick={() => handleArticleOpen(filteredArticles[0])}>
                       {/* 手機版使用 4:3 比例，平板以上使用 21:9 */}
-                      <div className="aspect-[4/3] md:aspect-[16/9] lg:aspect-[21/9] overflow-hidden">
+                      <div className="aspect-4/3 md:aspect-video lg:aspect-21/9 overflow-hidden">
                         <img
                           src={filteredArticles[0].image}
                           alt={filteredArticles[0].title}
@@ -286,16 +286,16 @@ export default function Community() {
                         />
                       </div>
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end">
+                      <div className="absolute inset-0 bg-linear-to-t/srgb from-black/80 via-black/40 to-transparent flex items-end">
                         <div className="p-4 md:p-6 lg:p-8 text-white w-full">
                           <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
-                            <span className="px-2.5 md:px-3 py-1 text-xs font-medium bg-white/20 backdrop-blur-sm rounded-full">
+                            <span className="px-2.5 md:px-3 py-1 text-xs font-medium bg-white/20 backdrop-blur-xs rounded-full">
                               {filteredArticles[0].category}
                             </span>
                             <span className="text-xs md:text-sm opacity-90">{filteredArticles[0].readTime}</span>
                           </div>
 
-                          <h2 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold mb-2 md:mb-3 lg:mb-4 leading-tight line-clamp-2 md:line-clamp-none">
+                          <h2 className="text-xl md:text-2xl md:leading-8 lg:text-3xl lg:leading-9 xl:text-4xl xl:leading-10 font-bold mb-2 md:mb-3 lg:mb-4 leading-tight line-clamp-2 md:line-clamp-none">
                             {filteredArticles[0].title}
                           </h2>
 
@@ -340,7 +340,7 @@ export default function Community() {
                         onClick={() => handleArticleOpen(article)}
                       >
                         {/* 手機版使用 16:10 比例 */}
-                        <div className="aspect-[16/10] overflow-hidden">
+                        <div className="aspect-16/10 overflow-hidden">
                           <img
                             src={article.image}
                             alt={article.title}
@@ -356,7 +356,7 @@ export default function Community() {
                             <span className="text-xs text-gray-500">{article.readTime}</span>
                           </div>
 
-                          <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-3 line-clamp-2 group-hover:text-brand transition-colors leading-snug">
+                          <h3 className="text-base md:text-lg md:leading-7 font-semibold text-gray-900 mb-2 md:mb-3 line-clamp-2 group-hover:text-brand transition-colors leading-snug">
                             {article.title}
                           </h3>
 
@@ -449,11 +449,11 @@ export default function Community() {
                       </div>
 
                       <div className="p-3 md:p-4">
-                        <p className="text-xs md:text-sm text-gray-700 mb-2 md:mb-3 line-clamp-2 md:line-clamp-3 leading-relaxed">
+                        <p className="text-xs md:text-sm md:leading-5 text-gray-700 mb-2 md:mb-3 line-clamp-2 md:line-clamp-3 leading-relaxed">
                           {post.caption}
                         </p>
 
-                        <span className="text-xs font-medium text-[#5B3D48]">內容主題</span>
+                        <span className="text-xs font-medium text-brand">內容主題</span>
                       </div>
                     </div>
                   ))}
@@ -470,7 +470,7 @@ export default function Community() {
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6">
               加入我們的健康社群
             </h2>
-            <p className="text-sm md:text-base lg:text-lg text-gray-600 mb-6 md:mb-8 leading-relaxed px-4">
+            <p className="text-sm md:text-base md:leading-6 lg:text-lg lg:leading-7 text-gray-600 mb-6 md:mb-8 leading-relaxed px-4">
               加入 LUCISSI CARE 會員，掌握最新護理專欄、專屬優惠與個人化貼心購物體驗。
             </p>
 

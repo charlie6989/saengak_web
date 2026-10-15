@@ -137,14 +137,14 @@ const ReviewSection: React.FC = () => {
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+              className="bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
               onClick={() => {
                 const numericId = product.id.replace('gid://shopify/Product/', '');
                 window.location.href = `/product/${numericId}`;
               }}
             >
               {/* 產品圖片 */}
-              <div className="aspect-[4/5] overflow-hidden">
+              <div className="aspect-4/5 overflow-hidden">
                 <img
                   src={product.image}
                   alt={product.name}
@@ -158,7 +158,7 @@ const ReviewSection: React.FC = () => {
 
                 {/* 產品名稱 */}
                 <h3
-                  className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]"
+                  className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-14"
                   style={{ fontFamily: '"Noto Sans TC", sans-serif' }}
                 >
                   {sanitizeProductTitle(product.name)}

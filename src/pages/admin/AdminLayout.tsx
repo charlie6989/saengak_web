@@ -24,11 +24,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-[#F8F5F1] text-gray-900">
       {/* 頂部管理員導覽列 */}
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md shadow-xs">
+      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-3">
             <Link to="/admin/dashboard" className="flex items-center space-x-2">
-              <span className="rounded-md bg-[#5B3D48] px-2.5 py-1 text-sm font-black tracking-widest text-white">
+              <span className="rounded-md bg-brand px-2.5 py-1 text-sm font-black tracking-widest text-white">
                 LUCISSI CARE
               </span>
               <span className="text-sm font-bold text-gray-800">管理後台系統</span>
@@ -72,7 +72,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 className={({ isActive }) =>
                   `whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs font-medium transition-colors ${
                     isActive
-                      ? 'bg-[#5B3D48] text-white shadow-xs'
+                      ? 'bg-brand text-white '
                       : 'text-gray-600 hover:bg-gray-200/70 hover:text-gray-900'
                   }`
                 }

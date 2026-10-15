@@ -940,7 +940,7 @@ export default function ProductPage() {
         <Header />
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#5B3D48] mb-4"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand mb-4"></div>
             <p className="text-gray-600 font-medium">正在載入商品資料...</p>
           </div>
         </div>
@@ -961,7 +961,7 @@ export default function ProductPage() {
             <p className="text-gray-500 text-sm">該商品可能已下架或網址不正確</p>
             <Link
               to="/"
-              className="inline-block px-6 py-2.5 bg-[#5B3D48] hover:bg-[#48303A] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors"
+              className="inline-block px-6 py-2.5 bg-brand hover:bg-brand-ink text-white text-sm font-semibold rounded-xl transition-colors"
             >
               返回首頁
             </Link>
@@ -991,7 +991,7 @@ export default function ProductPage() {
             className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[78px_minmax(0,1fr)] md:grid-cols-[84px_minmax(0,1fr)] lg:grid-cols-[90px_minmax(0,1fr)] sm:gap-3.5 lg:sticky lg:top-[108px] items-start self-start"
           >
             {/* 縮圖導航 (嚴格限制一列 6 張正方形縮圖，超過 6 張隨箭頭平滑切換) */}
-            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full flex-shrink-0 flex flex-col items-center">
+            <aside className="order-2 min-w-0 sm:order-1 relative select-none w-full shrink-0 flex flex-col items-center">
               <div className="relative flex items-center sm:flex-col w-full min-h-0 gap-1.5 sm:gap-1">
                 {/* 桌機版：頂部向上箭頭 (超過 6 張時顯示) */}
                 {productImages.length > 6 && (
@@ -999,7 +999,7 @@ export default function ProductPage() {
                     type="button"
                     onClick={handleScrollUpThumbnails}
                     aria-label="向上瀏覽更多縮圖"
-                    className="hidden sm:flex w-full h-6 flex-shrink-0 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded text-xs transition-colors shadow-2xs z-10 cursor-pointer mb-0.5"
+                    className="hidden sm:flex w-full h-6 shrink-0 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded-sm text-xs transition-colors z-10 cursor-pointer mb-0.5"
                   >
                     <i className="ri-arrow-up-s-line text-xs"></i>
                   </button>
@@ -1011,7 +1011,7 @@ export default function ProductPage() {
                     type="button"
                     onClick={handleScrollLeftThumbnails}
                     aria-label="向左瀏覽更多縮圖"
-                    className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
+                    className="sm:hidden shrink-0 w-6 h-10 flex items-center justify-center text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-sm z-10 cursor-pointer active:scale-95 transition-all"
                   >
                     <i className="ri-arrow-left-s-line text-base"></i>
                   </button>
@@ -1031,7 +1031,7 @@ export default function ProductPage() {
                     {productImages.map((url, idx) => {
                       const isSelected = selectedImage === idx;
                       return (
-                        <li key={idx} className="w-16 h-16 sm:w-full sm:h-auto sm:aspect-square flex-shrink-0">
+                        <li key={idx} className="w-16 h-16 sm:w-full sm:h-auto sm:aspect-square shrink-0">
                           <button
                             type="button"
                             onClick={() => handleThumbnailClick(idx)}
@@ -1039,7 +1039,7 @@ export default function ProductPage() {
                             aria-pressed={isSelected}
                             data-testid={`product-thumbnail-${idx}`}
                             className={`block w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${isSelected
-                                ? 'border-[#5B3D48] ring-1 ring-[#5B3D48] shadow-xs'
+                                ? 'border-brand ring-1 ring-[#5B3D48] '
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
                               }`}
                           >
@@ -1050,7 +1050,7 @@ export default function ProductPage() {
                                 e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
                               }}
                               draggable={false}
-                              className={`block w-full h-full object-cover object-center pointer-events-none ${isAllSoldOut ? 'grayscale-[30%]' : ''}`}
+                              className={`block w-full h-full object-cover object-center pointer-events-none ${isAllSoldOut ? 'grayscale-30' : ''}`}
                               loading="lazy"
                             />
                           </button>
@@ -1066,7 +1066,7 @@ export default function ProductPage() {
                     type="button"
                     onClick={handleScrollRightThumbnails}
                     aria-label="向右瀏覽更多縮圖"
-                    className="sm:hidden flex-shrink-0 w-6 h-10 flex items-center justify-center text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-sm shadow-2xs z-10 cursor-pointer active:scale-95 transition-all"
+                    className="sm:hidden shrink-0 w-6 h-10 flex items-center justify-center text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-sm z-10 cursor-pointer active:scale-95 transition-all"
                   >
                     <i className="ri-arrow-right-s-line text-base"></i>
                   </button>
@@ -1078,7 +1078,7 @@ export default function ProductPage() {
                     type="button"
                     onClick={handleScrollDownThumbnails}
                     aria-label="向下瀏覽更多縮圖"
-                    className="hidden sm:flex w-full h-6 flex-shrink-0 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded text-xs transition-colors shadow-2xs z-10 cursor-pointer mt-0.5"
+                    className="hidden sm:flex w-full h-6 shrink-0 items-center justify-center text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200/90 rounded-sm text-xs transition-colors z-10 cursor-pointer mt-0.5"
                   >
                     <i className="ri-arrow-down-s-line text-xs"></i>
                   </button>
@@ -1094,7 +1094,7 @@ export default function ProductPage() {
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F8F5F1] shadow-xs"
+                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F8F5F1]"
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -1134,7 +1134,7 @@ export default function ProductPage() {
                     }}
                     data-testid="product-main-image"
                     draggable={false}
-                    className={`block w-full h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl ${isAllSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
+                    className={`block w-full h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl ${isAllSoldOut ? 'opacity-75 grayscale-30' : ''}`}
                   />
                 </div>
 
@@ -1151,10 +1151,10 @@ export default function ProductPage() {
                 )}
 
                 {/* 標籤角標與放大指示 */}
-                <div className="absolute bottom-3 left-3 bg-black/55 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 pointer-events-none z-10">
+                <div className="absolute bottom-3 left-3 bg-black/55 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 pointer-events-none z-10">
                   <span>{selectedImage + 1} / {productImages.length}</span>
                 </div>
-                <span className="absolute bottom-3 right-3 bg-black/55 hover:bg-black/75 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 pointer-events-none transition-colors z-10">
+                <span className="absolute bottom-3 right-3 bg-black/55 hover:bg-black/75 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 pointer-events-none transition-colors z-10">
                   <i className="ri-zoom-in-line"></i> 點擊放大 / 拖曳切換
                 </span>
               </div>
@@ -1165,14 +1165,14 @@ export default function ProductPage() {
           <aside id="right-product-content" data-testid="product-info" className="min-w-0 w-full space-y-6">
             {/* 1. 商品類別 (實心淡雅底色標籤) */}
             <div>
-              <span className="inline-block bg-[#E7D6D4] text-[#5B3D48] px-3 py-1 text-xs sm:text-sm font-bold rounded-md tracking-wider">
+              <span className="inline-block bg-blush text-brand px-3 py-1 text-xs sm:text-sm font-bold rounded-md tracking-wider">
                 {product.category || product.productType || product.tags?.[0] || '女性護理'}
               </span>
             </div>
 
             {/* 2. 商品標題與副標 */}
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-bold leading-snug text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+              <h1 className="text-2xl sm:text-3xl sm:leading-9 font-bold leading-snug text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                 {product.name}
               </h1>
               <p className="text-sm text-gray-500 font-medium">
@@ -1197,7 +1197,7 @@ export default function ProductPage() {
               )}
               <div className="flex items-baseline gap-3">
                 {discountPercentage > 0 && (
-                  <span className="text-2xl font-extrabold text-[#5B3D48]">
+                  <span className="text-2xl font-extrabold text-brand">
                     -{discountPercentage}%
                   </span>
                 )}
@@ -1210,14 +1210,14 @@ export default function ProductPage() {
                   </span>
                 )}
                 {!isAvailableForSale && (
-                  <span className="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded ml-2">
+                  <span className="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded-sm ml-2">
                     已售完 / 缺貨中
                   </span>
                 )}
               </div>
 
               {product.promotionBadge && (
-                <div className="pt-1.5 flex items-center gap-1.5 text-xs text-[#5B3D48] font-medium">
+                <div className="pt-1.5 flex items-center gap-1.5 text-xs text-brand font-medium">
                   <i className="ri-gift-line"></i>
                   <span>{product.promotionBadge}</span>
                 </div>
@@ -1233,7 +1233,7 @@ export default function ProductPage() {
                     <div key={option.name} className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="font-medium text-gray-800">{option.name}：</span>
-                        <span className="text-[#5B3D48] font-semibold text-xs">{selectedVal || '請選擇規格'}</span>
+                        <span className="text-brand font-semibold text-xs">{selectedVal || '請選擇規格'}</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {option.values.map((val) => {
@@ -1247,9 +1247,9 @@ export default function ProductPage() {
                               onClick={() => handleOptionSelect(option.name, val)}
                               data-testid={`option-${option.name}-${val}`}
                               className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${isSelected
-                                  ? 'bg-[#5B3D48] text-white shadow-xs ring-2 ring-[#5B3D48] ring-offset-1'
+                                  ? 'bg-brand text-white ring-2 ring-[#5B3D48] ring-offset-1'
                                   : isAvailable
-                                    ? 'bg-white text-gray-700 border border-gray-300 hover:border-[#5B3D48] hover:bg-blush/40'
+                                    ? 'bg-white text-gray-700 border border-gray-300 hover:border-brand hover:bg-blush/40'
                                     : 'bg-gray-100 text-gray-400 border border-dashed border-gray-300 opacity-60'
                                 }`}
                             >
@@ -1279,9 +1279,9 @@ export default function ProductPage() {
                 </h3>
                 <ul className="space-y-2">
                   {product.highlights.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm leading-relaxed text-gray-700">
-                      <span className="flex-shrink-0 text-[#5B3D48] mt-0.5" aria-hidden="true">
-                        <svg className="w-4 h-4 text-[#5B3D48]" viewBox="0 0 20 20" fill="currentColor">
+                    <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm sm:leading-5 leading-relaxed text-gray-700">
+                      <span className="shrink-0 text-brand mt-0.5" aria-hidden="true">
+                        <svg className="w-4 h-4 text-brand" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </span>
@@ -1298,7 +1298,7 @@ export default function ProductPage() {
             <div className="space-y-3 border-t border-gray-200/60 pt-4">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-gray-900">購買數量</span>
-                <div className="flex items-center border border-gray-300 rounded-lg bg-white overflow-hidden shadow-2xs">
+                <div className="flex items-center border border-gray-300 rounded-lg bg-white overflow-hidden">
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={!isAvailableForSale}
@@ -1325,7 +1325,7 @@ export default function ProductPage() {
                   onClick={handleAddToCart}
                   disabled={!isAvailableForSale}
                   data-testid="add-to-cart-button"
-                  className="flex-1 h-12 border-2 border-[#5B3D48] text-[#5B3D48] hover:bg-blush/60 font-semibold rounded-xl shadow-2xs transition-all cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 h-12 border-2 border-brand text-brand hover:bg-blush/60 font-semibold rounded-xl transition-all cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <i className="ri-shopping-bag-line text-lg"></i>
                   {isAvailableForSale ? '加入購物車' : '此規格已售完'}
@@ -1335,7 +1335,7 @@ export default function ProductPage() {
                   onClick={handleBuyNow}
                   disabled={!isAvailableForSale}
                   data-testid="buy-now-button"
-                  className="flex-1 h-12 bg-[#5B3D48] hover:bg-[#48303A] text-white font-semibold rounded-xl shadow-xs transition-all cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 h-12 bg-brand hover:bg-brand-ink text-white font-semibold rounded-xl transition-all cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <i className="ri-flashlight-fill text-lg"></i>
                   {isAvailableForSale ? '立即購買' : '暫無庫存'}
@@ -1345,15 +1345,15 @@ export default function ProductPage() {
               {/* 官方保證小標籤 */}
               <div className="pt-2 flex items-center justify-between text-xs text-gray-500">
                 <div className="flex items-center gap-1.5">
-                  <i className="ri-shield-check-line text-[#5B3D48]"></i>
+                  <i className="ri-shield-check-line text-brand"></i>
                   <span>正品原廠保證</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <i className="ri-truck-line text-[#5B3D48]"></i>
+                  <i className="ri-truck-line text-brand"></i>
                   <span>超商 / 宅配 快速出貨</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <i className="ri-refresh-line text-[#5B3D48]"></i>
+                  <i className="ri-refresh-line text-brand"></i>
                   <span>7 天安心鑑賞期</span>
                 </div>
               </div>
@@ -1437,7 +1437,7 @@ export default function ProductPage() {
               <div className="space-y-8 animate-fadeIn" data-testid="product-reviews-tab">
                 {/* 評論總覽評分卡 */}
                 <div
-                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xs"
+                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6"
                   data-testid="reviews-summary"
                 >
                   <div className="flex items-center gap-5">
@@ -1478,7 +1478,7 @@ export default function ProductPage() {
                     className="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center"
                     data-testid="no-reviews-prompt"
                   >
-                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-blush text-[#5B3D48] flex items-center justify-center text-2xl">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-blush text-brand flex items-center justify-center text-2xl">
                       <i className="ri-chat-smile-2-line"></i>
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
@@ -1493,7 +1493,7 @@ export default function ProductPage() {
                     {publishedReviews.map((review) => (
                       <div
                         key={review.id}
-                        className="rounded-xl border border-gray-200 bg-white p-6 shadow-2xs space-y-3"
+                        className="rounded-xl border border-gray-200 bg-white p-6 space-y-3"
                         data-testid={`review-card-${review.id}`}
                       >
                         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1543,7 +1543,7 @@ export default function ProductPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-5">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#5B3D48] inline-block"></span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-brand inline-block"></span>
                       <h3
                         className="text-xl sm:text-2xl font-bold text-gray-900"
                         style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
@@ -1563,7 +1563,7 @@ export default function ProductPage() {
                         type="button"
                         onClick={() => { setRecommendationMode('category'); setRotationIndex(0); }}
                         className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${recommendationMode === 'category'
-                            ? 'bg-white text-[#5B3D48] shadow-2xs font-bold'
+                            ? 'bg-white text-brand font-bold'
                             : 'text-gray-600 hover:text-gray-900'
                           }`}
                       >
@@ -1575,7 +1575,7 @@ export default function ProductPage() {
                         type="button"
                         onClick={() => { setRecommendationMode('popular'); setRotationIndex(0); }}
                         className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${recommendationMode === 'popular'
-                            ? 'bg-white text-[#5B3D48] shadow-2xs font-bold'
+                            ? 'bg-white text-brand font-bold'
                             : 'text-gray-600 hover:text-gray-900'
                           }`}
                       >
@@ -1587,7 +1587,7 @@ export default function ProductPage() {
                         type="button"
                         onClick={() => { setRecommendationMode('top_rated'); setRotationIndex(0); }}
                         className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${recommendationMode === 'top_rated'
-                            ? 'bg-white text-[#5B3D48] shadow-2xs font-bold'
+                            ? 'bg-white text-brand font-bold'
                             : 'text-gray-600 hover:text-gray-900'
                           }`}
                       >
@@ -1599,7 +1599,7 @@ export default function ProductPage() {
                         type="button"
                         onClick={() => { setRecommendationMode('random'); setRotationIndex((r) => r + 1); }}
                         className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${recommendationMode === 'random'
-                            ? 'bg-white text-[#5B3D48] shadow-2xs font-bold'
+                            ? 'bg-white text-brand font-bold'
                             : 'text-gray-600 hover:text-gray-900'
                           }`}
                       >
@@ -1612,7 +1612,7 @@ export default function ProductPage() {
                     <button
                       type="button"
                       onClick={handleRotateRelated}
-                      className="px-3.5 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-blush/80 hover:border-[#5B3D48]/40 text-[#5B3D48] text-xs font-semibold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                      className="px-3.5 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-blush/80 hover:border-brand/40 text-brand text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
                       title="點擊換一批商品輪動"
                     >
                       <i className={`ri-refresh-line text-sm transition-transform duration-500 ${isRotating ? 'rotate-180 text-brand' : ''}`}></i>
@@ -1645,10 +1645,10 @@ export default function ProductPage() {
                       return (
                         <div
                           key={item.id}
-                          className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-2xs border border-gray-200/80 hover:shadow-md hover:border-[#5B3D48]/40 transition-all duration-300"
+                          className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200/80 hover:shadow-md hover:border-brand/40 transition-all duration-300"
                         >
                           {/* 3:4 直長型長方形圖片 */}
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#F8F5F1]">
+                          <div className="relative aspect-3/4 overflow-hidden bg-[#F8F5F1]">
                             <Link to={`/product/${cleanId}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                               <img
                                 src={item.image || FALLBACK_PRODUCT_IMAGE}
@@ -1659,7 +1659,7 @@ export default function ProductPage() {
                             </Link>
 
                             {/* 左上角徽章 */}
-                            <span className="absolute top-3 left-3 bg-black/65 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-full tracking-wider uppercase shadow-2xs pointer-events-none">
+                            <span className="absolute top-3 left-3 bg-black/65 text-white text-[11px] font-bold px-2.5 py-1 rounded-full tracking-wider uppercase pointer-events-none">
                               {badgeLabel}
                             </span>
 
@@ -1668,7 +1668,7 @@ export default function ProductPage() {
                               <Link
                                 to={`/product/${cleanId}`}
                                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                                className="block w-full py-2.5 bg-white/95 hover:bg-[#5B3D48] hover:text-white text-gray-900 text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-all text-center cursor-pointer"
+                                className="block w-full py-2.5 bg-white/95 hover:bg-brand hover:text-white text-gray-900 text-xs sm:text-sm font-semibold rounded-xl transition-all text-center cursor-pointer"
                                 style={{ fontFamily: '"Noto Sans TC", sans-serif' }}
                               >
                                 查看商品
@@ -1707,7 +1707,7 @@ export default function ProductPage() {
                               <Link
                                 to={`/product/${cleanId}`}
                                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                                className="font-bold text-gray-900 text-sm sm:text-base group-hover:text-[#5B3D48] transition-colors line-clamp-2 leading-snug"
+                                className="font-bold text-gray-900 text-sm sm:text-base sm:leading-6 group-hover:text-brand transition-colors line-clamp-2 leading-snug"
                                 style={{ fontFamily: '"Noto Sans TC", sans-serif' }}
                               >
                                 {item.name}
@@ -1722,7 +1722,7 @@ export default function ProductPage() {
                               )}
                               <div className="flex items-baseline gap-2">
                                 {itemDiscount > 0 && (
-                                  <span className="text-sm font-extrabold text-[#5B3D48]">
+                                  <span className="text-sm font-extrabold text-brand">
                                     -{itemDiscount}%
                                   </span>
                                 )}
@@ -1754,7 +1754,7 @@ export default function ProductPage() {
                 {allowProductQA ? (
                   user ? (
                     <div
-                      className="rounded-2xl border border-gray-200/90 bg-gray-50/70 p-6 sm:p-8 space-y-4 shadow-2xs"
+                      className="rounded-2xl border border-gray-200/90 bg-gray-50/70 p-6 sm:p-8 space-y-4"
                       data-testid="ask-question-section"
                     >
                       <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
@@ -1764,7 +1764,7 @@ export default function ProductPage() {
                       {questionMessage && (
                         <div
                           data-testid="question-success-message"
-                          className="p-3.5 bg-blush text-[#5B3D48] text-xs font-semibold rounded-xl border border-blush flex items-center gap-2 animate-fadeIn"
+                          className="p-3.5 bg-blush text-brand text-xs font-semibold rounded-xl border border-blush flex items-center gap-2 animate-fadeIn"
                         >
                           <i className="ri-checkbox-circle-fill text-base text-brand"></i>
                           <span>{questionMessage}</span>
@@ -1788,7 +1788,7 @@ export default function ProductPage() {
                               您的問題
                             </label>
                             <span className="text-[11px] text-gray-400 flex items-center gap-1">
-                              <i className="ri-shield-user-line text-[#5B3D48]"></i>
+                              <i className="ri-shield-user-line text-brand"></i>
                               <span>為保護隱私，提問將以部分遮蔽之帳號公開</span>
                             </span>
                           </div>
@@ -1798,7 +1798,7 @@ export default function ProductPage() {
                             onChange={(e) => setQuestionInput(e.target.value)}
                             placeholder="在此輸入您的問題（如成分配方、保存期限或使用時機）..."
                             data-testid="question-input"
-                            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:border-[#5B3D48] focus:ring-1 focus:ring-[#5B3D48] focus:outline-none bg-white placeholder-gray-400 resize-none transition-all shadow-2xs"
+                            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:border-brand focus:ring-1 focus:ring-[#5B3D48] focus:outline-hidden bg-white placeholder-gray-400 resize-none transition-all"
                           />
                         </div>
 
@@ -1806,7 +1806,7 @@ export default function ProductPage() {
                           type="submit"
                           disabled={isSubmittingQuestion || !questionInput.trim()}
                           data-testid="submit-question-btn"
-                          className="w-full py-3.5 bg-[#5B3D48] hover:bg-[#48303A] text-white text-sm font-bold rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                          className="w-full py-3.5 bg-brand hover:bg-brand-ink text-white text-sm font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                           {isSubmittingQuestion ? '送出中...' : '提交問題'}
                         </button>
@@ -1814,13 +1814,13 @@ export default function ProductPage() {
                     </div>
                   ) : (
                     <div
-                      className="rounded-2xl border border-gray-200 bg-gray-50/80 p-8 text-center shadow-2xs space-y-3"
+                      className="rounded-2xl border border-gray-200 bg-gray-50/80 p-8 text-center space-y-3"
                       data-testid="login-to-ask-prompt"
                     >
                       <p className="text-sm text-gray-700 font-medium">請登入會員以填寫提問</p>
                       <Link
                         to="/login"
-                        className="inline-flex items-center justify-center px-6 py-2.5 text-xs font-semibold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-xl shadow-2xs transition-colors"
+                        className="inline-flex items-center justify-center px-6 py-2.5 text-xs font-semibold text-white bg-brand hover:bg-brand-ink rounded-xl transition-colors"
                       >
                         立即登入會員
                       </Link>
@@ -1836,7 +1836,7 @@ export default function ProductPage() {
                       href={lineOaUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#5B3D48] font-bold underline hover:text-[#48303A] transition-colors"
+                      className="text-brand font-bold underline hover:text-brand-ink transition-colors"
                     >
                       LINE 官方客服
                     </a>{' '}
@@ -1862,7 +1862,7 @@ export default function ProductPage() {
                         href={lineOaUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#5B3D48] font-semibold underline hover:text-[#48303A] transition-colors"
+                        className="text-brand font-semibold underline hover:text-brand-ink transition-colors"
                       >
                         LINE 官方客服
                       </a>{' '}
@@ -1882,7 +1882,7 @@ export default function ProductPage() {
                           {/* 會員資訊列 */}
                           <div className="flex items-center justify-between text-xs text-gray-500">
                             <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blush text-[#5B3D48] text-[11px]">
+                              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blush text-brand text-[11px]">
                                 <i className="ri-mail-line"></i>
                               </span>
                               <span className="font-mono text-gray-700 font-medium">{item.display_name || 'LUCISSI CARE 會員'}</span>
@@ -1892,7 +1892,7 @@ export default function ProductPage() {
 
                           {/* 問題 */}
                           <div className="flex items-start gap-3">
-                            <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-gray-200 text-gray-700 text-xs font-bold flex-shrink-0 mt-0.5 select-none">
+                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-gray-200 text-gray-700 text-xs font-bold shrink-0 mt-0.5 select-none">
                               Q
                             </span>
                             <h4
@@ -1906,12 +1906,12 @@ export default function ProductPage() {
                           {/* 回覆 */}
                           {item.answer && (
                             <div className="flex items-start gap-3 bg-[#F8F5F1] p-3.5 rounded-xl border border-gray-100">
-                              <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-[#E7D6D4] text-[#5B3D48] text-xs font-bold flex-shrink-0 mt-0.5 select-none">
+                              <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-blush text-brand text-xs font-bold shrink-0 mt-0.5 select-none">
                                 A
                               </span>
                               <div className="space-y-1">
                                 <span
-                                  className="text-xs font-bold text-[#5B3D48]"
+                                  className="text-xs font-bold text-brand"
                                   data-testid="official-reply-badge"
                                 >
                                   LUCISSI CARE 官方專業團隊回覆
@@ -1929,14 +1929,14 @@ export default function ProductPage() {
                               type="button"
                               onClick={() => handleToggleHelpful(item.id)}
                               className={`inline-flex items-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${isLiked
-                                  ? 'text-[#5B3D48] font-bold'
-                                  : 'text-gray-500 hover:text-[#5B3D48]'
+                                  ? 'text-brand font-bold'
+                                  : 'text-gray-500 hover:text-brand'
                                 }`}
                             >
                               <i
                                 className={
                                   isLiked
-                                    ? 'ri-thumb-up-fill text-sm text-[#5B3D48]'
+                                    ? 'ri-thumb-up-fill text-sm text-brand'
                                     : 'ri-thumb-up-line text-sm'
                                 }
                               ></i>
@@ -1958,7 +1958,7 @@ export default function ProductPage() {
       {isZoomModalOpen && (
         <div
           onClick={() => setIsZoomModalOpen(false)}
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-xs cursor-zoom-out"
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 cursor-zoom-out"
         >
           <div className="relative max-w-4xl max-h-full" onClick={(e) => e.stopPropagation()}>
             <button

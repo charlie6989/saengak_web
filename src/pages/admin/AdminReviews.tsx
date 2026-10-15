@@ -183,7 +183,7 @@ export const AdminReviews: React.FC = () => {
             type="button"
             onClick={loadReviews}
             disabled={isLoading}
-            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? '同步中...' : '🔄 重新載入評價'}
           </button>
@@ -206,26 +206,26 @@ export const AdminReviews: React.FC = () => {
 
       {/* 統計卡片 */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+        <div className="rounded-xl border border-gray-200 bg-white p-4">
           <div className="text-xs font-medium text-gray-500">總評價數</div>
           <div className="mt-1 text-2xl font-bold text-gray-900">{stats.total}</div>
         </div>
-        <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 shadow-xs">
+        <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4">
           <div className="text-xs font-medium text-amber-700">待審核數</div>
           <div className="mt-1 text-2xl font-bold text-amber-900">{stats.pending}</div>
         </div>
-        <div className="rounded-xl border border-blush bg-blush/50 p-4 shadow-xs">
+        <div className="rounded-xl border border-blush bg-blush/50 p-4">
           <div className="text-xs font-medium text-brand">已發布數</div>
           <div className="mt-1 text-2xl font-bold text-brand">{stats.published}</div>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-xs">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
           <div className="text-xs font-medium text-gray-500">已隱藏數</div>
           <div className="mt-1 text-2xl font-bold text-gray-700">{stats.hidden}</div>
         </div>
       </div>
 
       {/* 篩選頁籤與搜尋列 */}
-      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
         {/* 頁籤 */}
         <div className="flex space-x-1 border-b border-gray-100 pb-2 sm:border-0 sm:pb-0">
           <button
@@ -233,7 +233,7 @@ export const AdminReviews: React.FC = () => {
             onClick={() => setActiveTab('all')}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
               activeTab === 'all'
-                ? 'bg-[#5B3D48] text-white'
+                ? 'bg-brand text-white'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
             }`}
           >
@@ -281,13 +281,13 @@ export const AdminReviews: React.FC = () => {
             placeholder="搜尋評價、商品 ID、訂單 ID 或會員..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-brand focus:outline-hidden"
           />
         </div>
       </div>
 
       {/* 評價列表 Table */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-500">
             <thead className="border-b border-gray-200 bg-gray-50/50 text-xs text-gray-700 uppercase">
@@ -304,7 +304,7 @@ export const AdminReviews: React.FC = () => {
               {isLoading && reviews.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#5B3D48]" />
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-brand" />
                     <p className="mt-2 text-xs">載入評價資料中...</p>
                   </td>
                 </tr>
@@ -331,7 +331,7 @@ export const AdminReviews: React.FC = () => {
 
                       {/* Shopify 商品 ID */}
                       <td className="px-6 py-4">
-                        <div className="text-xs font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded border border-gray-100 inline-block">
+                        <div className="text-xs font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded-sm border border-gray-100 inline-block">
                           {review.shopify_product_id}
                         </div>
                       </td>
@@ -380,7 +380,7 @@ export const AdminReviews: React.FC = () => {
                               type="button"
                               onClick={() => handleStatusChange(review.id, 'published')}
                               disabled={isBusy}
-                              className="rounded bg-blush px-2.5 py-1 text-xs font-medium text-brand hover:bg-blush border border-blush transition-colors disabled:opacity-50 cursor-pointer"
+                              className="rounded-sm bg-blush px-2.5 py-1 text-xs font-medium text-brand hover:bg-blush border border-blush transition-colors disabled:opacity-50 cursor-pointer"
                               title="通過審核並於前台發布"
                             >
                               {isBusy ? '處理中' : '✓ 通過審核'}
@@ -392,7 +392,7 @@ export const AdminReviews: React.FC = () => {
                               type="button"
                               onClick={() => handleStatusChange(review.id, 'hidden')}
                               disabled={isBusy}
-                              className="rounded bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 border border-gray-200 transition-colors disabled:opacity-50 cursor-pointer"
+                              className="rounded-sm bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 border border-gray-200 transition-colors disabled:opacity-50 cursor-pointer"
                               title="隱藏此則評價"
                             >
                               {isBusy ? '處理中' : '🔒 隱藏'}
@@ -403,7 +403,7 @@ export const AdminReviews: React.FC = () => {
                             type="button"
                             onClick={() => handleDelete(review.id)}
                             disabled={isBusy}
-                            className="rounded bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-100 border border-red-200 transition-colors disabled:opacity-50 cursor-pointer"
+                            className="rounded-sm bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-100 border border-red-200 transition-colors disabled:opacity-50 cursor-pointer"
                             title="刪除此則評價"
                           >
                             🗑️ 刪除

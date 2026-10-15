@@ -170,7 +170,7 @@ export const SiteSettings: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
           {/* 1. 金物流與運費參數 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+          <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-3">
               🚚 物流與運費規則設定
             </h2>
@@ -179,7 +179,7 @@ export const SiteSettings: React.FC = () => {
                 <label className="block text-xs font-semibold text-gray-700">
                   全館免運門檻 (TWD)
                 </label>
-                <div className="mt-1 relative rounded-md shadow-xs">
+                <div className="mt-1 relative rounded-md">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-xs">
                     NT$
                   </span>
@@ -189,7 +189,7 @@ export const SiteSettings: React.FC = () => {
                     step="50"
                     value={settings.freeShippingThreshold}
                     onChange={(e) => handleChange('freeShippingThreshold', Number(e.target.value))}
-                    className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
+                    className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden"
                   />
                 </div>
                 <p className="mt-1 text-[11px] text-gray-400">
@@ -201,7 +201,7 @@ export const SiteSettings: React.FC = () => {
                 <label className="block text-xs font-semibold text-gray-700">
                   基本預設運費 (TWD)
                 </label>
-                <div className="mt-1 relative rounded-md shadow-xs">
+                <div className="mt-1 relative rounded-md">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-xs">
                     NT$
                   </span>
@@ -211,7 +211,7 @@ export const SiteSettings: React.FC = () => {
                     step="10"
                     value={settings.defaultShippingFee}
                     onChange={(e) => handleChange('defaultShippingFee', Number(e.target.value))}
-                    className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
+                    className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden"
                   />
                 </div>
                 <p className="mt-1 text-[11px] text-gray-400">
@@ -229,7 +229,7 @@ export const SiteSettings: React.FC = () => {
                   max="50"
                   value={settings.lowStockThreshold}
                   onChange={(e) => handleChange('lowStockThreshold', Number(e.target.value))}
-                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
+                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden"
                 />
                 <p className="mt-1 text-[11px] text-gray-400">
                   當單一 Variant 可售庫存低於此數值時，於商品看板標註警示。
@@ -239,7 +239,7 @@ export const SiteSettings: React.FC = () => {
           </div>
 
           {/* 2. 客服聯絡資訊 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+          <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-3">
               📞 客服聯絡資訊
             </h2>
@@ -250,7 +250,7 @@ export const SiteSettings: React.FC = () => {
                   type="email"
                   value={settings.contactEmail}
                   onChange={(e) => handleChange('contactEmail', e.target.value)}
-                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
+                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden"
                 />
               </div>
               <div>
@@ -259,14 +259,14 @@ export const SiteSettings: React.FC = () => {
                   type="text"
                   value={settings.supportPhone}
                   onChange={(e) => handleChange('supportPhone', e.target.value)}
-                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none"
+                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden"
                 />
               </div>
             </div>
           </div>
 
           {/* 3. 商品問答與即時客服設定 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+          <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-3">
               💬 商品問答與即時客服設定
             </h2>
@@ -286,7 +286,7 @@ export const SiteSettings: React.FC = () => {
                     onChange={(e) => handleChange('allowProductQa', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#5B3D48]"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
                 </label>
               </div>
 
@@ -300,7 +300,7 @@ export const SiteSettings: React.FC = () => {
                   value={settings.lineOaUrl}
                   onChange={(e) => handleChange('lineOaUrl', e.target.value)}
                   placeholder="https://line.me/R/ti/p/@saengak"
-                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-[#5B3D48] focus:outline-none font-mono"
+                  className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden font-mono"
                 />
                 <p className="mt-1 text-[11px] text-gray-400">
                   前台商品頁、客服中心與頁尾導引之官方 LINE OA 連結網址。
@@ -310,7 +310,7 @@ export const SiteSettings: React.FC = () => {
           </div>
 
           {/* 4. 全站防護與維護模式 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+          <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-3">
               🔒 全站防護與維護模式
             </h2>
@@ -330,7 +330,7 @@ export const SiteSettings: React.FC = () => {
                     onChange={(e) => handleChange('maintenanceMode', e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
                 </label>
               </div>
 
@@ -352,7 +352,7 @@ export const SiteSettings: React.FC = () => {
           </div>
 
           {/* 4. 品牌法定主檔常數對照 */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+          <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-3">
               🏢 品牌與法定註冊主檔 (唯讀常數 - src/content/site.ts)
             </h2>
@@ -384,7 +384,7 @@ export const SiteSettings: React.FC = () => {
             <button
               type="submit"
               disabled={isSaving || isLoading}
-              className="rounded-lg bg-[#5B3D48] px-6 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-[#48303A] transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-brand px-6 py-2.5 text-xs font-semibold text-white hover:bg-brand-ink transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSaving ? '儲存中...' : '儲存營運參數'}
             </button>

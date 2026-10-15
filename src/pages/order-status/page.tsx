@@ -10,7 +10,7 @@ export default function OrderStatusPage() {
     <div className="min-h-screen bg-[#F8F5F1]">
       <Header />
       <main className="mx-auto max-w-4xl px-4 pb-20 pt-36">
-        <section className="rounded-2xl border border-stone-200 bg-white p-8 md:p-12 shadow-sm text-center">
+        <section className="rounded-2xl border border-stone-200 bg-white p-8 md:p-12 shadow-xs text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blush mb-6">
             <svg className="h-8 w-8 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

@@ -70,7 +70,7 @@ export const CheckoutErrorFallback: React.FC<CheckoutErrorFallbackProps> = ({
             />
           </svg>
         </div>
-        <div className="absolute -bottom-1 -right-1 bg-brand text-white p-1 rounded-full shadow">
+        <div className="absolute -bottom-1 -right-1 bg-brand text-white p-1 rounded-full shadow-sm">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
           </svg>
@@ -86,7 +86,7 @@ export const CheckoutErrorFallback: React.FC<CheckoutErrorFallbackProps> = ({
       </p>
 
       <div className="bg-blush/80 border border-blush rounded-xl p-3.5 mb-6 flex items-center justify-center gap-2 text-brand text-xs sm:text-sm">
-        <svg className="w-4 h-4 text-brand flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-4 h-4 text-brand shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
         <span>已啟用連線安全防護，未產生任何未授權之扣款。</span>
@@ -101,14 +101,14 @@ export const CheckoutErrorFallback: React.FC<CheckoutErrorFallbackProps> = ({
         <button
           type="button"
           onClick={handleCopyEventId}
-          className="text-xs px-2.5 py-1 bg-white border border-stone-200 rounded-lg text-stone-700 hover:bg-stone-100 transition-colors flex-shrink-0 font-medium"
+          className="text-xs px-2.5 py-1 bg-white border border-stone-200 rounded-lg text-stone-700 hover:bg-stone-100 transition-colors shrink-0 font-medium"
         >
           {copied ? '已複製 ✓' : '複製代碼'}
         </button>
       </div>
 
       {error && process.env.NODE_ENV !== 'production' && (
-        <p className="text-xs text-rose-500 font-mono mb-4 text-left p-2 bg-rose-50 rounded overflow-x-auto">
+        <p className="text-xs text-rose-500 font-mono mb-4 text-left p-2 bg-rose-50 rounded-sm overflow-x-auto">
           {error.message}
         </p>
       )}

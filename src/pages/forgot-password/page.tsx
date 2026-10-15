@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                     placeholder="請輸入您的電子郵件地址"
                   />
                 </div>
@@ -107,7 +107,7 @@ export default function ForgotPasswordPage() {
                   <button
                     type="submit"
                     disabled={loading || !isAuthCaptchaReady(captchaToken)}
-                    className="w-full py-3 bg-brand text-white rounded-md font-medium hover:bg-brand focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
+                    className="w-full py-3 bg-brand text-white rounded-md font-medium hover:bg-brand focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center space-x-2">

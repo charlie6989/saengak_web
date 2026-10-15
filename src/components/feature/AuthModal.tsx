@@ -250,7 +250,7 @@ export default function AuthModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]" onClick={onClose}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60" onClick={onClose}>
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 max-h-[calc(100vh-2rem)] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -260,7 +260,7 @@ export default function AuthModal({
           <button
             onClick={onClose}
             aria-label="關閉會員登入視窗"
-            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 cursor-pointer outline-none focus:outline-none"
+            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 cursor-pointer outline-hidden focus:outline-hidden"
           >
             <i className="ri-close-line text-xl"></i>
           </button>
@@ -282,21 +282,21 @@ export default function AuthModal({
               <div className="space-y-2">
                 <button
                   onClick={navigateToLogin}
-                  className="block w-full text-left px-3 py-2 bg-white border border-blue-200 rounded text-blue-700 hover:bg-blue-50 cursor-pointer whitespace-nowrap"
+                  className="block w-full text-left px-3 py-2 bg-white border border-blue-200 rounded-sm text-blue-700 hover:bg-blue-50 cursor-pointer whitespace-nowrap"
                 >
                   <i className="ri-login-box-line mr-2"></i>
                   前往登入頁面
                 </button>
                 <button
                   onClick={navigateToRegister}
-                  className="block w-full text-left px-3 py-2 bg-white border border-blue-200 rounded text-blue-700 hover:bg-blue-50 cursor-pointer whitespace-nowrap"
+                  className="block w-full text-left px-3 py-2 bg-white border border-blue-200 rounded-sm text-blue-700 hover:bg-blue-50 cursor-pointer whitespace-nowrap"
                 >
                   <i className="ri-user-add-line mr-2"></i>
                   前往註冊頁面
                 </button>
                 <button
                   onClick={navigateToForgotPassword}
-                  className="block w-full text-left px-3 py-2 bg-white border border-blue-200 rounded text-blue-700 hover:bg-blue-50 cursor-pointer whitespace-nowrap"
+                  className="block w-full text-left px-3 py-2 bg-white border border-blue-200 rounded-sm text-blue-700 hover:bg-blue-50 cursor-pointer whitespace-nowrap"
                 >
                   <i className="ri-lock-unlock-line mr-2"></i>
                   忘記密碼
@@ -346,7 +346,7 @@ export default function AuthModal({
                 value={formData.name}
                 onChange={handleInputChange}
                 required={!isLogin}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent"
                 placeholder="請輸入您的姓名"
               />
             </div>
@@ -364,7 +364,7 @@ export default function AuthModal({
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent"
               placeholder="請輸入您的電子郵件"
             />
           </div>
@@ -381,7 +381,7 @@ export default function AuthModal({
               value={formData.password}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent"
               placeholder="請輸入您的密碼"
               minLength={isLogin ? undefined : 12}
             />
@@ -400,7 +400,7 @@ export default function AuthModal({
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required={!isLogin}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent"
                 placeholder="請再次輸入密碼"
                 minLength={12}
               />
@@ -438,7 +438,7 @@ export default function AuthModal({
           <button
             type="submit"
             disabled={loading || !isAuthCaptchaReady(captchaToken)}
-            className="w-full py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
+            className="w-full py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed outline-hidden focus:outline-hidden"
           >
             {loading ? (
               <div className="flex items-center justify-center space-x-2">
@@ -457,7 +457,7 @@ export default function AuthModal({
             <button 
               onClick={handleForgotPassword}
               disabled={loading || !isAuthCaptchaReady(captchaToken)}
-              className="text-sm text-brand hover:text-brand cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
+              className="text-sm text-brand hover:text-brand cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed outline-hidden focus:outline-hidden"
             >
               忘記密碼？
             </button>
@@ -470,7 +470,7 @@ export default function AuthModal({
             {isLogin ? "還沒有帳號？" : "已經有帳號了？"}
             <button
               onClick={switchMode}
-              className="ml-1 text-brand hover:text-brand font-medium cursor-pointer outline-none focus:outline-none"
+              className="ml-1 text-brand hover:text-brand font-medium cursor-pointer outline-hidden focus:outline-hidden"
             >
               {isLogin ? '註冊' : '登入'}
             </button>

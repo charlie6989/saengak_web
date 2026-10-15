@@ -166,19 +166,19 @@ export const OrderList: React.FC = () => {
 
       {/* 發票與訂單狀態總覽指標 */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+        <div className="rounded-xl border border-gray-200 bg-white p-4">
           <div className="text-[11px] font-medium text-gray-500">總訂單數</div>
           <div className="mt-1 text-xl font-bold text-gray-900">{orders.length} 筆</div>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+        <div className="rounded-xl border border-gray-200 bg-white p-4">
           <div className="text-[11px] font-medium text-gray-500">發票已開立</div>
           <div className="mt-1 text-xl font-bold text-brand">{invoiceMetrics.issued} 筆</div>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+        <div className="rounded-xl border border-gray-200 bg-white p-4">
           <div className="text-[11px] font-medium text-gray-500">發票等待回讀 (Outbox)</div>
           <div className="mt-1 text-xl font-bold text-amber-600">{invoiceMetrics.awaiting} 筆</div>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+        <div className="rounded-xl border border-gray-200 bg-white p-4">
           <div className="text-[11px] font-medium text-gray-500">發票開立失敗 / 需人工檢核</div>
           <div className="mt-1 text-xl font-bold text-red-600">{invoiceMetrics.failed} 筆</div>
         </div>
@@ -200,7 +200,7 @@ export const OrderList: React.FC = () => {
       </div>
 
       {/* 過濾與搜尋工具列 */}
-      <div className="space-y-3 rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+      <div className="space-y-3 rounded-xl border border-gray-200 bg-white p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-medium text-gray-500">狀態篩選：</span>
@@ -211,7 +211,7 @@ export const OrderList: React.FC = () => {
                 onClick={() => setStatusFilter(filter)}
                 className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
                   statusFilter === filter
-                    ? 'bg-[#5B3D48] text-white'
+                    ? 'bg-brand text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -224,7 +224,7 @@ export const OrderList: React.FC = () => {
             type="button"
             onClick={fetchOrders}
             disabled={isLoading}
-            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? '同步中...' : '🔄 重新載入'}
           </button>
@@ -236,16 +236,16 @@ export const OrderList: React.FC = () => {
             placeholder="搜尋訂單編號或 Shopify GID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-brand focus:outline-hidden"
           />
         </div>
       </div>
 
       {/* 訂單表格 */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         {isLoading ? (
           <div className="p-12 text-center text-sm text-gray-500">
-            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#5B3D48] border-t-transparent"></div>
+            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent"></div>
             <p className="mt-2">正在載入 Supabase 訂單資料庫...</p>
           </div>
         ) : !isSupabaseConfigured ? (

@@ -309,7 +309,7 @@ export default function CartSidebar() {
         {/* 缺貨自動移除提醒橫幅 */}
         {prunedNotice && (
           <div className="bg-amber-50 border-b border-amber-200 px-6 py-3.5 flex items-start gap-3 animate-fade-in" role="alert" data-testid="cart-pruned-notice">
-            <div className="w-5 h-5 rounded-full bg-amber-200 flex items-center justify-center flex-shrink-0 text-amber-800 text-xs font-bold mt-0.5">
+            <div className="w-5 h-5 rounded-full bg-amber-200 flex items-center justify-center shrink-0 text-amber-800 text-xs font-bold mt-0.5">
               !
             </div>
             <div className="flex-1 text-xs text-amber-900 leading-relaxed font-medium">
@@ -353,7 +353,7 @@ export default function CartSidebar() {
                   >
                     {/* Product Image */}
                     <div 
-                      className="w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border border-gray-200/60"
+                      className="w-16 h-16 bg-white rounded-lg overflow-hidden shrink-0 cursor-pointer border border-gray-200/60"
                       onClick={() => handleProductClick(item)}
                     >
                       <img
@@ -374,7 +374,7 @@ export default function CartSidebar() {
                       </h3>
 
                       {item.variantTitle && item.variantTitle !== 'Default Title' && (
-                        <div className="inline-block bg-blush text-brand border border-blush text-[10px] px-1.5 py-0.5 rounded font-medium mb-1.5">
+                        <div className="inline-block bg-blush text-brand border border-blush text-[10px] px-1.5 py-0.5 rounded-sm font-medium mb-1.5">
                           {item.variantTitle}
                         </div>
                       )}
@@ -392,10 +392,10 @@ export default function CartSidebar() {
 
                       {/* Quantity Controls */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-2 py-1 shadow-2xs">
+                        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-2 py-1">
                           <button
                             onClick={() => updateQuantity(lineKey, item.quantity - 1)}
-                            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-brand hover:bg-blush rounded transition-colors cursor-pointer"
+                            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-brand hover:bg-blush rounded-sm transition-colors cursor-pointer"
                             aria-label="減少數量"
                           >
                             <span className="text-sm leading-none font-medium" aria-hidden="true">−</span>
@@ -405,7 +405,7 @@ export default function CartSidebar() {
                           </span>
                           <button
                             onClick={() => updateQuantity(lineKey, item.quantity + 1)}
-                            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-brand hover:bg-blush rounded transition-colors cursor-pointer"
+                            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-brand hover:bg-blush rounded-sm transition-colors cursor-pointer"
                             aria-label="增加數量"
                           >
                             <span className="text-sm leading-none font-medium" aria-hidden="true">＋</span>
@@ -445,7 +445,7 @@ export default function CartSidebar() {
               )}
               {selectedCouponCode && discountCalculation.amount > 0 && shippingWarning.willLoseFreeShipping && (
                 <div className="flex items-start gap-1.5 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 mt-1">
-                  <i className="ri-error-warning-line mt-0.5 flex-shrink-0"></i>
+                  <i className="ri-error-warning-line mt-0.5 shrink-0"></i>
                   <span>套用此折扣後金額將低於免運門檻，還差 {formatTwd(shippingWarning.amountStillNeeded)} 才能維持免運，實際運費以 Shopify 結帳頁計算結果為準。</span>
                 </div>
               )}
@@ -475,7 +475,7 @@ export default function CartSidebar() {
                   <i className="ri-ticket-2-line text-brand text-sm"></i>
                   <span>選擇優惠券 / 輸入折扣碼</span>
                   {selectedCouponCode && (
-                    <span className="px-2 py-0.5 rounded bg-blush text-brand font-mono font-bold text-[11px]">
+                    <span className="px-2 py-0.5 rounded-sm bg-blush text-brand font-mono font-bold text-[11px]">
                       {selectedCouponCode}
                     </span>
                   )}
@@ -492,7 +492,7 @@ export default function CartSidebar() {
                       placeholder="輸入折扣代碼"
                       value={manualCouponInput}
                       onChange={(e) => setManualCouponInput(e.target.value.toUpperCase())}
-                      className="flex-1 px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-mono uppercase bg-white focus:outline-none focus:border-brand"
+                      className="flex-1 px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-mono uppercase bg-white focus:outline-hidden focus:border-brand"
                     />
                     <button
                       type="button"
@@ -638,7 +638,7 @@ export default function CartSidebar() {
                             }
                       )
                     }
-                    className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-none focus:border-brand transition-colors"
+                    className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-hidden focus:border-brand transition-colors"
                   >
                     <option value="personal">個人電子發票</option>
                     <option value="company">公司統編發票 (三聯)</option>
@@ -659,7 +659,7 @@ export default function CartSidebar() {
                       })
                     }
                     placeholder="name@example.com"
-                    className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-brand transition-colors"
+                    className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-hidden focus:border-brand transition-colors"
                   />
                 </div>
 
@@ -677,7 +677,7 @@ export default function CartSidebar() {
                             carrierId: '',
                           })
                         }
-                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-none focus:border-brand transition-colors"
+                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-hidden focus:border-brand transition-colors"
                       >
                         <option value="none">一般電子發票 (系統自動對獎)</option>
                         <option value="mobile">手機條碼載具</option>
@@ -708,7 +708,7 @@ export default function CartSidebar() {
                                 ? '捐贈碼'
                                 : '載具接收 Email'
                           }
-                          className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-brand font-mono transition-colors"
+                          className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-hidden focus:border-brand font-mono transition-colors"
                         />
                       </div>
                     )}
@@ -731,7 +731,7 @@ export default function CartSidebar() {
                           })
                         }
                         placeholder="8 碼數字"
-                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-brand font-mono transition-colors"
+                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-hidden focus:border-brand font-mono transition-colors"
                       />
                     </div>
                     <div>
@@ -749,7 +749,7 @@ export default function CartSidebar() {
                           })
                         }
                         placeholder="完整公司名稱"
-                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-brand transition-colors"
+                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-hidden focus:border-brand transition-colors"
                       />
                     </div>
                   </div>
@@ -762,7 +762,7 @@ export default function CartSidebar() {
 
             {/* Action Buttons */}
             {checkoutMessage && (
-              <p className="rounded bg-amber-50 px-3 py-2 text-xs text-amber-800" role="status" data-testid="checkout-message">
+              <p className="rounded-sm bg-amber-50 px-3 py-2 text-xs text-amber-800" role="status" data-testid="checkout-message">
                 {checkoutMessage}
               </p>
             )}
@@ -771,7 +771,7 @@ export default function CartSidebar() {
               onClick={handleCheckout}
               disabled={isSubmitting || isAuthLoading}
               data-testid="checkout-button"
-              className="w-full bg-brand text-white py-3 rounded font-semibold hover:bg-brand active:bg-brand transition-all cursor-pointer shadow-md shadow-teal-700/20 text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait"
+              className="w-full bg-brand text-white py-3 rounded-sm font-semibold hover:bg-brand active:bg-brand transition-all cursor-pointer shadow-md shadow-teal-700/20 text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait"
               style={{ fontFamily: "Noto Sans TC, sans-serif" }}
             >
               {isSubmitting || isAuthLoading ? (
@@ -791,7 +791,7 @@ export default function CartSidebar() {
             <div className="flex items-center justify-between pt-1">
               <button
                 onClick={clearCart}
-                className="text-xs text-gray-400 hover:text-gray-600 transition-colors cursor-pointer py-1 border border-gray-200 rounded px-3"
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors cursor-pointer py-1 border border-gray-200 rounded-sm px-3"
                 style={{ fontFamily: "Noto Sans TC, sans-serif" }}
               >
                 清空購物車
@@ -809,7 +809,7 @@ export default function CartSidebar() {
 
       {/* 完善手機號碼輕量彈窗 (結帳前防呆) */}
       {isPhoneModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center space-x-2">
@@ -852,7 +852,7 @@ export default function CartSidebar() {
                     setPhoneNumberInput(e.target.value);
                     if (phoneError) setPhoneError('');
                   }}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:border-brand focus:ring-1 focus:ring-brand focus:outline-hidden"
                 />
                 {phoneError && (
                   <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
@@ -873,7 +873,7 @@ export default function CartSidebar() {
                 <button
                   type="submit"
                   disabled={isSavingPhone}
-                  className="rounded-lg bg-brand px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-brand disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="rounded-lg bg-brand px-5 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-brand disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5"
                 >
                   {isSavingPhone ? (
                     <>

@@ -97,7 +97,7 @@ export default function BestRated() {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product) => (
                 <div key={product.id} className="relative">
-                  <span className="absolute right-3 top-3 z-10 rounded bg-white/90 px-2 py-1 text-xs font-medium text-[#5B3D48] shadow-xs">
+                  <span className="absolute right-3 top-3 z-10 rounded-sm bg-white/90 px-2 py-1 text-xs font-medium text-brand">
                     人氣推薦
                   </span>
                   <ProductCard product={product} />

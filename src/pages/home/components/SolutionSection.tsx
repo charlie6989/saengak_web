@@ -180,14 +180,14 @@ export default function SolutionSection() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
             {/* 左側圖片 */}
             <div className="relative lg:sticky lg:top-32 lg:self-start">
-              <div className="aspect-[4/5] overflow-hidden">
+              <div className="aspect-4/5 overflow-hidden">
                 <img
                   src="/images/lucissi-v5/home-solution-portrait.webp"
                   alt="手持 Saengak 修護噴霧的日常護理情境"
                   className="w-full h-full object-cover object-center"
                 />
                 <div
-                  className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"
+                  className="absolute inset-0 bg-linear-to-t/srgb from-black/20 via-transparent to-transparent"
                   style={{ height: '85%', bottom: 0, top: 'auto' }}
                 ></div>
                 <div className="absolute bottom-8 left-8 text-white">
@@ -205,16 +205,16 @@ export default function SolutionSection() {
             <div className="space-y-6">
               {/* 分類切換按鈕 */}
               <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#D5C2C0]">
-                <span className="text-xs sm:text-sm font-bold text-[#5B3D48] tracking-wider">
+                <span className="text-xs sm:text-sm font-bold text-brand tracking-wider">
                   {activeTab === 'bundles' ? '✨ 官方推薦特惠組合' : activeTab === 'singles' ? '🌿 日常基礎護理單品' : '全系列私密護理品項'}
                 </span>
 
-                <div className="inline-flex bg-white/80 backdrop-blur-xs p-1 rounded-xl shadow-2xs border border-gray-200/60 text-xs sm:text-sm">
+                <div className="inline-flex bg-white/80 p-1 rounded-xl border border-gray-200/60 text-xs sm:text-sm">
                   <button
                     onClick={() => setActiveTab('bundles')}
                     className={`px-3 py-1.5 rounded-lg transition-all font-semibold flex items-center gap-1.5 cursor-pointer ${
                       activeTab === 'bundles'
-                        ? 'bg-[#5B3D48] text-white shadow-xs'
+                        ? 'bg-brand text-white '
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -227,7 +227,7 @@ export default function SolutionSection() {
                     onClick={() => setActiveTab('singles')}
                     className={`px-3 py-1.5 rounded-lg transition-all font-semibold flex items-center gap-1.5 cursor-pointer ${
                       activeTab === 'singles'
-                        ? 'bg-[#5B3D48] text-white shadow-xs'
+                        ? 'bg-brand text-white '
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -240,7 +240,7 @@ export default function SolutionSection() {
                     onClick={() => setActiveTab('all')}
                     className={`px-3 py-1.5 rounded-lg transition-all font-semibold cursor-pointer ${
                       activeTab === 'all'
-                        ? 'bg-[#5B3D48] text-white shadow-xs'
+                        ? 'bg-brand text-white '
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -269,7 +269,7 @@ export default function SolutionSection() {
                     return (
                       <div
                         key={product.id}
-                        className="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-2xs border border-gray-100/80 flex flex-col h-full hover:shadow-md transition-shadow"
+                        className="group cursor-pointer bg-white rounded-xl overflow-hidden border border-gray-100/80 flex flex-col h-full hover:shadow-md transition-shadow"
                         data-product-shop
                         onClick={() => handleProductClick(product)}
                       >
@@ -278,19 +278,19 @@ export default function SolutionSection() {
                           <img
                             src={product.image}
                             alt={product.name}
-                            className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300 ${isSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
+                            className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300 ${isSoldOut ? 'opacity-75 grayscale-30' : ''}`}
                           />
                           {product.hoverImage && (
                             <img
                               src={product.hoverImage}
                               alt={product.name}
-                              className={`w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSoldOut ? 'grayscale-[30%]' : ''}`}
+                              className={`w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSoldOut ? 'grayscale-30' : ''}`}
                             />
                           )}
                           {/* Labels */}
                           <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
                             {isBundle(product) && (
-                              <span className="bg-[#5B3D48] text-white text-[11px] px-2 py-0.5 font-bold rounded shadow-xs tracking-wider">
+                              <span className="bg-brand text-white text-[11px] px-2 py-0.5 font-bold rounded-sm tracking-wider">
                                 組合特惠
                               </span>
                             )}
@@ -340,7 +340,7 @@ export default function SolutionSection() {
                               })()}
                               {product.promotionBadge && (
                                 <div className="mb-1.5">
-                                  <span className="inline-block text-[11px] font-bold text-[#8C3A4D] bg-[#F5E6E8] px-2 py-0.5 rounded border border-[#EAC9CE]">
+                                  <span className="inline-block text-[11px] font-bold text-[#8C3A4D] bg-[#F5E6E8] px-2 py-0.5 rounded-sm border border-[#EAC9CE]">
                                     {product.promotionBadge}
                                   </span>
                                 </div>
@@ -360,7 +360,7 @@ export default function SolutionSection() {
                                 e.stopPropagation();
                                 // Handle wishlist logic here
                               }}
-                              className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded transition-colors cursor-pointer flex-shrink-0"
+                              className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded-sm transition-colors cursor-pointer shrink-0"
                             >
                               <i className="ri-heart-line text-gray-400 text-sm"></i>
                             </button>
@@ -430,8 +430,8 @@ export default function SolutionSection() {
         description="每天貼近肌膚的穿著，也是私密日常的一部分。"
       >
         <div className="mt-7 flex flex-wrap gap-4">
-          <a href="/search?category=貼身穿著" className="bg-[#5B3D48] px-6 py-3 text-sm font-semibold text-white">立即選購</a>
-          <a href="/community" className="border border-[#5B3D48]/30 px-6 py-3 text-sm font-semibold text-[#5B3D48]">了解更多</a>
+          <a href="/search?category=貼身穿著" className="bg-brand px-6 py-3 text-sm font-semibold text-white">立即選購</a>
+          <a href="/community" className="border border-brand/30 px-6 py-3 text-sm font-semibold text-brand">了解更多</a>
         </div>
       </EditorialHero>
     </>

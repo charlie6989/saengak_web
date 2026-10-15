@@ -189,7 +189,7 @@ export default function Header() {
 
       {/* 桌面版 - 滿版導覽列選單，去除左右空隙 */}
       <header
-        className="hidden lg:block fixed top-0 left-0 w-full z-50 bg-[#E7D6D4]"
+        className="hidden lg:block fixed top-0 left-0 w-full z-50 bg-blush"
         style={{ marginTop: '32px', height: '64px' }}
       >
         <div
@@ -212,7 +212,7 @@ export default function Header() {
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label={isMobileMenuOpen ? '關閉主選單' : '開啟主選單'}
-                className="lg:hidden flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-brand outline-none focus:outline-none border-none bg-transparent"
+                className="lg:hidden flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-brand outline-hidden focus:outline-hidden border-none bg-transparent"
                 style={{
                   width: '48px',
                   height: '48px',
@@ -231,7 +231,7 @@ export default function Header() {
 
               {/* 中央 - Logo圖片 - 手機版置中 */}
               <div className="flex items-center lg:mr-auto">
-                <Link to="/" className="flex items-center cursor-pointer outline-none focus:outline-none">
+                <Link to="/" className="flex items-center cursor-pointer outline-hidden focus:outline-hidden">
                   <BrandLogo className="w-[144px] xl:w-[156px]" />
                 </Link>
               </div>
@@ -246,7 +246,7 @@ export default function Header() {
                   <button
                     onClick={handleProductsClick}
                     onMouseEnter={() => setIsProductDropdownOpen(true)}
-                    className="font-semibold flex items-center cursor-pointer transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none border-none bg-transparent"
+                    className="font-semibold flex items-center cursor-pointer transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden border-none bg-transparent"
                     style={{
                       fontSize: 'min(16px, 1.11vw)',
                       color: '#34302F',
@@ -269,7 +269,7 @@ export default function Header() {
                           <Link
                             key={index}
                             to={category.href}
-                            className="block px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-200 border-b border-gray-50 last:border-b-0 hover:text-brand outline-none focus:outline-none"
+                            className="block px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-200 border-b border-gray-50 last:border-b-0 hover:text-brand outline-hidden focus:outline-hidden"
                             style={{ color: '#34302F' }}
                           >
                             {category.name}
@@ -282,7 +282,7 @@ export default function Header() {
 
                 <Link
                   to="/search?category=私密護理"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
                     color: '#34302F'
@@ -295,7 +295,7 @@ export default function Header() {
 
                 <Link
                   to="/search?category=貼身穿著"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
                     color: '#34302F'
@@ -306,7 +306,7 @@ export default function Header() {
 
                 <Link
                   to="/promotion"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
                     color: '#34302F'
@@ -317,7 +317,7 @@ export default function Header() {
 
                 <Link
                   to="/community"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
                     color: '#34302F'
@@ -329,7 +329,7 @@ export default function Header() {
                 {/* 關於我們 - 直接連結到品牌故事 */}
                 <Link
                   to="/brand-story"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-none focus:outline-none"
+                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
                   style={{
                     fontSize: 'min(16px, 1.11vw)',
                     color: '#34302F'
@@ -348,7 +348,7 @@ export default function Header() {
                 <button
                   onClick={handleSearchIconClick}
                   aria-label="開啟商品搜尋"
-                  className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-brand outline-none focus:outline-none border-none bg-transparent"
+                  className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-brand outline-hidden focus:outline-hidden border-none bg-transparent"
                   style={{
                     width: '44px',
                     height: '44px',
@@ -370,7 +370,7 @@ export default function Header() {
                   <button
                     onClick={handleUserIconClick}
                     aria-label={user ? '開啟會員選單' : '前往會員登入'}
-                    className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-brand outline-none focus:outline-none border-none bg-transparent"
+                    className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-brand outline-hidden focus:outline-hidden border-none bg-transparent"
                     style={{
                       width: 'min(24px, 1.67vw)',
                       height: 'min(24px, 1.67vw)',
@@ -458,7 +458,7 @@ export default function Header() {
                   onClick={handleCartClick}
                   aria-label="開啟購物車"
                   data-testid="desktop-cart-button"
-                  className="flex items-center justify-center cursor-pointer relative transition-colors duration-200 hover:text-brand outline-none focus:outline-none border-none bg-transparent"
+                  className="flex items-center justify-center cursor-pointer relative transition-colors duration-200 hover:text-brand outline-hidden focus:outline-hidden border-none bg-transparent"
                   style={{
                     width: '44px',
                     height: '44px',
@@ -495,7 +495,7 @@ export default function Header() {
 
       {/* 手機版 - 頂部簡化 Logo 欄 */}
       <header
-        className="lg:hidden fixed top-0 left-0 w-full z-50 bg-[#E7D6D4]"
+        className="lg:hidden fixed top-0 left-0 w-full z-50 bg-blush"
         style={{ marginTop: '32px', height: '64px' }}
       >
         <div className="flex items-center justify-center h-16 px-4">
@@ -512,7 +512,7 @@ export default function Header() {
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? '關閉主選單' : '開啟主選單'}
-            className="flex items-center gap-2 px-5 py-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer border-none outline-none focus:outline-none"
+            className="flex items-center gap-2 px-5 py-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer border-none outline-hidden focus:outline-hidden"
             style={{
               fontFamily: "Noto Sans TC, sans-serif"
             }}
@@ -531,7 +531,7 @@ export default function Header() {
           <button
             onClick={handleSearchIconClick}
             aria-label="開啟商品搜尋"
-            className="flex items-center justify-center w-14 h-14 bg-brand rounded-full shadow-lg hover:shadow-xl hover:bg-brand transition-all duration-200 cursor-pointer border-none outline-none focus:outline-none"
+            className="flex items-center justify-center w-14 h-14 bg-brand rounded-full shadow-lg hover:shadow-xl hover:bg-brand transition-all duration-200 cursor-pointer border-none outline-hidden focus:outline-hidden"
           >
             <i
               className="ri-search-line"
@@ -547,7 +547,7 @@ export default function Header() {
             onClick={handleCartClick}
             aria-label="開啟購物車"
             data-testid="mobile-cart-button"
-            className="flex items-center gap-2 px-5 py-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer relative border-none outline-none focus:outline-none"
+            className="flex items-center gap-2 px-5 py-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer relative border-none outline-hidden focus:outline-hidden"
             style={{
               fontFamily: "Noto Sans TC, sans-serif"
             }}
@@ -584,7 +584,7 @@ export default function Header() {
         <div className="fixed inset-0 z-40 lg:hidden" style={{ marginTop: '96px' }}>
           {/* 背景遮罩 */}
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50 backdrop-blur-xs"
             onClick={() => setIsMobileMenuOpen(false)}
           ></div>
           

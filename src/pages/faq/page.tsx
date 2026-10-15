@@ -135,7 +135,7 @@ export default function FAQPage() {
             placeholder="搜尋問題關鍵字..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full border border-[#5B3D48]/20 bg-white px-5 py-4 pr-12 text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#5B3D48]/30"
+            className="w-full border border-brand/20 bg-white px-5 py-4 pr-12 text-base text-gray-900 focus:outline-hidden focus:ring-2 focus:ring-[#5B3D48]/30"
           />
           <i className="ri-search-line absolute right-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
         </div>
@@ -189,7 +189,7 @@ export default function FAQPage() {
                   {openItems[item.id] && (
                     <div className="px-6 py-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex items-start">
-                        <div className="w-8 h-8 bg-green-100 text-green-600 flex items-center justify-center mr-4 font-bold text-sm flex-shrink-0">
+                        <div className="w-8 h-8 bg-green-100 text-green-600 flex items-center justify-center mr-4 font-bold text-sm shrink-0">
                           A
                         </div>
                         <div className="text-gray-700 leading-relaxed">{item.answer}</div>

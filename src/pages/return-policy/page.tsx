@@ -16,13 +16,13 @@ export default function ReturnPolicyPage() {
         </div>
 
         <div className="space-y-7">
-          <section className="rounded-2xl bg-white p-7 shadow-sm">
+          <section className="rounded-2xl bg-white p-7 shadow-xs">
             <h2 className="text-2xl font-semibold">消費者權益原則</h2>
             <p className="mt-4 leading-7">網路交易的解除權與例外依台灣消費者保護相關法令辦理。七日屬猶豫期間而非試用期；商品、包裝、贈品與購買憑證應妥善保存。</p>
             <p className="mt-3 leading-7">個人衛生用品若要主張合理例外，須符合商品性質、密封狀態及事前清楚告知等條件。商品瑕疵、寄錯或運送損壞仍應依個案與法令處理。</p>
           </section>
 
-          <section className="rounded-2xl bg-white p-7 shadow-sm">
+          <section className="rounded-2xl bg-white p-7 shadow-xs">
             <h2 className="text-2xl font-semibold">正式營運前必須補齊</h2>
             <ul className="mt-4 list-disc space-y-3 pl-6 leading-7">
               <li>正式客服電話、電子郵件或官方 LINE。</li>
@@ -32,7 +32,7 @@ export default function ReturnPolicyPage() {
             </ul>
           </section>
 
-          <section className="rounded-2xl bg-white p-7 shadow-sm">
+          <section className="rounded-2xl bg-white p-7 shadow-xs">
             <h2 className="text-2xl font-semibold">目前聯絡狀態</h2>
             <p className="mt-4 leading-7">{siteContent.supportStatus}。請勿自行將商品寄至公司登記地址；應等待官方受理與退貨指示。{siteContent.supportSafetyNotice}</p>
             <Link to="/customer-service" className="mt-5 inline-flex rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">查看客服狀態</Link>

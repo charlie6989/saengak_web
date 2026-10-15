@@ -10,11 +10,11 @@ export default function AdChoicesPage() {
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
         <p className="mb-3 text-sm font-medium tracking-wide text-brand">內容盤點日期：{siteContent.contentReviewedAt}</p>
         <h1 className="mb-5 text-4xl font-bold text-gray-950">廣告與追蹤偏好</h1>
-        <section className="rounded-2xl bg-white p-7 shadow-sm">
+        <section className="rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">目前狀態</h2>
           <p className="mt-4 leading-7">{siteContent.brandName} 現階段沒有提供獨立的 AdChoices 個人化廣告中心，也不應把未接入的退出按鈕顯示成可用功能。若日後加入廣告或分析服務，本頁將列明供應商、用途、資料類型與退出方式。</p>
         </section>
-        <section className="mt-8 rounded-2xl bg-white p-7 shadow-sm">
+        <section className="mt-8 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">您目前可以控制的項目</h2>
           <ul className="mt-4 list-disc space-y-3 pl-6 leading-7">
             <li>透過瀏覽器設定限制或刪除 Cookie 與網站資料。</li>

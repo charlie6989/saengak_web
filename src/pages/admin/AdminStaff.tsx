@@ -132,7 +132,7 @@ export const AdminStaff: React.FC = () => {
             type="button"
             onClick={fetchAdmins}
             disabled={isLoading}
-            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? '同步中...' : '🔄 重新載入名冊'}
           </button>
@@ -160,7 +160,7 @@ export const AdminStaff: React.FC = () => {
       )}
 
       {/* 搜尋工具列 */}
-      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between shadow-xs">
+      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 items-center space-x-3">
           <div className="relative w-full max-w-sm">
             <input
@@ -168,7 +168,7 @@ export const AdminStaff: React.FC = () => {
               placeholder="搜尋管理員姓名、Email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-brand focus:outline-hidden"
             />
           </div>
         </div>
@@ -178,7 +178,7 @@ export const AdminStaff: React.FC = () => {
       </div>
 
       {/* 管理員列表表格 */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-500">
             <thead className="border-b border-gray-200 bg-gray-50/50 text-xs text-gray-700 uppercase">
@@ -194,7 +194,7 @@ export const AdminStaff: React.FC = () => {
               {isLoading && admins.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#5B3D48]" />
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-brand" />
                     <p className="mt-2 text-xs">載入管理員名冊中...</p>
                   </td>
                 </tr>
@@ -211,7 +211,7 @@ export const AdminStaff: React.FC = () => {
                     <tr key={admin.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#5B3D48] text-white font-bold text-sm">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand text-white font-bold text-sm">
                             {admin.name?.charAt(0)?.toUpperCase() || 'A'}
                           </div>
                           <div>
