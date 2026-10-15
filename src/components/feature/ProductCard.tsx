@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { resolveDisplayVendor } from '../../lib/brandOwnership';
+import { isProductSoldOut } from '../../domain/algorithms';
 
 interface Product {
   id: string | number;
@@ -116,11 +117,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageSrc, setImageSrc] = useState(product.image || FALLBACK_PRODUCT_IMAGE);
   const [hoverSrc, setHoverSrc] = useState(product.hoverImage || product.image || FALLBACK_PRODUCT_IMAGE);
-  const isSoldOut =
-    product.availableForSale === false ||
-    (Array.isArray(product.variants) &&
-      product.variants.length > 0 &&
-      product.variants.every((v) => v.availableForSale === false));
+  const isSoldOut = isProductSoldOut(product);
   const discountPercentage = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;

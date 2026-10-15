@@ -72,7 +72,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 className={({ isActive }) =>
                   `whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs font-medium transition-colors ${
                     isActive
-                      ? 'bg-brand text-white '
+                      ? 'bg-brand text-white'
                       : 'text-gray-600 hover:bg-gray-200/70 hover:text-gray-900'
                   }`
                 }

@@ -2,6 +2,28 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
+const RECENT_SEARCHES_KEY = "lucissi:recent-searches";
+const MAX_RECENT_SEARCHES = 5;
+
+function readRecentSearches(): string[] {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string").slice(0, MAX_RECENT_SEARCHES) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentSearch(term: string): string[] {
+  const next = [term, ...readRecentSearches().filter((item) => item !== term)].slice(0, MAX_RECENT_SEARCHES);
+  try {
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
+  } catch {
+    // 無痕模式或停用儲存時，最近搜尋只是不保留，不影響搜尋本身
+  }
+  return next;
+}
+
 interface SearchOverlayProps {
   isOpen: boolean;
   onClose: () => void;
@@ -10,6 +32,7 @@ interface SearchOverlayProps {
 
 export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: SearchOverlayProps) {
   const [query, setQuery] = useState(initialQuery);
+  const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
 
@@ -17,6 +40,7 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
   useEffect(() => {
     document.body.classList.toggle("no-scroll", isOpen);
     if (isOpen) {
+      setRecent(readRecentSearches());
       const id = setTimeout(() => inputRef.current?.focus(), 40);
       return () => clearTimeout(id);
     }
@@ -39,16 +63,20 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
     onClose();
   };
 
-  // 送出搜尋
-  const handleSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const q = query.trim();
+  // 送出搜尋：直接接收要搜尋的字，避免點選標籤時讀到尚未更新的 query state
+  const submitSearch = (term: string) => {
+    const q = term.trim();
+    if (q) setRecent(saveRecentSearch(q));
     onClose();
     navigate(q ? `/search?q=${encodeURIComponent(q)}` : `/search`);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitSearch(query);
+  };
+
   const popular = ["私密清潔", "益生菌", "無痕內褲", "生理褲", "敏感肌"];
-  const recent = ["抗菌", "舒緩凝膠", "深層修護"];
 
   return (
     <AnimatePresence>
@@ -94,6 +122,7 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="搜尋商品、文章、關鍵字…"
+                  aria-label="搜尋商品、文章、關鍵字"
                   className="flex-1 outline-hidden text-base md:text-lg placeholder-gray-400"
                 />
                 <button
@@ -114,10 +143,8 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
                     {popular.map((p) => (
                       <button
                         key={p}
-                        onClick={() => {
-                          setQuery(p);
-                          setTimeout(() => handleSubmit(), 0);
-                        }}
+                        type="button"
+                        onClick={() => submitSearch(p)}
                         className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700"
                         style={{ borderRadius: 0 }}
                       >
@@ -126,16 +153,15 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
                     ))}
                   </div>
                 </div>
+                {recent.length > 0 && (
                 <div>
                   <div className="text-xs font-semibold text-gray-500 mb-2">最近搜尋</div>
                   <div className="flex flex-wrap gap-2">
                     {recent.map((r) => (
                       <button
                         key={r}
-                        onClick={() => {
-                          setQuery(r);
-                          setTimeout(() => handleSubmit(), 0);
-                        }}
+                        type="button"
+                        onClick={() => submitSearch(r)}
                         className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700"
                         style={{ borderRadius: 0 }}
                       >
@@ -144,6 +170,7 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
                     ))}
                   </div>
                 </div>
+                )}
               </div>
 
               {/* Footer */}

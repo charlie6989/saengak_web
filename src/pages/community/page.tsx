@@ -75,7 +75,6 @@ export default function Community() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
-  const [activeTab, setActiveTab] = useState('blog'); // 'blog' or 'instagram'
 
   const tags = ['全部', '私密護理', '健康知識', '生活美學', '選購指南', '品牌方法', '日常保養'];
 
@@ -111,39 +110,6 @@ export default function Community() {
       setArticles(localArticles);
     }
   };
-
-  const instagramPosts = [
-    {
-      id: 1,
-      image: '/images/lucissi-v5/social-daily-square.webp',
-      caption: '每日護理小貼士 💕 選擇溫和的私密護理產品，讓妳每天都充滿自信！ #私密護理 #女性健康 #內心想法',
-    },
-    {
-      id: 2,
-      image: '/images/lucissi-v5/social-gentle-square.webp',
-      caption: '純淨植萃配方 🌿 嚴選天然溫和成分，給私密肌膚最安心無負擔的溫柔守護。 #純淨保養 #安心植萃',
-    },
-    {
-      id: 3,
-      image: '/images/lucissi-v5/social-knowledge-square.webp',
-      caption: '健康小知識分享 📚 正確的私密護理方式，讓妳遠離不適困擾 #健康教育 #護理知識',
-    },
-    {
-      id: 4,
-      image: '/images/lucissi-v5/social-listening-square.webp',
-      caption: '真實愛用心得 💬 聆聽每一位使用者的真實感受，陪伴探索最舒適自信的日常。 #真實口碑 #溫柔陪伴',
-    },
-    {
-      id: 5,
-      image: '/images/lucissi-v5/social-period-square.webp',
-      caption: '生理期護理指南 🌸 溫柔呵護每個特殊的日子，讓妳舒適度過 #生理期護理 #女性關懷',
-    },
-    {
-      id: 6,
-      image: '/images/lucissi-v5/social-consult-square.webp',
-      caption: '專家建議時間 👩‍⚕️ 定期諮詢專業醫師，是維護健康的重要步驟 #專家建議 #健康諮詢',
-    }
-  ];
 
   const filteredArticles = articles.filter(article => {
     const matchesSearch = searchTerm === '' ||
@@ -184,40 +150,7 @@ export default function Community() {
       <main className="page-content bg-[#F8F5F1]">
         <section className="py-4 px-4 bg-[#F8F5F1] -mt-px">
           <div className="max-w-7xl mx-auto">
-            {/* Tab Navigation - 手機版優化 */}
-            <div className="flex items-center justify-center mb-6 md:mb-8">
-              <div className="flex bg-gray-100 rounded-full p-1 w-full max-w-md">
-                <button
-                  onClick={() => setActiveTab('blog')}
-                  className={`flex-1 px-4 md:px-6 py-2.5 md:py-2 rounded-full text-sm md:text-base font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${activeTab === 'blog'
-                    ? 'text-white shadow-xs'
-                    : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  style={{
-                    backgroundColor: activeTab === 'blog' ? '#5B3D48' : 'transparent'
-                  }}
-                >
-                  <i className="ri-article-line mr-1 md:mr-2"></i>
-                  健康文章
-                </button>
-                <button
-                  onClick={() => setActiveTab('instagram')}
-                  className={`flex-1 px-4 md:px-6 py-2.5 md:py-2 rounded-full text-sm md:text-base font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${activeTab === 'instagram'
-                    ? 'text-white shadow-xs'
-                    : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  style={{
-                    backgroundColor: activeTab === 'instagram' ? '#5B3D48' : 'transparent'
-                  }}
-                >
-                  <i className="ri-instagram-line mr-1 md:mr-2"></i>
-                  Instagram 動態
-                </button>
-              </div>
-            </div>
-
             {/* Blog Content */}
-            {activeTab === 'blog' && (
               <>
                 {/* Search and Filter Section - 手機版優化 */}
                 <div className="flex flex-col gap-4 mb-6 md:mb-8">
@@ -420,47 +353,6 @@ export default function Community() {
                 )}
 
               </>
-            )}
-
-            {/* Instagram Content - 手機版優化 */}
-            {activeTab === 'instagram' && (
-              <div className="pb-12">
-                {/* Instagram Header */}
-                <div className="text-center mb-8 md:mb-12">
-                  <div className="flex items-center justify-center mb-4">
-                    <i className="ri-instagram-line text-3xl md:text-4xl mr-2 md:mr-3" style={{ color: '#5B3D48' }}></i>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">社群內容主題</h2>
-                  </div>
-                  <p className="text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-                    以下為預計發布的內容方向；正式 Instagram 帳號與貼文串接後，才會顯示貼文日期與互動數據。
-                  </p>
-                </div>
-
-                {/* Instagram Posts Grid - 手機版優化 */}
-                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
-                  {instagramPosts.map((post) => (
-                    <div key={post.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden group">
-                      <div className="aspect-square overflow-hidden">
-                        <img
-                          src={post.image}
-                          alt={post.caption.split("#")[0].trim()}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-
-                      <div className="p-3 md:p-4">
-                        <p className="text-xs md:text-sm md:leading-5 text-gray-700 mb-2 md:mb-3 line-clamp-2 md:line-clamp-3 leading-relaxed">
-                          {post.caption}
-                        </p>
-
-                        <span className="text-xs font-medium text-brand">內容主題</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-              </div>
-            )}
           </div>
         </section>
 

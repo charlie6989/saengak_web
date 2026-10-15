@@ -1,15 +1,15 @@
 # 項目狀態
 
-更新日期：2026-10-16（Asia/Taipei）。最新一項工作為 Tailwind CSS 4 遷移並恢復完整依賴稽核；其下保留 2026-10-15 的 CI 修復與 Git 同步紀錄。
+更新日期：2026-10-16（Asia/Taipei）。最新工作依序為 Tailwind CSS 4 遷移與完整依賴稽核（PR #32）、UX 審視修正（PR #30，已合併）與 CI 修復（PR #31，已合併）；其下保留 2026-10-15 的 Git 同步紀錄。
 
 ## Tailwind CSS 4 遷移與完整稽核（2026-10-16，分支 `claude/tailwind4-full-audit`）
 
-接續 CI 修復分支，移除剩餘 25 項開發依賴稽核問題，CI 恢復為單一 `npm audit --audit-level=moderate`。
+接續 CI 修復分支，移除剩餘 25 項開發依賴稽核問題，CI 恢復為單一 `npm audit --audit-level=moderate`。合併含 PR #30 的 `main` 時，以同一流程（先移除 v3 無效 class、再跑升級工具、再套用修正）重新遷移 `main` 版本的 `src/`，而非手動合併 class 字串；對 `main` 未改動的檔案，該流程輸出與本分支先前結果一致。
 
 1. **Tailwind CSS 3.4 → 4.3**：以官方 `@tailwindcss/upgrade` 轉換後人工修正。`tailwind.config.ts` 併入 `src/index.css` 的 `@theme`；PostCSS 改用 `@tailwindcss/postcss`，移除 `autoprefixer`。
    - 升級工具誤改的非 class 值已還原：Google 按鈕 `theme: 'outline'`、`Button` 的 `variant: 'outline'`。
    - 為維持 v3 畫面而加入的相容設定（皆在 `src/index.css`，含註解）：預設邊框色、placeholder 色、按鈕 pointer、表單欄位底色；v3 預設色票（使用到的色系）與 rem 行高；`space-x/y` 的 v3 選擇器；網站自訂樣式放到 `@layer utilities` 末端以保留 v3 cascade；漸層加 `/srgb` 保持 v3 的 sRGB 插值。
-   - 刪除 `index.css` 中與 Tailwind 主題重複的 `.bg-brand`、`.bg-brand-ink`、`.text-brand`、`.border-brand`（升級工具把 `text-[#5B3D48]` 等改成 `text-brand`，重複定義會蓋過 `border-t-transparent` 等設定）。
+   - 刪除 `index.css` 中與 Tailwind 內建／主題重複的 `.bg-brand`、`.bg-brand-ink`、`.text-brand`、`.border-brand`（升級工具把 `text-[#5B3D48]` 等改成 `text-brand`，重複定義會蓋過 `border-t-transparent` 等設定）及 `.line-clamp-1/2/3`（v3 把響應式 variant 輸出在自訂 CSS 之後，`md:line-clamp-none` 才能生效）。
    - 移除在 v3 中不存在、v4 才會生效的 class（`shadow-xs`／`shadow-2xs`、`backdrop-blur-xs`、`drop-shadow-xs`、`scrollbar-none`），以免新增原本沒有的陰影、模糊或隱藏捲軸；`.shadow-xs`（v3 的 `shadow-sm`）加入扁平設計的去陰影清單。
    - 26 組「基礎 `leading-*` 搭配響應式 `md:text-*`」補上 v3 等效的 `md:leading-*`（v4 中 `leading-*` 會優先於 `text-*` 的行高）。
    - 保留 promotion 頁 spinner 的 `border-3`：v3 下此 class 無效、spinner 沒有邊框而不可見，v4 讓它顯示；這是唯一刻意的畫面變更。
@@ -24,14 +24,42 @@ Node.js v26.3.1、npm 11.16.0；另以 `npx npm@10.9.4` 模擬 CI 的 npm 10。
 | 乾淨目錄 `npx npm@10.9.4 ci --ignore-scripts`（lock 未被改寫）與 `npm ci`（npm 11） | 通過 |
 | `npm audit --audit-level=moderate`（npm 11 與 npm 10） | 0 項 |
 | `npm run typecheck` | 通過 |
-| `npx tsc -p tsconfig.app.json --noEmit` | 27 項錯誤，與遷移前逐項相同（既有問題，見待處理 3） |
-| `npm test -- --run` | 40 個檔案、356 個測試全部通過 |
+| `npx tsc -p tsconfig.app.json --noEmit` | 27 項錯誤，與 `main` 基準相同（既有問題，見待處理 3） |
+| `npm test -- --run`（合併 PR #30／#31 後） | 41 個檔案、365 個測試全部通過 |
 | `npm run build` | 通過；仍有主 chunk 超過 500 kB 的警告 |
-| `npm run verify:content` | 通過，檢查 158 個檔案 |
+| `npm run verify:content` | 通過，檢查 157 個檔案 |
 | `npm run verify:supabase` | 靜態基線通過 |
-| 畫面比對：遷移前（v3）與遷移後（v4）dev server，本機 Chrome headless，1440×900 與 375×812；首頁、商品頁、商品列表、搜尋、購物車側欄、登入、註冊、會員（未登入）、優惠活動 | 18 組整頁截圖逐像素比對皆 0 差異；逐元素 computed style 僅剩等效表示差異（漸層顯式 stop 位置、透明 ring 層） |
+| 畫面比對：`main`（v3，含 PR #30）與本分支合併結果（v4）dev server，本機 Chrome headless，1440×900 與 375×812；首頁、商品頁、商品列表、搜尋、購物車側欄、登入、註冊、會員（未登入）、優惠活動、訂單查詢、部落格、社群、熱門好評、退換貨、FAQ、客服 | 32 組整頁截圖逐像素比對皆 0 差異（退換貨桌機首輪有 531 px 的載入時序差，重跑兩次皆 0）；逐元素 computed style 僅剩等效表示差異（漸層顯式 stop 位置、透明 ring 層） |
 
 未比對：已登入會員頁、管理後台、hover／focus 等互動狀態。GitHub Actions 在 Node 22 上的結果以 PR 的 CI 執行為準。
+
+## 2026-10-15 UX 審視修正（分支 `claude/website-design-ux-review-4438d6`）
+
+提交 `f8013f4`，PR #30；2026-10-16 合併含 CI 修復的 `main`（`261a4d3`）後重新驗證。審視結果與進度畫板：https://claude.ai/artifact/FHj7kF1B3SL7VJEPceY2Eh （私人連結）。
+
+### 程式碼變更
+
+- 顧客可見的「確認中」文案、IG 假貼文分頁移除；客服頁、隱私、AdChoices、退換貨改以 `Company@lucissi.com` 說明（`src/content/site.ts` 的 `supportContact`）。退換貨「以 Email 受理」的流程描述待營運確認。
+- 停用預設賣點、假促銷、★4.9、全標 NEW、預設尺寸表／版型值與 mock 商品後備；`ShopifyDescriptionViewer` 的成分、產地、檢驗、授權只呈現 Shopify 資料，缺資料的區塊隱藏。
+- 有貨優先排序、商品頁預設有貨規格、尺寸／顏色篩選改用規格選項、搜尋標籤錯誤修正（`src/domain/algorithms.ts` 新增 `isProductSoldOut`、`sortAvailableFirst`、`pickInitialVariant`、`matchesVariantOption`）。
+- `/order-status` 改為訂單查詢頁；`/product-preview` 只在開發環境載入。
+- 手機商品頁固定購買列、規格樣式分開、購物車發票收合、清空需確認、搜尋頁窄版橫幅、首頁重複精選區移除、每頁分頁標題（`src/lib/pageTitle.ts`）。
+- `scripts/verify-public-content.mjs` 加入「確認中」、假促銷、Dermatest／韓國授權等回歸字串。
+
+### 本次驗證（合併後）
+
+| 檢查 | 結果 |
+| --- | --- |
+| `npm test -- --run`（合併 CI 修復後） | 41 檔案、365 測試全部通過 |
+| `npx tsc --noEmit -p tsconfig.app.json` | 27 個既有錯誤，與修改前基準相同，未新增 |
+| `npm run build` | 通過 |
+| `node scripts/verify-public-content.mjs` | 通過，157 個檔案 |
+| 本機預覽（Vite dev，真實 Shopify Storefront 資料） | 桌機與 375px 手機檢查列表排序、預設規格、篩選、搜尋標籤、訂單查詢、購物車、手機購買列、分頁標題；`/api/*` 需 `vercel dev`，Vite 下回傳 500 屬環境限制 |
+
+### 待處理（非程式碼）
+
+- Shopify 商品文案需依原廠文件修正：凝膠與慕斯成分不符原廠成分表、慕斯 pH（原廠 5.5）、「專利」無文件、純素證書已於 2026-03-19 到期、內褲「低敏檢測／抗菌／拉伸測試」無檢測報告、15 件商品仍顯示「春季特別企劃」。
+- 待決策：訪客結帳、全站唯一免運門檻（目前 1,500 與 1,499 並存）、客服與退換貨流程。
 
 ## CI 修復（2026-10-15，分支 `claude/fix-ci-validate`）
 
@@ -53,9 +81,9 @@ Node.js v26.3.1、npm 11.16.0；另以 `npx npm@10.9.4` 模擬 CI 的 npm 10。
 | --- | --- |
 | `npm ci`（npm 11）與乾淨目錄 `npm@10.9.4 ci --ignore-scripts`、`npm ls --all` | 通過 |
 | `npm run typecheck` | 通過 |
-| `npm test -- --run` | 40 個檔案、356 個測試全部通過 |
+| `npm test -- --run`（合併 PR #30／#31 後） | 41 個檔案、365 個測試全部通過 |
 | `npm run build` | 通過；仍有主 chunk 超過 500 kB 的警告 |
-| `npm run verify:content` | 通過，檢查 158 個檔案 |
+| `npm run verify:content` | 通過，檢查 157 個檔案 |
 | `npm run verify:supabase` | 靜態基線通過 |
 | `npm audit --omit=dev --audit-level=moderate` | 0 項 |
 | `npm audit --audit-level=critical` | 通過（25 項 moderate／high 皆為開發依賴，無 critical） |
@@ -94,7 +122,7 @@ GitHub Actions 在 Node 22 上的結果以 PR 的 CI 執行為準。
 2. ~~依賴稽核剩餘 25 項開發依賴問題~~：已由 Tailwind CSS 4 遷移與移除 Vercel CLI devDependency 解決，CI 恢復完整 `npm audit --audit-level=moderate`。
 3. 現有 typecheck script 應評估是否完整檢查 referenced projects。
 4. 主 bundle 大於 500 kB；後續可評估拆分，不影響本次成功建置。
-5. `src/content/site.ts` 仍記載正式客服電話、電子郵件與官方 LINE 尚待營運確認，應由營運核實。
+5. ~~`src/content/site.ts` 客服待確認文案~~：已於 UX 修正改為 Email 管道；電話與官方 LINE 仍待營運決定。
 
 ## 尚未驗證
 

@@ -19,6 +19,23 @@ export const defaultInvoicePreference: InvoicePreference = {
   carrierId: '',
 };
 
+// 購物車收合狀態下顯示的一行發票摘要
+export function describeInvoicePreference(preference: InvoicePreference): string {
+  if (preference.kind === 'company') {
+    return preference.taxId ? `公司統編發票（${preference.taxId}）` : '公司統編發票';
+  }
+  switch (preference.carrier) {
+    case 'mobile':
+      return '個人電子發票・手機條碼載具';
+    case 'amego-email':
+      return '個人電子發票・Email 載具';
+    case 'donation':
+      return '捐贈電子發票';
+    default:
+      return '個人電子發票';
+  }
+}
+
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const mobileBarcodePattern = /^\/[0-9A-Z+\-.]{7}$/;
 const donationCodePattern = /^\d{3,7}$/;

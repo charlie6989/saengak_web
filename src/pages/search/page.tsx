@@ -7,9 +7,10 @@ import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
 import { useShopifyCollectionProducts } from '../../hooks/useShopifyCollections';
 import { useShopifyProductsByTag } from '../../hooks/useShopifyTags';
-import { mockProducts, type Product } from '../../mocks/products';
-import { calculateSearchScore, deriveCatalogSignals, paginateItems } from '../../domain/algorithms';
+import type { Product } from '../../mocks/products';
+import { calculateSearchScore, deriveCatalogSignals, matchesVariantOption, paginateItems, sortAvailableFirst } from '../../domain/algorithms';
 import { getShopifyProducts } from '../../lib/shopify';
+import { formatPageTitle } from '../../lib/pageTitle';
 import { captureExceptionSafe } from '../../lib/sentry';
 
 export default function Search() {
@@ -17,6 +18,7 @@ export default function Search() {
   const productListRef = useRef<HTMLDivElement>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('最受歡迎');
@@ -129,12 +131,13 @@ export default function Search() {
           setProducts(transformedProducts);
           console.log('Products set:', transformedProducts.length);
         } else {
-          setProducts(getFallbackProducts());
+          setProducts([]);
         }
       } catch (error) {
         console.error('Error loading products:', error);
-        captureExceptionSafe(error, { source: 'SearchPage', fallback: 'mockProducts' });
-        setProducts(getFallbackProducts());
+        captureExceptionSafe(error, { source: 'SearchPage' });
+        setProducts([]);
+        setLoadFailed(true);
       } finally {
         setLoading(false);
       }
@@ -212,11 +215,6 @@ export default function Search() {
     document.body.classList.toggle("no-scroll", isFilterOpen);
     return () => document.body.classList.remove("no-scroll");
   }, [isFilterOpen]);
-
-  // 備用產品數據
-  const getFallbackProducts = (): Product[] => {
-    return mockProducts;
-  };
 
   // 切換展開狀態
   const toggleSection = (section: string) => {
@@ -360,13 +358,9 @@ export default function Search() {
         product.name.includes(usage) || product.description.includes(usage)
       );
     const matchesSize = selectedSizes.length === 0 ||
-      selectedSizes.some(size =>
-        product.name.includes(size) || product.description.includes(size)
-      );
+      selectedSizes.some(size => matchesVariantOption(product.variants, 'size', size));
     const matchesColor = selectedColors.length === 0 ||
-      selectedColors.some(color =>
-        product.name.includes(color) || product.description.includes(color)
-      );
+      selectedColors.some(color => matchesVariantOption(product.variants, 'color', color));
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
     const matchesBrand = selectedBrands.length === 0 || selectedBrands.some(brand =>
       product.name.includes(brand) || product.description.includes(brand)
@@ -375,7 +369,8 @@ export default function Search() {
     return matchesSearch && matchesCategory && matchesUsage && matchesSize && matchesColor && matchesPrice && matchesBrand;
   });
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  // 售完商品一律排在有貨商品之後，再套用顧客選擇的排序
+  const sortedProducts = sortAvailableFirst([...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case '價格低到高':
         return a.price - b.price;
@@ -394,7 +389,7 @@ export default function Search() {
       default:
         return 0;
     }
-  });
+  }));
 
   const paginatedProducts = paginateItems(sortedProducts, currentPage, 12);
 
@@ -408,6 +403,17 @@ export default function Search() {
     selectedBrands.length > 0 || priceRange[0] > 0 || priceRange[1] < 200000;
 
   // 獲取當前頁面標題
+  const pageTitleText = (() => {
+    if (collection) return collection.title;
+    if (tag) return `標籤: ${tag}`;
+    if (category) return category;
+    if (q) return `搜尋: ${q}`;
+    return '全部商品';
+  })();
+  useEffect(() => {
+    document.title = formatPageTitle(pageTitleText);
+  }, [pageTitleText]);
+
   const getPageTitle = () => {
     if (collection) {
       return collection.title;
@@ -522,6 +528,7 @@ export default function Search() {
       {getPageImage().startsWith('/images/lucissi-v5/') ? (
         <EditorialHero
           className="mt-24"
+          compact
           preserveImage
           image={getPageImage()}
           alt={categoryImageAlt[category || ''] || '象牙白抽屜中以私密護理產品為主的完整日常選品'}
@@ -962,10 +969,10 @@ export default function Search() {
             <div className="text-center py-12 sm:py-16">
               <i className="ri-search-line text-3xl sm:text-4xl text-gray-400 mb-3 sm:mb-4"></i>
               <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-                找不到符合條件的商品
+                {loadFailed ? '目前無法載入商品' : '找不到符合條件的商品'}
               </h3>
               <p className="text-sm sm:text-base text-gray-600">
-                請嘗試調整搜尋條件或篩選設定
+                {loadFailed ? '請稍後重新整理頁面再試一次' : '請嘗試調整搜尋條件或篩選設定'}
               </p>
             </div>
           )}

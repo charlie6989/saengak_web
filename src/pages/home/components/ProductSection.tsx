@@ -7,7 +7,7 @@ import {
   isFeaturedShopifyProduct,
   type ShopifyProduct,
 } from '../../../lib/shopify';
-import { mockProducts } from '../../../mocks/products';
+import { deriveCatalogSignals, sortAvailableFirst } from '../../../domain/algorithms';
 import { captureExceptionSafe } from '../../../lib/sentry';
 
 interface Product {
@@ -99,7 +99,7 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
       }
 
       if (items && items.length > 0) {
-        setAllProducts(items.map((p) => ({
+        setAllProducts(sortAvailableFirst(items.map((p) => ({
           id: p.id,
           name: p.name || p.title,
           image: p.image,
@@ -108,17 +108,17 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
           originalPrice: p.originalPrice,
           description: p.description,
           model: p.handle,
-          isNew: true,
+          isNew: deriveCatalogSignals({ tags: p.tags }).isNew,
           availableForSale: p.availableForSale,
           variants: p.variants,
-        })));
+        }))));
       } else {
-        setAllProducts(mockProducts.slice(0, 4));
+        setAllProducts([]);
       }
     } catch (err) {
-      console.warn('Shopify Storefront direct fetch failed, fallback to mock:', err);
-      captureExceptionSafe(err, { source: 'ProductSection', fallback: 'mockProducts' });
-      setAllProducts(mockProducts.slice(0, 4));
+      captureExceptionSafe(err, { source: 'ProductSection' });
+      setAllProducts([]);
+      setError('目前無法載入商品，請稍後再試。');
     } finally {
       setLoading(false);
     }
@@ -137,13 +137,6 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               {title}
             </h2>
-            <button
-              onClick={handleRefresh}
-              className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
-              title="重新載入產品"
-            >
-              <i className="ri-refresh-line text-xl"></i>
-            </button>
           </div>
           {subtitle && (
             <p className="text-lg text-gray-600 max-w-2xl mx-auto" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>

@@ -250,8 +250,11 @@ layer(base);
   order but lost to more specific utilities (e.g. `text-4xl` over `h1`,
   `hover:bg-brand-ink` over `.bg-brand`). Unlayered CSS in v4 beats every
   layered utility, so keeping them in the same layer, after Tailwind's own
-  utilities, preserves the v3 cascade. The block is intentionally not
-  re-indented to keep the history readable; it closes at the end of the file.
+  utilities, preserves the v3 cascade. v3 emitted responsive variants after
+  this file, so a site rule must not set a property that a responsive variant
+  on the same element also sets (see the line-clamp note below). The block is
+  intentionally not re-indented to keep the history readable; it closes at the
+  end of the file.
 */
 @layer utilities {
 
@@ -689,27 +692,9 @@ a {
   font-family: var(--font-sans);
 }
 
-/* Text Truncation */
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+/* Text truncation uses Tailwind's line-clamp-* utilities. Custom copies here
+   would win over responsive variants such as md:line-clamp-none, which v3
+   emitted after this file's rules. */
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {

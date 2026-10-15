@@ -5,8 +5,12 @@ import {
   clampCartQuantity,
   deriveCatalogSignals,
   estimateReadingMinutes,
+  isProductSoldOut,
+  matchesVariantOption,
   paginateItems,
+  pickInitialVariant,
   rankProducts,
+  sortAvailableFirst,
 } from './algorithms';
 import { mockProducts } from '../mocks/products';
 
@@ -91,5 +95,47 @@ describe('catalog algorithms', () => {
         quantity: 1,
       }],
     });
+  });
+
+  it('treats a product as sold out only when nothing can be bought', () => {
+    expect(isProductSoldOut({ availableForSale: false })).toBe(true);
+    expect(isProductSoldOut({ variants: [{ availableForSale: false }, { availableForSale: false }] })).toBe(true);
+    expect(isProductSoldOut({ variants: [{ availableForSale: false }, { availableForSale: true }] })).toBe(false);
+    expect(isProductSoldOut({})).toBe(false);
+  });
+
+  it('moves sold-out products last while keeping the original order', () => {
+    const sorted = sortAvailableFirst([
+      { id: 'a', availableForSale: false },
+      { id: 'b' },
+      { id: 'c', variants: [{ availableForSale: false }] },
+      { id: 'd', availableForSale: true },
+    ]);
+    expect(sorted.map((p) => p.id)).toEqual(['b', 'd', 'a', 'c']);
+  });
+
+  it('defaults to the first purchasable variant', () => {
+    const variants = [
+      { id: 'm', availableForSale: false },
+      { id: 'l', availableForSale: true },
+    ];
+    expect(pickInitialVariant(variants)?.id).toBe('l');
+    expect(pickInitialVariant([{ id: 'x', availableForSale: false }])?.id).toBe('x');
+    expect(pickInitialVariant([])).toBeUndefined();
+  });
+
+  it('filters size and colour by variant options instead of product names', () => {
+    const variants = [
+      { selectedOptions: [{ name: '顏色', value: '雪紗白' }, { name: '尺寸', value: 'M (適合體重 40-50kg)' }] },
+      { selectedOptions: [{ name: '顏色', value: '極雅黑' }, { name: '尺寸', value: 'L (適合體重 50-65kg)' }] },
+    ];
+    expect(matchesVariantOption(variants, 'size', 'L')).toBe(true);
+    expect(matchesVariantOption(variants, 'size', 'S')).toBe(false);
+    expect(matchesVariantOption(variants, 'size', 'XL')).toBe(false);
+    expect(matchesVariantOption(variants, 'color', '白色')).toBe(true);
+    expect(matchesVariantOption(variants, 'color', '黑色')).toBe(true);
+    expect(matchesVariantOption(variants, 'color', '藍色')).toBe(false);
+    expect(matchesVariantOption([{ selectedOptions: [{ name: 'Title', value: 'Default Title' }] }], 'size', 'S')).toBe(false);
+    expect(matchesVariantOption(undefined, 'size', 'S')).toBe(false);
   });
 });

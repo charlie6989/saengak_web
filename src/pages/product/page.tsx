@@ -5,7 +5,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ShopifyDescriptionViewer from '../../components/feature/ShopifyDescriptionViewer';
-import { getMockProductById, mockProducts } from '../../mocks/products';
 import {
   getShopifyProduct,
   getShopifyProducts,
@@ -21,7 +20,8 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { fetchPublishedReviews, fetchProductQA, submitProductQuestion } from '../../lib/reviews-qa';
 import type { ProductReview, ProductQuestion } from '../../types/reviews-qa';
 import { captureExceptionSafe } from '../../lib/sentry';
-import { formatTwd } from '../../domain/algorithms';
+import { formatTwd, pickInitialVariant } from '../../domain/algorithms';
+import { formatPageTitle } from '../../lib/pageTitle';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
 
 interface Product {
@@ -89,6 +89,11 @@ export default function ProductPage() {
   const [selectedTab, setSelectedTab] = useState<'details' | 'reviews' | 'related' | 'qa'>('details');
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
+
+  // 分頁標題顯示商品名稱，方便多分頁比較與分享
+  useEffect(() => {
+    if (product?.name) document.title = formatPageTitle(product.name);
+  }, [product?.name]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [catalogPool, setCatalogPool] = useState<Product[]>([]);
@@ -99,7 +104,7 @@ export default function ProductPage() {
   const [relatedWishlist, setRelatedWishlist] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const thumbnailListRef = useRef<HTMLUListElement>(null);
-  const { addToCart, setIsCartOpen } = useCart();
+  const { addToCart, setIsCartOpen, getTotalItems } = useCart();
 
   // 商品評價與問答狀態 (Supabase 串接)
   const [publishedReviews, setPublishedReviews] = useState<ProductReview[]>([]);
@@ -133,9 +138,9 @@ export default function ProductPage() {
       if (resolvedId) {
         const shopifyProduct = await getShopifyProduct(resolvedId);
         if (shopifyProduct) {
-          // 初始化規格選項 (Options)
-          let initialOptions: Record<string, string> = {};
-          const firstVariant = shopifyProduct.variants?.[0];
+          // 初始化規格選項 (Options)：預設選第一個有庫存的規格，避免一進頁面就顯示「已售完」
+          const initialOptions: Record<string, string> = {};
+          const firstVariant = pickInitialVariant(shopifyProduct.variants ?? []);
           if (firstVariant?.selectedOptions && firstVariant.selectedOptions.length > 0) {
             firstVariant.selectedOptions.forEach((opt: { name: string; value: string }) => {
               initialOptions[opt.name] = opt.value;
@@ -167,26 +172,10 @@ export default function ProductPage() {
             productType: shopifyProduct.productType,
             vendor: shopifyProduct.vendor,
             availableForSale: shopifyProduct.availableForSale,
-            highlights: shopifyProduct.highlights && shopifyProduct.highlights.length > 0
-              ? shopifyProduct.highlights
-              : [
-                '嚴選優質材料與人體工學細緻剪裁，日常使用舒適安心',
-                '通過多重出廠品質檢驗合格，呵護敏弱肌膚無負擔',
-                '重視每個微小工藝細節，帶來極致貼身與陪伴感',
-                '簡約高雅生活美學設計，提升居家生活品質',
-                '官方旗艦直營正品保證，享 7 天安心鑑賞期'
-              ],
-            subtitle: shopifyProduct.subtitle || (() => {
-              const brandCandidate = { productType: shopifyProduct.productType, title: shopifyProduct.title, vendor: shopifyProduct.vendor };
-              if (isNonSaengakOwnBrandProduct(brandCandidate)) {
-                const legitVendor = resolveDisplayVendor(brandCandidate, { allowSaengakFallbackForOwnBrand: false });
-                return legitVendor
-                  ? `${legitVendor} 精選選品 | 品質保證`
-                  : '親膚舒適・日常優質貼身選品';
-              }
-              return `${resolveDisplayVendor(brandCandidate)} 官方旗艦直營 | 原裝正品品質保證`;
-            })(),
-            promotionBadge: shopifyProduct.promotionBadge || '春季特別優惠・滿 2 件享免運折扣',
+            // 賣點、副標與活動文案只顯示 Shopify 上真實填寫的內容，不再自動補上預設宣稱
+            highlights: shopifyProduct.highlights ?? [],
+            subtitle: shopifyProduct.subtitle,
+            promotionBadge: shopifyProduct.promotionBadge,
             fitGuide: shopifyProduct.fitGuide,
             sizeChart: shopifyProduct.sizeChart,
             careSpecs: shopifyProduct.careSpecs,
@@ -219,15 +208,9 @@ export default function ProductPage() {
             setCatalogPool(mappedPool);
             setRelatedProducts(mappedPool.slice(0, 4));
           } catch (relErr) {
-            console.warn('載入 Shopify 推薦商品池失敗，使用預設商品:', relErr);
-            const allMocks = mockProducts.filter((p) => p.id !== (resolvedId || ''));
-            const mappedMocks: Product[] = allMocks.map((p) => ({
-              ...p,
-              tags: p.tags || [],
-              category: p.category || '女性護理',
-            }));
-            setCatalogPool(mappedMocks);
-            setRelatedProducts(mappedMocks.slice(0, 4));
+            console.warn('載入 Shopify 推薦商品池失敗:', relErr);
+            setCatalogPool([]);
+            setRelatedProducts([]);
           }
 
           setLoading(false);
@@ -235,49 +218,12 @@ export default function ProductPage() {
         }
       }
 
-      // Fallback to mock
-      const fallbackMock = getMockProductById(resolvedId || '');
-      if (fallbackMock) {
-        setProduct({
-          ...fallbackMock,
-          category: fallbackMock.category || '女性護理',
-          highlights: fallbackMock.highlights || [
-            '通過德國 Dermatest 最高等級優異皮膚耐受性測試認證',
-            '嚴選天然植萃與專利益生菌微生態配方，維持 pH4.5~5.5 弱酸健康平衡',
-            '堅持不添加 21 種有害化學成分與人工香精，敏弱肌膚也能安心使用',
-            '水潤凝膠質地清爽好吸收，深層滋潤不黏膩',
-            '韓國原廠直營進口正品保證，享 7 天安心鑑賞期'
-          ],
-          subtitle: fallbackMock.subtitle || '韓國原裝進口 | Dermatest 醫學肌膚認證 | 溫和弱酸配方',
-          promotionBadge: fallbackMock.promotionBadge || '春季特別優惠・滿 2 件享免運折扣',
-        });
-        const allMocks = mockProducts.filter((p) => p.id !== (resolvedId || ''));
-        const mappedMocks: Product[] = allMocks.map((p) => ({
-          ...p,
-          tags: p.tags || [],
-          category: p.category || '女性護理',
-        }));
-        setCatalogPool(mappedMocks);
-        setRelatedProducts(mappedMocks.slice(0, 4));
-      }
+      // Shopify 找不到商品或讀取失敗時，顯示「找不到該商品」，不改用示範商品
+      setProduct(null);
     } catch (err) {
       console.error('Error fetching product data:', err);
-      captureExceptionSafe(err, { source: 'ProductPage', fallback: 'mockProducts' });
-      const fallbackMock = getMockProductById(resolvedId || '');
-      if (fallbackMock) {
-        setProduct({
-          ...fallbackMock,
-          category: fallbackMock.category || '女性護理',
-        });
-        const allMocks = mockProducts.filter((p) => p.id !== (resolvedId || ''));
-        const mappedMocks: Product[] = allMocks.map((p) => ({
-          ...p,
-          tags: p.tags || [],
-          category: p.category || '女性護理',
-        }));
-        setCatalogPool(mappedMocks);
-        setRelatedProducts(mappedMocks.slice(0, 4));
-      }
+      captureExceptionSafe(err, { source: 'ProductPage' });
+      setProduct(null);
     } finally {
       setLoading(false);
     }
@@ -622,10 +568,11 @@ export default function ProductPage() {
       const sorted = [...available].sort((a, b) => {
         const cleanA = (a.id || '').split('/').pop() || a.id;
         const cleanB = (b.id || '').split('/').pop() || b.id;
-        const rateA = ratingsMap[a.id]?.rating ?? ratingsMap[cleanA]?.rating ?? 4.9;
-        const rateB = ratingsMap[b.id]?.rating ?? ratingsMap[cleanB]?.rating ?? 4.9;
-        const countA = ratingsMap[a.id]?.count ?? ratingsMap[cleanA]?.count ?? 12;
-        const countB = ratingsMap[b.id]?.count ?? ratingsMap[cleanB]?.count ?? 12;
+        // 沒有真實評價的商品以 0 分排在最後，不補預設分數
+        const rateA = ratingsMap[a.id]?.rating ?? ratingsMap[cleanA]?.rating ?? 0;
+        const rateB = ratingsMap[b.id]?.rating ?? ratingsMap[cleanB]?.rating ?? 0;
+        const countA = ratingsMap[a.id]?.count ?? ratingsMap[cleanA]?.count ?? 0;
+        const countB = ratingsMap[b.id]?.count ?? ratingsMap[cleanB]?.count ?? 0;
         if (rateB !== rateA) return rateB - rateA;
         return countB - countA;
       });
@@ -973,8 +920,8 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F8F5F1' }}>
-      <Header />
+    <div className="min-h-screen pb-24 lg:pb-0" style={{ backgroundColor: '#F8F5F1' }}>
+      <Header hideMobileBottomNav />
 
       <main className="mx-auto max-w-[1280px] px-4 pb-16 pt-[108px] sm:pt-[116px] md:pt-[124px] lg:pt-[132px]">
         {/* =========================================================================
@@ -1039,7 +986,7 @@ export default function ProductPage() {
                             aria-pressed={isSelected}
                             data-testid={`product-thumbnail-${idx}`}
                             className={`block w-full h-full overflow-hidden rounded-md transition-all duration-200 border-2 cursor-pointer bg-white ${isSelected
-                                ? 'border-brand ring-1 ring-[#5B3D48] '
+                                ? 'border-brand ring-1 ring-[#5B3D48]'
                                 : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
                               }`}
                           >
@@ -1211,7 +1158,7 @@ export default function ProductPage() {
                 )}
                 {!isAvailableForSale && (
                   <span className="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded-sm ml-2">
-                    已售完 / 缺貨中
+                    此規格已售完
                   </span>
                 )}
               </div>
@@ -1246,11 +1193,15 @@ export default function ProductPage() {
                               type="button"
                               onClick={() => handleOptionSelect(option.name, val)}
                               data-testid={`option-${option.name}-${val}`}
-                              className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${isSelected
-                                  ? 'bg-brand text-white ring-2 ring-[#5B3D48] ring-offset-1'
-                                  : isAvailable
-                                    ? 'bg-white text-gray-700 border border-gray-300 hover:border-brand hover:bg-blush/40'
-                                    : 'bg-gray-100 text-gray-400 border border-dashed border-gray-300 opacity-60'
+                              aria-pressed={isSelected}
+                              aria-label={isAvailable ? val : `${val}（缺貨）`}
+                              className={`min-h-[44px] px-3.5 py-2 rounded-lg text-xs sm:text-sm transition-all cursor-pointer ${isSelected && isAvailable
+                                  ? 'bg-blush/60 text-brand font-bold border-2 border-brand'
+                                  : isSelected
+                                    ? 'bg-gray-100 text-gray-500 font-bold border-2 border-dashed border-brand'
+                                    : isAvailable
+                                      ? 'bg-white text-gray-700 font-medium border border-gray-300 hover:border-brand hover:bg-blush/40'
+                                      : 'bg-gray-50 text-gray-400 font-medium border border-dashed border-gray-300'
                                 }`}
                             >
                               <span className={!isAvailable ? 'line-through decoration-gray-400' : ''}>
@@ -1300,6 +1251,8 @@ export default function ProductPage() {
                 <span className="text-sm font-medium text-gray-900">購買數量</span>
                 <div className="flex items-center border border-gray-300 rounded-lg bg-white overflow-hidden">
                   <button
+                    type="button"
+                    aria-label="減少數量"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={!isAvailableForSale}
                     className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors disabled:opacity-40"
@@ -1310,6 +1263,8 @@ export default function ProductPage() {
                     {quantity}
                   </span>
                   <button
+                    type="button"
+                    aria-label="增加數量"
                     onClick={() => setQuantity((q) => q + 1)}
                     disabled={!isAvailableForSale}
                     className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors disabled:opacity-40"
@@ -1346,15 +1301,15 @@ export default function ProductPage() {
               <div className="pt-2 flex items-center justify-between text-xs text-gray-500">
                 <div className="flex items-center gap-1.5">
                   <i className="ri-shield-check-line text-brand"></i>
-                  <span>正品原廠保證</span>
+                  <span>官方網站販售</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-truck-line text-brand"></i>
-                  <span>超商 / 宅配 快速出貨</span>
+                  <span>超商 / 宅配 配送</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-refresh-line text-brand"></i>
-                  <span>7 天安心鑑賞期</span>
+                  <Link to="/return-policy" className="hover:text-brand hover:underline">退換貨說明</Link>
                 </div>
               </div>
             </div>
@@ -1624,7 +1579,7 @@ export default function ProductPage() {
                 {/* 卡片網格 */}
                 {displayedRelatedProducts.length > 0 ? (
                   <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-opacity duration-300 ${isRotating ? 'opacity-40' : 'opacity-100'}`}>
-                    {displayedRelatedProducts.map((item, idx) => {
+                    {displayedRelatedProducts.map((item) => {
                       const cleanId = (item.id || '').split('/').pop() || item.id;
                       const isWishlisted = !!(relatedWishlist[item.id] || relatedWishlist[cleanId]);
                       const itemDiscount = item.originalPrice && item.originalPrice > item.price
@@ -1634,10 +1589,10 @@ export default function ProductPage() {
                       // Badge 徽章文案
                       const badgeLabel = (() => {
                         if (recommendationMode === 'category') return item.category || '同類精選';
-                        if (recommendationMode === 'popular') return `熱銷 TOP ${idx + 1}`;
+                        if (recommendationMode === 'popular') return '暢銷推薦';
                         if (recommendationMode === 'top_rated') {
-                          const rating = ratingsMap[item.id]?.rating ?? ratingsMap[cleanId]?.rating ?? 4.9;
-                          return `★ ${rating.toFixed(1)} 好評`;
+                          const rating = ratingsMap[item.id]?.rating ?? ratingsMap[cleanId]?.rating;
+                          return rating ? `★ ${rating.toFixed(1)} 好評` : '精選推薦';
                         }
                         return '生活精選';
                       })();
@@ -1980,6 +1935,43 @@ export default function ProductPage() {
       )}
 
       <Footer />
+
+      {/* 手機版固定購買列：取代底部導覽，捲動到任何位置都能看到價格並加入購物車 */}
+      <div
+        className="lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-gray-200 bg-white/95 backdrop-blur-sm px-4 pt-3"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)' }}
+        data-testid="mobile-buy-bar"
+      >
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsCartOpen(true)}
+            aria-label={`開啟購物車，目前 ${getTotalItems()} 件`}
+            className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-gray-300 text-gray-800"
+          >
+            <i className="ri-shopping-bag-line text-xl" aria-hidden="true"></i>
+            {getTotalItems() > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[11px] font-semibold text-white">
+                {getTotalItems()}
+              </span>
+            )}
+          </button>
+          <div className="min-w-0 flex-1">
+            {selectedVariant?.title && selectedVariant.title !== 'Default Title' && (
+              <p className="truncate text-xs text-gray-500">{selectedVariant.title}</p>
+            )}
+            <p className="text-lg font-bold text-gray-900">{formatTwd(currentPrice)}</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={!isAvailableForSale}
+            className="h-12 flex-1 rounded-xl bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-ink disabled:cursor-not-allowed disabled:bg-gray-300"
+          >
+            {isAvailableForSale ? '加入購物車' : '此規格已售完'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

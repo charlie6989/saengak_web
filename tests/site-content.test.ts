@@ -8,7 +8,7 @@ describe('Site Content & Brand Alignment', () => {
     expect(siteContent.taxId).toBe('90014835');
     expect(siteContent.companyEmail).toBe('Company@lucissi.com');
     expect(siteContent.registeredAddress).toBe('新北市汐止區長興街1段14號');
-    expect(siteContent.supportStatus).toBe('正式客服電話、電子郵件與官方 LINE 尚待營運確認');
-    expect(siteContent.supportSafetyNotice).toContain('請勿透過非官方帳號提供訂單個資');
+    expect(siteContent.supportContact).toContain(siteContent.companyEmail);
+    expect(siteContent.supportSafetyNotice).toContain('請勿向任何人提供信用卡卡號');
   });
 });
