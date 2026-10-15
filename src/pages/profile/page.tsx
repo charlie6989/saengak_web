@@ -710,7 +710,7 @@ export default function ProfilePage() {
       case 'completed': return 'text-green-600 bg-green-100';
       case 'processing': return 'text-blue-600 bg-blue-100';
       case 'shipped': return 'text-purple-600 bg-purple-100';
-      case 'paid': return 'text-teal-700 bg-teal-100';
+      case 'paid': return 'text-brand bg-blush';
       case 'refunded': return 'text-amber-700 bg-amber-100';
       case 'payment_failed': return 'text-red-600 bg-red-100';
       case 'cancelled': return 'text-red-600 bg-red-100';
@@ -744,7 +744,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-b-2 border-teal-600"></div>
+        <div className="animate-spin h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -803,7 +803,7 @@ export default function ProfilePage() {
                 <button
                   onClick={() => setActiveTab('profile')}
                   className={`py-4 px-1 border-b-2 font-medium text-sm cursor-pointer whitespace-nowrap ${activeTab === 'profile'
-                      ? 'border-teal-500 text-teal-600'
+                      ? 'border-brand text-brand'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                 >
@@ -813,7 +813,7 @@ export default function ProfilePage() {
                 <button
                   onClick={() => setActiveTab('orders')}
                   className={`py-4 px-1 border-b-2 font-medium text-sm cursor-pointer whitespace-nowrap ${activeTab === 'orders'
-                      ? 'border-teal-500 text-teal-600'
+                      ? 'border-brand text-brand'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                 >
@@ -823,7 +823,7 @@ export default function ProfilePage() {
                 <button
                   onClick={() => setActiveTab('favorites')}
                   className={`py-4 px-1 border-b-2 font-medium text-sm cursor-pointer whitespace-nowrap ${activeTab === 'favorites'
-                      ? 'border-teal-500 text-teal-600'
+                      ? 'border-brand text-brand'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                 >
@@ -833,7 +833,7 @@ export default function ProfilePage() {
                 <button
                   onClick={() => setActiveTab('coupons')}
                   className={`py-4 px-1 border-b-2 font-medium text-sm cursor-pointer whitespace-nowrap ${activeTab === 'coupons'
-                      ? 'border-teal-500 text-teal-600'
+                      ? 'border-brand text-brand'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                 >
@@ -860,7 +860,7 @@ export default function ProfilePage() {
                       </button>
                       <button
                         onClick={handleSaveProfile}
-                        className="px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 cursor-pointer whitespace-nowrap"
+                        className="px-4 py-2 bg-brand text-white hover:bg-brand cursor-pointer whitespace-nowrap"
                       >
                         儲存
                       </button>
@@ -868,7 +868,7 @@ export default function ProfilePage() {
                   ) : (
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 cursor-pointer whitespace-nowrap"
+                      className="px-4 py-2 bg-brand text-white hover:bg-brand cursor-pointer whitespace-nowrap"
                     >
                       <i className="ri-edit-line mr-2"></i>
                       編輯資料
@@ -911,7 +911,7 @@ export default function ProfilePage() {
                     value={formData.name}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className={`w-full px-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-teal-500' : 'bg-gray-50'
+                    className={`w-full px-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-brand' : 'bg-gray-50'
                       }`}
                   />
                 </div>
@@ -926,7 +926,7 @@ export default function ProfilePage() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className={`w-full px-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-teal-500' : 'bg-gray-50'
+                    className={`w-full px-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-brand' : 'bg-gray-50'
                       }`}
                   />
                 </div>
@@ -944,7 +944,7 @@ export default function ProfilePage() {
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="your_username"
-                      className={`w-full pl-8 pr-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-teal-500' : 'bg-gray-50'
+                      className={`w-full pl-8 pr-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-brand' : 'bg-gray-50'
                         }`}
                     />
                   </div>
@@ -960,7 +960,7 @@ export default function ProfilePage() {
                     value={formData.birth_date}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className={`w-full px-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-teal-500' : 'bg-gray-50'
+                    className={`w-full px-3 py-2 border border-gray-300 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-brand' : 'bg-gray-50'
                       }`}
                   />
                 </div>
@@ -974,7 +974,7 @@ export default function ProfilePage() {
                     value={formData.gender}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className={`w-full px-3 py-2 border border-gray-300 pr-8 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-teal-500' : 'bg-gray-50'
+                    className={`w-full px-3 py-2 border border-gray-300 pr-8 ${isEditing ? 'focus:outline-none focus:ring-2 focus:ring-brand' : 'bg-gray-50'
                       }`}
                   >
                     <option value="">請選擇</option>
@@ -990,13 +990,13 @@ export default function ProfilePage() {
                   </label>
 
                   {isEditing ? (
-                    <div className="bg-teal-50/40 p-4 border border-teal-100 rounded-xl space-y-3">
+                    <div className="bg-blush/40 p-4 border border-blush rounded-xl space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-teal-800 font-semibold flex items-center gap-1.5">
-                          <i className="ri-map-pin-2-fill text-teal-600"></i>
+                        <span className="text-xs text-brand font-semibold flex items-center gap-1.5">
+                          <i className="ri-map-pin-2-fill text-brand"></i>
                           台灣地址標準填寫格式
                         </span>
-                        <span className="text-[11px] text-teal-700 bg-teal-100/60 px-2 py-0.5 rounded">
+                        <span className="text-[11px] text-brand bg-blush/60 px-2 py-0.5 rounded">
                           結帳時自動對齊 Shopify 配送規格
                         </span>
                       </div>
@@ -1010,7 +1010,7 @@ export default function ProfilePage() {
                           <select
                             value={addressCity}
                             onChange={(e) => handleCityChange(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                           >
                             <option value="">請選擇縣市</option>
                             {getTaiwanCities().map((city) => (
@@ -1029,7 +1029,7 @@ export default function ProfilePage() {
                             value={addressDistrict}
                             onChange={(e) => handleDistrictChange(e.target.value)}
                             disabled={!addressCity}
-                            className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:text-gray-400"
+                            className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand disabled:bg-gray-100 disabled:text-gray-400"
                           >
                             <option value="">
                               {addressCity ? '請選擇行政區' : '請先選擇縣市'}
@@ -1066,20 +1066,20 @@ export default function ProfilePage() {
                           placeholder="例：忠孝東路四段100號5樓"
                           value={addressStreet}
                           onChange={(e) => handleStreetChange(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          className="w-full px-3 py-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                         />
                       </div>
                     </div>
                   ) : (
                     formData.address ? (
                       <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-lg flex items-start gap-3">
-                        <div className="mt-0.5 text-teal-600">
+                        <div className="mt-0.5 text-brand">
                           <i className="ri-map-pin-2-fill text-lg"></i>
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             {addressZip && (
-                              <span className="inline-block px-2 py-0.5 bg-teal-100 text-teal-800 text-xs font-mono font-semibold rounded">
+                              <span className="inline-block px-2 py-0.5 bg-blush text-brand text-xs font-mono font-semibold rounded">
                                 {addressZip}
                               </span>
                             )}
@@ -1134,7 +1134,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     {isFacebookLinked ? (
-                      <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full font-medium">
+                      <span className="inline-flex items-center gap-1 text-xs text-brand bg-blush px-2.5 py-1 rounded-full font-medium">
                         <i className="ri-checkbox-circle-line"></i> 已連結
                       </span>
                     ) : (
@@ -1167,7 +1167,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     {isGoogleLinked ? (
-                      <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full font-medium">
+                      <span className="inline-flex items-center gap-1 text-xs text-brand bg-blush px-2.5 py-1 rounded-full font-medium">
                         <i className="ri-checkbox-circle-line"></i> 已連結
                       </span>
                     ) : (
@@ -1197,9 +1197,9 @@ export default function ProfilePage() {
               {reviewToast && (
                 <div
                   data-testid="review-toast"
-                  className="mb-6 p-4 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-sm font-medium flex items-center gap-2"
+                  className="mb-6 p-4 rounded-lg bg-blush text-brand border border-blush text-sm font-medium flex items-center gap-2"
                 >
-                  <i className="ri-checkbox-circle-line text-emerald-600 text-base"></i>
+                  <i className="ri-checkbox-circle-line text-brand text-base"></i>
                   <span>{reviewToast}</span>
                 </div>
               )}
@@ -1213,7 +1213,7 @@ export default function ProfilePage() {
                   <p className="text-gray-500 mb-6">開始購物，建立您的第一筆訂單！</p>
                   <button
                     onClick={() => navigate('/')}
-                    className="px-6 py-3 bg-teal-600 text-white hover:bg-teal-700 cursor-pointer whitespace-nowrap"
+                    className="px-6 py-3 bg-brand text-white hover:bg-brand cursor-pointer whitespace-nowrap"
                   >
                     開始購物
                   </button>
@@ -1285,7 +1285,7 @@ export default function ProfilePage() {
                                     type="button"
                                     onClick={() => handleOpenReviewModal(order.id, item)}
                                     data-testid={`write-review-btn-${item.id}`}
-                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#225B4F] bg-white border border-[#225B4F]/40 hover:bg-emerald-50 rounded-md shadow-2xs transition-colors cursor-pointer"
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#5B3D48] bg-white border border-[#5B3D48]/40 hover:bg-blush rounded-md shadow-2xs transition-colors cursor-pointer"
                                   >
                                     <span>✍️</span> 撰寫評價
                                   </button>
@@ -1316,7 +1316,7 @@ export default function ProfilePage() {
                                     href={trackingUrl}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="font-medium text-[#225B4F] underline underline-offset-2"
+                                    className="font-medium text-[#5B3D48] underline underline-offset-2"
                                   >
                                     查詢配送進度
                                   </a>
@@ -1374,7 +1374,7 @@ export default function ProfilePage() {
                   <p className="text-gray-500 mb-6">瀏覽商品時點擊愛心圖示即可收藏</p>
                   <button
                     onClick={() => navigate('/')}
-                    className="px-6 py-3 bg-teal-600 text-white hover:bg-teal-700 cursor-pointer whitespace-nowrap"
+                    className="px-6 py-3 bg-brand text-white hover:bg-brand cursor-pointer whitespace-nowrap"
                   >
                     瀏覽商品
                   </button>
@@ -1397,7 +1397,7 @@ export default function ProfilePage() {
                         </button>
                       </div>
                       <h3 className="font-medium text-gray-900 mb-2">{favorite.product_name}</h3>
-                      <p className="text-lg font-semibold text-teal-600 mb-2">
+                      <p className="text-lg font-semibold text-brand mb-2">
                         NT$ {favorite.product_price.toLocaleString()}
                       </p>
                       <p className="text-sm text-gray-500 mb-4">
@@ -1405,7 +1405,7 @@ export default function ProfilePage() {
                       </p>
                       <button
                         onClick={() => navigate(`/product/${favorite.product_id.split('/').pop() || favorite.product_id}`)}
-                        className="w-full py-2 bg-teal-600 text-white hover:bg-teal-700 cursor-pointer whitespace-nowrap"
+                        className="w-full py-2 bg-brand text-white hover:bg-brand cursor-pointer whitespace-nowrap"
                       >
                         查看商品
                       </button>
@@ -1430,7 +1430,7 @@ export default function ProfilePage() {
                   to="/promotion"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#225B4F] text-white hover:bg-[#1a473e] text-xs sm:text-sm font-semibold rounded-lg shadow-2xs transition-colors self-start sm:self-auto cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#5B3D48] text-white hover:bg-[#48303A] text-xs sm:text-sm font-semibold rounded-lg shadow-2xs transition-colors self-start sm:self-auto cursor-pointer"
                 >
                   <i className="ri-gift-line"></i>
                   <span>前往優惠專區領券</span>
@@ -1439,8 +1439,8 @@ export default function ProfilePage() {
               </div>
 
               {couponToast && (
-                <div className="mb-6 p-3 text-sm rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-2">
-                  <i className="ri-checkbox-circle-line text-emerald-600"></i>
+                <div className="mb-6 p-3 text-sm rounded-lg bg-blush text-brand border border-blush flex items-center gap-2">
+                  <i className="ri-checkbox-circle-line text-brand"></i>
                   <span>{couponToast}</span>
                 </div>
               )}
@@ -1452,7 +1452,7 @@ export default function ProfilePage() {
                   onClick={() => setCouponFilter('available')}
                   className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                     couponFilter === 'available'
-                      ? 'border-[#225B4F] text-[#225B4F]'
+                      ? 'border-[#5B3D48] text-[#5B3D48]'
                       : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -1463,7 +1463,7 @@ export default function ProfilePage() {
                   onClick={() => setCouponFilter('used')}
                   className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                     couponFilter === 'used'
-                      ? 'border-[#225B4F] text-[#225B4F]'
+                      ? 'border-[#5B3D48] text-[#5B3D48]'
                       : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -1474,7 +1474,7 @@ export default function ProfilePage() {
                   onClick={() => setCouponFilter('expired')}
                   className={`pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                     couponFilter === 'expired'
-                      ? 'border-[#225B4F] text-[#225B4F]'
+                      ? 'border-[#5B3D48] text-[#5B3D48]'
                       : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -1501,7 +1501,7 @@ export default function ProfilePage() {
                       to="/promotion"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#225B4F] text-white hover:bg-[#1a473e] text-sm font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#5B3D48] text-white hover:bg-[#48303A] text-sm font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
                     >
                       <span>前往優惠專區領券</span>
                       <i className="ri-external-link-line text-sm"></i>
@@ -1521,7 +1521,7 @@ export default function ProfilePage() {
                           key={item.id}
                           className={`relative border rounded-2xl p-5 transition-all flex flex-col justify-between ${
                             isAvailable
-                              ? 'border-gray-200 bg-white hover:border-[#225B4F]/50 hover:shadow-sm'
+                              ? 'border-gray-200 bg-white hover:border-[#5B3D48]/50 hover:shadow-sm'
                               : 'border-gray-200 bg-gray-50/70 opacity-75'
                           }`}
                         >
@@ -1531,7 +1531,7 @@ export default function ProfilePage() {
                               <div>
                                 <span className={`inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full mb-1.5 ${
                                   isAvailable
-                                    ? 'bg-[#225B4F]/10 text-[#225B4F]'
+                                    ? 'bg-[#5B3D48]/10 text-[#5B3D48]'
                                     : 'bg-gray-200 text-gray-600'
                                 }`}>
                                   {promo?.badge_text || (promo?.discount_type === 'free_shipping' ? '免運券' : '折價券')}
@@ -1541,7 +1541,7 @@ export default function ProfilePage() {
                                 </h3>
                               </div>
                               <div className="text-right">
-                                <span className={`text-xl font-black ${isAvailable ? 'text-[#225B4F]' : 'text-gray-500'}`}>
+                                <span className={`text-xl font-black ${isAvailable ? 'text-[#5B3D48]' : 'text-gray-500'}`}>
                                   {promo?.discount_type === 'percentage'
                                     ? `${promo.discount_value}% OFF`
                                     : promo?.discount_type === 'fixed_amount'
@@ -1571,7 +1571,7 @@ export default function ProfilePage() {
                                     setTimeout(() => setCouponToast(''), 3000);
                                   }
                                 }}
-                                className="text-xs text-[#225B4F] hover:text-[#173e35] font-semibold cursor-pointer"
+                                className="text-xs text-[#5B3D48] hover:text-[#48303A] font-semibold cursor-pointer"
                               >
                                 複製代碼
                               </button>
@@ -1589,7 +1589,7 @@ export default function ProfilePage() {
                                 <button
                                   type="button"
                                   onClick={() => navigate('/search?query=all')}
-                                  className="px-3.5 py-1.5 bg-[#225B4F] hover:bg-[#1a473e] text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                  className="px-3.5 py-1.5 bg-[#5B3D48] hover:bg-[#48303A] text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors cursor-pointer"
                                 >
                                   立即去使用
                                 </button>
@@ -1677,7 +1677,7 @@ export default function ProfilePage() {
                         aria-label={`給予 ${star} 顆星`}
                         data-testid={`star-${star}`}
                         className="p-1 text-2xl transition-transform hover:scale-110 focus:outline-none cursor-pointer"
-                        style={{ color: isFilled ? '#F59E0B' : '#D1D5DB' }}
+                        style={{ color: isFilled ? '#F59E0B' : '#DDD6D1' }}
                       >
                         <i className={isFilled ? 'ri-star-fill' : 'ri-star-line'}></i>
                       </button>
@@ -1704,7 +1704,7 @@ export default function ProfilePage() {
                   onChange={(e) => setCommentInput(e.target.value)}
                   placeholder="請分享您對此商品的實際穿著體驗、材質觸感或尺寸剪裁感受..."
                   data-testid="review-comment-input"
-                  className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:border-[#225B4F] focus:ring-1 focus:ring-[#225B4F] focus:outline-none placeholder-gray-400"
+                  className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:border-[#5B3D48] focus:ring-1 focus:ring-[#5B3D48] focus:outline-none placeholder-gray-400"
                 />
                 <p className="mt-1 text-xs text-gray-400 text-right">
                   {commentInput.length} 字
@@ -1736,7 +1736,7 @@ export default function ProfilePage() {
                   type="submit"
                   disabled={isSubmittingReview || !commentInput.trim()}
                   data-testid="submit-review-button"
-                  className="px-5 py-2 text-sm font-medium text-white bg-[#225B4F] hover:bg-[#1a473e] rounded-lg shadow-2xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-5 py-2 text-sm font-medium text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmittingReview ? '提交中...' : '送出評價'}
                 </button>

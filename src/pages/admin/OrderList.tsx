@@ -115,7 +115,7 @@ export const OrderList: React.FC = () => {
   const orderStatusBadge = (status: OrderStatus) => {
     switch (status) {
       case 'completed':
-        return <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">● {ORDER_STATUS_LABEL[status]}</span>;
+        return <span className="rounded-full bg-blush px-2 py-0.5 text-[11px] font-semibold text-brand border border-blush">● {ORDER_STATUS_LABEL[status]}</span>;
       case 'paid':
       case 'shipped':
         return <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 border border-blue-200">● {ORDER_STATUS_LABEL[status]}</span>;
@@ -136,7 +136,7 @@ export const OrderList: React.FC = () => {
     }
     switch (invoice.status) {
       case 'issued':
-        return <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">● {INVOICE_STATUS_LABEL[invoice.status]}</span>;
+        return <span className="rounded-full bg-blush px-2 py-0.5 text-[11px] font-semibold text-brand border border-blush">● {INVOICE_STATUS_LABEL[invoice.status]}</span>;
       case 'allowance-issued':
         return <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 border border-blue-200">● {INVOICE_STATUS_LABEL[invoice.status]}</span>;
       case 'awaiting-provider':
@@ -172,7 +172,7 @@ export const OrderList: React.FC = () => {
         </div>
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
           <div className="text-[11px] font-medium text-gray-500">發票已開立</div>
-          <div className="mt-1 text-xl font-bold text-emerald-600">{invoiceMetrics.issued} 筆</div>
+          <div className="mt-1 text-xl font-bold text-brand">{invoiceMetrics.issued} 筆</div>
         </div>
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
           <div className="text-[11px] font-medium text-gray-500">發票等待回讀 (Outbox)</div>
@@ -211,7 +211,7 @@ export const OrderList: React.FC = () => {
                 onClick={() => setStatusFilter(filter)}
                 className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
                   statusFilter === filter
-                    ? 'bg-[#225B4F] text-white'
+                    ? 'bg-[#5B3D48] text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -236,7 +236,7 @@ export const OrderList: React.FC = () => {
             placeholder="搜尋訂單編號或 Shopify GID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#225B4F] focus:outline-none"
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
           />
         </div>
       </div>
@@ -245,7 +245,7 @@ export const OrderList: React.FC = () => {
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
         {isLoading ? (
           <div className="p-12 text-center text-sm text-gray-500">
-            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#225B4F] border-t-transparent"></div>
+            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#5B3D48] border-t-transparent"></div>
             <p className="mt-2">正在載入 Supabase 訂單資料庫...</p>
           </div>
         ) : !isSupabaseConfigured ? (

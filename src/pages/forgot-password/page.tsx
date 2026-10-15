@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                     placeholder="請輸入您的電子郵件地址"
                   />
                 </div>
@@ -107,7 +107,7 @@ export default function ForgotPasswordPage() {
                   <button
                     type="submit"
                     disabled={loading || !isAuthCaptchaReady(captchaToken)}
-                    className="w-full py-3 bg-teal-600 text-white rounded-md font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
+                    className="w-full py-3 bg-brand text-white rounded-md font-medium hover:bg-brand focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center space-x-2">
@@ -136,7 +136,7 @@ export default function ForgotPasswordPage() {
                       setMessage('');
                       setEmail('');
                     }}
-                    className="text-teal-600 hover:text-teal-800 cursor-pointer"
+                    className="text-brand hover:text-brand cursor-pointer"
                   >
                     重新發送
                   </button>
@@ -147,7 +147,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-6 text-center">
               <Link
                 to="/login"
-                className="text-sm text-teal-600 hover:text-teal-800 cursor-pointer"
+                className="text-sm text-brand hover:text-brand cursor-pointer"
               >
                 <i className="ri-arrow-left-line mr-1"></i>
                 返回登入頁面

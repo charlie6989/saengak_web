@@ -98,13 +98,13 @@ export const ProductList: React.FC = () => {
               placeholder="搜尋品名、Handle 或 SKU..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#225B4F] focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
             />
           </div>
           <select
             value={selectedTag}
             onChange={(e) => setSelectedTag(e.target.value)}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-700 focus:border-[#225B4F] focus:outline-none"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-700 focus:border-[#5B3D48] focus:outline-none"
           >
             <option value="ALL">全部標籤 ({products.length})</option>
             {allTags.map((tag) => (
@@ -130,7 +130,7 @@ export const ProductList: React.FC = () => {
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
         {isLoading ? (
           <div className="p-12 text-center text-sm text-gray-500">
-            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#225B4F] border-t-transparent"></div>
+            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#5B3D48] border-t-transparent"></div>
             <p className="mt-2">正在查詢 Shopify Storefront 即時商品清單...</p>
           </div>
         ) : filteredProducts.length === 0 ? (
@@ -188,7 +188,7 @@ export const ProductList: React.FC = () => {
                       <div className="space-y-1">
                         <div className="flex items-center space-x-1.5">
                           {product.availableForSale ? (
-                            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
+                            <span className="inline-flex items-center rounded-full bg-blush px-2 py-0.5 text-[11px] font-semibold text-brand border border-blush">
                               ● 正常供貨中
                             </span>
                           ) : (
@@ -200,7 +200,7 @@ export const ProductList: React.FC = () => {
                         {typeof product.totalInventory === 'number' && (
                           <div className="text-[11px] font-medium text-gray-600">
                             總庫存：
-                            <strong className={product.totalInventory > 0 ? 'text-emerald-700 font-semibold' : 'text-amber-600 font-semibold'}>
+                            <strong className={product.totalInventory > 0 ? 'text-brand font-semibold' : 'text-amber-600 font-semibold'}>
                               {product.totalInventory}
                             </strong> 件
                           </div>
@@ -233,7 +233,7 @@ export const ProductList: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setSelectedProduct(product)}
-                        className="rounded border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#225B4F] cursor-pointer"
+                        className="rounded border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#5B3D48] cursor-pointer"
                       >
                         檢視規格
                       </button>
@@ -256,7 +256,7 @@ export const ProductList: React.FC = () => {
                 <div className="flex items-center space-x-3 mt-1 text-xs text-gray-500">
                   <span>Handle: <code className="font-mono text-gray-700">{selectedProduct.handle}</code></span>
                   {typeof selectedProduct.totalInventory === 'number' && (
-                    <span className="rounded bg-teal-50 px-2 py-0.5 font-semibold text-teal-800 border border-teal-200">
+                    <span className="rounded bg-blush px-2 py-0.5 font-semibold text-brand border border-blush">
                       全品項總庫存: {selectedProduct.totalInventory} 件
                     </span>
                   )}
@@ -292,7 +292,7 @@ export const ProductList: React.FC = () => {
                             <span
                               className={`font-mono text-[11px] font-semibold rounded px-1.5 py-0.5 border ${
                                 v.quantityAvailable > 0
-                                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                  ? 'bg-blush text-brand border-blush'
                                   : 'bg-red-50 text-red-700 border-red-200'
                               }`}
                             >
@@ -302,7 +302,7 @@ export const ProductList: React.FC = () => {
                           <span
                             className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold ${
                               v.availableForSale
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                ? 'bg-blush text-brand border border-blush'
                                 : 'bg-red-50 text-red-700 border border-red-200'
                             }`}
                           >
@@ -323,7 +323,7 @@ export const ProductList: React.FC = () => {
                   {selectedProduct.tags.map((t) => (
                     <span
                       key={t}
-                      className="rounded-md bg-teal-50 px-2 py-1 text-xs font-medium text-teal-800 border border-teal-100"
+                      className="rounded-md bg-blush px-2 py-1 text-xs font-medium text-brand border border-blush"
                     >
                       {t}
                     </span>

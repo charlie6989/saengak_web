@@ -45,6 +45,7 @@ const mockPromotion: ShopifyPromotion = {
   badge_text: '15% OFF',
   image_url: 'https://example.test/save15.jpg',
   is_active: true,
+  is_exhausted: false,
   applies_once_per_customer: true,
   usage_limit: null,
   async_usage_count: 0,

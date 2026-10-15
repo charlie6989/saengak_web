@@ -50,18 +50,18 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* 歡迎與權限橫幅 */}
-      <div className="rounded-2xl border border-teal-100 bg-white p-6 shadow-xs">
+      <div className="rounded-2xl border border-blush bg-white p-6 shadow-xs">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
             <div className="flex items-center space-x-2">
               <h1 className="text-2xl font-bold text-gray-900">營運指標與系統主控台</h1>
-              <span className="rounded-md bg-[#225B4F]/10 px-2 py-0.5 text-xs font-semibold text-[#225B4F]">
+              <span className="rounded-md bg-[#5B3D48]/10 px-2 py-0.5 text-xs font-semibold text-[#5B3D48]">
                 Live Dashboard
               </span>
             </div>
             <p className="mt-1 text-sm text-gray-500">
               管理員：<span className="font-medium text-gray-800 truncate inline-block max-w-[240px] align-bottom" title={user?.email}>{user?.email}</span> | 角色：
-              <span className="font-semibold text-[#225B4F]">
+              <span className="font-semibold text-[#5B3D48]">
                 {String(user?.app_metadata?.role || 'admin')}
               </span>
             </p>
@@ -94,7 +94,7 @@ export const Dashboard: React.FC = () => {
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-gray-500">Shopify Storefront</span>
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+            <span className="flex h-2 w-2 rounded-full bg-brand"></span>
           </div>
           <div className="mt-3 text-lg font-bold text-gray-900">
             {isLoading ? '檢測中...' : `${productCount} 件商品連線`}
@@ -102,7 +102,7 @@ export const Dashboard: React.FC = () => {
           <p className="mt-1 truncate text-xs text-gray-500" title={SHOPIFY_STORE_DOMAIN}>
             網域：{SHOPIFY_STORE_DOMAIN}
           </p>
-          <div className="mt-3 text-xs text-emerald-600 font-medium">
+          <div className="mt-3 text-xs text-brand font-medium">
             API 版本：{SHOPIFY_API_VERSION} (純前端直連)
           </div>
         </div>
@@ -113,7 +113,7 @@ export const Dashboard: React.FC = () => {
             <span className="text-xs font-medium text-gray-500">Supabase Auth & RLS</span>
             <span
               className={`flex h-2 w-2 rounded-full ${
-                isSupabaseConfigured ? 'bg-emerald-500' : 'bg-amber-500'
+                isSupabaseConfigured ? 'bg-brand' : 'bg-amber-500'
               }`}
             ></span>
           </div>
@@ -123,7 +123,7 @@ export const Dashboard: React.FC = () => {
           <p className="mt-1 text-xs text-gray-500">
             專案 Ref：<code>tmqzkagkrzhioftvwbqo</code>
           </p>
-          <div className="mt-3 text-xs text-[#225B4F] font-medium">
+          <div className="mt-3 text-xs text-[#5B3D48] font-medium">
             權限模式：app_metadata 隔離
           </div>
         </div>
@@ -145,11 +145,11 @@ export const Dashboard: React.FC = () => {
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-gray-500">Sentry 監控與脫敏</span>
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+            <span className="flex h-2 w-2 rounded-full bg-brand"></span>
           </div>
           <div className="mt-3 text-lg font-bold text-gray-900">PII 脫敏過濾啟用</div>
           <p className="mt-1 text-xs text-gray-500">資安標頭 CSP & HSTS 定版</p>
-          <div className="mt-3 text-xs text-emerald-600 font-medium">
+          <div className="mt-3 text-xs text-brand font-medium">
             可觀測性：captureExceptionSafe
           </div>
         </div>
@@ -163,7 +163,7 @@ export const Dashboard: React.FC = () => {
             <h2 className="font-semibold text-gray-800">商品與供貨狀態</h2>
             <Link
               to="/admin/products"
-              className="text-xs font-medium text-[#225B4F] hover:underline"
+              className="text-xs font-medium text-[#5B3D48] hover:underline"
             >
               進入看板 →
             </Link>
@@ -177,13 +177,13 @@ export const Dashboard: React.FC = () => {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">全站在庫總庫存</span>
-              <span className="font-bold text-emerald-700">
+              <span className="font-bold text-brand">
                 {isLoading ? '...' : `${totalUnits?.toLocaleString()} 件`}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">正常供貨中 (availableForSale)</span>
-              <span className="font-semibold text-emerald-600">
+              <span className="font-semibold text-brand">
                 {isLoading ? '...' : `${inStockCount} 項`}
               </span>
             </div>
@@ -202,7 +202,7 @@ export const Dashboard: React.FC = () => {
             <h2 className="font-semibold text-gray-800">結帳與發票狀態</h2>
             <Link
               to="/admin/orders"
-              className="text-xs font-medium text-[#225B4F] hover:underline"
+              className="text-xs font-medium text-[#5B3D48] hover:underline"
             >
               檢視訂單 →
             </Link>
@@ -210,7 +210,7 @@ export const Dashboard: React.FC = () => {
           <div className="mt-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">結帳方式</span>
-              <span className="rounded bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+              <span className="rounded bg-blush px-2 py-0.5 text-xs font-semibold text-brand">
                 Shopify Checkout（外部託管）
               </span>
             </div>
@@ -231,7 +231,7 @@ export const Dashboard: React.FC = () => {
             <h2 className="font-semibold text-gray-800">全域營運防護與參數</h2>
             <Link
               to="/admin/settings"
-              className="text-xs font-medium text-[#225B4F] hover:underline"
+              className="text-xs font-medium text-[#5B3D48] hover:underline"
             >
               設定參數 →
             </Link>
@@ -239,7 +239,7 @@ export const Dashboard: React.FC = () => {
           <div className="mt-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">預設封閉 (Fail-Closed)</span>
-              <span className="font-semibold text-emerald-600">強制啟動</span>
+              <span className="font-semibold text-brand">強制啟動</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">免運門檻標準</span>
@@ -247,7 +247,7 @@ export const Dashboard: React.FC = () => {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">測試存取閘門</span>
-              <span className="font-semibold text-emerald-600">Preview 測試保護中</span>
+              <span className="font-semibold text-brand">Preview 測試保護中</span>
             </div>
           </div>
         </div>
@@ -259,7 +259,7 @@ export const Dashboard: React.FC = () => {
         <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
           <Link
             to="/admin/products"
-            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 transition-all hover:border-[#225B4F] hover:bg-teal-50/40"
+            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 transition-all hover:border-[#5B3D48] hover:bg-blush/40"
           >
             <span className="text-2xl">📦</span>
             <div>
@@ -270,7 +270,7 @@ export const Dashboard: React.FC = () => {
 
           <Link
             to="/admin/orders"
-            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 transition-all hover:border-[#225B4F] hover:bg-teal-50/40"
+            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 transition-all hover:border-[#5B3D48] hover:bg-blush/40"
           >
             <span className="text-2xl">📑</span>
             <div>
@@ -281,7 +281,7 @@ export const Dashboard: React.FC = () => {
 
           <Link
             to="/admin/settings"
-            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 transition-all hover:border-[#225B4F] hover:bg-teal-50/40"
+            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 transition-all hover:border-[#5B3D48] hover:bg-blush/40"
           >
             <span className="text-2xl">⚙️</span>
             <div>
@@ -292,7 +292,7 @@ export const Dashboard: React.FC = () => {
 
           <Link
             to="/admin/modules"
-            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 transition-all hover:border-[#225B4F] hover:bg-teal-50/40"
+            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 transition-all hover:border-[#5B3D48] hover:bg-blush/40"
           >
             <span className="text-2xl">🏗️</span>
             <div>

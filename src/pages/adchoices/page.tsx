@@ -8,7 +8,7 @@ export default function AdChoicesPage() {
     <div className="min-h-screen bg-stone-50 text-gray-800">
       <Header />
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
-        <p className="mb-3 text-sm font-medium tracking-wide text-teal-700">內容盤點日期：{siteContent.contentReviewedAt}</p>
+        <p className="mb-3 text-sm font-medium tracking-wide text-brand">內容盤點日期：{siteContent.contentReviewedAt}</p>
         <h1 className="mb-5 text-4xl font-bold text-gray-950">廣告與追蹤偏好</h1>
         <section className="rounded-2xl bg-white p-7 shadow-sm">
           <h2 className="text-2xl font-semibold">目前狀態</h2>
@@ -26,7 +26,7 @@ export default function AdChoicesPage() {
         <section className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-7">
           <h2 className="text-xl font-semibold text-amber-950">需要提出資料請求？</h2>
           <p className="mt-3 leading-7 text-amber-900">{siteContent.supportStatus}。正式管道公告前請勿向非官方帳號提供身分證件、訂單或付款資料。</p>
-          <Link to="/privacy" className="mt-5 inline-flex rounded-md bg-teal-800 px-5 py-3 text-sm font-medium text-white hover:bg-teal-900">閱讀隱私權政策</Link>
+          <Link to="/privacy" className="mt-5 inline-flex rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">閱讀隱私權政策</Link>
         </section>
       </main>
       <Footer />

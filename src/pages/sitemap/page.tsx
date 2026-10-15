@@ -26,8 +26,8 @@ const SitemapPage = () => {
     {
       category: '主要頁面',
       icon: 'ri-home-line',
-      color: 'text-teal-600',
-      bgColor: 'bg-teal-50',
+      color: 'text-brand',
+      bgColor: 'bg-blush',
       links: [
         { name: '首頁', url: '/', description: '探索 SAENGAK 精選產品和最新優惠活動' },
         { name: '產品搜尋', url: '/search', description: '搜尋和瀏覽所有女性護理產品' },
@@ -39,8 +39,8 @@ const SitemapPage = () => {
     {
       category: '用戶服務',
       icon: 'ri-user-line',
-      color: 'text-teal-600',
-      bgColor: 'bg-teal-50',
+      color: 'text-brand',
+      bgColor: 'bg-blush',
       links: [
         { name: '會員登入', url: '/login', description: '登入您的 SAENGAK 會員帳戶' },
         { name: '會員註冊', url: '/register', description: '註冊成為 SAENGAK 會員享受專屬優惠' },
@@ -52,8 +52,8 @@ const SitemapPage = () => {
     {
       category: '客戶服務',
       icon: 'ri-customer-service-line',
-      color: 'text-teal-600',
-      bgColor: 'bg-teal-50',
+      color: 'text-brand',
+      bgColor: 'bg-blush',
       links: [
         { name: '線上客服', url: '/customer-service', description: '聯繫我們的專業客服團隊' },
         { name: '常見問題', url: '/faq', description: '查看常見問題和詳細解答' },
@@ -64,8 +64,8 @@ const SitemapPage = () => {
     {
       category: '政策條款',
       icon: 'ri-file-text-line',
-      color: 'text-teal-600',
-      bgColor: 'bg-teal-50',
+      color: 'text-brand',
+      bgColor: 'bg-blush',
       links: [
         { name: '隱私權政策', url: '/privacy', description: '了解我們如何保護您的個人隱私' },
         { name: '使用條款', url: '/terms', description: '網站使用條款和服務規範' },
@@ -95,11 +95,11 @@ const SitemapPage = () => {
   })).filter(section => section.links.length > 0);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-ivory">
       <Header />
       
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-teal-600 to-teal-700 text-white">
+      <div className="bg-gradient-to-br from-brand to-brand text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white/10 rounded-2xl mb-6">
@@ -127,7 +127,7 @@ const SitemapPage = () => {
                   placeholder="搜尋頁面或功能..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 pl-12 sm:pl-14 text-sm sm:text-base border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 pl-12 sm:pl-14 text-sm sm:text-base border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200"
                   style={{ fontFamily: "Noto Sans TC, sans-serif" }}
                 />
                 <i className="ri-search-line absolute left-4 sm:left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg sm:text-xl"></i>
@@ -142,8 +142,8 @@ const SitemapPage = () => {
                   onClick={() => setSelectedCategory(category.id)}
                   className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-medium transition-all duration-200 whitespace-nowrap ${
                     selectedCategory === category.id
-                      ? 'bg-teal-600 text-white shadow-lg'
-                      : 'bg-white text-teal-600 border-2 border-teal-600 hover:bg-teal-600 hover:text-white'
+                      ? 'bg-brand text-white shadow-lg'
+                      : 'bg-white text-brand border-2 border-brand hover:bg-brand hover:text-white'
                   }`}
                   style={{ fontFamily: "Noto Sans TC, sans-serif" }}
                 >
@@ -190,18 +190,18 @@ const SitemapPage = () => {
                       <Link
                         key={linkIndex}
                         to={link.url}
-                        className="block p-4 sm:p-5 rounded-xl border border-gray-200 hover:border-teal-500 hover:shadow-md transition-all duration-200 group"
+                        className="block p-4 sm:p-5 rounded-xl border border-gray-200 hover:border-brand hover:shadow-md transition-all duration-200 group"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-teal-600 mb-1 sm:mb-2 transition-colors" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-brand mb-1 sm:mb-2 transition-colors" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                               {link.name}
                             </h3>
                             <p className="text-xs sm:text-sm text-gray-600 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                               {link.description}
                             </p>
                           </div>
-                          <i className="ri-arrow-right-line text-gray-400 group-hover:text-teal-600 group-hover:translate-x-1 transition-all ml-3 sm:ml-4 mt-1 text-lg sm:text-xl flex-shrink-0"></i>
+                          <i className="ri-arrow-right-line text-gray-400 group-hover:text-brand group-hover:translate-x-1 transition-all ml-3 sm:ml-4 mt-1 text-lg sm:text-xl flex-shrink-0"></i>
                         </div>
                       </Link>
                     ))}
@@ -213,31 +213,31 @@ const SitemapPage = () => {
         )}
 
         {/* Quick Stats */}
-        <div className="mt-12 sm:mt-16 bg-gradient-to-br from-teal-50 to-teal-100/50 rounded-2xl p-6 sm:p-8">
+        <div className="mt-12 sm:mt-16 bg-gradient-to-br from-blush to-blush/50 rounded-2xl p-6 sm:p-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8 text-center" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
             網站統計資訊
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
             <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-sm">
-              <div className="text-3xl sm:text-4xl font-bold text-teal-600 mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+              <div className="text-3xl sm:text-4xl font-bold text-brand mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {siteStructure.reduce((total, section) => total + section.links.length, 0)}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>總頁面數</div>
             </div>
             <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-sm">
-              <div className="text-3xl sm:text-4xl font-bold text-teal-600 mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+              <div className="text-3xl sm:text-4xl font-bold text-brand mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {siteStructure.length}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>主要分類</div>
             </div>
             <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-sm">
-              <div className="text-3xl sm:text-4xl font-bold text-teal-600 mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+              <div className="text-3xl sm:text-4xl font-bold text-brand mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {siteStructure.find(s => s.category === '客戶服務')?.links.length || 0}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>客服頁面</div>
             </div>
             <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-sm">
-              <div className="text-3xl sm:text-4xl font-bold text-teal-600 mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+              <div className="text-3xl sm:text-4xl font-bold text-brand mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {siteStructure.find(s => s.category === '政策條款')?.links.length || 0}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>政策頁面</div>
@@ -246,10 +246,10 @@ const SitemapPage = () => {
         </div>
 
         {/* Help Section */}
-        <div className="mt-12 sm:mt-16 bg-white rounded-2xl p-8 sm:p-12 text-center border-2 border-teal-100">
+        <div className="mt-12 sm:mt-16 bg-white rounded-2xl p-8 sm:p-12 text-center border-2 border-blush">
           <div className="max-w-2xl mx-auto">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-teal-50 rounded-2xl mb-6">
-              <i className="ri-customer-service-2-line text-3xl sm:text-4xl text-teal-600"></i>
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-blush rounded-2xl mb-6">
+              <i className="ri-customer-service-2-line text-3xl sm:text-4xl text-brand"></i>
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               需要協助嗎？
@@ -260,7 +260,7 @@ const SitemapPage = () => {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Link
                 to="/customer-service"
-                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-teal-600 text-white text-sm sm:text-base font-semibold rounded-xl hover:bg-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl whitespace-nowrap"
+                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-brand text-white text-sm sm:text-base font-semibold rounded-xl hover:bg-brand transition-all duration-200 shadow-lg hover:shadow-xl whitespace-nowrap"
                 style={{ fontFamily: "Noto Sans TC, sans-serif" }}
               >
                 <i className="ri-customer-service-line mr-2 sm:mr-3 text-lg sm:text-xl"></i>
@@ -268,7 +268,7 @@ const SitemapPage = () => {
               </Link>
               <Link
                 to="/faq"
-                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-teal-600 text-sm sm:text-base font-semibold rounded-xl border-2 border-teal-600 hover:bg-teal-600 hover:text-white transition-all duration-200 shadow-lg hover:shadow-xl whitespace-nowrap"
+                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-brand text-sm sm:text-base font-semibold rounded-xl border-2 border-brand hover:bg-brand hover:text-white transition-all duration-200 shadow-lg hover:shadow-xl whitespace-nowrap"
                 style={{ fontFamily: "Noto Sans TC, sans-serif" }}
               >
                 <i className="ri-question-line mr-2 sm:mr-3 text-lg sm:text-xl"></i>

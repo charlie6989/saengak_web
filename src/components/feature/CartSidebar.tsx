@@ -273,7 +273,7 @@ export default function CartSidebar() {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
           <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-            購物車 <span className="text-teal-600 font-semibold text-base">({items.length} 件商品)</span>
+            購物車 <span className="text-brand font-semibold text-base">({items.length} 件商品)</span>
           </h2>
           <button
             onClick={() => setIsCartOpen(false)}
@@ -286,20 +286,20 @@ export default function CartSidebar() {
 
         {/* 免運門檻提示條 */}
         {items.length > 0 && (
-          <div className="bg-teal-50/70 border-b border-teal-100 px-6 py-3">
+          <div className="bg-blush/70 border-b border-blush px-6 py-3">
             <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-medium text-teal-900">
+              <span className="font-medium text-brand">
                 {amountToFreeShipping === 0 ? (
-                  <span className="text-teal-700 font-bold">🎉 已達成免運門檻（滿 {formatTwd(shippingSettings.freeShippingThreshold)}）</span>
+                  <span className="text-brand font-bold">🎉 已達成免運門檻（滿 {formatTwd(shippingSettings.freeShippingThreshold)}）</span>
                 ) : (
-                  <span>再消費 <strong className="text-teal-700 font-bold">{formatTwd(amountToFreeShipping)}</strong> 即可享<strong>免運優惠</strong></span>
+                  <span>再消費 <strong className="text-brand font-bold">{formatTwd(amountToFreeShipping)}</strong> 即可享<strong>免運優惠</strong></span>
                 )}
               </span>
-              <span className="font-semibold text-teal-700">{freeShippingProgress}%</span>
+              <span className="font-semibold text-brand">{freeShippingProgress}%</span>
             </div>
-            <div className="w-full bg-teal-200/50 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-blush/50 rounded-full h-1.5 overflow-hidden">
               <div 
-                className="bg-teal-600 h-1.5 rounded-full transition-all duration-300"
+                className="bg-brand h-1.5 rounded-full transition-all duration-300"
                 style={{ width: `${freeShippingProgress}%` }}
               />
             </div>
@@ -366,7 +366,7 @@ export default function CartSidebar() {
                     {/* Product Info */}
                     <div className="flex-1 min-w-0">
                       <h3 
-                        className="text-xs font-semibold text-gray-900 line-clamp-2 cursor-pointer hover:text-teal-600 transition-colors leading-snug mb-1"
+                        className="text-xs font-semibold text-gray-900 line-clamp-2 cursor-pointer hover:text-brand transition-colors leading-snug mb-1"
                         style={{ fontFamily: "Noto Sans TC, sans-serif" }}
                         onClick={() => handleProductClick(item)}
                       >
@@ -374,13 +374,13 @@ export default function CartSidebar() {
                       </h3>
 
                       {item.variantTitle && item.variantTitle !== 'Default Title' && (
-                        <div className="inline-block bg-teal-50 text-teal-800 border border-teal-100 text-[10px] px-1.5 py-0.5 rounded font-medium mb-1.5">
+                        <div className="inline-block bg-blush text-brand border border-blush text-[10px] px-1.5 py-0.5 rounded font-medium mb-1.5">
                           {item.variantTitle}
                         </div>
                       )}
                       
                       <div className="flex items-baseline gap-1.5 mb-2">
-                        <span className="text-sm font-bold text-teal-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                        <span className="text-sm font-bold text-brand" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                           {formatTwd(item.price)}
                         </span>
                         {item.originalPrice && item.originalPrice > item.price && (
@@ -395,7 +395,7 @@ export default function CartSidebar() {
                         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-2 py-1 shadow-2xs">
                           <button
                             onClick={() => updateQuantity(lineKey, item.quantity - 1)}
-                            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-teal-600 hover:bg-teal-50 rounded transition-colors cursor-pointer"
+                            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-brand hover:bg-blush rounded transition-colors cursor-pointer"
                             aria-label="減少數量"
                           >
                             <span className="text-sm leading-none font-medium" aria-hidden="true">−</span>
@@ -405,7 +405,7 @@ export default function CartSidebar() {
                           </span>
                           <button
                             onClick={() => updateQuantity(lineKey, item.quantity + 1)}
-                            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-teal-600 hover:bg-teal-50 rounded transition-colors cursor-pointer"
+                            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-brand hover:bg-blush rounded transition-colors cursor-pointer"
                             aria-label="增加數量"
                           >
                             <span className="text-sm leading-none font-medium" aria-hidden="true">＋</span>
@@ -438,7 +438,7 @@ export default function CartSidebar() {
                 <span>{formatTwd(totalPrice)}</span>
               </div>
               {selectedCouponCode && discountCalculation.amount > 0 && (
-                <div className="flex items-center justify-between text-xs text-teal-700 font-semibold">
+                <div className="flex items-center justify-between text-xs text-brand font-semibold">
                   <span>優惠折抵 ({selectedCouponCode})</span>
                   <span>-{formatTwd(discountCalculation.amount)}</span>
                 </div>
@@ -458,7 +458,7 @@ export default function CartSidebar() {
                     <p className="text-[10px] text-gray-400">實際金額於 Shopify Checkout 結算</p>
                   )}
                 </div>
-                <span className="text-xl font-bold text-teal-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                <span className="text-xl font-bold text-brand" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                   {formatTwd(Math.max(0, totalPrice - discountCalculation.amount))}
                 </span>
               </div>
@@ -469,18 +469,18 @@ export default function CartSidebar() {
               <button
                 type="button"
                 onClick={() => setIsCouponSectionOpen(!isCouponSectionOpen)}
-                className="w-full flex items-center justify-between text-xs font-bold text-gray-800 hover:text-teal-700 py-1 transition-colors cursor-pointer"
+                className="w-full flex items-center justify-between text-xs font-bold text-gray-800 hover:text-brand py-1 transition-colors cursor-pointer"
               >
                 <span className="flex items-center gap-1.5">
-                  <i className="ri-ticket-2-line text-teal-600 text-sm"></i>
+                  <i className="ri-ticket-2-line text-brand text-sm"></i>
                   <span>選擇優惠券 / 輸入折扣碼</span>
                   {selectedCouponCode && (
-                    <span className="px-2 py-0.5 rounded bg-teal-100 text-teal-800 font-mono font-bold text-[11px]">
+                    <span className="px-2 py-0.5 rounded bg-blush text-brand font-mono font-bold text-[11px]">
                       {selectedCouponCode}
                     </span>
                   )}
                 </span>
-                <i className={`ri-arrow-down-s-line text-base transition-transform ${isCouponSectionOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}></i>
+                <i className={`ri-arrow-down-s-line text-base transition-transform ${isCouponSectionOpen ? 'rotate-180 text-brand' : 'text-gray-400'}`}></i>
               </button>
 
               {isCouponSectionOpen && (
@@ -492,7 +492,7 @@ export default function CartSidebar() {
                       placeholder="輸入折扣代碼"
                       value={manualCouponInput}
                       onChange={(e) => setManualCouponInput(e.target.value.toUpperCase())}
-                      className="flex-1 px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-mono uppercase bg-white focus:outline-none focus:border-teal-500"
+                      className="flex-1 px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-mono uppercase bg-white focus:outline-none focus:border-brand"
                     />
                     <button
                       type="button"
@@ -501,7 +501,7 @@ export default function CartSidebar() {
                         setSelectedCouponCode(manualCouponInput.trim());
                         setManualCouponInput('');
                       }}
-                      className="px-3 py-1.5 bg-teal-700 text-white rounded-lg font-semibold hover:bg-teal-800 cursor-pointer"
+                      className="px-3 py-1.5 bg-brand text-white rounded-lg font-semibold hover:bg-brand cursor-pointer"
                     >
                       套用
                     </button>
@@ -509,9 +509,9 @@ export default function CartSidebar() {
 
                   {/* 已套用之折扣碼指示 */}
                   {selectedCouponCode && (
-                    <div className="flex items-center justify-between bg-teal-50 p-2.5 rounded-lg border border-teal-200 text-teal-900">
+                    <div className="flex items-center justify-between bg-blush p-2.5 rounded-lg border border-blush text-brand">
                       <div className="flex items-center gap-2">
-                        <i className="ri-checkbox-circle-fill text-teal-600"></i>
+                        <i className="ri-checkbox-circle-fill text-brand"></i>
                         <span>已套用：<strong className="font-mono">{selectedCouponCode}</strong></span>
                       </div>
                       <button
@@ -544,9 +544,9 @@ export default function CartSidebar() {
                                 }}
                                 className={`p-2 rounded-lg border transition-all cursor-pointer flex items-center justify-between ${
                                   isSelected
-                                    ? 'bg-teal-50/70 border-teal-500 text-teal-950 font-medium'
+                                    ? 'bg-blush/70 border-brand text-teal-950 font-medium'
                                     : isEligible
-                                    ? 'bg-white border-gray-200 hover:border-teal-300 text-gray-800'
+                                    ? 'bg-white border-gray-200 hover:border-mauve text-gray-800'
                                     : 'bg-gray-100 border-gray-200 text-gray-400 opacity-60 cursor-not-allowed'
                                 }`}
                               >
@@ -571,9 +571,9 @@ export default function CartSidebar() {
                                   disabled={!isEligible}
                                   className={`text-[11px] px-2 py-1 rounded font-semibold ${
                                     isSelected
-                                      ? 'bg-teal-700 text-white'
+                                      ? 'bg-brand text-white'
                                       : isEligible
-                                      ? 'bg-gray-100 text-gray-700 hover:bg-teal-100 hover:text-teal-900'
+                                      ? 'bg-gray-100 text-gray-700 hover:bg-blush hover:text-brand'
                                       : 'bg-gray-200 text-gray-400'
                                   }`}
                                 >
@@ -591,7 +591,7 @@ export default function CartSidebar() {
                           href="/promotion"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-block mt-1 text-teal-700 font-bold hover:underline text-[11px]"
+                          className="inline-block mt-1 text-brand font-bold hover:underline text-[11px]"
                         >
                           前往優惠專區領取 →
                         </a>
@@ -603,7 +603,7 @@ export default function CartSidebar() {
                       <button
                         type="button"
                         onClick={() => setIsAuthModalOpen(true)}
-                        className="inline-block mt-1 text-teal-700 font-bold hover:underline text-[11px] cursor-pointer"
+                        className="inline-block mt-1 text-brand font-bold hover:underline text-[11px] cursor-pointer"
                       >
                         立即登入 →
                       </button>
@@ -638,7 +638,7 @@ export default function CartSidebar() {
                             }
                       )
                     }
-                    className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-none focus:border-teal-500 transition-colors"
+                    className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-none focus:border-brand transition-colors"
                   >
                     <option value="personal">個人電子發票</option>
                     <option value="company">公司統編發票 (三聯)</option>
@@ -659,7 +659,7 @@ export default function CartSidebar() {
                       })
                     }
                     placeholder="name@example.com"
-                    className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-teal-500 transition-colors"
+                    className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-brand transition-colors"
                   />
                 </div>
 
@@ -677,7 +677,7 @@ export default function CartSidebar() {
                             carrierId: '',
                           })
                         }
-                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-none focus:border-brand transition-colors"
                       >
                         <option value="none">一般電子發票 (系統自動對獎)</option>
                         <option value="mobile">手機條碼載具</option>
@@ -708,7 +708,7 @@ export default function CartSidebar() {
                                 ? '捐贈碼'
                                 : '載具接收 Email'
                           }
-                          className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-teal-500 font-mono transition-colors"
+                          className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-brand font-mono transition-colors"
                         />
                       </div>
                     )}
@@ -731,7 +731,7 @@ export default function CartSidebar() {
                           })
                         }
                         placeholder="8 碼數字"
-                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-teal-500 font-mono transition-colors"
+                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-brand font-mono transition-colors"
                       />
                     </div>
                     <div>
@@ -749,7 +749,7 @@ export default function CartSidebar() {
                           })
                         }
                         placeholder="完整公司名稱"
-                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-brand transition-colors"
                       />
                     </div>
                   </div>
@@ -771,7 +771,7 @@ export default function CartSidebar() {
               onClick={handleCheckout}
               disabled={isSubmitting || isAuthLoading}
               data-testid="checkout-button"
-              className="w-full bg-teal-700 text-white py-3 rounded font-semibold hover:bg-teal-800 active:bg-teal-900 transition-all cursor-pointer shadow-md shadow-teal-700/20 text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait"
+              className="w-full bg-brand text-white py-3 rounded font-semibold hover:bg-brand active:bg-brand transition-all cursor-pointer shadow-md shadow-teal-700/20 text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait"
               style={{ fontFamily: "Noto Sans TC, sans-serif" }}
             >
               {isSubmitting || isAuthLoading ? (
@@ -813,7 +813,7 @@ export default function CartSidebar() {
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center space-x-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-lg">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blush text-brand text-lg">
                   📱
                 </div>
                 <div>
@@ -852,7 +852,7 @@ export default function CartSidebar() {
                     setPhoneNumberInput(e.target.value);
                     if (phoneError) setPhoneError('');
                   }}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:border-teal-600 focus:ring-1 focus:ring-teal-600 focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none"
                 />
                 {phoneError && (
                   <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
@@ -873,7 +873,7 @@ export default function CartSidebar() {
                 <button
                   type="submit"
                   disabled={isSavingPhone}
-                  className="rounded-lg bg-teal-700 px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-teal-800 disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="rounded-lg bg-brand px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-brand disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5"
                 >
                   {isSavingPhone ? (
                     <>

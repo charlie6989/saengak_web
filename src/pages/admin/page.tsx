@@ -18,14 +18,14 @@ export default function AdminModulesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#225B4F]">全站 9 大核心技術模組狀態</h1>
+          <h1 className="text-2xl font-bold text-[#5B3D48]">全站 9 大核心技術模組狀態</h1>
           <p className="mt-1 text-sm text-gray-600">
             這裡只呈現可驗證的功能狀態，不顯示示範營收、假訂單或假會員數。正式營運後台在 Supabase Auth 以 <code>app_metadata.role = 'admin'</code> 嚴格驗證。
           </p>
         </div>
         <Link
           to="/admin/dashboard"
-          className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-[#225B4F] shadow-xs hover:bg-gray-50"
+          className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-[#5B3D48] shadow-xs hover:bg-gray-50"
         >
           ← 返回營運主控台
         </Link>
@@ -38,7 +38,7 @@ export default function AdminModulesPage() {
             className="grid gap-2 border-b border-gray-100 p-5 last:border-0 md:grid-cols-[180px_140px_1fr] text-xs hover:bg-gray-50/50 transition-colors"
           >
             <strong className="text-gray-900 text-sm">{name}</strong>
-            <span className="font-semibold text-[#225B4F]">{status}</span>
+            <span className="font-semibold text-[#5B3D48]">{status}</span>
             <span className="text-gray-600 leading-5">{note}</span>
           </div>
         ))}

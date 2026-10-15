@@ -49,8 +49,8 @@ export default function Button({
   // Inline style tweaks that depend on the selected variant.
   const style: React.CSSProperties = {
     fontFamily: 'Noto Sans TC, sans-serif',
-    ...(variant === 'primary' && { backgroundColor: '#245B50' }),
-    ...(variant === 'outline' && { borderColor: '#245B50', color: '#245B50' }),
+    ...(variant === 'primary' && { backgroundColor: '#5B3D48' }),
+    ...(variant === 'outline' && { borderColor: '#5B3D48', color: '#5B3D48' }),
   };
 
   // Defensive check – if both `href` and `onClick` are supplied we prefer navigation,

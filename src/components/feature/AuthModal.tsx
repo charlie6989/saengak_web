@@ -267,9 +267,9 @@ export default function AuthModal({
         </div>
 
         {purpose === 'checkout' && (
-          <div className="mb-6 p-4 bg-teal-50 border border-teal-200 rounded-md">
-            <p className="text-sm font-medium text-teal-900">結帳前請先登入會員</p>
-            <p className="mt-1 text-sm text-teal-800">訂單會綁定到您的會員 ID；登入或註冊過程不會清除購物車。</p>
+          <div className="mb-6 p-4 bg-blush border border-blush rounded-md">
+            <p className="text-sm font-medium text-brand">結帳前請先登入會員</p>
+            <p className="mt-1 text-sm text-brand">訂單會綁定到您的會員 ID；登入或註冊過程不會清除購物車。</p>
           </div>
         )}
 
@@ -346,7 +346,7 @@ export default function AuthModal({
                 value={formData.name}
                 onChange={handleInputChange}
                 required={!isLogin}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 placeholder="請輸入您的姓名"
               />
             </div>
@@ -364,7 +364,7 @@ export default function AuthModal({
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
               placeholder="請輸入您的電子郵件"
             />
           </div>
@@ -381,7 +381,7 @@ export default function AuthModal({
               value={formData.password}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
               placeholder="請輸入您的密碼"
               minLength={isLogin ? undefined : 12}
             />
@@ -400,7 +400,7 @@ export default function AuthModal({
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required={!isLogin}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                 placeholder="請再次輸入密碼"
                 minLength={12}
               />
@@ -428,7 +428,7 @@ export default function AuthModal({
               type="button"
               onClick={handleResendConfirmation}
               disabled={loading || resendCountdown > 0 || !isAuthCaptchaReady(captchaToken)}
-              className="w-full py-2 border border-teal-200 text-teal-700 rounded-md text-sm font-medium hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full py-2 border border-blush text-brand rounded-md text-sm font-medium hover:bg-blush disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {resendCountdown > 0 ? `${resendCountdown} 秒後可重新寄送` : '重新寄送驗證信'}
             </button>
@@ -457,7 +457,7 @@ export default function AuthModal({
             <button 
               onClick={handleForgotPassword}
               disabled={loading || !isAuthCaptchaReady(captchaToken)}
-              className="text-sm text-teal-600 hover:text-teal-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
+              className="text-sm text-brand hover:text-brand cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
             >
               忘記密碼？
             </button>
@@ -470,7 +470,7 @@ export default function AuthModal({
             {isLogin ? "還沒有帳號？" : "已經有帳號了？"}
             <button
               onClick={switchMode}
-              className="ml-1 text-teal-600 hover:text-teal-800 font-medium cursor-pointer outline-none focus:outline-none"
+              className="ml-1 text-brand hover:text-brand font-medium cursor-pointer outline-none focus:outline-none"
             >
               {isLogin ? '註冊' : '登入'}
             </button>

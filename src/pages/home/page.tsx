@@ -1,3 +1,4 @@
+import { editorialImage } from '../../content/editorialImages';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
@@ -18,7 +19,7 @@ const fallbackArticles = [
     contentHtml: '',
     tags: ['健康知識', '私密護理'],
     publishedAt: '2026-09-01T10:37:30Z',
-    image: { url: '/images/blog/daily-feminine-care-guide.jpg', altText: '日常私密護理指南' }
+    image: { url: '/images/lucissi-v5/thumb-care.webp', altText: '日常私密護理指南' }
   },
   {
     id: 'fallback-article-2',
@@ -28,7 +29,7 @@ const fallbackArticles = [
     contentHtml: '',
     tags: ['生活美學', '選購指南'],
     publishedAt: '2026-09-01T10:37:33Z',
-    image: { url: '/images/blog/how-to-choose-seamless-underwear.jpg', altText: '貼身衣物材質指南' }
+    image: { url: '/images/lucissi-v5/thumb-wear.webp', altText: '貼身衣物材質指南' }
   },
   {
     id: 'fallback-article-3',
@@ -38,7 +39,7 @@ const fallbackArticles = [
     contentHtml: '',
     tags: ['品牌方法', '透明原則'],
     publishedAt: '2026-09-01T10:37:36Z',
-    image: { url: '/images/blog/how-we-review-products-and-content.jpg', altText: 'SAENGAK 品牌編輯標準' }
+    image: { url: '/images/lucissi-v5/thumb-standards.webp', altText: 'SAENGAK 品牌編輯標準' }
   },
 ];
 
@@ -59,7 +60,7 @@ export default function Home() {
             contentHtml: a.contentHtml || '',
             tags: a.tags || [],
             publishedAt: a.publishedAt,
-            image: a.image || null,
+            image: { url: editorialImage(a.handle, a.image?.url), altText: a.title },
           })));
         } else {
           setArticles(fallbackArticles);
@@ -73,10 +74,10 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+    <div className="min-h-screen bg-ivory" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
       <Header />
 
-      <main>
+      <main className="pt-24">
         <HeroSection />
 
         <ProductSection
@@ -94,12 +95,12 @@ export default function Home() {
         {/* 白色間隔區域 */}
         <section className="py-12 bg-white"></section>
 
-        {/* SAENGAK Talk｜私密對話 區塊 */}
-        <section className="py-20" style={{ backgroundColor: '#F7F7F5' }}>
+        {/* LUCISSI Talk｜私密對話 區塊 */}
+        <section className="py-20" style={{ backgroundColor: '#F8F5F1' }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                SAENGAK Talk｜私密對話
+                LUCISSI Talk｜私密對話
               </h2>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-4xl mx-auto" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 談身體，也談心。<br />
@@ -115,8 +116,8 @@ export default function Home() {
                   {/* 專業文章 */}
                   <div className="bg-white p-8 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
                     <div className="flex items-start space-x-6">
-                      <div className="w-16 h-16 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#BED2C0', borderRadius: '12px' }}>
-                        <i className="ri-article-line text-2xl" style={{ color: '#225B4F' }}></i>
+                      <div className="w-16 h-16 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--color-sage)', borderRadius: '12px' }}>
+                        <i className="ri-article-line text-2xl" style={{ color: '#5B3D48' }}></i>
                       </div>
                       <div className="flex-1">
                         <h4 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
@@ -133,8 +134,8 @@ export default function Home() {
                   {/* Instagram 動態 */}
                   <div className="bg-white p-8 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
                     <div className="flex items-start space-x-6">
-                      <div className="w-16 h-16 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#BED2C0', borderRadius: '12px' }}>
-                        <i className="ri-instagram-line text-2xl" style={{ color: '#225B4F' }}></i>
+                      <div className="w-16 h-16 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#E7D6D4', borderRadius: '12px' }}>
+                        <i className="ri-instagram-line text-2xl" style={{ color: '#5B3D48' }}></i>
                       </div>
                       <div className="flex-1">
                         <h4 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
@@ -155,8 +156,8 @@ export default function Home() {
                       className="inline-flex items-center justify-center px-8 py-4 font-semibold text-lg transition-all duration-300 cursor-pointer whitespace-nowrap hover:transform hover:scale-105 shadow-sm"
                       style={{
                         fontFamily: "Noto Sans TC, sans-serif",
-                        backgroundColor: '#225B4F',
-                        color: '#FFFFFF',
+                        backgroundColor: '#5B3D48',
+                        color: '#FFFDFC',
                         borderRadius: '12px'
                       }}
                     >
@@ -169,8 +170,8 @@ export default function Home() {
                       style={{
                         fontFamily: "Noto Sans TC, sans-serif",
                         backgroundColor: 'transparent',
-                        color: '#225B4F',
-                        borderColor: '#225B4F',
+                        color: '#5B3D48',
+                        borderColor: '#5B3D48',
                         borderRadius: '12px'
                       }}
                     >
@@ -185,9 +186,9 @@ export default function Home() {
               <div className="flex items-stretch">
                 <div className="w-full h-full min-h-[500px] relative overflow-hidden shadow-lg" style={{ borderRadius: '16px' }}>
                   <img
-                    src="https://readdy.ai/api/search-image?query=Intimate%20conversation%20between%20women%20about%20feminine%20health%2C%20warm%20and%20caring%20atmosphere%2C%20soft%20lighting%2C%20comfortable%20setting%20for%20sharing%20personal%20topics%2C%20Korean%20women%20having%20heart%20to%20heart%20talk%20about%20body%20and%20mind%20wellness%2C%20professional%20healthcare%20consultation%20environment&width=600&height=500&seq=saengak-talk-redesign&orientation=landscape"
-                    alt="SAENGAK Talk 私密對話"
-                    className="w-full h-full object-cover"
+                    src="/images/lucissi-v5/home-talk-portrait.webp"
+                    alt="LUCISSI Talk 私密對話"
+                    className="w-full h-full origin-top scale-[1.15] object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                   <div className="absolute bottom-8 left-8 right-8">
@@ -226,14 +227,14 @@ export default function Home() {
                     >
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
-                          src={article.image?.url || 'https://readdy.ai/api/search-image?query=calm%20minimal%20women%20wellness%20editorial%20still%20life%20soft%20natural%20light%20green%20and%20white%20palette&width=800&height=600&seq=saengak-editorial-fallback&orientation=landscape'}
+                          src={article.image?.url || '/images/lucissi-v5/thumb-standards.webp'}
                           alt={article.image?.altText || article.title}
                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                         />
                       </div>
                       <div className="p-6 flex-1 flex flex-col">
                         <div className="flex items-center mb-3">
-                          <span className="px-3 py-1 text-sm font-medium text-white" style={{ backgroundColor: '#225B4F', borderRadius: '20px' }}>
+                          <span className="px-3 py-1 text-sm font-medium text-white" style={{ backgroundColor: '#5B3D48', borderRadius: '20px' }}>
                             {article.tags && article.tags.length > 0 ? article.tags[0] : '專欄文章'}
                           </span>
                         </div>

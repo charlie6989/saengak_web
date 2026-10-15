@@ -11,33 +11,32 @@
 
 /* Design Tokens (CSS Variables) - Updated Color Palette */
 :root {
-  /* Brand Colors - Updated to New Color Palette */
-  --color-brand: #225B4F;          /* Primary Brand Green */
-  --color-brand-ink: #245B4F;      /* Darker brand for hover states */
-  --color-accent: #BED2C0;         /* Secondary brand accent */
-  --color-text: #000000;           /* Dark Text / Primary Copy */
-  --color-text-weak: #555555;      /* Secondary Text / Sub Copy */
-  --color-text-light: #747775;     /* Light text */
-  --color-border: #CDCDCD;         /* Light border color */
-  --color-bg: #FFFFFF;             /* Background / White Base */
-  --color-bg-weak: #F7F7F5;        /* Soft Neutral / Off-White */
-  --color-bg-soft: #FFFEF2;        /* Alternative soft background */
-  --color-bg-accent: #EBF3EC;      /* Accent background */
-  --color-bg-light: #F1F4F9;       /* Light background */
-  --color-sale: #007AFF;           /* Contrast / Highlight Color */
-  --color-warm-neutral: #92786E;   /* Accent Warm / Earth Tone */
-  --color-warm-light: #D8D6CA;     /* Lighter warm neutral */
-  --color-gray-light: #BBBBBB;     /* Light gray */
-  --color-gray-medium: #999999;    /* Medium gray */
-  --color-gray-dark: #333333;      /* Dark gray */
-  --color-black-light: #111111;    /* Light black */
-  --color-black-medium: #1F1F1F;   /* Medium black */
-  --color-black-dark: #222222;     /* Dark black */
-  --color-accent-dark: #444746;    /* Dark accent */
-
-  /* Add to Cart Button Colors */
-  --color-cart-btn: #BED2C0;       /* Soft pastel green for cart buttons */
-  --color-cart-btn-hover: #EBF3EC; /* Lighter mint green for hover */
+  /* Warm Ivory / Deep Plum palette. Muted colors are decorative, not body text. */
+  --color-brand: #5B3D48;
+  --color-brand-ink: #48303A;
+  --color-accent: #A9838B;
+  --color-sage: #A9ADA2;
+  --color-text: #34302F;
+  --color-text-weak: #655859;
+  --color-text-light: #655859;
+  --color-border: #DDD6D1;
+  --color-bg: #FFFDFC;
+  --color-bg-weak: #F8F5F1;
+  --color-bg-soft: #F8F5F1;
+  --color-bg-accent: #E7D6D4;
+  --color-bg-light: #F8F5F1;
+  --color-sale: #5B3D48;
+  --color-warm-neutral: #A9838B;
+  --color-warm-light: #A9ADA2;
+  --color-gray-light: #DDD6D1;
+  --color-gray-medium: #655859;
+  --color-gray-dark: #34302F;
+  --color-black-light: #34302F;
+  --color-black-medium: #5B3D48;
+  --color-black-dark: #34302F;
+  --color-accent-dark: #5B3D48;
+  --color-cart-btn: #5B3D48;
+  --color-cart-btn-hover: #E7D6D4;
 
   /* Layout */
   --container-max: 1200px;         
@@ -80,7 +79,7 @@ body {
   font-weight: var(--fw-body);
   line-height: var(--lh-body);
   color: var(--color-text);
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-weak);
 }
 
 /* Transparent wrapper for header */
@@ -512,13 +511,13 @@ a {
 
 /* Product Card Styles - Updated with new color palette */
 .product-card-shadow {
-  box-shadow: 0 1px 3px rgba(34, 91, 79, 0.1);
+  box-shadow: 0 1px 3px rgba(91, 61, 72, 0.1);
   transition: box-shadow 0.3s ease;
   background: var(--color-bg);
 }
 
 .product-card-shadow:hover {
-  box-shadow: 0 4px 12px rgba(34, 91, 79, 0.15);
+  box-shadow: 0 4px 12px rgba(91, 61, 72, 0.15);
 }
 
 /* Price Text Styles */
@@ -552,7 +551,7 @@ a {
 
 .korean-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(34, 91, 79, 0.1);
+  box-shadow: 0 4px 12px rgba(91, 61, 72, 0.1);
 }
 
 /* Responsive Typography */
@@ -745,7 +744,7 @@ a:focus {
    ========================================================================== */
 .article-content {
   font-family: var(--font-sans);
-  color: #374151;
+  color: #34302F;
   font-size: 1.0625rem; /* ~17px */
   line-height: 2;
   letter-spacing: 0.015em;
@@ -754,17 +753,17 @@ a:focus {
 .article-content p {
   margin-bottom: 1.75rem;
   line-height: 2;
-  color: #374151;
+  color: #34302F;
 }
 
 .article-content h2 {
   font-size: 1.625rem;
   font-weight: 700;
-  color: #1a4d42;
+  color: #5B3D48;
   margin-top: 3.5rem;
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid #EBF3EC;
+  border-bottom: 2px solid #E7D6D4;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -774,7 +773,7 @@ a:focus {
 .article-content h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: #34302F;
   margin-top: 2.25rem;
   margin-bottom: 0.875rem;
   position: relative;
@@ -789,7 +788,7 @@ a:focus {
   top: 0.25rem;
   bottom: 0.25rem;
   width: 3.5px;
-  background-color: #225B4F;
+  background-color: #5B3D48;
   border-radius: 2px;
 }
 
@@ -807,7 +806,7 @@ a:focus {
   position: relative;
   padding-left: 1.75rem;
   line-height: 1.85;
-  color: #4b5563;
+  color: #655859;
 }
 
 .article-content ul li::before {
@@ -815,7 +814,7 @@ a:focus {
   position: absolute;
   left: 0.5rem;
   top: -0.1rem;
-  color: #225B4F;
+  color: #5B3D48;
   font-size: 1.35rem;
   font-weight: bold;
 }
@@ -832,18 +831,18 @@ a:focus {
 
 .article-content ol li {
   line-height: 1.85;
-  color: #4b5563;
+  color: #655859;
   padding-left: 0.25rem;
 }
 
 .article-content .lead {
   font-size: 1.125rem;
   line-height: 1.9;
-  color: #173f36;
-  background-color: #f2f7f4;
+  color: #48303A;
+  background-color: #E7D6D4;
   padding: 1.5rem 1.75rem;
   border-radius: 12px;
-  border-left: 4px solid #225B4F;
+  border-left: 4px solid #5B3D48;
   margin-bottom: 2.5rem;
   font-weight: 500;
 }

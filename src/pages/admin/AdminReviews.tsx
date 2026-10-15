@@ -138,7 +138,7 @@ export const AdminReviews: React.FC = () => {
     switch (status) {
       case 'published':
         return (
-          <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+          <span className="inline-flex items-center rounded-full bg-blush px-2.5 py-0.5 text-xs font-semibold text-brand border border-blush">
             ● 已發布
           </span>
         );
@@ -195,7 +195,7 @@ export const AdminReviews: React.FC = () => {
         <div
           className={`rounded-xl border p-4 text-xs font-semibold ${
             statusMessage.type === 'success'
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+              ? 'border-blush bg-blush text-brand'
               : 'border-red-200 bg-red-50 text-red-800'
           }`}
         >
@@ -214,9 +214,9 @@ export const AdminReviews: React.FC = () => {
           <div className="text-xs font-medium text-amber-700">待審核數</div>
           <div className="mt-1 text-2xl font-bold text-amber-900">{stats.pending}</div>
         </div>
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-xs">
-          <div className="text-xs font-medium text-emerald-700">已發布數</div>
-          <div className="mt-1 text-2xl font-bold text-emerald-900">{stats.published}</div>
+        <div className="rounded-xl border border-blush bg-blush/50 p-4 shadow-xs">
+          <div className="text-xs font-medium text-brand">已發布數</div>
+          <div className="mt-1 text-2xl font-bold text-brand">{stats.published}</div>
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-xs">
           <div className="text-xs font-medium text-gray-500">已隱藏數</div>
@@ -233,7 +233,7 @@ export const AdminReviews: React.FC = () => {
             onClick={() => setActiveTab('all')}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
               activeTab === 'all'
-                ? 'bg-[#225B4F] text-white'
+                ? 'bg-[#5B3D48] text-white'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
             }`}
           >
@@ -255,8 +255,8 @@ export const AdminReviews: React.FC = () => {
             onClick={() => setActiveTab('published')}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
               activeTab === 'published'
-                ? 'bg-emerald-700 text-white'
-                : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-800'
+                ? 'bg-brand text-white'
+                : 'text-gray-600 hover:bg-blush hover:text-brand'
             }`}
           >
             已發布 ({stats.published})
@@ -281,7 +281,7 @@ export const AdminReviews: React.FC = () => {
             placeholder="搜尋評價、商品 ID、訂單 ID 或會員..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#225B4F] focus:outline-none"
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
           />
         </div>
       </div>
@@ -304,7 +304,7 @@ export const AdminReviews: React.FC = () => {
               {isLoading && reviews.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#225B4F]" />
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#5B3D48]" />
                     <p className="mt-2 text-xs">載入評價資料中...</p>
                   </td>
                 </tr>
@@ -380,7 +380,7 @@ export const AdminReviews: React.FC = () => {
                               type="button"
                               onClick={() => handleStatusChange(review.id, 'published')}
                               disabled={isBusy}
-                              className="rounded bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors disabled:opacity-50 cursor-pointer"
+                              className="rounded bg-blush px-2.5 py-1 text-xs font-medium text-brand hover:bg-blush border border-blush transition-colors disabled:opacity-50 cursor-pointer"
                               title="通過審核並於前台發布"
                             >
                               {isBusy ? '處理中' : '✓ 通過審核'}

@@ -13,7 +13,7 @@ body,
 }
 
 body {
-  background: #f7f7f5;
+  background: #F8F5F1;
   font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -24,7 +24,7 @@ body {
   place-items: center;
   padding: 32px 24px;
   overflow: hidden;
-  background: #f7f7f5;
+  background: #F8F5F1;
 }
 
 .coming-soon__content {
@@ -34,7 +34,7 @@ body {
 
 .coming-soon__brand {
   margin: 0 0 20px;
-  color: #225b4f;
+  color: #5B3D48;
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
@@ -44,7 +44,7 @@ body {
 
 .coming-soon__title {
   margin: 0;
-  color: #225b4f;
+  color: #5B3D48;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(52px, 10vw, 104px);
   font-weight: 400;
@@ -57,9 +57,9 @@ body {
   margin-top: 34px;
   padding: 10px 2px 8px;
   border: 0;
-  border-bottom: 1px solid rgba(34, 91, 79, 0.42);
+  border-bottom: 1px solid rgba(91, 61, 72, 0.42);
   background: transparent;
-  color: #225b4f;
+  color: #5B3D48;
   font: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -68,14 +68,14 @@ body {
 }
 
 .coming-soon__login-trigger:hover {
-  border-color: #225b4f;
+  border-color: #5B3D48;
 }
 
 .coming-soon__login-trigger:focus-visible,
 .test-login__close:focus-visible,
 .test-login__field input:focus-visible,
 .test-login__submit:focus-visible {
-  outline: 3px solid rgba(34, 91, 79, 0.22);
+  outline: 3px solid rgba(91, 61, 72, 0.22);
   outline-offset: 3px;
 }
 
@@ -84,9 +84,9 @@ body {
   inset: 50% auto auto 50%;
   width: min(calc(100% - 40px), 390px);
   padding: 34px;
-  border: 1px solid rgba(34, 91, 79, 0.16);
+  border: 1px solid rgba(91, 61, 72, 0.16);
   background: #fff;
-  box-shadow: 0 24px 80px rgba(23, 63, 54, 0.18);
+  box-shadow: 0 24px 80px rgba(72, 48, 58, 0.18);
   text-align: left;
   transform: translate(-50%, -50%);
 }
@@ -100,7 +100,7 @@ body {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #225b4f;
+  color: #5B3D48;
   font: inherit;
   font-size: 24px;
   line-height: 1;
@@ -109,7 +109,7 @@ body {
 
 .test-login__title {
   margin: 0 0 26px;
-  color: #225b4f;
+  color: #5B3D48;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 30px;
   font-weight: 400;
@@ -127,7 +127,7 @@ body {
 }
 
 .test-login__field span {
-  color: #225b4f;
+  color: #5B3D48;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -137,10 +137,10 @@ body {
   width: 100%;
   height: 46px;
   padding: 0 12px;
-  border: 1px solid rgba(34, 91, 79, 0.28);
+  border: 1px solid rgba(91, 61, 72, 0.28);
   border-radius: 0;
   background: #fff;
-  color: #173f36;
+  color: #48303A;
   font: inherit;
   font-size: 16px;
 }
@@ -154,8 +154,8 @@ body {
 
 .test-login__submit {
   height: 48px;
-  border: 1px solid #225b4f;
-  background: #225b4f;
+  border: 1px solid #5B3D48;
+  background: #5B3D48;
   color: #fff;
   font: inherit;
   font-size: 14px;

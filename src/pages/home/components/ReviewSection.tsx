@@ -136,7 +136,7 @@ const ReviewSection: React.FC = () => {
 
               {/* 評論內容 */}
               <div className="p-6">
-                <div className="text-xs font-medium text-teal-700 mb-3">精選推薦</div>
+                <div className="text-xs font-medium text-brand mb-3">精選推薦</div>
 
                 {/* 產品名稱 */}
                 <h3

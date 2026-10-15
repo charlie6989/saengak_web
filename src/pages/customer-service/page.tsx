@@ -5,13 +5,13 @@ import { siteContent } from '../../content/site';
 
 export default function CustomerService() {
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+    <div className="min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
       <Header />
 
-      <div className="bg-teal-700 pb-20 pt-32 text-white">
+      <div className="bg-brand pb-20 pt-32 text-white">
         <div className="mx-auto max-w-5xl px-4 text-center">
           <h1 className="mb-5 text-4xl font-bold sm:text-5xl">客服中心</h1>
-          <p className="mx-auto max-w-2xl text-base text-teal-50 sm:text-lg">
+          <p className="mx-auto max-w-2xl text-base text-blush sm:text-lg">
             我們只公布已確認的官方管道，不使用示範電話、跨品牌信箱或未啟用的即時聊天。
           </p>
         </div>
@@ -33,7 +33,7 @@ export default function CustomerService() {
 
         <section className="mt-10 grid gap-6 md:grid-cols-2">
           <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <i className="ri-building-line mb-4 block text-3xl text-teal-700" />
+            <i className="ri-building-line mb-4 block text-3xl text-brand" />
             <h2 className="mb-4 text-xl font-bold text-gray-900">營運公司</h2>
             <dl className="space-y-3 text-sm text-gray-700">
               <div>
@@ -46,7 +46,7 @@ export default function CustomerService() {
               </div>
               <div>
                 <dt className="font-semibold text-gray-900">電子郵件</dt>
-                <dd><a href={`mailto:${siteContent.companyEmail}`} className="text-teal-700 hover:underline">{siteContent.companyEmail}</a></dd>
+                <dd><a href={`mailto:${siteContent.companyEmail}`} className="text-brand hover:underline">{siteContent.companyEmail}</a></dd>
               </div>
               <div>
                 <dt className="font-semibold text-gray-900">登記地址</dt>
@@ -56,16 +56,16 @@ export default function CustomerService() {
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <i className="ri-question-answer-line mb-4 block text-3xl text-teal-700" />
+            <i className="ri-question-answer-line mb-4 block text-3xl text-brand" />
             <h2 className="mb-4 text-xl font-bold text-gray-900">自助查詢</h2>
             <p className="mb-5 text-sm leading-6 text-gray-600">
               若您對商品選購、訂單進度、會員帳戶或售後服務有任何疑問，歡迎隨時參閱常見問題或與我們聯繫。
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/faq" className="rounded-md bg-teal-700 px-5 py-3 text-sm font-medium text-white hover:bg-teal-800">
+              <Link to="/faq" className="rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">
                 查看常見問題
               </Link>
-              <Link to="/return-policy" className="rounded-md border border-teal-700 px-5 py-3 text-sm font-medium text-teal-700 hover:bg-teal-50">
+              <Link to="/return-policy" className="rounded-md border border-brand px-5 py-3 text-sm font-medium text-brand hover:bg-blush">
                 查看退換貨說明
               </Link>
             </div>

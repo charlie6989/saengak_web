@@ -56,21 +56,21 @@ export default function WelcomePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-blush to-blue-50">
       <Header />
       
       <div className="py-12 px-4 sm:px-6 lg:px-8" style={{ paddingTop: '120px' }}>
         <div className="max-w-4xl mx-auto">
           {/* 歡迎標題 */}
           <div className="text-center mb-12">
-            <div className="w-20 h-20 mx-auto mb-6 bg-teal-100 rounded-full flex items-center justify-center">
-              <i className="ri-user-smile-line text-3xl text-teal-600"></i>
+            <div className="w-20 h-20 mx-auto mb-6 bg-blush rounded-full flex items-center justify-center">
+              <i className="ri-user-smile-line text-3xl text-brand"></i>
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               歡迎加入 SAENGAK！
@@ -91,7 +91,7 @@ export default function WelcomePage() {
                 <div key={step} className="flex items-center">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
                     step <= currentStep 
-                      ? 'bg-teal-600 text-white' 
+                      ? 'bg-brand text-white'
                       : 'bg-gray-200 text-gray-500'
                   }`}>
                     {step < currentStep ? (
@@ -102,7 +102,7 @@ export default function WelcomePage() {
                   </div>
                   {step < 3 && (
                     <div className={`w-16 h-1 mx-2 ${
-                      step < currentStep ? 'bg-teal-600' : 'bg-gray-200'
+                      step < currentStep ? 'bg-brand' : 'bg-gray-200'
                     }`}></div>
                   )}
                 </div>
@@ -125,8 +125,8 @@ export default function WelcomePage() {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
                   <div className="text-center p-4">
-                    <div className="w-16 h-16 mx-auto mb-3 bg-teal-100 rounded-full flex items-center justify-center">
-                      <i className="ri-shield-check-line text-2xl text-teal-600"></i>
+                    <div className="w-16 h-16 mx-auto mb-3 bg-blush rounded-full flex items-center justify-center">
+                      <i className="ri-shield-check-line text-2xl text-brand"></i>
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">資料可追溯</h3>
                     <p className="text-sm text-gray-600">未接入的認證不自行推定</p>
@@ -151,7 +151,7 @@ export default function WelcomePage() {
 
             {currentStep === 2 && (
               <div className="text-center">
-                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-100 to-teal-100 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-100 to-blush rounded-full flex items-center justify-center">
                   <i className="ri-shopping-bag-3-line text-4xl text-green-500"></i>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -201,12 +201,12 @@ export default function WelcomePage() {
                   目前未公告新會員折扣或免運門檻；正式活動只會顯示已核准的條件、期間與適用範圍。
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                  <div className="bg-gradient-to-r from-teal-50 to-blue-50 rounded-lg p-6 text-center border border-teal-100">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-teal-100 rounded-full flex items-center justify-center">
-                      <i className="ri-percent-line text-2xl text-teal-600"></i>
+                  <div className="bg-gradient-to-r from-blush to-blue-50 rounded-lg p-6 text-center border border-blush">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-blush rounded-full flex items-center justify-center">
+                      <i className="ri-percent-line text-2xl text-brand"></i>
                     </div>
                     <h3 className="font-bold text-gray-900 mb-2 text-lg">優惠資訊</h3>
-                    <p className="text-teal-600 font-semibold text-xl mb-2">以結帳頁為準</p>
+                    <p className="text-brand font-semibold text-xl mb-2">以結帳頁為準</p>
                     <p className="text-sm text-gray-600">未公告的折扣不會預先套用</p>
                   </div>
                   <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 text-center border border-purple-100">
@@ -238,7 +238,7 @@ export default function WelcomePage() {
             </button>
             <button
               onClick={handleContinue}
-              className="px-8 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors cursor-pointer whitespace-nowrap"
+              className="px-8 py-3 bg-brand text-white rounded-lg font-medium hover:bg-brand transition-colors cursor-pointer whitespace-nowrap"
             >
               {currentStep === 3 ? '開始購物' : '繼續'}
             </button>
@@ -251,7 +251,7 @@ export default function WelcomePage() {
             </p>
             <button
               onClick={() => navigate('/profile')}
-              className="mt-2 text-teal-600 hover:text-teal-800 text-sm cursor-pointer"
+              className="mt-2 text-brand hover:text-brand text-sm cursor-pointer"
             >
               前往會員中心
             </button>

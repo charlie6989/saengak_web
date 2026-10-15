@@ -204,7 +204,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </p>
 
             {/* Product Title - 完整展示 Saengak 品牌與品名，不以省略號截斷 */}
-            <h3 className="text-sm md:text-base font-semibold leading-snug line-clamp-2 min-h-[2.5rem]" title={displayTitle} style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#225B4F" }}>
+            <h3 className="text-sm md:text-base font-semibold leading-snug line-clamp-2 min-h-[2.5rem]" title={displayTitle} style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
               {displayTitle}
             </h3>
 
@@ -217,7 +217,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               );
               if (!displayVendor) return null;
               return (
-                <p className="text-xs sm:text-sm mb-1 text-[#225B4F]/80 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                <p className="text-xs sm:text-sm mb-1 text-[#5B3D48]/80 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                   {displayVendor}
                 </p>
               );
@@ -241,12 +241,12 @@ export default function ProductCard({ product }: ProductCardProps) {
                   ) : (
                     <div className="h-5"></div>
                   )}
-                  {/* 折扣比率移到折扣後價格前面，字體大小和顏色與折扣後價格一致，顏色改為 #225B4F */}
+                  {/* 折扣比率移到折扣後價格前面，字體大小和顏色與折扣後價格一致，顏色改為 #5B3D48 */}
                   <div className="flex items-center gap-2">
                     {discountPercentage > 0 ? (
-                      <span className="text-lg font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#225B4F" }}>-{discountPercentage}%</span>
+                      <span className="text-lg font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>-{discountPercentage}%</span>
                     ) : null}
-                    <span className="text-lg font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#225B4F" }}>
+                    <span className="text-lg font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
                       ${product.price.toLocaleString()}
                     </span>
                   </div>
@@ -272,17 +272,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           aria-label={`查看 ${product.name} 商品詳情`}
           className="add-to-cart-btn mt-auto"
           style={{
-            backgroundColor: isSoldOut ? '#F3F4F6' : '#E9F1EC',
-            color: isSoldOut ? '#888888' : '#222222',
+            backgroundColor: isSoldOut ? '#F8F5F1' : '#E7D6D4',
+            color: isSoldOut ? '#655859' : '#34302F',
             fontFamily: "Noto Sans TC, sans-serif"
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = isSoldOut ? '#E5E7EB' : '#245B50';
-            e.currentTarget.style.color = isSoldOut ? '#444444' : '#ffffff';
+            e.currentTarget.style.backgroundColor = isSoldOut ? '#DDD6D1' : '#5B3D48';
+            e.currentTarget.style.color = isSoldOut ? '#655859' : '#FFFDFC';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = isSoldOut ? '#F3F4F6' : '#E9F1EC';
-            e.currentTarget.style.color = isSoldOut ? '#888888' : '#222222';
+            e.currentTarget.style.backgroundColor = isSoldOut ? '#F8F5F1' : '#E7D6D4';
+            e.currentTarget.style.color = isSoldOut ? '#655859' : '#34302F';
           }}
         >
           {isSoldOut ? '已售完・查看詳情' : '查看商品'}
