@@ -74,7 +74,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess }) => {
       <div className="w-full max-w-md">
         {/* 標頭與 Logo */}
         <div className="mb-8 text-center">
-          <div className="mx-auto inline-flex items-center space-x-2 rounded-xl bg-[#5B3D48] px-4 py-2 text-white shadow-md">
+          <div className="mx-auto inline-flex items-center space-x-2 rounded-xl bg-brand px-4 py-2 text-white shadow-md">
             <span className="text-base font-black tracking-widest">LUCISSI CARE</span>
             <span className="text-xs font-semibold opacity-90">| 管理後台</span>
           </div>
@@ -85,7 +85,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess }) => {
         </div>
 
         {/* 登入卡片 */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-xs">
           {/* 安全政策提示 */}
           <div className="mb-6 rounded-xl border border-blush bg-blush/70 p-3.5 text-xs text-brand">
             <div className="flex items-start space-x-2">
@@ -130,7 +130,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess }) => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="管理員電子郵件"
                 disabled={isLoading}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-[#5B3D48] focus:outline-none focus:ring-2 focus:ring-[#5B3D48]/20 disabled:bg-gray-100"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-[#5B3D48]/20 disabled:bg-gray-100"
               />
             </div>
 
@@ -151,14 +151,14 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
                 disabled={isLoading}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-[#5B3D48] focus:outline-none focus:ring-2 focus:ring-[#5B3D48]/20 disabled:bg-gray-100"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-[#5B3D48]/20 disabled:bg-gray-100"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-2 flex w-full items-center justify-center rounded-lg bg-[#5B3D48] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#48303A] focus:outline-none focus:ring-2 focus:ring-[#5B3D48] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+              className="mt-2 flex w-full items-center justify-center rounded-lg bg-brand px-4 py-3 text-sm font-semibold text-white shadow-xs transition-all hover:bg-brand-ink focus:outline-hidden focus:ring-2 focus:ring-[#5B3D48] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
             >
               {isLoading ? (
                 <div className="flex items-center space-x-2">

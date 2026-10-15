@@ -249,7 +249,7 @@ export const AdminMembers: React.FC = () => {
             type="button"
             onClick={fetchProfiles}
             disabled={isLoading}
-            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? '同步中...' : '🔄 重新載入會員'}
           </button>
@@ -263,7 +263,7 @@ export const AdminMembers: React.FC = () => {
       )}
 
       {/* 搜尋工具列 */}
-      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between shadow-xs">
+      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 items-center space-x-3">
           <div className="relative w-full max-w-sm">
             <input
@@ -271,7 +271,7 @@ export const AdminMembers: React.FC = () => {
               placeholder="搜尋會員姓名、Email 或手機..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-brand focus:outline-hidden"
             />
           </div>
         </div>
@@ -281,7 +281,7 @@ export const AdminMembers: React.FC = () => {
       </div>
 
       {/* 會員列表 */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-500">
             <thead className="border-b border-gray-200 bg-gray-50/50 text-xs text-gray-700 uppercase">
@@ -298,7 +298,7 @@ export const AdminMembers: React.FC = () => {
               {isLoading && profiles.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#5B3D48]" />
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-brand" />
                     <p className="mt-2 text-xs">載入會員名冊中...</p>
                   </td>
                 </tr>
@@ -313,7 +313,7 @@ export const AdminMembers: React.FC = () => {
                   <tr key={profile.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold">
                           {profile.name?.charAt(0)?.toUpperCase() || '?'}
                         </div>
                         <div>
@@ -371,7 +371,7 @@ export const AdminMembers: React.FC = () => {
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => handleOpenEditModal(profile)}
-                        className="rounded bg-white px-2.5 py-1.5 text-xs font-medium text-blue-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 cursor-pointer"
+                        className="rounded-sm bg-white px-2.5 py-1.5 text-xs font-medium text-blue-700 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 cursor-pointer"
                       >
                         編輯資料
                       </button>
@@ -386,7 +386,7 @@ export const AdminMembers: React.FC = () => {
 
       {/* 編輯 Modal */}
       {editingProfile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-bold text-gray-900">編輯會員資料</h3>
@@ -419,7 +419,7 @@ export const AdminMembers: React.FC = () => {
                   placeholder="請填寫會員姓名（必填）"
                   value={editingProfile.name || ''}
                   onChange={(e) => setEditingProfile({ ...editingProfile, name: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#5B3D48] focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand focus:outline-hidden"
                 />
               </div>
 
@@ -429,7 +429,7 @@ export const AdminMembers: React.FC = () => {
                   type="tel"
                   value={editingProfile.phone || ''}
                   onChange={(e) => setEditingProfile({ ...editingProfile, phone: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#5B3D48] focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand focus:outline-hidden"
                 />
               </div>
 
@@ -439,7 +439,7 @@ export const AdminMembers: React.FC = () => {
                   <label className="block text-xs font-semibold text-gray-800">
                     聯絡地址 (台灣標準格式)
                   </label>
-                  <span className="text-[10px] text-brand bg-blush px-1.5 py-0.5 rounded border border-blush">
+                  <span className="text-[10px] text-brand bg-blush px-1.5 py-0.5 rounded-sm border border-blush">
                     自動對齊 Shopify 規格
                   </span>
                 </div>
@@ -450,7 +450,7 @@ export const AdminMembers: React.FC = () => {
                     <select
                       value={adminAddrCity}
                       onChange={(e) => handleAdminCityChange(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-xs focus:border-[#5B3D48] focus:outline-none"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-xs focus:border-brand focus:outline-hidden"
                     >
                       <option value="">選擇縣市</option>
                       {getTaiwanCities().map((city) => (
@@ -467,7 +467,7 @@ export const AdminMembers: React.FC = () => {
                       value={adminAddrDistrict}
                       onChange={(e) => handleAdminDistrictChange(e.target.value)}
                       disabled={!adminAddrCity}
-                      className="w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-xs focus:border-[#5B3D48] focus:outline-none disabled:bg-gray-100 disabled:text-gray-400"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-xs focus:border-brand focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400"
                     >
                       <option value="">{adminAddrCity ? '選擇區域' : '先選縣市'}</option>
                       {getTaiwanDistricts(adminAddrCity).map((dist) => (
@@ -499,7 +499,7 @@ export const AdminMembers: React.FC = () => {
                     placeholder="例：忠孝東路四段100號5樓"
                     value={adminAddrStreet}
                     onChange={(e) => handleAdminStreetChange(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs focus:border-[#5B3D48] focus:outline-none"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs focus:border-brand focus:outline-hidden"
                   />
                 </div>
               </div>
@@ -511,7 +511,7 @@ export const AdminMembers: React.FC = () => {
                     type="date"
                     value={editingProfile.birth_date || ''}
                     onChange={(e) => setEditingProfile({ ...editingProfile, birth_date: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#5B3D48] focus:outline-none"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -519,7 +519,7 @@ export const AdminMembers: React.FC = () => {
                   <select
                     value={editingProfile.gender || ''}
                     onChange={(e) => setEditingProfile({ ...editingProfile, gender: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#5B3D48] focus:outline-none"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand focus:outline-hidden"
                   >
                     <option value="">未設定</option>
                     <option value="male">男</option>
@@ -535,7 +535,7 @@ export const AdminMembers: React.FC = () => {
                   type="text"
                   value={editingProfile.instagram || ''}
                   onChange={(e) => setEditingProfile({ ...editingProfile, instagram: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#5B3D48] focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand focus:outline-hidden"
                 />
               </div>
 
@@ -589,7 +589,7 @@ export const AdminMembers: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="rounded-lg bg-[#5B3D48] px-4 py-2 text-sm font-medium text-white hover:bg-brand disabled:opacity-50 cursor-pointer"
+                  className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand disabled:opacity-50 cursor-pointer"
                 >
                   {isUpdating ? '儲存中...' : '儲存變更'}
                 </button>

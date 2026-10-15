@@ -98,7 +98,7 @@ const SitemapPage = () => {
       <Header />
       
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-brand to-brand text-white">
+      <div className="bg-linear-to-br/srgb from-brand to-brand text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white/10 rounded-2xl mb-6">
@@ -107,7 +107,7 @@ const SitemapPage = () => {
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               網站地圖
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed px-4" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+            <p className="text-base sm:text-lg sm:leading-7 md:text-xl md:leading-7 text-white/90 max-w-2xl mx-auto leading-relaxed px-4" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               快速找到您需要的頁面和功能
             </p>
           </div>
@@ -173,7 +173,7 @@ const SitemapPage = () => {
                 {/* Section Header */}
                 <div className={`${section.bgColor} px-6 sm:px-8 py-5 sm:py-6`}>
                   <div className="flex items-center space-x-3 sm:space-x-4">
-                    <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl flex items-center justify-center shadow-sm`}>
+                    <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl flex items-center justify-center shadow-xs`}>
                       <i className={`${section.icon} ${section.color} text-xl sm:text-2xl`}></i>
                     </div>
                     <h2 className="text-lg sm:text-xl font-bold text-gray-900" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
@@ -196,11 +196,11 @@ const SitemapPage = () => {
                             <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-brand mb-1 sm:mb-2 transition-colors" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                               {link.name}
                             </h3>
-                            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                            <p className="text-xs sm:text-sm sm:leading-5 text-gray-600 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                               {link.description}
                             </p>
                           </div>
-                          <i className="ri-arrow-right-line text-gray-400 group-hover:text-brand group-hover:translate-x-1 transition-all ml-3 sm:ml-4 mt-1 text-lg sm:text-xl flex-shrink-0"></i>
+                          <i className="ri-arrow-right-line text-gray-400 group-hover:text-brand group-hover:translate-x-1 transition-all ml-3 sm:ml-4 mt-1 text-lg sm:text-xl shrink-0"></i>
                         </div>
                       </Link>
                     ))}
@@ -212,30 +212,30 @@ const SitemapPage = () => {
         )}
 
         {/* Quick Stats */}
-        <div className="mt-12 sm:mt-16 bg-gradient-to-br from-blush to-blush/50 rounded-2xl p-6 sm:p-8">
+        <div className="mt-12 sm:mt-16 bg-linear-to-br/srgb from-blush to-blush/50 rounded-2xl p-6 sm:p-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8 text-center" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
             網站統計資訊
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
-            <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-sm">
+            <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-xs">
               <div className="text-3xl sm:text-4xl font-bold text-brand mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {siteStructure.reduce((total, section) => total + section.links.length, 0)}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>總頁面數</div>
             </div>
-            <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-sm">
+            <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-xs">
               <div className="text-3xl sm:text-4xl font-bold text-brand mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {siteStructure.length}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>主要分類</div>
             </div>
-            <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-sm">
+            <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-xs">
               <div className="text-3xl sm:text-4xl font-bold text-brand mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {siteStructure.find(s => s.category === '客戶服務')?.links.length || 0}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>客服頁面</div>
             </div>
-            <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-sm">
+            <div className="text-center bg-white rounded-xl p-4 sm:p-6 shadow-xs">
               <div className="text-3xl sm:text-4xl font-bold text-brand mb-2 sm:mb-3" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 {siteStructure.find(s => s.category === '政策條款')?.links.length || 0}
               </div>
@@ -253,7 +253,7 @@ const SitemapPage = () => {
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               需要協助嗎？
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+            <p className="text-sm sm:text-base sm:leading-6 md:text-lg md:leading-7 text-gray-600 mb-6 sm:mb-8 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               如果您無法找到所需的頁面或功能，我們的專業客服團隊隨時為您提供協助
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">

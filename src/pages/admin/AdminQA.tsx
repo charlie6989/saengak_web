@@ -255,7 +255,7 @@ export const AdminQA: React.FC = () => {
             type="button"
             onClick={loadQuestions}
             disabled={isLoading}
-            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? '同步中...' : '🔄 重新載入問答'}
           </button>
@@ -278,26 +278,26 @@ export const AdminQA: React.FC = () => {
 
       {/* 統計卡片 */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+        <div className="rounded-xl border border-gray-200 bg-white p-4">
           <div className="text-xs font-medium text-gray-500">總提問數</div>
           <div className="mt-1 text-2xl font-bold text-gray-900">{stats.total}</div>
         </div>
-        <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 shadow-xs">
+        <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4">
           <div className="text-xs font-medium text-amber-700">待回覆數</div>
           <div className="mt-1 text-2xl font-bold text-amber-900">{stats.pending}</div>
         </div>
-        <div className="rounded-xl border border-blush bg-blush/50 p-4 shadow-xs">
+        <div className="rounded-xl border border-blush bg-blush/50 p-4">
           <div className="text-xs font-medium text-brand">已回覆數</div>
           <div className="mt-1 text-2xl font-bold text-brand">{stats.answered}</div>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-xs">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
           <div className="text-xs font-medium text-gray-500">已隱藏數</div>
           <div className="mt-1 text-2xl font-bold text-gray-700">{stats.hidden}</div>
         </div>
       </div>
 
       {/* 篩選頁籤與搜尋列 */}
-      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
         {/* 頁籤 */}
         <div className="flex space-x-1 border-b border-gray-100 pb-2 sm:border-0 sm:pb-0">
           <button
@@ -305,7 +305,7 @@ export const AdminQA: React.FC = () => {
             onClick={() => setActiveTab('all')}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
               activeTab === 'all'
-                ? 'bg-[#5B3D48] text-white'
+                ? 'bg-brand text-white'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
             }`}
           >
@@ -353,13 +353,13 @@ export const AdminQA: React.FC = () => {
             placeholder="搜尋提問、回答、商品 ID 或會員..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-brand focus:outline-hidden"
           />
         </div>
       </div>
 
       {/* 問答列表 Table */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-500">
             <thead className="border-b border-gray-200 bg-gray-50/50 text-xs text-gray-700 uppercase">
@@ -375,7 +375,7 @@ export const AdminQA: React.FC = () => {
               {isLoading && questions.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#5B3D48]" />
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-brand" />
                     <p className="mt-2 text-xs">載入商品問答資料中...</p>
                   </td>
                 </tr>
@@ -394,7 +394,7 @@ export const AdminQA: React.FC = () => {
                       <td className="px-6 py-4 max-w-md">
                         <div className="space-y-2">
                           <div className="flex items-start space-x-2">
-                            <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[11px] font-bold text-blue-700 flex-shrink-0 mt-0.5">
+                            <span className="rounded-sm bg-blue-50 px-1.5 py-0.5 text-[11px] font-bold text-blue-700 shrink-0 mt-0.5">
                               問
                             </span>
                             <p className="text-xs font-semibold text-gray-900 whitespace-pre-wrap leading-relaxed">
@@ -424,7 +424,7 @@ export const AdminQA: React.FC = () => {
                               )}
                             </div>
                           ) : (
-                            <div className="text-xs text-amber-700 bg-amber-50/50 px-2.5 py-1.5 rounded border border-amber-100 inline-block font-medium">
+                            <div className="text-xs text-amber-700 bg-amber-50/50 px-2.5 py-1.5 rounded-sm border border-amber-100 inline-block font-medium">
                               ⏳ 尚未回覆此提問
                             </div>
                           )}
@@ -433,7 +433,7 @@ export const AdminQA: React.FC = () => {
 
                       {/* Shopify 商品 ID */}
                       <td className="px-6 py-4">
-                        <div className="text-xs font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded border border-gray-100 inline-block">
+                        <div className="text-xs font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded-sm border border-gray-100 inline-block">
                           {q.shopify_product_id}
                         </div>
                       </td>
@@ -475,7 +475,7 @@ export const AdminQA: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleOpenReplyModal(q)}
-                            className="rounded bg-[#5B3D48] px-2.5 py-1 text-xs font-medium text-white hover:bg-[#48303A] transition-colors cursor-pointer shadow-xs"
+                            className="rounded-sm bg-brand px-2.5 py-1 text-xs font-medium text-white hover:bg-brand-ink transition-colors cursor-pointer"
                           >
                             {q.answer ? '✏️ 修改回覆' : '💬 撰寫回覆'}
                           </button>
@@ -484,7 +484,7 @@ export const AdminQA: React.FC = () => {
                             type="button"
                             onClick={() => handleToggleStatus(q)}
                             disabled={isBusy}
-                            className="rounded bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 border border-gray-200 transition-colors disabled:opacity-50 cursor-pointer"
+                            className="rounded-sm bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 border border-gray-200 transition-colors disabled:opacity-50 cursor-pointer"
                             title={q.status === 'hidden' ? '恢復為公開發布' : '隱藏此問答'}
                           >
                             {isBusy ? '處理中' : q.status === 'hidden' ? '👁️ 恢復發布' : '🔒 隱藏'}
@@ -494,7 +494,7 @@ export const AdminQA: React.FC = () => {
                             type="button"
                             onClick={() => handleDelete(q.id)}
                             disabled={isBusy}
-                            className="rounded bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-100 border border-red-200 transition-colors disabled:opacity-50 cursor-pointer"
+                            className="rounded-sm bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-100 border border-red-200 transition-colors disabled:opacity-50 cursor-pointer"
                             title="刪除此則問答"
                           >
                             🗑️ 刪除
@@ -512,7 +512,7 @@ export const AdminQA: React.FC = () => {
 
       {/* 回覆 Modal */}
       {replyingQuestion && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h3 className="text-base font-bold text-gray-900">
@@ -551,7 +551,7 @@ export const AdminQA: React.FC = () => {
                   value={replyAnswer}
                   onChange={(e) => setReplyAnswer(e.target.value)}
                   placeholder="請輸入專業、親切的客服回覆內容..."
-                  className="w-full rounded-lg border border-gray-300 p-3 text-xs focus:border-[#5B3D48] focus:outline-none resize-none leading-relaxed"
+                  className="w-full rounded-lg border border-gray-300 p-3 text-xs focus:border-brand focus:outline-hidden resize-none leading-relaxed"
                   required
                 />
               </div>
@@ -562,7 +562,7 @@ export const AdminQA: React.FC = () => {
                   id="replyIsPublicCheckbox"
                   checked={replyIsPublic}
                   onChange={(e) => setReplyIsPublic(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-[#5B3D48] focus:ring-[#5B3D48]"
+                  className="h-4 w-4 rounded-sm border-gray-300 text-brand focus:ring-[#5B3D48]"
                 />
                 <label htmlFor="replyIsPublicCheckbox" className="text-xs text-gray-700 font-medium cursor-pointer">
                   在前台商品頁公開展示此問答回覆
@@ -580,7 +580,7 @@ export const AdminQA: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmittingReply || !replyAnswer.trim()}
-                  className="rounded-lg bg-[#5B3D48] px-5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#48303A] disabled:opacity-50 cursor-pointer"
+                  className="rounded-lg bg-brand px-5 py-2 text-xs font-semibold text-white hover:bg-brand-ink disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmittingReply ? '發布中...' : '發布客服回覆'}
                 </button>

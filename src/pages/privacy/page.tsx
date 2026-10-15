@@ -21,7 +21,7 @@ export default function Privacy() {
           <p className="mt-2 text-sm leading-6">本頁已移除舊品牌與未確認聯絡資料，並依目前網站架構整理；正式營運前仍須由營運與法務確認最終文字、保存期間及正式聯絡管道。</p>
         </div>
 
-        <section className="space-y-4 rounded-2xl bg-white p-7 shadow-sm">
+        <section className="space-y-4 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">資料控管者</h2>
           <dl className="grid gap-3 text-sm sm:grid-cols-[9rem_1fr]">
             <dt className="text-gray-500">品牌</dt><dd>{siteContent.brandName}</dd>
@@ -31,7 +31,7 @@ export default function Privacy() {
           </dl>
         </section>
 
-        <section className="mt-8 space-y-5 rounded-2xl bg-white p-7 shadow-sm">
+        <section className="mt-8 space-y-5 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">目前可能處理的資料</h2>
           {dataUses.map(([title, description]) => (
             <div key={title} className="border-l-4 border-brand pl-4">
@@ -41,14 +41,14 @@ export default function Privacy() {
           ))}
         </section>
 
-        <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-sm">
+        <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">服務供應商與資料安全</h2>
           <p className="leading-7">網站目前使用或規劃使用 Vercel（網站託管）、Supabase（會員、訂單與受限發票處理資料）、Shopify（商品、購物車與結帳）、TapPay（付款）、ShipAny 與其承運商（配送、收件與追蹤），以及 Amego 光貿（電子發票、統編、載具、捐贈與通知）。各服務只依完成交易、配送、法定發票及安全維運所需範圍處理資料。</p>
           <p className="leading-7">ShipAny 及承運商可能處理收件人姓名、電話、地址或超商取件資訊；Amego 可能處理買受人名稱、統一編號、通知 Email、載具或捐贈碼。發票暫存資料位於瀏覽器不可直接讀寫的後端，完成開立或作廢後會清除工作佇列中的敏感請求內容；依法必須保存的訂單與發票紀錄則依適用法令辦理。</p>
           <p className="leading-7">會員與訂單資料已設定帳號隔離規則；但任何網路服務都無法保證絕對安全，請勿在非官方管道提供密碼、卡號或驗證碼。</p>
         </section>
 
-        <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-sm">
+        <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">查詢、更正與刪除</h2>
           <p className="leading-7">您可依適用法令請求查詢、閱覽、更正、停止利用或刪除個人資料。請來信 {siteContent.companyEmail} 提出申請；{siteContent.supportSafetyNotice}</p>
           <Link to="/customer-service" className="inline-flex rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">前往客服中心</Link>

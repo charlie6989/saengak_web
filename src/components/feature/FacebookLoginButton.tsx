@@ -76,7 +76,7 @@ export default function FacebookLoginButton({
       onClick={handleFacebookLogin}
       disabled={disabled || loading}
       aria-label="使用 Facebook 登入"
-      className="w-full h-11 flex items-center justify-center gap-3 px-4 bg-[#1877F2] hover:bg-[#166FE5] active:bg-[#1465D2] text-white font-medium text-sm rounded-lg shadow-xs transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+      className="w-full h-11 flex items-center justify-center gap-3 px-4 bg-[#1877F2] hover:bg-[#166FE5] active:bg-[#1465D2] text-white font-medium text-sm rounded-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
       style={{ fontFamily: 'Noto Sans TC, sans-serif' }}
     >
       {loading ? (

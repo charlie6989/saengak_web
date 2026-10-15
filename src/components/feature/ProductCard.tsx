@@ -153,21 +153,21 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group cursor-pointer flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-2xs border border-gray-100/80 hover:shadow-md transition-shadow" onClick={handleCardClick}>
+    <div className="group cursor-pointer flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-100/80 hover:shadow-md transition-shadow" onClick={handleCardClick}>
       {/* Product Image - Standardized square (1:1) ratio */}
       <div className="aspect-square bg-gray-50 overflow-hidden mb-3 relative flex items-center justify-center">
         <img
           src={imageSrc}
           alt={product.name}
           onError={() => setImageSrc(FALLBACK_PRODUCT_IMAGE)}
-          className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300 ${isSoldOut ? 'opacity-75 grayscale-[30%]' : ''}`}
+          className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300 ${isSoldOut ? 'opacity-75 grayscale-30' : ''}`}
         />
         {hoverSrc && (
           <img
             src={hoverSrc}
             alt={product.name}
             onError={() => setHoverSrc(FALLBACK_PRODUCT_IMAGE)}
-            className={`w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSoldOut ? 'grayscale-[30%]' : ''}`}
+            className={`w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSoldOut ? 'grayscale-30' : ''}`}
           />
         )}
 
@@ -205,7 +205,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </p>
 
             {/* Product Title - 完整展示 Saengak 品牌與品名，不以省略號截斷 */}
-            <h3 className="text-sm md:text-base font-semibold leading-snug line-clamp-2 min-h-[2.5rem]" title={displayTitle} style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
+            <h3 className="text-sm md:text-base md:leading-6 font-semibold leading-snug line-clamp-2 min-h-10" title={displayTitle} style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
               {displayTitle}
             </h3>
 
@@ -218,7 +218,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               );
               if (!displayVendor) return null;
               return (
-                <p className="text-xs sm:text-sm mb-1 text-[#5B3D48]/80 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                <p className="text-xs sm:text-sm mb-1 text-brand/80 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                   {displayVendor}
                 </p>
               );
@@ -226,7 +226,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
 
             {/* Description - 搜尋頁／列表頁須為一句話 */}
-            <p className="text-xs sm:text-sm line-clamp-1 leading-relaxed text-gray-500" title={singleSentenceDesc} style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+            <p className="text-xs sm:text-sm sm:leading-5 line-clamp-1 leading-relaxed text-gray-500" title={singleSentenceDesc} style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
               {singleSentenceDesc}
             </p>
 
@@ -261,7 +261,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             onClick={handleWishlistClick}
             aria-label={isWishlisted ? `從收藏移除 ${product.name}` : `收藏 ${product.name}`}
-            className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded transition-colors cursor-pointer flex-shrink-0"
+            className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded-sm transition-colors cursor-pointer shrink-0"
           >
             <i className={`${isWishlisted ? 'ri-heart-fill text-red-500' : 'ri-heart-line text-gray-400'} text-sm`}></i>
           </button>

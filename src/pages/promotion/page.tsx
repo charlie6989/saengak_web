@@ -222,7 +222,7 @@ export default function PromotionPage() {
           description="探索專屬折扣與限時特惠，登入會員一鍵歸戶，為您的日常生活增添優雅與美好提案。"
         >
             {user ? (
-              <div className="mt-6 inline-flex items-center gap-3 bg-white/80 backdrop-blur-xs border border-blush/80 px-4 py-2 rounded-full text-xs sm:text-sm text-brand">
+              <div className="mt-6 inline-flex items-center gap-3 bg-white/80 border border-blush/80 px-4 py-2 rounded-full text-xs sm:text-sm text-brand">
                 <i className="ri-vip-crown-fill text-amber-500 text-base"></i>
                 <span>您已歸戶 <strong>{userCoupons.length}</strong> 張優惠券</span>
                 <Link
@@ -239,7 +239,7 @@ export default function PromotionPage() {
                 <button
                   type="button"
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="font-semibold text-[#5B3D48] underline underline-offset-2 hover:text-[#48303A] cursor-pointer"
+                  className="font-semibold text-brand underline underline-offset-2 hover:text-brand-ink cursor-pointer"
                 >
                   立即登入 / 註冊
                 </button>
@@ -249,7 +249,7 @@ export default function PromotionPage() {
 
         {/* 分類過濾頁籤 */}
         <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 mb-10 pt-8">
-          <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-2">
             {categoryTabs.map((tab) => {
               const isActive = selectedCategory === tab.key;
               return (
@@ -259,7 +259,7 @@ export default function PromotionPage() {
                   onClick={() => setSelectedCategory(tab.key)}
                   className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap cursor-pointer ${
                     isActive
-                      ? 'bg-[#5B3D48] text-white shadow-md shadow-[#5B3D48]/20'
+                      ? 'bg-brand text-white shadow-md shadow-[#5B3D48]/20'
                       : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200/80'
                   }`}
                 >
@@ -275,7 +275,7 @@ export default function PromotionPage() {
         <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 mb-20">
           {loading ? (
             <div className="py-20 text-center">
-              <div className="inline-block h-10 w-10 animate-spin rounded-full border-3 border-[#5B3D48] border-t-transparent"></div>
+              <div className="inline-block h-10 w-10 animate-spin rounded-full border-3 border-brand border-t-transparent"></div>
               <p className="mt-4 text-sm text-gray-500">載入優惠活動中...</p>
             </div>
           ) : filteredPromotions.length === 0 ? (
@@ -303,7 +303,7 @@ export default function PromotionPage() {
                 return (
                   <div
                     key={promo.id}
-                    className="relative flex flex-col bg-white rounded-2xl border border-gray-200/90 shadow-sm hover:shadow-md transition-shadow overflow-hidden group"
+                    className="relative flex flex-col bg-white rounded-2xl border border-gray-200/90 shadow-xs hover:shadow-md transition-shadow overflow-hidden group"
                   >
                     {/* 上方視覺圖與徽章 */}
                     <div className="relative h-44 w-full bg-gray-100 overflow-hidden">
@@ -314,15 +314,15 @@ export default function PromotionPage() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-brand/10 text-[#5B3D48]">
+                        <div className="w-full h-full flex items-center justify-center bg-brand/10 text-brand">
                           <i className="ri-gift-line text-4xl"></i>
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                      <div className="absolute inset-0 bg-linear-to-t/srgb from-black/60 via-black/20 to-transparent"></div>
 
                       {/* 類別徽章 */}
                       {promo.badge_text && (
-                        <span className="absolute top-3 left-3 rounded-full bg-[#5B3D48] px-3 py-1 text-xs font-bold text-white shadow-xs">
+                        <span className="absolute top-3 left-3 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">
                           {promo.badge_text}
                         </span>
                       )}
@@ -330,7 +330,7 @@ export default function PromotionPage() {
                       {/* 面額大標 */}
                       <div className="absolute bottom-3 left-4 right-4 flex items-baseline justify-between text-white">
                         <div>
-                          <p className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-xs">
+                          <p className="text-2xl sm:text-3xl font-black tracking-tight">
                             {promo.discount_type === 'percentage'
                               ? `${promo.discount_value}% OFF`
                               : promo.discount_type === 'fixed_amount'
@@ -345,7 +345,7 @@ export default function PromotionPage() {
                               : '全館無門檻'}
                           </p>
                         </div>
-                        <span className="text-xs px-2.5 py-1 rounded bg-white/20 backdrop-blur-xs font-mono">
+                        <span className="text-xs px-2.5 py-1 rounded-sm bg-white/20 font-mono">
                           {promo.code}
                         </span>
                       </div>
@@ -362,12 +362,12 @@ export default function PromotionPage() {
                     <div className="p-6 flex-1 flex flex-col justify-between">
                       <div>
                         <div className="flex items-start justify-between gap-2">
-                          <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#5B3D48] transition-colors">
+                          <h3 className="text-lg font-bold text-gray-900 group-hover:text-brand transition-colors">
                             {promo.title}
                           </h3>
                         </div>
                         {promo.subtitle && (
-                          <p className="text-xs font-semibold text-[#5B3D48] mt-1">
+                          <p className="text-xs font-semibold text-brand mt-1">
                             {promo.subtitle}
                           </p>
                         )}
@@ -459,7 +459,7 @@ export default function PromotionPage() {
                           <button
                             type="button"
                             onClick={() => handleCopyCode(promo.code)}
-                            className="inline-flex items-center gap-1 text-xs font-semibold text-[#5B3D48] hover:text-[#48303A] cursor-pointer"
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:text-brand-ink cursor-pointer"
                           >
                             <i className="ri-file-copy-line"></i>
                             <span>複製代碼</span>
@@ -480,7 +480,7 @@ export default function PromotionPage() {
                               <button
                                 type="button"
                                 onClick={() => navigate('/search?query=all')}
-                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-brand hover:bg-brand-ink rounded-lg transition-colors cursor-pointer"
                               >
                                 前往逛逛
                               </button>
@@ -492,7 +492,7 @@ export default function PromotionPage() {
                                 setPendingPromoToClaim(promo);
                                 setIsAuthModalOpen(true);
                               }}
-                              className="px-4 py-2 text-xs font-bold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
+                              className="px-4 py-2 text-xs font-bold text-white bg-brand hover:bg-brand-ink rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
                             >
                               <i className="ri-download-cloud-line text-sm"></i>
                               <span>立即領券歸戶</span>
@@ -506,7 +506,7 @@ export default function PromotionPage() {
                               <button
                                 type="button"
                                 onClick={() => navigate('/search?query=all')}
-                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-brand hover:bg-brand-ink rounded-lg transition-colors cursor-pointer"
                               >
                                 前往逛逛
                               </button>
@@ -520,7 +520,7 @@ export default function PromotionPage() {
                               <button
                                 type="button"
                                 onClick={() => navigate('/search?query=all')}
-                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-brand hover:bg-brand-ink rounded-lg transition-colors cursor-pointer"
                               >
                                 前往逛逛
                               </button>
@@ -530,7 +530,7 @@ export default function PromotionPage() {
                               type="button"
                               onClick={() => handleClaim(promo)}
                               disabled={isClaimingThis}
-                              className="px-4 py-2 text-xs font-bold text-white bg-[#5B3D48] hover:bg-[#48303A] rounded-lg shadow-2xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                              className="px-4 py-2 text-xs font-bold text-white bg-brand hover:bg-brand-ink rounded-lg transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
                             >
                               {isClaimingThis ? (
                                 <>
@@ -569,7 +569,7 @@ export default function PromotionPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-gray-50/70 border border-gray-100">
-                <div className="h-14 w-14 rounded-2xl bg-[#5B3D48]/10 text-[#5B3D48] flex items-center justify-center text-2xl mb-4 font-bold">
+                <div className="h-14 w-14 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-2xl mb-4 font-bold">
                   1
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">登入領券歸戶</h3>
@@ -579,7 +579,7 @@ export default function PromotionPage() {
               </div>
 
               <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-gray-50/70 border border-gray-100">
-                <div className="h-14 w-14 rounded-2xl bg-[#5B3D48]/10 text-[#5B3D48] flex items-center justify-center text-2xl mb-4 font-bold">
+                <div className="h-14 w-14 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-2xl mb-4 font-bold">
                   2
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">挑選商品加入購物車</h3>
@@ -589,7 +589,7 @@ export default function PromotionPage() {
               </div>
 
               <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-gray-50/70 border border-gray-100">
-                <div className="h-14 w-14 rounded-2xl bg-[#5B3D48]/10 text-[#5B3D48] flex items-center justify-center text-2xl mb-4 font-bold">
+                <div className="h-14 w-14 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-2xl mb-4 font-bold">
                   3
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">結帳自動套用折抵</h3>
@@ -623,17 +623,17 @@ export default function PromotionPage() {
                   <button
                     type="button"
                     onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-gray-900 hover:text-[#5B3D48] transition-colors cursor-pointer"
+                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-gray-900 hover:text-brand transition-colors cursor-pointer"
                   >
                     <span className="text-sm sm:text-base">{faq.q}</span>
                     <i
                       className={`ri-arrow-down-s-line text-xl transition-transform ${
-                        isOpen ? 'rotate-180 text-[#5B3D48]' : 'text-gray-400'
+                        isOpen ? 'rotate-180 text-brand' : 'text-gray-400'
                       }`}
                     ></i>
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-gray-600 leading-relaxed border-t border-gray-100 bg-gray-50/50">
+                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm sm:leading-5 text-gray-600 leading-relaxed border-t border-gray-100 bg-gray-50/50">
                       {faq.a}
                     </div>
                   )}
@@ -645,7 +645,7 @@ export default function PromotionPage() {
 
         {/* 官方客服導流橫幅 */}
         <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-gradient-to-r from-[#5B3D48] to-[#5B3D48] p-8 sm:p-12 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="rounded-3xl bg-linear-to-r/srgb from-[#5B3D48] to-[#5B3D48] p-8 sm:p-12 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <span className="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold tracking-wider text-blush uppercase mb-3">
                 Customer Support

@@ -25,7 +25,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
         className="flex min-h-screen flex-col items-center justify-center bg-[#F8F5F1] px-4"
       >
         <div className="flex flex-col items-center space-y-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#5B3D48] border-t-transparent"></div>
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
           <p className="text-sm font-medium text-gray-600">正在驗證管理員安全憑證...</p>
         </div>
       </div>
@@ -44,7 +44,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
         data-testid="admin-guard-forbidden"
         className="flex min-h-screen flex-col items-center justify-center bg-[#F8F5F1] px-4 text-center"
       >
-        <div className="w-full max-w-md rounded-2xl border border-red-200 bg-white p-8 shadow-sm">
+        <div className="w-full max-w-md rounded-2xl border border-red-200 bg-white p-8 shadow-xs">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
             <svg
               className="h-8 w-8"
@@ -76,7 +76,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
           <div className="mt-6 flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0">
             <Link
               to="/"
-              className="inline-flex w-full items-center justify-center rounded-lg bg-[#5B3D48] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#48303A]"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-colors hover:bg-brand-ink"
             >
               返回商城首頁
             </Link>
@@ -85,7 +85,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
               onClick={async () => {
                 await signOut();
               }}
-              className="inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 cursor-pointer"
+              className="inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-xs transition-colors hover:bg-gray-50 cursor-pointer"
             >
               切換其他帳號
             </button>

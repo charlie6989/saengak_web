@@ -16,7 +16,7 @@ export default function TermsPage() {
         </div>
 
         <div className="space-y-7">
-          <section className="rounded-2xl bg-white p-7 shadow-sm">
+          <section className="rounded-2xl bg-white p-7 shadow-xs">
             <h2 className="text-2xl font-semibold">網站營運者</h2>
             <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-[9rem_1fr]">
               <dt className="text-gray-500">品牌</dt><dd>{siteContent.brandName}</dd>
@@ -26,7 +26,7 @@ export default function TermsPage() {
             </dl>
           </section>
 
-          <section className="rounded-2xl bg-white p-7 shadow-sm">
+          <section className="rounded-2xl bg-white p-7 shadow-xs">
             <h2 className="text-2xl font-semibold">商品與訂單</h2>
             <ul className="mt-4 list-disc space-y-3 pl-6 leading-7">
               <li>商品名稱、規格、價格、庫存與促銷，以實際商品頁及 Shopify 結帳畫面為準。</li>
@@ -36,12 +36,12 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="rounded-2xl bg-white p-7 shadow-sm">
+          <section className="rounded-2xl bg-white p-7 shadow-xs">
             <h2 className="text-2xl font-semibold">使用規範</h2>
             <p className="mt-4 leading-7">使用者不得以自動化濫用、未授權存取、冒用身分或其他違法方式干擾網站。產品資訊屬一般資訊，不取代醫師、藥師或其他專業醫療建議。</p>
           </section>
 
-          <section className="rounded-2xl bg-white p-7 shadow-sm">
+          <section className="rounded-2xl bg-white p-7 shadow-xs">
             <h2 className="text-2xl font-semibold">退換貨與個人資料</h2>
             <p className="mt-4 leading-7">消費者權益依適用法令及正式交易條款辦理。個人衛生用品是否屬合理例外，須依商品性質、密封狀態、事前告知與主管機關規範判斷，不能僅以「已拆封」一概排除。</p>
             <div className="mt-5 flex flex-wrap gap-3">

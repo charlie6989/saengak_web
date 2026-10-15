@@ -18,7 +18,7 @@ export default function OrderStatusPage() {
       <div className="min-h-screen bg-[#F8F5F1]">
         <Header />
         <main className="mx-auto max-w-4xl px-4 pb-20 pt-36">
-          <section className="rounded-2xl border border-stone-200 bg-white p-8 md:p-12 shadow-sm text-center">
+          <section className="rounded-2xl border border-stone-200 bg-white p-8 md:p-12 shadow-xs text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blush mb-6">
               <svg className="h-8 w-8 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -61,7 +61,7 @@ export default function OrderStatusPage() {
     <div className="min-h-screen bg-[#F8F5F1]">
       <Header />
       <main className="mx-auto max-w-4xl px-4 pb-20 pt-36">
-        <section className="rounded-2xl border border-stone-200 bg-white p-8 md:p-12 shadow-sm">
+        <section className="rounded-2xl border border-stone-200 bg-white p-8 md:p-12 shadow-xs">
           <h1 className="mb-4 text-3xl font-bold text-stone-900">訂單查詢</h1>
           <p className="leading-7 text-stone-600">
             登入會員即可在「我的訂單」查看付款、出貨與物流進度。

@@ -62,7 +62,7 @@ export default function WelcomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blush to-blue-50">
+    <div className="min-h-screen bg-linear-to-br/srgb from-blush to-blue-50">
       <Header />
       
       <div className="py-12 px-4 sm:px-6 lg:px-8" style={{ paddingTop: '120px' }}>
@@ -80,7 +80,7 @@ export default function WelcomePage() {
             </p>
             <p className="text-gray-500">
               讓我們花幾分鐘時間了解我們的服務
-              {useMockData && <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">假數據模式</span>}
+              {useMockData && <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-sm">假數據模式</span>}
             </p>
           </div>
 
@@ -114,7 +114,7 @@ export default function WelcomePage() {
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
             {currentStep === 1 && (
               <div className="text-center">
-                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 mx-auto mb-6 bg-linear-to-br/srgb from-pink-100 to-purple-100 rounded-full flex items-center justify-center">
                   <i className="ri-heart-3-line text-4xl text-pink-500"></i>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -151,7 +151,7 @@ export default function WelcomePage() {
 
             {currentStep === 2 && (
               <div className="text-center">
-                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-100 to-blush rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 mx-auto mb-6 bg-linear-to-br/srgb from-green-100 to-blush rounded-full flex items-center justify-center">
                   <i className="ri-shopping-bag-3-line text-4xl text-green-500"></i>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -191,7 +191,7 @@ export default function WelcomePage() {
 
             {currentStep === 3 && (
               <div className="text-center">
-                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 mx-auto mb-6 bg-linear-to-br/srgb from-yellow-100 to-orange-100 rounded-full flex items-center justify-center">
                   <i className="ri-gift-line text-4xl text-orange-500"></i>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -201,7 +201,7 @@ export default function WelcomePage() {
                   目前未公告新會員折扣或免運門檻；正式活動只會顯示已核准的條件、期間與適用範圍。
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                  <div className="bg-gradient-to-r from-blush to-blue-50 rounded-lg p-6 text-center border border-blush">
+                  <div className="bg-linear-to-r/srgb from-blush to-blue-50 rounded-lg p-6 text-center border border-blush">
                     <div className="w-16 h-16 mx-auto mb-4 bg-blush rounded-full flex items-center justify-center">
                       <i className="ri-percent-line text-2xl text-brand"></i>
                     </div>
@@ -209,7 +209,7 @@ export default function WelcomePage() {
                     <p className="text-brand font-semibold text-xl mb-2">以結帳頁為準</p>
                     <p className="text-sm text-gray-600">未公告的折扣不會預先套用</p>
                   </div>
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 text-center border border-purple-100">
+                  <div className="bg-linear-to-r/srgb from-purple-50 to-pink-50 rounded-lg p-6 text-center border border-purple-100">
                     <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
                       <i className="ri-truck-line text-2xl text-purple-600"></i>
                     </div>

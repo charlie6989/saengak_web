@@ -20,7 +20,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-包含 Vercel API 的本機流程使用 `npm run dev:vercel`；先確認對應專案與環境設定。
+包含 Vercel API 的本機流程使用 `npm run dev:vercel`（透過 `npx` 執行 Vercel CLI 64.x，不安裝在專案依賴中）；先確認對應專案與環境設定。
 
 ## 驗證
 

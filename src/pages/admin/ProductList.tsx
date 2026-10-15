@@ -68,7 +68,7 @@ export const ProductList: React.FC = () => {
             type="button"
             onClick={fetchProducts}
             disabled={isLoading}
-            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 shadow-xs hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? '同步中...' : '🔄 重新載入商品'}
           </button>
@@ -90,7 +90,7 @@ export const ProductList: React.FC = () => {
       </div>
 
       {/* 搜尋與過濾條件工具列 */}
-      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between shadow-xs">
+      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 items-center space-x-3">
           <div className="relative w-full max-w-sm">
             <input
@@ -98,13 +98,13 @@ export const ProductList: React.FC = () => {
               placeholder="搜尋品名、Handle 或 SKU..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-[#5B3D48] focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3.5 py-2 text-xs focus:border-brand focus:outline-hidden"
             />
           </div>
           <select
             value={selectedTag}
             onChange={(e) => setSelectedTag(e.target.value)}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-700 focus:border-[#5B3D48] focus:outline-none"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-700 focus:border-brand focus:outline-hidden"
           >
             <option value="ALL">全部標籤 ({products.length})</option>
             {allTags.map((tag) => (
@@ -127,10 +127,10 @@ export const ProductList: React.FC = () => {
       )}
 
       {/* 商品列表表格 */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         {isLoading ? (
           <div className="p-12 text-center text-sm text-gray-500">
-            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#5B3D48] border-t-transparent"></div>
+            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent"></div>
             <p className="mt-2">正在查詢 Shopify Storefront 即時商品清單...</p>
           </div>
         ) : filteredProducts.length === 0 ? (
@@ -208,7 +208,7 @@ export const ProductList: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="rounded bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-700">
+                      <span className="rounded-sm bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-700">
                         {product.variants.length} 款規格
                       </span>
                     </td>
@@ -217,7 +217,7 @@ export const ProductList: React.FC = () => {
                         {product.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
-                            className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600"
+                            className="rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600"
                           >
                             {tag}
                           </span>
@@ -233,7 +233,7 @@ export const ProductList: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setSelectedProduct(product)}
-                        className="rounded border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#5B3D48] cursor-pointer"
+                        className="rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-brand cursor-pointer"
                       >
                         檢視規格
                       </button>
@@ -248,7 +248,7 @@ export const ProductList: React.FC = () => {
 
       {/* 規格詳情彈窗 */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
               <div>
@@ -256,7 +256,7 @@ export const ProductList: React.FC = () => {
                 <div className="flex items-center space-x-3 mt-1 text-xs text-gray-500">
                   <span>Handle: <code className="font-mono text-gray-700">{selectedProduct.handle}</code></span>
                   {typeof selectedProduct.totalInventory === 'number' && (
-                    <span className="rounded bg-blush px-2 py-0.5 font-semibold text-brand border border-blush">
+                    <span className="rounded-sm bg-blush px-2 py-0.5 font-semibold text-brand border border-blush">
                       全品項總庫存: {selectedProduct.totalInventory} 件
                     </span>
                   )}

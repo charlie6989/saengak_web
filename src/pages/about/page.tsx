@@ -4,9 +4,9 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { siteContent } from '../../content/site';
 
-const textLink = 'inline-flex min-h-11 items-center gap-3 text-sm font-medium text-[#5B3D48] underline decoration-[#5B3D48]/30 underline-offset-8 transition-colors hover:decoration-[#5B3D48] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#5B3D48]';
+const textLink = 'inline-flex min-h-11 items-center gap-3 text-sm font-medium text-brand underline decoration-brand/30 underline-offset-8 transition-colors hover:decoration-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand';
 const eyebrow = 'text-xs font-medium tracking-[0.18em] text-[#78616A]';
-const heading = 'text-3xl font-medium leading-snug text-[#5B3D48] md:text-4xl';
+const heading = 'text-3xl font-medium leading-snug text-brand md:text-4xl md:leading-10';
 
 const selectionPrinciples = [
   {
@@ -28,7 +28,7 @@ const selectionPrinciples = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#F8F5F1] font-sans text-[#655859]">
+    <div className="min-h-screen bg-[#F8F5F1] font-sans text-gray-500">
       <Header />
       <main className="pt-24">
         <EditorialHero
@@ -70,7 +70,7 @@ export default function AboutPage() {
                 <img
                   src="/images/lucissi-v5/about-saengak-portrait.webp"
                   alt="擺放於淺色層架上的私密清潔、噴霧與濕巾選品"
-                  className="aspect-[4/5] w-full object-cover"
+                  className="aspect-4/5 w-full object-cover"
                   width={768}
                   height={960}
                   loading="lazy"
@@ -80,13 +80,13 @@ export default function AboutPage() {
               <div className="divide-y divide-[#D9CAC9]">
                 <article className="pb-9 md:pb-10">
                   <p className={eyebrow}>01 / INTIMATE CARE</p>
-                  <h3 className="mt-4 text-2xl font-medium text-[#5B3D48]">私密護理</h3>
+                  <h3 className="mt-4 text-2xl font-medium text-brand">私密護理</h3>
                   <p className="mt-4 text-base leading-8">精選清潔、保濕與舒緩護理，從不同的使用需求出發，為每天的私密日常，多一點舒適與自在。</p>
                   <Link to="/search?category=私密護理" className={`${textLink} mt-5`}>探索私密護理 <span aria-hidden="true">↗</span></Link>
                 </article>
                 <article className="pt-9 md:pt-10">
                   <p className={eyebrow}>02 / EVERYDAY WEAR</p>
-                  <h3 className="mt-4 text-2xl font-medium text-[#5B3D48]">貼身穿著</h3>
+                  <h3 className="mt-4 text-2xl font-medium text-brand">貼身穿著</h3>
                   <p className="mt-4 text-base leading-8">每天貼近肌膚的穿著，也是私密日常的一部分。從材質的觸感、剪裁到穿著情境，陪妳找到自在的貼身選擇。</p>
                   <Link to="/search?category=貼身穿著" className={`${textLink} mt-5`}>探索貼身穿著 <span aria-hidden="true">↗</span></Link>
                 </article>
@@ -105,8 +105,8 @@ export default function AboutPage() {
                   <div key={principle.number} className="flex gap-5 py-6 first:pt-0 last:pb-0">
                     <span aria-hidden="true" className="pt-1 text-xs tracking-widest text-[#78616A]">{principle.number}</span>
                     <div>
-                      <h3 className="text-lg font-medium text-[#5B3D48]">{principle.title}</h3>
-                      <p className="mt-2 text-sm leading-7 md:text-base">{principle.description}</p>
+                      <h3 className="text-lg font-medium text-brand">{principle.title}</h3>
+                      <p className="mt-2 text-sm leading-7 md:text-base md:leading-6">{principle.description}</p>
                     </div>
                   </div>
                 ))}
@@ -115,7 +115,7 @@ export default function AboutPage() {
             <img
               src="/images/lucissi-v5/about-daily-portrait.webp"
               alt="出門前，將日常護理噴霧放入肩背包的女性"
-              className="aspect-[3/4] w-full object-cover"
+              className="aspect-3/4 w-full object-cover"
               width={768}
               height={1024}
               loading="lazy"
@@ -128,7 +128,7 @@ export default function AboutPage() {
             <img
               src="/images/lucissi-v5/about-balance-portrait.webp"
               alt="穿著柔粉色上衣的女性，在窗邊安靜休息"
-              className="aspect-[4/5] w-full object-cover"
+              className="aspect-4/5 w-full object-cover"
               width={768}
               height={960}
               loading="lazy"
@@ -145,12 +145,12 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section aria-labelledby="shop-title" className="bg-[#5B3D48] px-6 py-16 text-center text-white md:py-20">
+        <section aria-labelledby="shop-title" className="bg-brand px-6 py-16 text-center text-white md:py-20">
           <div className="mx-auto max-w-2xl">
-            <p className="text-xs tracking-[0.18em] text-[#E7D6D4]">A LITTLE CARE, EVERY DAY</p>
-            <h2 id="shop-title" className="mt-5 text-3xl font-medium leading-snug text-white md:text-4xl">從今天，多留一點照顧給自己。</h2>
-            <p className="mt-5 text-base leading-8 text-[#E7D6D4]">從一件貼近日常的選品開始，找到屬於妳的舒適步調。</p>
-            <Link to="/search" className="mt-8 inline-flex min-h-12 items-center justify-center gap-6 bg-[#F8F5F1] px-8 py-3 text-sm font-medium text-[#5B3D48] transition-colors hover:bg-[#E7D6D4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            <p className="text-xs tracking-[0.18em] text-blush">A LITTLE CARE, EVERY DAY</p>
+            <h2 id="shop-title" className="mt-5 text-3xl font-medium leading-snug text-white md:text-4xl md:leading-10">從今天，多留一點照顧給自己。</h2>
+            <p className="mt-5 text-base leading-8 text-blush">從一件貼近日常的選品開始，找到屬於妳的舒適步調。</p>
+            <Link to="/search" className="mt-8 inline-flex min-h-12 items-center justify-center gap-6 bg-[#F8F5F1] px-8 py-3 text-sm font-medium text-brand transition-colors hover:bg-blush focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
               開始選購 <span aria-hidden="true">→</span>
             </Link>
           </div>
@@ -158,12 +158,12 @@ export default function AboutPage() {
 
         <section aria-labelledby="business-title" className="px-6 py-12 md:px-10 md:py-14">
           <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-[1fr_3fr] md:gap-12">
-            <h2 id="business-title" className="text-base font-medium text-[#5B3D48]">營運與聯絡資訊</h2>
+            <h2 id="business-title" className="text-base font-medium text-brand">營運與聯絡資訊</h2>
             <dl className="grid gap-6 text-sm leading-6 sm:grid-cols-2">
               <div><dt className="text-xs text-[#78616A]">營運公司</dt><dd className="mt-1">{siteContent.legalName}</dd></div>
               <div><dt className="text-xs text-[#78616A]">統一編號</dt><dd className="mt-1">{siteContent.taxId}</dd></div>
               <div><dt className="text-xs text-[#78616A]">登記地址</dt><dd className="mt-1">{siteContent.registeredAddress}</dd></div>
-              <div><dt className="text-xs text-[#78616A]">公司信箱</dt><dd className="mt-1"><a href={`mailto:${siteContent.companyEmail}`} className="break-all underline underline-offset-4 hover:text-[#5B3D48]">{siteContent.companyEmail}</a></dd></div>
+              <div><dt className="text-xs text-[#78616A]">公司信箱</dt><dd className="mt-1"><a href={`mailto:${siteContent.companyEmail}`} className="break-all underline underline-offset-4 hover:text-brand">{siteContent.companyEmail}</a></dd></div>
             </dl>
           </div>
         </section>

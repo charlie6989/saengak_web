@@ -546,13 +546,13 @@ export default function Search() {
           />
         </div>
 
-        <div className="pointer-events-none absolute inset-0 flex items-center bg-gradient-to-r from-black/55 via-black/25 to-transparent">
+        <div className="pointer-events-none absolute inset-0 flex items-center bg-linear-to-r/srgb from-black/55 via-black/25 to-transparent">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
             <div className="max-w-full sm:max-w-[70%] lg:max-w-[60%]">
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white drop-shadow-lg mb-2 sm:mb-3">
                 {getPageTitle()}
               </h1>
-              <p className="text-sm sm:text-base md:text-lg text-white/90 drop-shadow">
+              <p className="text-sm sm:text-base md:text-lg text-white/90 drop-shadow-sm">
                 {getPageDescription()}
               </p>
             </div>

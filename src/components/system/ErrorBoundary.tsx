@@ -83,7 +83,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       // 預設全域 Fallback UI
       return (
         <div className="min-h-[400px] flex items-center justify-center p-6 bg-stone-50">
-          <div className="max-w-md w-full bg-white rounded-2xl p-8 shadow-sm border border-stone-200 text-center">
+          <div className="max-w-md w-full bg-white rounded-2xl p-8 shadow-xs border border-stone-200 text-center">
             <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-amber-200">
               <svg
                 className="w-7 h-7"

@@ -113,9 +113,9 @@ export default function Home() {
               <div className="flex flex-col justify-center">
                 <div className="space-y-8">
                   {/* 專業文章 */}
-                  <div className="bg-white p-8 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
+                  <div className="bg-white p-8 shadow-xs border border-gray-100 transition-all duration-300 hover:shadow-md">
                     <div className="flex items-start space-x-6">
-                      <div className="w-16 h-16 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--color-sage)', borderRadius: '12px' }}>
+                      <div className="w-16 h-16 flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--color-sage)', borderRadius: '12px' }}>
                         <i className="ri-article-line text-2xl" style={{ color: '#5B3D48' }}></i>
                       </div>
                       <div className="flex-1">
@@ -134,7 +134,7 @@ export default function Home() {
                   <div className="flex flex-col sm:flex-row gap-4 pt-6">
                     <a
                       href="/community"
-                      className="inline-flex items-center justify-center px-8 py-4 font-semibold text-lg transition-all duration-300 cursor-pointer whitespace-nowrap hover:transform hover:scale-105 shadow-sm"
+                      className="inline-flex items-center justify-center px-8 py-4 font-semibold text-lg transition-all duration-300 cursor-pointer whitespace-nowrap hover:transform hover:scale-105 shadow-xs"
                       style={{
                         fontFamily: "Noto Sans TC, sans-serif",
                         backgroundColor: '#5B3D48',
@@ -157,9 +157,9 @@ export default function Home() {
                     alt="LUCISSI Talk 私密對話"
                     className="w-full h-full origin-top scale-[1.15] object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                  <div className="absolute inset-0 bg-linear-to-t/srgb from-black/20 via-transparent to-transparent"></div>
                   <div className="absolute bottom-8 left-8 right-8">
-                    <div className="bg-white/90 backdrop-blur-sm p-6" style={{ borderRadius: '12px' }}>
+                    <div className="bg-white/90 backdrop-blur-xs p-6" style={{ borderRadius: '12px' }}>
                       <h5 className="text-xl font-bold text-gray-900 mb-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                         真實分享，溫暖陪伴
                       </h5>
@@ -185,14 +185,14 @@ export default function Home() {
                 ) : articles.map((article: any) => (
                     <div
                       key={article.id}
-                      className="bg-white shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:transform hover:scale-105 cursor-pointer flex flex-col h-full"
+                      className="bg-white shadow-xs border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:transform hover:scale-105 cursor-pointer flex flex-col h-full"
                       style={{ borderRadius: '16px' }}
                       onClick={() => {
                         const target = article.handle || article.id;
                         navigate(`/blog/${target}`);
                       }}
                     >
-                      <div className="aspect-[4/3] overflow-hidden">
+                      <div className="aspect-4/3 overflow-hidden">
                         <img
                           src={article.image?.url || '/images/lucissi-v5/thumb-standards.webp'}
                           alt={article.image?.altText || article.title}

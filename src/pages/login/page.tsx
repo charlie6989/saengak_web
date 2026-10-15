@@ -165,7 +165,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={fillDemoAccount}
-                    className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 cursor-pointer"
+                    className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-sm hover:bg-blue-200 cursor-pointer"
                   >
                     填入示範帳號
                   </button>
@@ -211,7 +211,7 @@ export default function LoginPage() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="電子郵件"
                 />
               </div>
@@ -225,7 +225,7 @@ export default function LoginPage() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="密碼"
                 />
               </div>
@@ -250,7 +250,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || (!useMockData && !isAuthCaptchaReady(captchaToken))}
-                  className="w-full py-3 bg-brand text-white rounded-md font-medium hover:bg-brand focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
+                  className="w-full py-3 bg-brand text-white rounded-md font-medium hover:bg-brand focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap transition-colors"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center space-x-2">

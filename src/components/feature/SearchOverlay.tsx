@@ -84,7 +84,7 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[100] bg-black/50"
+            className="fixed inset-0 z-100 bg-black/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -92,7 +92,7 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
           />
           {/* Panel */}
           <motion.div
-            className="fixed inset-0 z-[101] flex items-start md:items-center justify-center p-4 md:p-6"
+            className="fixed inset-0 z-101 flex items-start md:items-center justify-center p-4 md:p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -123,7 +123,7 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="搜尋商品、文章、關鍵字…"
                   aria-label="搜尋商品、文章、關鍵字"
-                  className="flex-1 outline-none text-base md:text-lg placeholder-gray-400"
+                  className="flex-1 outline-hidden text-base md:text-lg placeholder-gray-400"
                 />
                 <button
                   type="button"
