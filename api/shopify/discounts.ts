@@ -1,6 +1,7 @@
 import { jsonResponse, isOriginAllowed } from '../_lib/security.js';
 import { SHOPIFY_STORE_DOMAIN, SHOPIFY_ADMIN_API_VERSION } from '../_lib/shopify-config.js';
 import { getSiteSetting } from '../_lib/supabase-admin.js';
+import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../src/domain/shipping.js';
 
 interface ShopifyDiscountNode {
   id: string;
@@ -536,8 +537,8 @@ export async function GET(request: Request): Promise<Response> {
       getSiteSetting<number>('default_shipping_fee'),
     ]);
     const siteSettings = {
-      freeShippingThreshold: typeof freeShippingThresholdSetting === 'number' ? freeShippingThresholdSetting : 1500,
-      defaultShippingFee: typeof defaultShippingFeeSetting === 'number' ? defaultShippingFeeSetting : 80,
+      freeShippingThreshold: typeof freeShippingThresholdSetting === 'number' ? freeShippingThresholdSetting : DEFAULT_FREE_SHIPPING_THRESHOLD,
+      defaultShippingFee: typeof defaultShippingFeeSetting === 'number' ? defaultShippingFeeSetting : DEFAULT_SHIPPING_FEE,
     };
 
     return jsonResponse(

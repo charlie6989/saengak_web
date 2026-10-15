@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { formatTwd, getCartLineKey } from '../../domain/algorithms';
+import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
 import { 
   defaultInvoicePreference, 
   type InvoicePreference, 
@@ -41,7 +42,7 @@ export default function CartSidebar() {
   const [isCouponSectionOpen, setIsCouponSectionOpen] = useState(false);
   const [selectedCouponCode, setSelectedCouponCode] = useState<string>('');
   const [manualCouponInput, setManualCouponInput] = useState<string>('');
-  const [shippingSettings, setShippingSettings] = useState({ freeShippingThreshold: 1500, defaultShippingFee: 80 });
+  const [shippingSettings, setShippingSettings] = useState({ freeShippingThreshold: DEFAULT_FREE_SHIPPING_THRESHOLD, defaultShippingFee: DEFAULT_SHIPPING_FEE });
   const { user, isLoading: isAuthLoading } = useAuth();
 
   const { 
