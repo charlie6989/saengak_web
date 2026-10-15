@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../domain/shipping';
 import type { Promotion, UserCoupon, ClaimCouponResult } from '../types/promotions';
 
 // 預設促銷活動（僅在 Shopify API 與 Supabase 皆無法讀取時使用之最後備援；
@@ -43,13 +44,13 @@ export const DEFAULT_PROMOTIONS: Promotion[] = [
   {
     id: 'promo-free-ship',
     code: 'FREESHIP',
-    title: '初夏免運專案',
+    title: '滿額免運',
     subtitle: '超商與宅配滿額免運費',
     description: '消費滿 NT$ 1,499 即可享免運費優惠，結帳時直接折抵運費。',
     category: 'shipping',
     discount_type: 'free_shipping',
     discount_value: 0,
-    min_spend: 1499,
+    min_spend: DEFAULT_FREE_SHIPPING_THRESHOLD,
     starts_at: '2026-01-01T00:00:00Z',
     badge_text: '全館免運',
     image_url: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&q=80&w=800',
@@ -377,7 +378,7 @@ export function calculateDiscountAmount(
  * 讀取失敗時退回與後端相同的預設值，避免前後端門檻顯示不同步。
  */
 export async function fetchShippingSettings(): Promise<{ freeShippingThreshold: number; defaultShippingFee: number }> {
-  const FALLBACK = { freeShippingThreshold: 1500, defaultShippingFee: 80 };
+  const FALLBACK = { freeShippingThreshold: DEFAULT_FREE_SHIPPING_THRESHOLD, defaultShippingFee: DEFAULT_SHIPPING_FEE };
   try {
     const res = await fetch('/api/shopify/discounts', {
       method: 'GET',
