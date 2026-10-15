@@ -2,6 +2,14 @@
 
 更新日期：2026-10-16（Asia/Taipei）。最新工作依序為 Tailwind CSS 4 遷移與完整依賴稽核（PR #32）、免運門檻統一（PR #35，已合併）、UX 審視修正（PR #30，已合併）與 CI 修復（PR #31，已合併）；其下保留 2026-10-15 的 Git 同步紀錄。
 
+## 訪客結帳設計（2026-10-16，分支 `claude/guest-checkout-plan`）
+
+只新增設計文件 `docs/GUEST_CHECKOUT_PLAN.md`，未修改程式碼或 migration，也未查詢或變更任何正式服務。
+
+- 阻塞點已確認：`sync_shopify_order_webhook` 找不到會員 link 就回 `unlinked` 並提早結束（不寫 orders、不建立發票工作）；`orders.user_id`、`shopify_checkout_links.user_id` 為 `not null`；upsert 條件 `excluded.user_id = orders.user_id` 對 null 不成立；webhook 解析器不讀訂單 Email。
+- 方案重點：link 與 orders 加 `checkout_kind`、`user_id` 可為 null；訪客 Email 存 `private.guest_order_contacts`；訪客購物車需 Turnstile、不得帶折扣碼、以 `site_settings.guest_checkout_enabled` 控制上線；認領只比對**已驗證**的 Email；查詢 API 只回傳限縮欄位並限速。
+- 未實作原因：需重建正式訂單同步 RPC、新增免登入 API，且依賴尚未查證的正式設定（Supabase Email 確認、Shopify 顧客聯絡方式、實際 webhook 端點）。見設計文件 §8、§10。
+
 ## Tailwind CSS 4 遷移與完整稽核（2026-10-16，分支 `claude/tailwind4-full-audit`）
 
 接續 CI 修復分支，移除剩餘 25 項開發依賴稽核問題，CI 恢復為單一 `npm audit --audit-level=moderate`。合併含 PR #30 的 `main` 時，以同一流程（先移除 v3 無效 class、再跑升級工具、再套用修正）重新遷移 `main` 版本的 `src/`，而非手動合併 class 字串；對 `main` 未改動的檔案，該流程輸出與本分支先前結果一致。
