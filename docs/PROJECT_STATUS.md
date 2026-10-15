@@ -1,6 +1,37 @@
 # 項目狀態
 
-更新日期：2026-10-15（Asia/Taipei）。最新一項工作為修復 GitHub Actions CI；其下保留同日較早的 Git 同步紀錄。
+更新日期：2026-10-16（Asia/Taipei）。最新一項工作為 Tailwind CSS 4 遷移並恢復完整依賴稽核；其下保留 2026-10-15 的 CI 修復與 Git 同步紀錄。
+
+## Tailwind CSS 4 遷移與完整稽核（2026-10-16，分支 `claude/tailwind4-full-audit`）
+
+接續 CI 修復分支，移除剩餘 25 項開發依賴稽核問題，CI 恢復為單一 `npm audit --audit-level=moderate`。
+
+1. **Tailwind CSS 3.4 → 4.3**：以官方 `@tailwindcss/upgrade` 轉換後人工修正。`tailwind.config.ts` 併入 `src/index.css` 的 `@theme`；PostCSS 改用 `@tailwindcss/postcss`，移除 `autoprefixer`。
+   - 升級工具誤改的非 class 值已還原：Google 按鈕 `theme: 'outline'`、`Button` 的 `variant: 'outline'`。
+   - 為維持 v3 畫面而加入的相容設定（皆在 `src/index.css`，含註解）：預設邊框色、placeholder 色、按鈕 pointer、表單欄位底色；v3 預設色票（使用到的色系）與 rem 行高；`space-x/y` 的 v3 選擇器；網站自訂樣式放到 `@layer utilities` 末端以保留 v3 cascade；漸層加 `/srgb` 保持 v3 的 sRGB 插值。
+   - 刪除 `index.css` 中與 Tailwind 主題重複的 `.bg-brand`、`.bg-brand-ink`、`.text-brand`、`.border-brand`（升級工具把 `text-[#5B3D48]` 等改成 `text-brand`，重複定義會蓋過 `border-t-transparent` 等設定）。
+   - 移除在 v3 中不存在、v4 才會生效的 class（`shadow-xs`／`shadow-2xs`、`backdrop-blur-xs`、`drop-shadow-xs`、`scrollbar-none`），以免新增原本沒有的陰影、模糊或隱藏捲軸；`.shadow-xs`（v3 的 `shadow-sm`）加入扁平設計的去陰影清單。
+   - 26 組「基礎 `leading-*` 搭配響應式 `md:text-*`」補上 v3 等效的 `md:leading-*`（v4 中 `leading-*` 會優先於 `text-*` 的行高）。
+   - 保留 promotion 頁 spinner 的 `border-3`：v3 下此 class 無效、spinner 沒有邊框而不可見，v4 讓它顯示；這是唯一刻意的畫面變更。
+2. **Vercel CLI**：最新 64.2.0 仍經 `@vercel/*` → ts-morph → fast-glob → micromatch 帶入 `braces`（無修補版本），因此不升級而是移除 devDependency；`dev:vercel` 改為 `npx --yes vercel@64 dev`。原本只為 Vercel CLI 依賴樹存在的 `overrides` 全部移除，lock 中其他套件版本未變。
+
+### 本次本機驗證
+
+Node.js v26.3.1、npm 11.16.0；另以 `npx npm@10.9.4` 模擬 CI 的 npm 10。
+
+| 檢查 | 結果 |
+| --- | --- |
+| 乾淨目錄 `npx npm@10.9.4 ci --ignore-scripts`（lock 未被改寫）與 `npm ci`（npm 11） | 通過 |
+| `npm audit --audit-level=moderate`（npm 11 與 npm 10） | 0 項 |
+| `npm run typecheck` | 通過 |
+| `npx tsc -p tsconfig.app.json --noEmit` | 27 項錯誤，與遷移前逐項相同（既有問題，見待處理 3） |
+| `npm test -- --run` | 40 個檔案、356 個測試全部通過 |
+| `npm run build` | 通過；仍有主 chunk 超過 500 kB 的警告 |
+| `npm run verify:content` | 通過，檢查 158 個檔案 |
+| `npm run verify:supabase` | 靜態基線通過 |
+| 畫面比對：遷移前（v3）與遷移後（v4）dev server，本機 Chrome headless，1440×900 與 375×812；首頁、商品頁、商品列表、搜尋、購物車側欄、登入、註冊、會員（未登入）、優惠活動 | 18 組整頁截圖逐像素比對皆 0 差異；逐元素 computed style 僅剩等效表示差異（漸層顯式 stop 位置、透明 ring 層） |
+
+未比對：已登入會員頁、管理後台、hover／focus 等互動狀態。GitHub Actions 在 Node 22 上的結果以 PR 的 CI 執行為準。
 
 ## CI 修復（2026-10-15，分支 `claude/fix-ci-validate`）
 
@@ -60,7 +91,7 @@ GitHub Actions 在 Node 22 上的結果以 PR 的 CI 執行為準。
 ## 已知待處理
 
 1. ~~`tests/invoice-guangmao-api.test.ts` 的 7 個案例失敗~~：已於 CI 修復分支補上假憑證 fixture。
-2. 依賴稽核剩餘 25 項開發依賴問題（`braces` 無修補版本、Tailwind CSS 3、Vercel CLI 相關）；需 Tailwind CSS 4 遷移與 Vercel CLI 主版本更新後，將 CI 稽核恢復為完整 `npm audit --audit-level=moderate`。
+2. ~~依賴稽核剩餘 25 項開發依賴問題~~：已由 Tailwind CSS 4 遷移與移除 Vercel CLI devDependency 解決，CI 恢復完整 `npm audit --audit-level=moderate`。
 3. 現有 typecheck script 應評估是否完整檢查 referenced projects。
 4. 主 bundle 大於 500 kB；後續可評估拆分，不影響本次成功建置。
 5. `src/content/site.ts` 仍記載正式客服電話、電子郵件與官方 LINE 尚待營運確認，應由營運核實。
