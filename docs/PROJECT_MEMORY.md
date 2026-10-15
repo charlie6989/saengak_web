@@ -36,6 +36,12 @@
 - 2026-10-15 比對結果：Made in Korea 有依據；Dermatest 僅見於原廠說明書（濕巾 Excellent、泡沫潔淨露 confirmed）；純素證書效期至 2026-03-19；凝膠與慕斯在 Shopify 的成分及慕斯 pH 與原廠不符；無專利文件。
 - 列表與推薦一律有貨優先；商品頁預設第一個有貨規格。
 
+## 營運決策（2026-10-16）
+
+- 全站免運門檻為 NT$1,499。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
+- 客服暫時只用 Email（`Company@lucissi.com`）。
+- 訪客結帳已決定開放，但未登入訂單目前無法對應發票，需先完成資料與發票設計再改介面。
+
 ## 素材製作記憶
 
 - `creative/` 保存提示詞、manifest、provenance 與改版說明；現在納入 Git。

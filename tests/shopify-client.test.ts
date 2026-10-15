@@ -282,7 +282,8 @@ describe('Shopify Storefront SDK Client', () => {
     });
   });
 
-  describe('Live Shopify Storefront API Integration', () => {
+  // 這組測試會連線到正式 Shopify Storefront API；CI 網路延遲偶爾超過預設 5 秒，因此放寬逾時。
+  describe('Live Shopify Storefront API Integration', { timeout: 20_000 }, () => {
     it('getShopifyProducts should query store products successfully', async () => {
       const products = await getShopifyProducts({ first: 5 });
 
