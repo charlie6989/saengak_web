@@ -1,6 +1,37 @@
 # 項目狀態
 
-更新日期：2026-10-16（Asia/Taipei）。最新工作依序為 UX 審視修正（PR #30）與 CI 修復（PR #31，已合併）；其下保留同日較早的 Git 同步紀錄。
+更新日期：2026-10-16（Asia/Taipei）。最新工作為免運門檻統一（PR #35）；其下依序為 UX 審視修正（PR #30）、CI 修復（PR #31，皆已合併）與同日較早的 Git 同步紀錄。
+
+## 2026-10-16 免運門檻統一為 NT$1,499（分支 `claude/guest-checkout-free-ship`，PR #35）
+
+營運決定全站免運門檻為 NT$1,499、客服先只用 Email、訪客結帳開放（實作待發票設計）。
+
+### 程式碼設定
+
+- 新增 `src/domain/shipping.ts`：`DEFAULT_FREE_SHIPPING_THRESHOLD = 1499`、`DEFAULT_SHIPPING_FEE = 80`；`CartSidebar`、`src/lib/promotions.ts`（FREESHIP 後備改名「滿額免運」）、`api/shopify/discounts.ts`、後台 `SiteSettings` 共用此常數。
+- 新增 migration `supabase/migrations/20261016000001_unify_free_shipping_threshold.sql`：把 `site_settings.free_shipping_threshold` 由舊初始值 1500 改為 1499，並把 `promotions` 的 FREESHIP 標題由「初夏免運專案」改為「滿額免運」。API 優先採用資料庫值，所以只改程式碼預設值不會改變顧客看到的門檻。
+
+### 正式服務狀態（2026-10-16 查詢）
+
+| 項目 | 狀態 |
+| --- | --- |
+| Supabase `tmqzkagkrzhioftvwbqo` 的 `free_shipping_threshold` | 已是 1499（10/15 由後台設定，非本 migration） |
+| Supabase FREESHIP 促銷標題 | 仍為「初夏免運專案 - 滿額免運費」，本 migration 尚未套用到正式資料庫 |
+| Shopify 運費規則 | 已顯示「滿 $1499.00 免費」；但 Shopify 運費為 $146，與網站 `default_shipping_fee` 80 不一致，待確認 |
+
+### 本次驗證
+
+| 檢查 | 結果 |
+| --- | --- |
+| `npm test -- --run` | 367 測試全部通過（含新增 `src/domain/shipping.test.ts`） |
+| `npm run verify:supabase` | 靜態基線通過（未對資料庫執行 migration） |
+| `node scripts/verify-public-content.mjs` | 通過 |
+
+### 同日 Shopify 後台修改（非程式碼）
+
+- SAENGAK 凝膠、慕斯、濕巾、噴霧四件商品的副標、重點、規格成分、使用方式、圖文卡與說明，已依 NAS 原廠文件改寫並以 Storefront API 逐欄回讀一致；移除專利、純素、Dermatest 最高等級等無文件宣稱，慕斯 pH 改為 5.5、無香料。
+- 20 件商品的「春季特別企劃」活動標籤已清除；涼感冰絲無痕內褲（7811043393603）副標改為中腰。
+- 仍待處理：16 件內褲文案仍含「抗菌／權威機構／低敏」；舊版凝膠商品 7811130785859 仍寫「專利／低敏」。
 
 ## 2026-10-15 UX 審視修正（分支 `claude/website-design-ux-review-4438d6`）
 
@@ -28,7 +59,7 @@
 ### 待處理（非程式碼）
 
 - Shopify 商品文案需依原廠文件修正：凝膠與慕斯成分不符原廠成分表、慕斯 pH（原廠 5.5）、「專利」無文件、純素證書已於 2026-03-19 到期、內褲「低敏檢測／抗菌／拉伸測試」無檢測報告、15 件商品仍顯示「春季特別企劃」。
-- 待決策：訪客結帳、全站唯一免運門檻（目前 1,500 與 1,499 並存）、客服與退換貨流程。
+- ~~待決策：訪客結帳、全站唯一免運門檻、客服~~：2026-10-16 已決定（見最上方 PR #35 段落）；退換貨流程細節仍待營運確認。
 
 ## CI 修復（2026-10-15，分支 `claude/fix-ci-validate`）
 
