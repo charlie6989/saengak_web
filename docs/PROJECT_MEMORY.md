@@ -17,6 +17,8 @@
 - 光貿發票採 outbox／派送流程；缺少必要憑證時拒絕處理。不可為了讓測試通過而補入正式憑證或取消防護。
 - ShipAny 由 Shopify 後台管理；`.env.example` 明確記載網站／Supabase 不另持有 ShipAny API key。
 - Sentry 的事件處理與資料清理在 `src/lib/sentry.ts`。
+- 依賴 `overrides` 必須同時被 npm 10（CI 的 Node 22）與 npm 11 的 `npm ci` 接受。npm 10 對部分以版本為鍵的 override（例如 `undici@5.29.0`）會誤判 lock 不同步；`undici` 因此巢狀在 `vercel` 下並對 `@vercel/sandbox` 保留 7.x。修改 overrides 後以 `npx npm@10.9.4 ci --ignore-scripts --dry-run` 與 `npm ci --dry-run` 驗證，不要用 npm 10 重建 lock（會帶回有漏洞的版本）。
+- CI 稽核目前分為正式依賴 moderate 與全部依賴 critical 兩段；開發依賴剩餘問題見 `PROJECT_STATUS.md`。
 
 ## 既有商品與介面決策
 
