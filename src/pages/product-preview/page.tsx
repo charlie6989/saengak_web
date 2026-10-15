@@ -12,7 +12,7 @@ const SAMPLE_PRODUCT = {
   price: 1280,
   originalPrice: 1680,
   discountPercentage: 24,
-  promotionBadge: '春季特別優惠・滿 2 件享免運折扣',
+  promotionBadge: '期間限定優惠（示範）',
   highlights: [
     '通過德國 Dermatest 最高等級優異皮膚耐受性測試認證',
     '嚴選天然植萃與專利益生菌微生態配方，維持 pH4.5~5.5 弱酸健康平衡',
@@ -54,7 +54,7 @@ const SAMPLE_PRODUCT = {
       badge: 'TEXTURE 02'
     },
     {
-      title: '德國 Dermatest 權威檢驗・全成分透明公開',
+      title: '示範檢驗說明・全成分透明公開',
       description: '無酒精、無色素、無paraben防腐劑，通過人體皮膚刺激測試，敏感時期與每日日常皆可放心使用。',
       image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1200',
       badge: 'SAFETY 03'
@@ -858,7 +858,7 @@ export default function ProductPreviewPage() {
                           版型與著感指標 (Fit & Feeling Guide)
                         </h3>
                       </div>
-                      <span className="text-xs text-gray-400 font-medium">Musinsa Standard Specs</span>
+                      <span className="text-xs text-gray-400 font-medium">示範資料</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-10">

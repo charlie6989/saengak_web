@@ -8,11 +8,11 @@ export default function ReturnPolicyPage() {
     <div className="min-h-screen bg-stone-50 text-gray-800">
       <Header />
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
-        <p className="mb-3 text-sm font-medium tracking-wide text-brand">內容盤點日期：{siteContent.contentReviewedAt}</p>
+        <p className="mb-3 text-sm font-medium tracking-wide text-brand">最後更新：{siteContent.contentReviewedAt}</p>
         <h1 className="mb-5 text-4xl font-bold text-gray-950">退換貨說明</h1>
-        <div className="mb-10 rounded-xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
-          <p className="font-semibold">正式流程尚未開放</p>
-          <p className="mt-2 text-sm leading-6">網站目前沒有站內退貨申請、退貨單列印或自動退款功能。物流商、退貨地址、退款時程與正式客服管道仍待營運確認。</p>
+        <div className="mb-10 rounded-xl border border-gray-200 bg-white p-5 text-gray-800">
+          <p className="font-semibold">退換貨以 Email 受理</p>
+          <p className="mt-2 text-sm leading-6">請來信 {siteContent.companyEmail}，附上訂單編號、商品照片與退換貨原因，我們會回覆後續的寄回方式。</p>
         </div>
 
         <div className="space-y-7">
@@ -23,19 +23,9 @@ export default function ReturnPolicyPage() {
           </section>
 
           <section className="rounded-2xl bg-white p-7 shadow-sm">
-            <h2 className="text-2xl font-semibold">正式營運前必須補齊</h2>
-            <ul className="mt-4 list-disc space-y-3 pl-6 leading-7">
-              <li>正式客服電話、電子郵件或官方 LINE。</li>
-              <li>可受理退貨的地址與物流方式；登記地址不等於退貨地址。</li>
-              <li>依付款方式定義的退款作業時間與通知方式。</li>
-              <li>每項商品是否屬通訊交易解除權合理例外的清楚標示。</li>
-            </ul>
-          </section>
-
-          <section className="rounded-2xl bg-white p-7 shadow-sm">
-            <h2 className="text-2xl font-semibold">目前聯絡狀態</h2>
-            <p className="mt-4 leading-7">{siteContent.supportStatus}。請勿自行將商品寄至公司登記地址；應等待官方受理與退貨指示。{siteContent.supportSafetyNotice}</p>
-            <Link to="/customer-service" className="mt-5 inline-flex rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">查看客服狀態</Link>
+            <h2 className="text-2xl font-semibold">申請方式</h2>
+            <p className="mt-4 leading-7">{siteContent.supportContact}請勿自行將商品寄至公司登記地址，請依回覆的退貨指示寄回。{siteContent.supportSafetyNotice}</p>
+            <Link to="/customer-service" className="mt-5 inline-flex rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">前往客服中心</Link>
           </section>
         </div>
       </main>

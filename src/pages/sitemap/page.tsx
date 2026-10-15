@@ -8,7 +8,6 @@ const SitemapPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
-    document.title = '網站地圖 - LUCISSI CARE | 探索完整網站結構';
     
     // SEO meta tags
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -57,7 +56,7 @@ const SitemapPage = () => {
       links: [
         { name: '線上客服', url: '/customer-service', description: '聯繫我們的專業客服團隊' },
         { name: '常見問題', url: '/faq', description: '查看常見問題和詳細解答' },
-        { name: '訂單狀態', url: '/order-status', description: '查詢和追蹤您的訂單狀態' },
+        { name: '訂單查詢', url: '/order-status', description: '查詢和追蹤您的訂單狀態' },
         { name: '退換貨說明', url: '/return-policy', description: '了解退換貨政策和詳細流程' },
       ]
     },

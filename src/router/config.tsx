@@ -6,7 +6,8 @@ import { lazy } from 'react';
 const HomePage = lazy(() => import('../pages/home/page'));
 const SearchPage = lazy(() => import('../pages/search/page'));
 const ProductPage = lazy(() => import('../pages/product/page'));
-const ProductPreviewPage = lazy(() => import('../pages/product-preview/page'));
+// 只在開發環境載入示範頁，正式建置不會產生這個 chunk
+const ProductPreviewPage = import.meta.env.DEV ? lazy(() => import('../pages/product-preview/page')) : null;
 const LoginPage = lazy(() => import('../pages/login/page'));
 const RegisterPage = lazy(() => import('../pages/register/page'));
 const ProfilePage = lazy(() => import('../pages/profile/page'));
@@ -60,10 +61,10 @@ const routes: RouteObject[] = [
     path: '/product',
     element: <ProductPage />,
   },
-  {
-    path: '/product-preview',
-    element: <ProductPreviewPage />,
-  },
+  // 示範商品頁含範例評價與認證字樣，只在本機開發環境開放，正式站回傳 404
+  ...(ProductPreviewPage
+    ? [{ path: '/product-preview', element: <ProductPreviewPage /> }]
+    : []),
   {
     path: '/product/:id',
     element: <ProductPage />,

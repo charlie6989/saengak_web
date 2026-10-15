@@ -12,21 +12,24 @@ export default function CustomerService() {
         <div className="mx-auto max-w-5xl px-4 text-center">
           <h1 className="mb-5 text-4xl font-bold sm:text-5xl">客服中心</h1>
           <p className="mx-auto max-w-2xl text-base text-blush sm:text-lg">
-            我們只公布已確認的官方管道，不使用示範電話、跨品牌信箱或未啟用的即時聊天。
+            商品選購、訂單、會員或售後問題，都可以透過下方管道與我們聯繫。
           </p>
         </div>
       </div>
 
       <main className="mx-auto max-w-5xl px-4 pb-20">
-        <section className="relative -mt-10 rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-lg sm:p-8">
+        <section className="relative -mt-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-lg sm:p-8">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-100">
-              <i className="ri-information-line text-2xl text-amber-700" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blush">
+              <i className="ri-mail-line text-2xl text-brand" aria-hidden="true" />
             </div>
             <div>
-              <h2 className="mb-2 text-xl font-bold text-gray-900">客服聯絡資料確認中</h2>
-              <p className="mb-3 text-gray-700">{siteContent.supportStatus}。</p>
-              <p className="text-sm leading-6 text-amber-900">{siteContent.supportSafetyNotice}</p>
+              <h2 className="mb-2 text-xl font-bold text-gray-900">客服信箱</h2>
+              <p className="mb-3 text-gray-700">
+                <a href={`mailto:${siteContent.companyEmail}`} className="font-semibold text-brand hover:underline">{siteContent.companyEmail}</a>
+              </p>
+              <p className="mb-2 text-gray-700">{siteContent.supportContact}</p>
+              <p className="text-sm leading-6 text-gray-600">{siteContent.supportSafetyNotice}</p>
             </div>
           </div>
         </section>
@@ -73,7 +76,7 @@ export default function CustomerService() {
         </section>
 
         <p className="mt-8 text-center text-xs text-gray-500">
-          內容檢核日期：{siteContent.contentReviewedAt}
+          最後更新：{siteContent.contentReviewedAt}
         </p>
       </main>
 

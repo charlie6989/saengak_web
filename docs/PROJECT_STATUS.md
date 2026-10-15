@@ -1,6 +1,34 @@
 # 項目狀態
 
-更新日期：2026-10-15（Asia/Taipei）。最新一項工作為修復 GitHub Actions CI；其下保留同日較早的 Git 同步紀錄。
+更新日期：2026-10-16（Asia/Taipei）。最新工作依序為 UX 審視修正（PR #30）與 CI 修復（PR #31，已合併）；其下保留同日較早的 Git 同步紀錄。
+
+## 2026-10-15 UX 審視修正（分支 `claude/website-design-ux-review-4438d6`）
+
+提交 `f8013f4`，PR #30；2026-10-16 合併含 CI 修復的 `main`（`261a4d3`）後重新驗證。審視結果與進度畫板：https://claude.ai/artifact/FHj7kF1B3SL7VJEPceY2Eh （私人連結）。
+
+### 程式碼變更
+
+- 顧客可見的「確認中」文案、IG 假貼文分頁移除；客服頁、隱私、AdChoices、退換貨改以 `Company@lucissi.com` 說明（`src/content/site.ts` 的 `supportContact`）。退換貨「以 Email 受理」的流程描述待營運確認。
+- 停用預設賣點、假促銷、★4.9、全標 NEW、預設尺寸表／版型值與 mock 商品後備；`ShopifyDescriptionViewer` 的成分、產地、檢驗、授權只呈現 Shopify 資料，缺資料的區塊隱藏。
+- 有貨優先排序、商品頁預設有貨規格、尺寸／顏色篩選改用規格選項、搜尋標籤錯誤修正（`src/domain/algorithms.ts` 新增 `isProductSoldOut`、`sortAvailableFirst`、`pickInitialVariant`、`matchesVariantOption`）。
+- `/order-status` 改為訂單查詢頁；`/product-preview` 只在開發環境載入。
+- 手機商品頁固定購買列、規格樣式分開、購物車發票收合、清空需確認、搜尋頁窄版橫幅、首頁重複精選區移除、每頁分頁標題（`src/lib/pageTitle.ts`）。
+- `scripts/verify-public-content.mjs` 加入「確認中」、假促銷、Dermatest／韓國授權等回歸字串。
+
+### 本次驗證（合併後）
+
+| 檢查 | 結果 |
+| --- | --- |
+| `npm test -- --run`（合併 CI 修復後） | 41 檔案、365 測試全部通過 |
+| `npx tsc --noEmit -p tsconfig.app.json` | 27 個既有錯誤，與修改前基準相同，未新增 |
+| `npm run build` | 通過 |
+| `node scripts/verify-public-content.mjs` | 通過，157 個檔案 |
+| 本機預覽（Vite dev，真實 Shopify Storefront 資料） | 桌機與 375px 手機檢查列表排序、預設規格、篩選、搜尋標籤、訂單查詢、購物車、手機購買列、分頁標題；`/api/*` 需 `vercel dev`，Vite 下回傳 500 屬環境限制 |
+
+### 待處理（非程式碼）
+
+- Shopify 商品文案需依原廠文件修正：凝膠與慕斯成分不符原廠成分表、慕斯 pH（原廠 5.5）、「專利」無文件、純素證書已於 2026-03-19 到期、內褲「低敏檢測／抗菌／拉伸測試」無檢測報告、15 件商品仍顯示「春季特別企劃」。
+- 待決策：訪客結帳、全站唯一免運門檻（目前 1,500 與 1,499 並存）、客服與退換貨流程。
 
 ## CI 修復（2026-10-15，分支 `claude/fix-ci-validate`）
 
@@ -63,7 +91,7 @@ GitHub Actions 在 Node 22 上的結果以 PR 的 CI 執行為準。
 2. 依賴稽核剩餘 25 項開發依賴問題（`braces` 無修補版本、Tailwind CSS 3、Vercel CLI 相關）；需 Tailwind CSS 4 遷移與 Vercel CLI 主版本更新後，將 CI 稽核恢復為完整 `npm audit --audit-level=moderate`。
 3. 現有 typecheck script 應評估是否完整檢查 referenced projects。
 4. 主 bundle 大於 500 kB；後續可評估拆分，不影響本次成功建置。
-5. `src/content/site.ts` 仍記載正式客服電話、電子郵件與官方 LINE 尚待營運確認，應由營運核實。
+5. ~~`src/content/site.ts` 客服待確認文案~~：已於 UX 修正改為 Email 管道；電話與官方 LINE 仍待營運決定。
 
 ## 尚未驗證
 

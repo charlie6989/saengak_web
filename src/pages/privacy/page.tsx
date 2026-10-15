@@ -14,7 +14,7 @@ export default function Privacy() {
     <div className="min-h-screen bg-stone-50 text-gray-800">
       <Header />
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
-        <p className="mb-3 text-sm font-medium tracking-wide text-brand">內容盤點日期：{siteContent.contentReviewedAt}</p>
+        <p className="mb-3 text-sm font-medium tracking-wide text-brand">最後更新：{siteContent.contentReviewedAt}</p>
         <h1 className="mb-5 text-4xl font-bold text-gray-950">隱私權政策</h1>
         <div className="mb-10 rounded-xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
           <p className="font-semibold">發布前審閱中</p>
@@ -50,8 +50,8 @@ export default function Privacy() {
 
         <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-sm">
           <h2 className="text-2xl font-semibold">查詢、更正與刪除</h2>
-          <p className="leading-7">您可依適用法令請求查詢、閱覽、更正、停止利用或刪除個人資料。{siteContent.supportStatus}；正式管道公告前，請先參考客服狀態頁，且不要向非官方帳號提供敏感資料。</p>
-          <Link to="/customer-service" className="inline-flex rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">查看客服狀態</Link>
+          <p className="leading-7">您可依適用法令請求查詢、閱覽、更正、停止利用或刪除個人資料。請來信 {siteContent.companyEmail} 提出申請；{siteContent.supportSafetyNotice}</p>
+          <Link to="/customer-service" className="inline-flex rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">前往客服中心</Link>
         </section>
       </main>
       <Footer />

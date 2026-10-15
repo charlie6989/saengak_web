@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteContent } from '../../content/site';
 
 interface FAQItem {
   id: string;
@@ -215,11 +216,11 @@ export default function FAQPage() {
             </div>
             
             <div className="mx-auto max-w-2xl bg-white p-6 text-center">
-              <i className="ri-information-line text-3xl text-amber-600 mb-4"></i>
-              <h3 className="font-semibold text-gray-900 mb-2">正式客服管道確認中</h3>
-              <p className="text-gray-600 text-sm mb-5">本站不顯示示範電話、跨品牌信箱或未啟用的即時聊天。</p>
+              <i className="ri-mail-line text-3xl text-brand mb-4" aria-hidden="true"></i>
+              <h3 className="font-semibold text-gray-900 mb-2">來信詢問</h3>
+              <p className="text-gray-600 text-sm mb-5">{siteContent.supportContact}</p>
               <Link to="/customer-service" className="inline-block bg-brand text-white px-5 py-3 hover:bg-brand transition-colors text-sm">
-                查看客服狀態
+                前往客服中心
               </Link>
             </div>
           </div>

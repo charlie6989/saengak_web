@@ -67,6 +67,64 @@ export function deriveCatalogSignals(product: CatalogSignalInput): CatalogSignal
   };
 }
 
+export interface AvailabilityInput {
+  availableForSale?: boolean;
+  variants?: Array<{ availableForSale?: boolean }>;
+}
+
+// 商品層級標記為不可售，或所有規格都不可售時，視為售完
+export function isProductSoldOut(product: AvailabilityInput): boolean {
+  if (product.availableForSale === false) return true;
+  return Array.isArray(product.variants)
+    && product.variants.length > 0
+    && product.variants.every((variant) => variant.availableForSale === false);
+}
+
+// 穩定排序：有貨商品在前、售完商品在後，各自維持原本順序
+export function sortAvailableFirst<T extends AvailabilityInput>(products: T[]): T[] {
+  return products
+    .map((product, index) => ({ product, index, soldOut: isProductSoldOut(product) }))
+    .sort((a, b) => Number(a.soldOut) - Number(b.soldOut) || a.index - b.index)
+    .map(({ product }) => product);
+}
+
+// 商品頁預設規格：第一個可售規格；全部售完時才退回第一個規格
+export function pickInitialVariant<T extends { availableForSale?: boolean }>(variants: T[]): T | undefined {
+  return variants.find((variant) => variant.availableForSale !== false) ?? variants[0];
+}
+
+export interface VariantOptionInput {
+  selectedOptions?: Array<{ name: string; value: string }>;
+}
+
+const VARIANT_OPTION_NAMES = {
+  size: /尺寸|尺碼|size/i,
+  color: /顏色|色系|colou?r/i,
+} as const;
+
+// 依 Shopify 規格選項篩選：尺寸比對選項值開頭的尺碼代號（「L (適合體重…)」→ L），
+// 顏色去掉「色」字後比對（「白色」可對到「雪紗白」），不再用商品名稱做字串比對。
+export function matchesVariantOption(
+  variants: VariantOptionInput[] | undefined,
+  kind: keyof typeof VARIANT_OPTION_NAMES,
+  wanted: string,
+): boolean {
+  const target = wanted.trim().toLowerCase();
+  if (!target || !Array.isArray(variants)) return false;
+  const colorStem = target.replace(/色$/, '');
+  return variants.some((variant) =>
+    (variant.selectedOptions ?? []).some((option) => {
+      if (!VARIANT_OPTION_NAMES[kind].test(option.name)) return false;
+      const value = option.value.trim().toLowerCase();
+      if (kind === 'size') {
+        const code = value.split(/[\s(（]/)[0];
+        return code === target || value === target;
+      }
+      return Boolean(colorStem) && value.includes(colorStem);
+    }),
+  );
+}
+
 export function paginateItems<T>(items: T[], requestedPage: number, requestedPageSize = 12): PaginationResult<T> {
   const pageSize = Math.max(1, Math.floor(requestedPageSize));
   const pageCount = Math.max(1, Math.ceil(items.length / pageSize));

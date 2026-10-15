@@ -5,7 +5,8 @@ import { formatTwd, getCartLineKey } from '../../domain/algorithms';
 import { 
   defaultInvoicePreference, 
   type InvoicePreference, 
-  validateInvoicePreference 
+  validateInvoicePreference,
+  describeInvoicePreference,
 } from '../../domain/invoice';
 import { createShopifyCheckout } from '../../lib/shopifyCheckout';
 import { captureExceptionSafe } from '../../lib/sentry';
@@ -34,6 +35,8 @@ export default function CartSidebar() {
   const [isSavingPhone, setIsSavingPhone] = useState(false);
   const [userProfilePhone, setUserProfilePhone] = useState<string | null>(null);
   const [invoicePreference, setInvoicePreference] = useState<InvoicePreference>(defaultInvoicePreference);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [isConfirmingClear, setIsConfirmingClear] = useState(false);
   const [userCoupons, setUserCoupons] = useState<UserCoupon[]>([]);
   const [isCouponSectionOpen, setIsCouponSectionOpen] = useState(false);
   const [selectedCouponCode, setSelectedCouponCode] = useState<string>('');
@@ -211,6 +214,7 @@ export default function CartSidebar() {
     const invoiceError = validateInvoicePreference(invoicePreference);
     if (invoiceError) {
       setCheckoutMessage(invoiceError);
+      setIsInvoiceOpen(true);
       return;
     }
 
@@ -614,10 +618,25 @@ export default function CartSidebar() {
             </div>
 
             {/* Invoice Form */}
-            <div className="space-y-4 pt-4 pb-2 border-t border-gray-100">
-              <h3 className="text-sm font-bold text-gray-900" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>電子發票</h3>
-              
-              <div className="space-y-3">
+            <div className="space-y-3 pt-4 pb-2 border-t border-gray-100">
+              {/* 預設收合成一行摘要；多數人使用預設值，需要時再展開修改 */}
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-sm text-gray-700" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                  <span className="font-bold text-gray-900">發票：</span>{describeInvoicePreference(invoicePreference)}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsInvoiceOpen((open) => !open)}
+                  aria-expanded={isInvoiceOpen}
+                  aria-controls="drawer-invoice-fields"
+                  className="shrink-0 min-h-[44px] px-2 text-sm font-semibold text-brand hover:underline"
+                >
+                  {isInvoiceOpen ? '收合' : '修改'}
+                </button>
+              </div>
+
+              {isInvoiceOpen && (
+              <div className="space-y-3" id="drawer-invoice-fields">
                 <div>
                   <label htmlFor="drawer-invoice-kind" className="block text-xs font-semibold text-gray-700 mb-1">發票類型</label>
                   <select
@@ -681,7 +700,7 @@ export default function CartSidebar() {
                       >
                         <option value="none">一般電子發票 (系統自動對獎)</option>
                         <option value="mobile">手機條碼載具</option>
-                        <option value="amego-email">光貿 Email 載具</option>
+                        <option value="amego-email">Email 載具（發票寄到 Email）</option>
                         <option value="donation">社福團體捐贈碼</option>
                       </select>
                     </div>
@@ -755,9 +774,12 @@ export default function CartSidebar() {
                   </div>
                 )}
               </div>
-              <p className="text-xs text-gray-500 mt-2 leading-relaxed bg-gray-50 p-2 rounded-lg border border-gray-100">
-                發票資料只送往光貿並暫存於受限後端；不會放入公開原始碼或瀏覽器可寫的資料表。
-              </p>
+              )}
+              {isInvoiceOpen && (
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  發票資訊僅用於開立電子發票，並依<a href="/privacy" className="underline hover:text-gray-700">隱私權政策</a>保護。
+                </p>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -771,7 +793,7 @@ export default function CartSidebar() {
               onClick={handleCheckout}
               disabled={isSubmitting || isAuthLoading}
               data-testid="checkout-button"
-              className="w-full bg-brand text-white py-3 rounded font-semibold hover:bg-brand active:bg-brand transition-all cursor-pointer shadow-md shadow-teal-700/20 text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait"
+              className="w-full bg-brand text-white py-3 rounded font-semibold hover:bg-brand active:bg-brand transition-all cursor-pointer shadow-md text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait"
               style={{ fontFamily: "Noto Sans TC, sans-serif" }}
             >
               {isSubmitting || isAuthLoading ? (
@@ -780,22 +802,43 @@ export default function CartSidebar() {
                    <span>{isAuthLoading ? '確認會員狀態...' : '處理中...'}</span>
                  </>
               ) : (
-                 <span>{user ? '前往 TapPay 安全結帳' : '登入會員後結帳'}</span>
+                 <span>{user ? '前往結帳' : '登入會員後結帳'}</span>
               )}
             </button>
             
-            <p className="text-[10px] text-gray-500 text-center mt-2">
-              將前往 Shopify Checkout, 付款方式與最終金額以結帳頁顯示為準。
+            <p className="text-xs text-gray-500 text-center mt-2">
+              下一步選擇取貨方式與付款，最終金額以結帳頁為準。
             </p>
 
-            <div className="flex items-center justify-between pt-1">
-              <button
-                onClick={clearCart}
-                className="text-xs text-gray-400 hover:text-gray-600 transition-colors cursor-pointer py-1 border border-gray-200 rounded px-3"
-                style={{ fontFamily: "Noto Sans TC, sans-serif" }}
-              >
-                清空購物車
-              </button>
+            {/* 清空購物車與主按鈕保持距離，並需再次確認，避免手機誤觸 */}
+            <div className="flex items-center justify-center gap-3 pt-6 text-xs text-gray-500">
+              {isConfirmingClear ? (
+                <>
+                  <span>確定要移除全部商品？</span>
+                  <button
+                    type="button"
+                    onClick={() => { clearCart(); setIsConfirmingClear(false); }}
+                    className="min-h-[44px] px-2 font-semibold text-red-700 hover:underline"
+                  >
+                    確定清空
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsConfirmingClear(false)}
+                    className="min-h-[44px] px-2 hover:underline"
+                  >
+                    取消
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsConfirmingClear(true)}
+                  className="min-h-[44px] px-2 hover:text-gray-700 hover:underline"
+                >
+                  清空購物車
+                </button>
+              )}
             </div>
           </div>
         )}

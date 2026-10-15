@@ -8,7 +8,7 @@ export default function TermsPage() {
     <div className="min-h-screen bg-stone-50 text-gray-800">
       <Header />
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
-        <p className="mb-3 text-sm font-medium tracking-wide text-brand">內容盤點日期：{siteContent.contentReviewedAt}</p>
+        <p className="mb-3 text-sm font-medium tracking-wide text-brand">最後更新：{siteContent.contentReviewedAt}</p>
         <h1 className="mb-5 text-4xl font-bold text-gray-950">網站使用與訂購條款</h1>
         <div className="mb-10 rounded-xl border border-blush bg-blush p-5 text-teal-950">
           <p className="font-semibold">正式結帳已啟用</p>

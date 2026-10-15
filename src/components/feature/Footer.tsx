@@ -28,7 +28,7 @@ export default function Footer() {
                   className="text-base text-gray-600 hover:text-gray-900 transition-colors duration-200"
                   style={{ fontFamily: "Noto Sans TC, sans-serif" }}
                 >
-                  訂單狀態
+                  訂單查詢
                 </Link>
               </li>
               <li>
@@ -55,7 +55,7 @@ export default function Footer() {
                   className="text-base text-gray-600 hover:text-gray-900 transition-colors"
                   style={{ fontFamily: "Noto Sans TC, sans-serif" }}
                 >
-                  線上客服
+                  客服中心
                 </Link>
               </li>
               <li>
@@ -89,12 +89,6 @@ export default function Footer() {
                   <i className="ri-article-line text-xl"></i>
                   健康知識分享
                 </Link>
-              </li>
-              <li>
-                <span className="text-base text-gray-500 flex items-center gap-2" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                  <i className="ri-instagram-line text-xl"></i>
-                  正式社群帳號確認中
-                </span>
               </li>
             </ul>
           </div>

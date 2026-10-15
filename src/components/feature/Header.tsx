@@ -7,7 +7,12 @@ import AuthModal from './AuthModal';
 import SearchOverlay from './SearchOverlay';
 import { supabase } from '../../lib/supabase';
 
-export default function Header() {
+interface HeaderProps {
+  /** 商品頁在手機版改用固定購買列，隱藏底部懸浮導覽避免遮住價格與購買按鈕 */
+  hideMobileBottomNav?: boolean;
+}
+
+export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}) {
   const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -506,6 +511,7 @@ export default function Header() {
       </header>
 
       {/* 手機版 - 底部膠囊式懸浮導航 */}
+      {!hideMobileBottomNav && (
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pb-6 px-4 pointer-events-none">
         <div className="flex items-center justify-between gap-3 pointer-events-auto">
           {/* 左側膠囊 - 選單按鈕 */}
@@ -578,6 +584,7 @@ export default function Header() {
           </button>
         </div>
       </div>
+      )}
 
       {/* 手機版全屏選單 */}
       {isMobileMenuOpen && (
