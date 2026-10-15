@@ -25,6 +25,13 @@
 - 首頁 Solution 支援超值組合、經典單品、全部分類；商品細節依 Shopify 資料呈現。
 - 圖片在 `public/images/`。`editorial-v2`、`lucissi-v3`、`lucissi-v4`、`lucissi-v5` 是既有版本目錄，不能未查引用就刪除。
 
+## 商品資訊與宣稱原則（2026-10-15）
+
+- 商品頁的成分、產地、檢驗、認證、專利與品牌授權只能來自 Shopify 實際填寫的資料；程式碼不得補預設宣稱、評分、NEW 標籤或 mock 商品。回歸字串列在 `scripts/verify-public-content.mjs`。
+- SAENGAK 原廠文件（產品說明書、CPNP/SCPN 與安全評估含成分表、純素／Halal／MOCRA、ISO 22716）存放在公司 NAS 的 `saengak_kr` 共用資料夾，不在 Git。內褲類目前沒有檢測報告。
+- 2026-10-15 比對結果：Made in Korea 有依據；Dermatest 僅見於原廠說明書（濕巾 Excellent、泡沫潔淨露 confirmed）；純素證書效期至 2026-03-19；凝膠與慕斯在 Shopify 的成分及慕斯 pH 與原廠不符；無專利文件。
+- 列表與推薦一律有貨優先；商品頁預設第一個有貨規格。
+
 ## 素材製作記憶
 
 - `creative/` 保存提示詞、manifest、provenance 與改版說明；現在納入 Git。
