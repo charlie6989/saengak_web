@@ -9,14 +9,14 @@
 ### 程式碼設定
 
 - 新增 `src/domain/shipping.ts`：`DEFAULT_FREE_SHIPPING_THRESHOLD = 1499`、`DEFAULT_SHIPPING_FEE = 80`；`CartSidebar`、`src/lib/promotions.ts`（FREESHIP 後備改名「滿額免運」）、`api/shopify/discounts.ts`、後台 `SiteSettings` 共用此常數。
-- 新增 migration `supabase/migrations/20261016000001_unify_free_shipping_threshold.sql`：把 `site_settings.free_shipping_threshold` 由舊初始值 1500 改為 1499，並把 `promotions` 的 FREESHIP 標題由「初夏免運專案」改為「滿額免運」。API 優先採用資料庫值，所以只改程式碼預設值不會改變顧客看到的門檻。
+- 新增 migration `supabase/migrations/20261015225032_unify_free_shipping_threshold.sql`：把 `site_settings.free_shipping_threshold` 由舊初始值 1500 改為 1499，並把 `promotions` 的 FREESHIP 標題由「初夏免運專案」改為「滿額免運」。API 優先採用資料庫值，所以只改程式碼預設值不會改變顧客看到的門檻。
 
 ### 正式服務狀態（2026-10-16 查詢）
 
 | 項目 | 狀態 |
 | --- | --- |
-| Supabase `tmqzkagkrzhioftvwbqo` 的 `free_shipping_threshold` | 已是 1499（10/15 由後台設定，非本 migration） |
-| Supabase FREESHIP 促銷標題 | 仍為「初夏免運專案 - 滿額免運費」，本 migration 尚未套用到正式資料庫 |
+| Supabase `tmqzkagkrzhioftvwbqo` 的 `free_shipping_threshold` | 1499（10/15 已由後台設定；套用本 migration 後回讀仍為 1499） |
+| Supabase FREESHIP 促銷 | 2026-10-16 已以 MCP `apply_migration` 套用本 migration（正式資料庫 migration 版本 `20261015225032`，檔名同步）；回讀標題「滿額免運」、min_spend 1499 |
 | Shopify 運費規則 | 已顯示「滿 $1499.00 免費」；但 Shopify 運費為 $146，與網站 `default_shipping_fee` 80 不一致，待確認 |
 
 ### 本次驗證
