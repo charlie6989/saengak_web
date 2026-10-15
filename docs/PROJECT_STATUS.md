@@ -1,8 +1,10 @@
 # 項目狀態
 
+更新日期：2026-10-16（Asia/Taipei）。最新工作依序為 UX 審視修正（PR #30）與 CI 修復（PR #31，已合併）；其下保留同日較早的 Git 同步紀錄。
+
 ## 2026-10-15 UX 審視修正（分支 `claude/website-design-ux-review-4438d6`）
 
-提交 `f8013f4`，並以 `d474fda` 合併 `origin/main`（`2f5d0c7`）；尚未 push、尚未部署。審視結果與進度畫板：https://claude.ai/artifact/FHj7kF1B3SL7VJEPceY2Eh （私人連結）。
+提交 `f8013f4`，PR #30；2026-10-16 合併含 CI 修復的 `main`（`261a4d3`）後重新驗證。審視結果與進度畫板：https://claude.ai/artifact/FHj7kF1B3SL7VJEPceY2Eh （私人連結）。
 
 ### 程式碼變更
 
@@ -17,7 +19,7 @@
 
 | 檢查 | 結果 |
 | --- | --- |
-| `npx vitest run` | 41 檔案：40 通過、1 失敗；365 測試：358 通過、7 失敗（同為既有 `invoice-guangmao-api` 案例） |
+| `npm test -- --run`（合併 CI 修復後） | 41 檔案、365 測試全部通過 |
 | `npx tsc --noEmit -p tsconfig.app.json` | 27 個既有錯誤，與修改前基準相同，未新增 |
 | `npm run build` | 通過 |
 | `node scripts/verify-public-content.mjs` | 通過，157 個檔案 |
@@ -28,11 +30,38 @@
 - Shopify 商品文案需依原廠文件修正：凝膠與慕斯成分不符原廠成分表、慕斯 pH（原廠 5.5）、「專利」無文件、純素證書已於 2026-03-19 到期、內褲「低敏檢測／抗菌／拉伸測試」無檢測報告、15 件商品仍顯示「春季特別企劃」。
 - 待決策：訪客結帳、全站唯一免運門檻（目前 1,500 與 1,499 並存）、客服與退換貨流程。
 
-## 2026-10-15 記憶與 Git 同步
+## CI 修復（2026-10-15，分支 `claude/fix-ci-validate`）
 
-更新日期：2026-10-15（Asia/Taipei）。本次任務為將項目記憶、狀態、程式碼及素材紀錄保存至 Git 遠端。
+GitHub Actions「Validate repository」自 2026-09-09 起在 `main` 與各 dependabot 分支皆失敗，本分支修復三個原因：
 
-## 同步內容
+1. **`npm ci` 在 Node 22／npm 10 失敗**（`Missing: @tootallnate/once@2.0.0, smol-toml@1.5.2, undici@5.29.0, @fastify/busboy@2.1.1 from lock file`）。npm 10 無法正確套用部分以版本為鍵的 overrides。改為：`@tootallnate/once`、`smol-toml` 使用名稱鍵（各自只有 Vercel CLI 相關的消費者）；`undici` 改為巢狀於 `vercel` 之下，並對 `@vercel/sandbox` 保留 `^7.27.1`，避免把它降回 6.x。其餘仍可被 npm 10 接受的版本鍵 overrides 維持不變。已確認 lock 內仍是修補版本。
+2. **`tests/invoice-guangmao-api.test.ts` 7 個失敗**：測試 `beforeEach` 補上僅供測試的假 `AmegoSellerTaxId`／`AmegoAppKey`／`AmegoIssuerNote`。`api/invoice/guangmao.ts` 的 Fail-Closed 憑證防護未修改，SEC-6 測試仍逐一刪除憑證並驗證回 500。未加入任何真實憑證。
+3. **`npm audit`**：在不升級主版本的前提下修補——vitest 4.1.10→4.1.12、sharp 0.35.5、undici 6.29.1／7.30.1、smol-toml 1.9.1、js-yaml 4.3.2、brace-expansion、fast-uri、source-map-js。結果由 39 項降為 25 項（2 moderate、23 high），**正式（production）依賴為 0 項**。剩餘全部屬開發工具：
+   - `braces`（GHSA-vfj7-8cjw-p6xm）目前沒有修補版本，經由 Tailwind CSS 3（chokidar、micromatch、fast-glob）及 Vercel CLI（`@vercel/*` → ts-morph → fast-glob）引入；
+   - `postcss-selector-parser` <7.1.6，Tailwind CSS 3／postcss-nested 6 固定使用 6.x。
+   修復需要 Tailwind CSS 4 遷移與 Vercel CLI 主版本更新，未執行 `npm audit fix --force`。
+   因此 CI 稽核改為兩段：`npm audit --omit=dev --audit-level=moderate`（正式依賴）與 `npm audit --audit-level=critical`（全部依賴）。這是 CI 閘門的放寬，應在 Tailwind／Vercel CLI 升級後恢復完整 moderate 稽核。
+
+### 本次本機驗證
+
+Node.js v26.3.1、npm 11.16.0；另以 `npx npm@10.9.4` 模擬 CI 的 npm 10。
+
+| 檢查 | 結果 |
+| --- | --- |
+| `npm ci`（npm 11）與乾淨目錄 `npm@10.9.4 ci --ignore-scripts`、`npm ls --all` | 通過 |
+| `npm run typecheck` | 通過 |
+| `npm test -- --run` | 40 個檔案、356 個測試全部通過 |
+| `npm run build` | 通過；仍有主 chunk 超過 500 kB 的警告 |
+| `npm run verify:content` | 通過，檢查 158 個檔案 |
+| `npm run verify:supabase` | 靜態基線通過 |
+| `npm audit --omit=dev --audit-level=moderate` | 0 項 |
+| `npm audit --audit-level=critical` | 通過（25 項 moderate／high 皆為開發依賴，無 critical） |
+
+GitHub Actions 在 Node 22 上的結果以 PR 的 CI 執行為準。
+
+## 先前同步紀錄（2026-10-15）
+
+### 同步內容
 
 - 將原本未提交的本機網站改版、圖片與製圖工作紀錄保存為 `d485e99`。
 - 合併遠端 `main` 的 5 個更新提交，最新基準為 `dc54236`，整合提交為 `c93b89e`；保留新版品牌、精選商品、超值組合與網域／回呼設定。
@@ -41,7 +70,7 @@
 - 修正 `.gitignore`，讓專案文件與 creative 資料可持續追蹤；`.env.local`、依賴、建置輸出、服務工作階段及本機診斷仍排除。
 - 本次不包含正式資料庫、Shopify 後台資料或完整對話歷史的匯出；Git push 的最終結果以遠端提交與交接回覆為準。
 
-## 本次驗證
+### 當時驗證
 
 本機 Node.js v24.14.0、npm 11.9.0；使用既有安裝依賴執行。CI 使用 Node.js 22，本次未另外重裝依賴。
 
@@ -58,8 +87,8 @@
 
 ## 已知待處理
 
-1. `tests/invoice-guangmao-api.test.ts` 的 7 個案例失敗：API 的 `AmegoSellerTaxId`／`AmegoAppKey` 缺失防護先返回 500，而部分測試預期成功或進入認領迴圈。測試 setup 未提供這兩項 fixture，應在獨立修復中補齊測試前置條件並驗證缺憑證防護。此次未修改該 API 或測試，兩者與遠端基準一致。
-2. 依賴稽核包含 Vitest、Vercel 相關依賴、Tailwind 相關依賴、sharp、undici 等。需另行評估更新與回歸，未執行 `npm audit fix --force`。
+1. ~~`tests/invoice-guangmao-api.test.ts` 的 7 個案例失敗~~：已於 CI 修復分支補上假憑證 fixture。
+2. 依賴稽核剩餘 25 項開發依賴問題（`braces` 無修補版本、Tailwind CSS 3、Vercel CLI 相關）；需 Tailwind CSS 4 遷移與 Vercel CLI 主版本更新後，將 CI 稽核恢復為完整 `npm audit --audit-level=moderate`。
 3. 現有 typecheck script 應評估是否完整檢查 referenced projects。
 4. 主 bundle 大於 500 kB；後續可評估拆分，不影響本次成功建置。
 5. ~~`src/content/site.ts` 客服待確認文案~~：已於 UX 修正改為 Email 管道；電話與官方 LINE 仍待營運決定。

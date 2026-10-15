@@ -32,6 +32,10 @@ import vercelHandler from '../api/invoice/guangmao.js';
 
 const DISPATCH_TOKEN = 'fixture-only-dispatch-token-never-real';
 const CRON_TOKEN = 'fixture-only-cron-secret-never-real';
+// 僅供測試的假憑證：讓授權與認領迴圈測試能通過 Fail-Closed 憑證檢查；SEC-6 會個別刪除以驗證缺漏時仍回 500。
+const SELLER_TAX_ID_FIXTURE = 'fixture-only-seller-tax-id-never-real';
+const APP_KEY_FIXTURE = 'fixture-only-app-key-never-real';
+const ISSUER_NOTE_FIXTURE = 'fixture-only-issuer-note';
 
 function buildJob(overrides: Partial<AmegoJob> = {}): AmegoJob {
   return {
@@ -104,6 +108,9 @@ describe('光貿發票 Worker API (api/invoice/guangmao.ts)', () => {
     delete process.env.AmegoDispatchToken;
     delete process.env.CRON_SECRET;
     process.env.AmegoInvoiceReleaseEnabled = 'true';
+    process.env.AmegoSellerTaxId = SELLER_TAX_ID_FIXTURE;
+    process.env.AmegoAppKey = APP_KEY_FIXTURE;
+    process.env.AmegoIssuerNote = ISSUER_NOTE_FIXTURE;
     mocks.getSupabaseAdminClient.mockReturnValue(null);
     mocks.dispatchAmegoJob.mockReset();
     mocks.updateTransactionLog.mockResolvedValue(null);
