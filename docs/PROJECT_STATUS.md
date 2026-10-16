@@ -1,6 +1,21 @@
 # 項目狀態
 
-更新日期：2026-10-17（Asia/Taipei）。最新工作為 LUCISSI 會員首單免運（會員互通第 1 階段）；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-17（Asia/Taipei）。最新工作為暫用字標與會員首單免運上線進度；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## 暫用字標與會員首單免運上線進度（2026-10-17，分支 `claude/interim-wordmark`）
+
+**字標**：使用者同意先以程式排出方向 A 家族字標，取代頁首 PNG（「care」在頁首不到 1px）。依設計系統 Logo 規範，以 Cormorant Garamond 400（LUCISSI，字距 0.32em）與 Noto Sans TC 500（CARE）轉成外框路徑（OFL 字型），不依賴裝置字型；單色 `currentColor`／`text-brand`（plum #5B3D48）。
+
+- `BrandLogo` 改輸出 inline SVG，`lockup` 為 `small`（預設，header 150px／手機 138px）、`primary`（≥200px，重設密碼頁 220px）、`horizontal`。路徑資料在 `src/components/base/brandLogoPaths.ts`；同規格的 SVG 檔在 `public/images/brand/lucissi-care-{small,primary,horizontal,icon}.svg`。
+- `index.html` 加入 `favicon.svg`（plum 方形＋Cormorant「L」，規格中的暫定圖示）與 `theme-color`。舊 `lucissi-care-logo.png` 移除。
+- 已驗證：本機 dev server 手機與 1440px 桌機頁首皆顯示新字標（桌機 150×37px、plum、無主控台錯誤）；`tsc`、lint、Vitest 482 項、build、`verify:content` 通過。
+- 未處理：設計師正式 SVG、`.ico`／`apple-touch-icon`、Open Graph 分享圖；Email 範本未使用此元件。
+
+**會員首單免運正式上線進度**（依 `docs/LUCISSI_MEMBER_PARTNER_API.md` 步驟）：
+
+- 已完成：兩站正式 Supabase 套用 `partner_member_perks`（MCP 記錄版本 CARE `20261016205350`、母站 `20261016205402`，與 repo 檔名 `20261017120000` 不同，尚未對齊）；兩站 Vercel production 設定 `PARTNER_MEMBER_SECRET`、`PARTNER_MEMBER_STATUS_URL`；母站 PR #33、修正 PR #34 已合併；兩站互相簽章呼叫 `member-status` 回 200、未簽章與錯誤簽章回 401。
+- CARE 已開 `LUCISSI_MEMBER_PERK_ENABLED=true`（前台卡片仍隱藏）。首次領取時 Shopify 拒絕 `appliesOnOneTimePurchase`／`appliesOnSubscription`（商店未使用訂閱），PR #46 移除後，測試會員 `charlie.liu6989+lucissitest@gmail.com` 成功領取 `issued` 代碼並建立綁定顧客的 Shopify 折扣（亦證實 CARE app 具顧客權限）；代碼不在公開優惠列表。
+- 待解決：使用者以此代碼與 TapPay 測試卡完成結帳、結帳頁運費為免運，但訂單未寫入 CARE 資料庫（正式 `orders` 最新為 2026-08-26 的 #1007），代碼仍為 `issued`；需查 Shopify `gh2xgs-zf` 的 webhook 投遞結果。母站 app 第 12 版已要求 `read_customers`／`write_customers`，但 `j97kr5-7b` 安裝仍未授予，母站權益維持關閉。尚未做「不用代碼的首單」停用測試、未開前台卡片旗標、測試訂單尚未取消。
 
 ## LUCISSI 會員首單免運（會員互通第 1 階段，2026-10-17，分支 `claude/lucissi-member-perk`）
 

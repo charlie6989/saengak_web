@@ -103,7 +103,7 @@ export default function ResetPasswordPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
           <Link to="/" className="inline-block">
-            <BrandLogo className="w-[200px] mx-auto" />
+            <BrandLogo lockup="primary" className="w-[220px] mx-auto" />
           </Link>
         </div>
         <div className="text-center">

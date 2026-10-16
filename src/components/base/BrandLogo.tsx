@@ -1,15 +1,20 @@
-/** Display the supplied artwork without its large canvas margins; preserve the source pixels. */
-export default function BrandLogo({ className = '' }: { className?: string }) {
+import { BRAND_LOGO_LOCKUPS, type BrandLogoLockup } from './brandLogoPaths';
+
+/**
+ * LUCISSI CARE 字標（方向 A：家族字標）。以外框路徑輸出，不依賴使用者裝置字型；顏色跟隨 currentColor（預設 text-brand）。
+ * small：120–199px（網站 header）；primary：≥ 200px；horizontal：單行、寬度 ≥ 130px。
+ */
+export default function BrandLogo({ lockup = 'small', className = '' }: { lockup?: BrandLogoLockup; className?: string }) {
+  const { viewBox, d } = BRAND_LOGO_LOCKUPS[lockup];
   return (
-    <span className={`relative block overflow-hidden shrink-0 mix-blend-multiply ${className}`} style={{ aspectRatio: '964 / 256' }}>
-      <img
-        src="/images/brand/lucissi-care-logo.png"
-        alt="LUCISSI CARE"
-        width={2172}
-        height={724}
-        className="absolute h-auto"
-        style={{ width: `${2172 / 964 * 100}%`, maxWidth: 'none', left: `${-132 / 964 * 100}%`, top: `${-228 / 256 * 100}%` }}
-      />
-    </span>
+    <svg
+      role="img"
+      aria-label="LUCISSI CARE"
+      viewBox={viewBox}
+      fill="currentColor"
+      className={`block h-auto shrink-0 text-brand ${className}`}
+    >
+      <path d={d} />
+    </svg>
   );
 }
