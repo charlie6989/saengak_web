@@ -2,7 +2,7 @@
 
 ## 最新正式服務查核（2026-10-17）
 
-- **正式寄信已送達**：Supabase Auth 配置回讀 SMTP `smtp.resend.com:465`／`resend`、寄件地址 `noreply@auth.saengak.com.tw`，site_url `https://lucissicare.com`，正式回跳白名單及 Email 驗證均正確。只將 sender name 從 SAENGAK 改為 LUCISSI CARE，回讀其餘 SMTP 與 Auth 配置不變。向 `company@lucissi.com` 發送正式驗證信 HTTP 200；Resend `01a145c3-72b7-7ee8-b487-3e1470c5414a` 顯示正確寄件者及 01:30 Delivered。正式 Auth 新增待驗證帳號，沒有新增訂單／付款；收件者實際收信與回跳待確認。
+- **正式寄信已送達**：Supabase Auth 配置回讀 SMTP `smtp.resend.com:465`／`resend`、寄件地址 `noreply@auth.saengak.com.tw`，site_url `https://lucissicare.com`，正式回跳白名單及 Email 驗證均正確。只將 sender name 從 SAENGAK 改為 LUCISSI CARE，回讀其餘 SMTP 與 Auth 配置不變。向 `company@lucissi.com` 發送正式驗證信 HTTP 200；Resend `01a145c3-72b7-7ee8-b487-3e1470c5414a` 顯示正確寄件者及 01:30 Delivered。正式 Auth 新增的測試帳號已由使用者點信完成驗證；使用者確認成功回到正式站，DB 回讀 verified_accounts=1、last_sign_in_at=2026-10-17 01:33:40（Asia/Taipei）。沒有新增訂單／付款。
 - **TapPay 仍為測試**：Shopify `gh2xgs-zf` 畫面顯示「啟用中／測試模式已開啟」。管理入口的 TapPay Portal 及光貿後台未登入，使用者將登入既有帳號；未建立新帳號或更改收款模式。
 - **正式光貿設定仍未確定**：Vercel seller/key/mode/release 等欄位存在但 sensitive 不可解密讀回，不能據此確認配置值。未呼叫正式派送 API，也未開立正式發票。
 - **兩筆歷史測試工作**：正式 outbox pending／attempts=0 的 #1006（8330730242115）、#1007（8339114950723）均由 Shopify API 證實 test=true、TapPay SALE SUCCESS/test=true。已以精確 order GID、pending／issue／attempts=0／未送出及未開票條件，將兩筆發票工作改為 manual_review／SHOPIFY_TEST_ORDER 並回讀；不再被自動認領，未取消或退款 Shopify 訂單。
