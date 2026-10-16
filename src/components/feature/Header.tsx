@@ -237,7 +237,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
               {/* 中央 - Logo圖片 - 手機版置中 */}
               <div className="flex items-center lg:mr-auto">
                 <Link to="/" className="flex items-center cursor-pointer outline-hidden focus:outline-hidden">
-                  <BrandLogo className="w-[144px] xl:w-[156px]" />
+                  <BrandLogo className="w-[150px]" />
                 </Link>
               </div>
 
