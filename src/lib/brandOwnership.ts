@@ -28,6 +28,8 @@ export const SHOPIFY_PLACEHOLDER_VENDOR = 'My Store 7';
 export const NON_SAENGAK_OWN_BRAND_KEYWORDS = [
   '內褲',
   '內著',
+  '內衣',
+  '運動',
   '生理褲',
   '安全褲',
   '三角褲',
@@ -45,8 +47,11 @@ const NON_SAENGAK_OWN_BRAND_PATTERN = new RegExp(
   'i'
 );
 
-/** 舒適穿著（內著／衣物）商品在 Shopify 的 productType 字面值。 */
-const COMFORT_WEAR_PRODUCT_TYPE = '舒適穿著';
+/**
+ * 內著／衣物商品在 Shopify 的 productType 字面值。「舒適穿著」是現行值；
+ * 「舒適內搭」「輕盈運動」是網站導覽的新面向名稱，若後台日後改用這些值也同樣判定為非 SAENGAK。
+ */
+const COMFORT_WEAR_PRODUCT_TYPES = ['舒適穿著', '舒適內搭', '輕盈運動'];
 
 /**
  * 分類與品牌名稱解析共用的商品欄位子集。
@@ -69,7 +74,7 @@ export interface BrandOwnershipCandidate {
  * 判斷商品是否屬於「非 SAENGAK 自有品牌」分類。
  *
  * 命中條件（符合其一即為 true）：
- * 1. `productType` 精確等於「舒適穿著」。
+ * 1. `productType` 精確等於「舒適穿著」「舒適內搭」或「輕盈運動」。
  * 2. 商品標題／名稱／類別／標籤中，包含任一內著、生理褲、安全褲，
  *    或除毛刀、護衣袋、洗衣袋等周邊關鍵字（見 {@link NON_SAENGAK_OWN_BRAND_KEYWORDS}）。
  *
@@ -77,7 +82,7 @@ export interface BrandOwnershipCandidate {
  * （AGENTS.md §5 P0 鐵律）；呼叫端應改為顯示合法第三方 vendor、通用文案，或直接隱藏該欄位。
  */
 export function isNonSaengakOwnBrandProduct(product: BrandOwnershipCandidate): boolean {
-  if ((product.productType || '').trim() === COMFORT_WEAR_PRODUCT_TYPE) {
+  if (COMFORT_WEAR_PRODUCT_TYPES.includes((product.productType || '').trim())) {
     return true;
   }
 

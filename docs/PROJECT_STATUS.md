@@ -1,6 +1,23 @@
 # 項目狀態
 
-更新日期：2026-10-17（Asia/Taipei）。最新工作為正式金流、發票與寄信查核；其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-17（Asia/Taipei）。最新工作為五個照護面向導覽與背書文案；前一項為正式金流、發票與寄信查核；其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## 五個照護面向導覽與背書文案（2026-10-17，分支 `claude/lucissi-care-brand-web-51f3a7`）
+
+依使用者確認的提案（設計系統「導覽與文案提案」）實作；重疊品類、會員互通、免運門檻統一與新照片仍待使用者決定，未處理。PR #40 已於同日合併後再接續本分支。
+
+- 新增 `src/content/carePillars.ts` 作為五個面向（私密保養／身體保養／肌膚保養／舒適內搭／輕盈運動）的單一來源：導覽名稱、頁首文案、首頁圖卡、子分類、商品歸類與舊分類名對應。舊網址 `?category=私密護理`、`貼身穿著`、`舒適穿著` 仍可用，會解析為新面向。
+- 商品歸類只在程式端判斷，**未改 Shopify 後台**：除毛刀→身體保養、護衣袋→舒適內搭、運動內衣→輕盈運動；運動與身體保養只看品名與 productType（內褲帶「運動時穿著」標籤時仍歸舒適內搭）。
+- `brandOwnership.ts`：非 SAENGAK 關鍵字加入「內衣」「運動」，productType「舒適內搭」「輕盈運動」也視為非 SAENGAK，避免運動內衣被誤標 SAENGAK。
+- Header：導覽改為 全部商品｜五個面向｜LUCISSI Talk（優惠活動、關於我們移到頁尾與手機選單），目前面向加底線並標 `aria-current`；公告列改為靜態「LUCISSI 的日常照護系列｜全館滿 NT$1,499 免運」（門檻取 `DEFAULT_FREE_SHIPPING_THRESHOLD`，不另打 API；Supabase 門檻若改，這裡要一起改）。結帳安全說明移出公告列。
+- 搜尋／分類頁：五個面向的頁首文案與子分類切換；子分類文案移除「專利高活性」「專利益生菌」「韓國沙龍級」「頂級親膚純棉」等無文件依據的宣稱。商品少於 4 件的面向在商品下方加上 LUCISSI Talk 文章（`PillarArticles`）；沒有商品時不顯示「找不到商品」，改顯示「正在準備中」與文章。
+- 首頁：主視覺由 5 張減為 3 張並移除重複標題；新增五面向入口（`PillarSection`）與「來自 LUCISSI」區塊；「精選產品」改「本季精選」並刪除「最受歡迎」字樣；Solution 區 h2 改「超值組合」；貼身穿著橫幅改舒適內搭。
+- 頁尾加 LUCISSI 背書與「前往 LUCISSI」連結，新增「品牌」欄（關於我們、LUCISSI Talk、優惠活動）。關於我們、精選頁文案同步；`<title>`／meta description 改為「LUCISSI CARE｜LUCISSI 的日常照護系列」。
+- `verify-public-content.mjs` 新增被移除宣稱的回歸檢查。
+- 新面向暫用既有 v5 照片（身體保養 `home-philosophy`、肌膚保養 `article-care`／`about-daily-portrait`、輕盈運動 `about-balance-portrait`），待使用者決定是否新製。
+- 已執行驗證：`npm ci`（worktree 原本的 node_modules 早於 Tailwind 4 遷移，build 找不到 `@tailwindcss/postcss`）、`npm run typecheck`、`npm test -- --run`（47 檔／459 項）、`npm run build`（僅既有 chunk 大小警告）、`npm run verify:content`（166 檔）皆通過。本機 dev server 連既有 Shopify 資料逐一檢查五個面向與舊網址：私密保養 8、身體保養 1、肌膚保養 0（顯示準備中與文章）、舒適內搭 16、輕盈運動 1；桌機與手機 375 首頁、關於我們、頁尾無水平捲動或錯位，console 無錯誤。
+- 已知：舒適內搭目前包含「性感蕾絲女三角內褲」，與 CARE 非性感化語氣不一致，屬商品選品決定，未更動。
+- 未執行：未部署；未改 Shopify productType／Collections；未更新 `sitemap.xml`（目前未列分類網址）。
 
 ## 品牌檢視低風險視覺修正（2026-10-17，分支 `claude/compassionate-chaum-640a12`）
 

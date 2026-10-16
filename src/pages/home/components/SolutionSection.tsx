@@ -49,7 +49,7 @@ export default function SolutionSection() {
     const tags: string[] = Array.isArray(p.tags) ? p.tags : [];
     const combined = `${title} ${type} ${tags.join(' ').toLowerCase()}`;
 
-    // 首頁「私密照護，從日常開始。」為 P0 級白名單專區，僅能展示 SAENGAK 私密護理品。
+    // 首頁「超值組合」為 P0 級白名單專區，僅能展示 SAENGAK 私密護理品。
     // 先以 brandOwnership 共用模組排除所有內著／舒適穿著／除毛刀／護衣袋／洗衣袋等非 SAENGAK
     // 自有品牌商品，並沿用原本額外排除的「配件」「收腹」關鍵字，維持既有更嚴格的排除範圍不變。
     if (
@@ -141,7 +141,7 @@ export default function SolutionSection() {
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-4">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                私密照護，從日常開始。
+                超值組合
               </h2>
             </div>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
@@ -393,13 +393,13 @@ export default function SolutionSection() {
         priority={false}
         image="/images/lucissi-v5/home-wear-banner.webp"
         alt="親膚棉質內著的蝴蝶結、織紋與車縫細節"
-        eyebrow="LUCISSI CARE · EVERYDAY COMFORT"
+        eyebrow="舒適內搭 · EVERYDAY COMFORT"
         headingLevel="h2"
-        title="貼身穿著"
-        description="每天貼近肌膚的穿著，也是私密日常的一部分。"
+        title="貼身的，更要舒服"
+        description="無痕、純棉與生理期內搭，每天貼近肌膚的選擇，回到自己的舒適感受。"
       >
         <div className="mt-7 flex flex-wrap gap-4">
-          <a href="/search?category=貼身穿著" className="bg-brand px-6 py-3 text-sm font-semibold text-white">立即選購</a>
+          <a href="/search?category=舒適內搭" className="bg-brand px-6 py-3 text-sm font-semibold text-white">探索舒適內搭</a>
           <a href="/community" className="border border-brand/30 px-6 py-3 text-sm font-semibold text-brand">了解更多</a>
         </div>
       </EditorialHero>

@@ -15,6 +15,9 @@
 - 主要網域設定為 `lucissicare.com`，repository 名稱仍為 `saengak_web`。
 - `vercel.json` 將 `saengak.com.tw` 與 `www.saengak.com.tw` 一般頁面永久轉址至新網域；排除 `/api`、`/auth/confirm`、`/reset-password`，以保留服務回呼。修改時須一起檢查相關測試、CSP、Origin 白名單、sitemap 與 robots。
 
+- **子品牌定位（2026-10-17 使用者確認）**：LUCISSI CARE 是「LUCISSI 的日常照護系列」，服務 LUCISSI 既有客人；五個照護面向為私密保養、身體保養、肌膚保養、舒適內搭、輕盈運動（名稱與文案集中在 `src/content/carePillars.ts`）。不承接情趣與性健康品類，語氣維持非性感化。待決：與母站 lucissi.com 重疊的私密保養／個人護理／運動品類如何分工、會員是否互通、免運門檻（母站 NT$1,500 vs 本站 NT$1,499）是否統一、新面向照片。
+- **Logo（2026-10-17）**：已選定方向 A「家族字標」（LUCISSI 沿用母站 Cormorant Garamond 400、字距 0.32em，下方細線夾 CARE，單色 plum #5B3D48）。規格與設計師需求在設計系統 artifact（https://claude.ai/artifact/LuJEPWJzPNbHwEe5UgDaKp）；SVG 交付前網站續用 `lucissi-care-logo.png`。
+
 ## 架構與整合
 
 - 前端：React 19、TypeScript、Vite 7、React Router、Tailwind CSS 4（`@tailwindcss/postcss`，主題在 `src/index.css` 的 `@theme`，沒有 `tailwind.config`）；入口與頁面位於 `src/`。

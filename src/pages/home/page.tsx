@@ -7,40 +7,12 @@ import HeroSection from './components/HeroSection';
 import ProductSection from './components/ProductSection';
 import BrandSection from './components/BrandSection';
 import SolutionSection from './components/SolutionSection';
+import PillarSection from './components/PillarSection';
+import FromLucissiSection from './components/FromLucissiSection';
+import { TALK_FALLBACK_ARTICLES } from '../../content/talkFallbackArticles';
 import { getShopifyArticles } from '../../lib/shopify';
 
-const fallbackArticles = [
-  {
-    id: 'fallback-article-1',
-    handle: 'daily-feminine-care-guide',
-    title: '日常私密護理：先理解身體，再選擇產品',
-    excerpt: '從溫和清潔、生活習慣到何時應尋求專業協助，建立可長期執行的溫和照護原則。',
-    contentHtml: '',
-    tags: ['健康知識', '私密護理'],
-    publishedAt: '2026-09-01T10:37:30Z',
-    image: { url: '/images/lucissi-v5/thumb-care.webp', altText: '日常私密護理指南' }
-  },
-  {
-    id: 'fallback-article-2',
-    handle: 'how-to-choose-seamless-underwear',
-    title: '貼身衣物材質怎麼選？透氣、摩擦與清潔頻率的日常指南',
-    excerpt: '用透氣度、摩擦感與清潔頻率三個面向，整理日常挑選貼身衣物的實用重點。',
-    contentHtml: '',
-    tags: ['生活美學', '選購指南'],
-    publishedAt: '2026-09-01T10:37:33Z',
-    image: { url: '/images/lucissi-v5/thumb-wear.webp', altText: '貼身衣物材質指南' }
-  },
-  {
-    id: 'fallback-article-3',
-    handle: 'how-we-review-products-and-content',
-    title: '我們如何整理產品與內容：LUCISSI CARE 編輯團隊的透明度承諾',
-    excerpt: '所有產品資訊堅持來源透明與成分公開；沒有即時評價時，就以編輯精選清楚標示。',
-    contentHtml: '',
-    tags: ['品牌方法', '透明原則'],
-    publishedAt: '2026-09-01T10:37:36Z',
-    image: { url: '/images/lucissi-v5/thumb-standards.webp', altText: 'LUCISSI CARE 品牌編輯標準' }
-  },
-];
+const fallbackArticles = TALK_FALLBACK_ARTICLES;
 
 export default function Home() {
   const navigate = useNavigate();
@@ -79,9 +51,11 @@ export default function Home() {
       <main className="pt-24">
         <HeroSection />
 
+        <PillarSection />
+
         <ProductSection
-          title="精選產品"
-          subtitle="探索我們最受歡迎的女性護理與私密保養產品"
+          title="本季精選"
+          subtitle="從私密保養到舒適內搭，先從這些開始。"
         />
 
         <BrandSection />
@@ -216,6 +190,7 @@ export default function Home() {
           </div>
         </section>
 
+        <FromLucissiSection />
       </main>
 
       <Footer />

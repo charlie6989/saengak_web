@@ -12,6 +12,8 @@ import { calculateSearchScore, deriveCatalogSignals, matchesVariantOption, pagin
 import { getShopifyProducts } from '../../lib/shopify';
 import { formatPageTitle } from '../../lib/pageTitle';
 import { captureExceptionSafe } from '../../lib/sentry';
+import PillarArticles from '../../components/feature/PillarArticles';
+import { CARE_PILLARS, SUBCATEGORY_DESCRIPTIONS, classifyCarePillar, findCarePillarByName, matchesCareSubcategory, resolveCategoryName } from '../../content/carePillars';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -46,7 +48,9 @@ export default function Search() {
 
   // 從 URL 參數讀取分類和搜尋字串 (支援 query, q, keyword, search 並處理 all)
   const rawCategory = searchParams.get('category') || '';
-  const category = rawCategory.trim().toLowerCase() === 'all' ? '' : rawCategory.trim();
+  // 舊分類網址（私密護理、貼身穿著、舒適穿著）解析到新的照護面向名稱
+  const category = rawCategory.trim().toLowerCase() === 'all' ? '' : resolveCategoryName(rawCategory.trim());
+  const activePillar = findCarePillarByName(category);
 
   const rawQuery =
     searchParams.get('q') ||
@@ -59,7 +63,8 @@ export default function Search() {
   const collectionHandle = searchParams.get('collection') || '';
   const tag = searchParams.get('tag') || '';
 
-  const categories = ['私密護理', '貼身穿著'];
+  const categories = CARE_PILLARS.map((pillar) => pillar.name);
+  const [activeSubcategory, setActiveSubcategory] = useState('');
 
 
   // 新增篩選選項
@@ -201,6 +206,7 @@ export default function Search() {
 
     // 重置所有篩選
     setSelectedCategories(category ? [category] : []);
+    setActiveSubcategory('');
     setSelectedUsages([]);
     setSelectedSizes([]);
     setSelectedColors([]);
@@ -267,6 +273,7 @@ export default function Search() {
 
   const clearAllFilters = () => {
     setSelectedCategories([]);
+    setActiveSubcategory('');
     setSelectedUsages([]);
     setSelectedSizes([]);
     setSelectedColors([]);
@@ -281,10 +288,16 @@ export default function Search() {
 
     // 精準分類比對邏輯 (避免單字拆解導致全品項誤判)
     const matchesCategory = selectedCategories.length === 0 ||
-      selectedCategories.flatMap(name => name === '私密護理'
-        ? ['女性護理', '每日清潔', '深層修護']
-        : [name]).some(catName => {
-        const catNorm = (catName === '貼身穿著' ? '舒適穿著' : catName).trim().toLowerCase();
+      selectedCategories.some(catName => {
+        // 五個照護面向：以共用分類判斷，關鍵字優先（除毛刀→身體保養、護衣袋→舒適內搭、運動內衣→輕盈運動）
+        const pillar = findCarePillarByName(catName);
+        if (pillar) return classifyCarePillar(product) === pillar.id;
+        const parentPillar = CARE_PILLARS.find((item) => item.subcategories.includes(catName));
+        if (parentPillar && parentPillar.id !== 'intimate') {
+          return classifyCarePillar(product) === parentPillar.id && matchesCareSubcategory(product, catName);
+        }
+        if (parentPillar?.id === 'intimate' && classifyCarePillar(product) !== 'intimate') return false;
+        const catNorm = catName.trim().toLowerCase();
         const pType = (product.productType || '').trim().toLowerCase();
         const pName = (product.name || '').toLowerCase();
         const pTags = (product.tags || []).map(t => t.toLowerCase());
@@ -366,7 +379,11 @@ export default function Search() {
       product.name.includes(brand) || product.description.includes(brand)
     );
 
-    return matchesSearch && matchesCategory && matchesUsage && matchesSize && matchesColor && matchesPrice && matchesBrand;
+    const matchesSubcategory = !activeSubcategory || !activePillar || (activePillar.id === 'intimate'
+      ? (product.productType || '').trim() === activeSubcategory
+      : matchesCareSubcategory(product, activeSubcategory));
+
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesUsage && matchesSize && matchesColor && matchesPrice && matchesBrand;
   });
 
   // 售完商品一律排在有貨商品之後，再套用顧客選擇的排序
@@ -395,7 +412,7 @@ export default function Search() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedCategories, selectedUsages, selectedSizes, selectedColors, selectedBrands, priceRange, sortBy]);
+  }, [searchQuery, selectedCategories, activeSubcategory, selectedUsages, selectedSizes, selectedColors, selectedBrands, priceRange, sortBy]);
 
   // 檢查是否有任何篩選條件
   const hasActiveFilters = selectedCategories.length > 0 || selectedUsages.length > 0 ||
@@ -421,61 +438,56 @@ export default function Search() {
     if (tag) {
       return `標籤: ${tag}`;
     }
+    if (activePillar) {
+      return activePillar.title;
+    }
     if (category) {
       return category;
     }
     if (q) {
       return `搜尋: ${q}`;
     }
-    return "全部商品";
+    return '照顧身體的每一個日常';
   };
 
-  // 分類專屬橫幅與描述。
+  // 子分類橫幅與描述；五個照護面向的頁首文案在 src/content/carePillars.ts。
   const CATEGORY_CONFIG: Record<string, { image: string; description: string }> = {
-    '私密護理': {
-      image: '/images/lucissi-v5/catalog-care.webp',
-      description: '精選清潔、保濕與舒緩護理，為每天的私密日常，多一點舒適與自在。'
-    },
-    '貼身穿著': {
-      image: '/images/lucissi-v5/catalog-wear.webp',
-      description: '每天貼近肌膚的穿著，也是私密日常的一部分。'
-    },
     '女性護理': {
       image: '/images/lucissi-v5/catalog-feminine.webp',
-      description: '韓國沙龍級極簡護理，給予私密肌膚最溫柔細膩的長效守護'
+      description: SUBCATEGORY_DESCRIPTIONS['女性護理']
     },
     '每日清潔': {
       image: '/images/lucissi-v5/catalog-cleansing.webp',
-      description: '弱酸性親膚潔淨配方，綿密慕斯泡沫維持每日微生態平衡'
+      description: SUBCATEGORY_DESCRIPTIONS['每日清潔']
     },
     '深層修護': {
       image: '/images/lucissi-v5/catalog-repair.webp',
-      description: '專利高活性修護精華，深度舒緩乾癢敏弱，長效平衡健康屏障'
-    },
-    '舒適穿著': {
-      image: '/images/lucissi-v5/catalog-comfort.webp',
-      description: '頂級親膚純棉與無痕透氣剪裁，細膩貼合日常生活的每個節奏'
+      description: SUBCATEGORY_DESCRIPTIONS['深層修護']
     },
     '益生菌私密舒緩凝膠': {
       image: '/images/lucissi-v5/catalog-gel.webp',
-      description: '專利益生菌舒緩修護配方，溫和穩定私密肌膚微生態'
+      description: SUBCATEGORY_DESCRIPTIONS['益生菌私密舒緩凝膠']
     }
   };
 
   const DEFAULT_SEARCH_BANNER = "/images/lucissi-v5/catalog-all.webp";
 
   const categoryImageAlt: Record<string, string> = {
-    '私密護理': '透光玫瑰玻璃前的 Saengak 潔淨慕斯與修護噴霧',
-    '貼身穿著': '淺粉抽屜中整齊放置的親膚棉質內著',
     '女性護理': '梅紫收納包中的隨身護理噴霧與濕巾',
     '每日清潔': '象牙白洗手檯邊的 Saengak 潔淨慕斯',
     '深層修護': '透明玻璃稜柱旁的修護精華噴霧',
-    '舒適穿著': '以雙手確認棉質內著腰帶的柔軟度',
     '益生菌私密舒緩凝膠': '淺藍凝膠包裝與單支產品的日常護理陳列',
   };
 
+  const heroEyebrow = activePillar
+    ? `${activePillar.name} · ${activePillar.eyebrow}`
+    : category
+      ? `LUCISSI CARE · ${category}`
+      : 'LUCISSI CARE · ALL';
+
   const getPageImage = () => {
     if (collection?.image) return collection.image;
+    if (activePillar) return activePillar.heroImage;
     if (category && CATEGORY_CONFIG[category]) {
       return CATEGORY_CONFIG[category].image;
     }
@@ -490,13 +502,16 @@ export default function Search() {
     if (tag) {
       return `包含 ${tag} 標籤的所有商品`;
     }
+    if (activePillar) {
+      return activePillar.description;
+    }
     if (category && CATEGORY_CONFIG[category]) {
       return CATEGORY_CONFIG[category].description;
     }
     if (q) {
       return `"${q}" 的搜尋結果`;
     }
-    return '從私密護理，到每天貼近肌膚的舒適穿著，為女性挑選更自在的日常選擇。';
+    return '從私密、身體與肌膚保養、舒適內搭，到輕盈運動，為妳細心挑選。';
   };
 
   const scrollToProductListTop = () => {
@@ -515,6 +530,14 @@ export default function Search() {
     }
   };
 
+  // 商品不足的面向：以 LUCISSI Talk 文章陪伴。以「套用篩選前」的面向商品數判斷，
+  // 尺寸、顏色、價格等篩選把結果篩到 0 時，仍顯示一般的「找不到符合條件的商品」。
+  const pillarInventoryCount = activePillar
+    ? products.filter((product) => classifyCarePillar(product) === activePillar.id).length
+    : 0;
+  const showPillarArticles = Boolean(activePillar) && !loading && !loadFailed && pillarInventoryCount < 4;
+  const showPillarPlaceholderOnly = showPillarArticles && pillarInventoryCount === 0;
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     scrollToProductListTop();
@@ -531,8 +554,8 @@ export default function Search() {
           compact
           preserveImage
           image={getPageImage()}
-          alt={categoryImageAlt[category || ''] || '象牙白抽屜中以私密護理產品為主的完整日常選品'}
-          eyebrow={category === '私密護理' ? 'LUCISSI CARE · INTIMATE CARE' : 'LUCISSI CARE · DAILY ESSENTIALS'}
+          alt={activePillar?.heroAlt || categoryImageAlt[category || ''] || '象牙白抽屜中以私密護理產品為主的完整日常選品'}
+          eyebrow={heroEyebrow}
           title={getPageTitle()}
           description={getPageDescription()}
         />
@@ -564,6 +587,25 @@ export default function Search() {
       <main className="page-content" ref={productListRef} id="product-list-top">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="py-4 sm:py-6">
+            {/* 照護面向的子分類 */}
+            {activePillar && activePillar.subcategories.length > 0 && (
+              <div className="mb-4 flex flex-wrap gap-2 sm:mb-6" role="group" aria-label={`${activePillar.name}子分類`}>
+                {['', ...activePillar.subcategories].map((sub) => (
+                  <button
+                    key={sub || 'all'}
+                    type="button"
+                    aria-pressed={activeSubcategory === sub}
+                    onClick={() => setActiveSubcategory(sub)}
+                    className={`border px-4 py-1.5 text-sm transition-colors ${activeSubcategory === sub
+                      ? 'border-brand bg-brand text-white'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-brand hover:text-brand'}`}
+                  >
+                    {sub || `全部${activePillar.name}`}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Product Count and Controls - 手機版優化 */}
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               {/* Product Count */}
@@ -965,7 +1007,7 @@ export default function Search() {
             </motion.div>
           )}
 
-          {!loading && sortedProducts.length === 0 && (
+          {!loading && sortedProducts.length === 0 && !showPillarPlaceholderOnly && (
             <div className="text-center py-12 sm:py-16">
               <i className="ri-search-line text-3xl sm:text-4xl text-gray-400 mb-3 sm:mb-4"></i>
               <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
@@ -1012,6 +1054,9 @@ export default function Search() {
                 <i className="ri-arrow-right-s-line text-lg"></i>
               </button>
             </div>
+          )}
+          {showPillarArticles && activePillar && (
+            <PillarArticles pillar={activePillar} hasProducts={pillarInventoryCount > 0} />
           )}
         </div>
       </main>

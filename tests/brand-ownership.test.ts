@@ -20,6 +20,13 @@ describe('brandOwnership - SAENGAK 品牌歸屬判斷共用模組', () => {
       expect(isNonSaengakOwnBrandProduct({ name: '親膚內著套組' })).toBe(true);
     });
 
+    it('運動內衣與新面向 productType（舒適內搭、輕盈運動）應判定為非自有品牌', () => {
+      expect(isNonSaengakOwnBrandProduct({ title: '乾爽透氣運動內衣' })).toBe(true);
+      expect(isNonSaengakOwnBrandProduct({ productType: '舒適內搭', title: '任意品名' })).toBe(true);
+      expect(isNonSaengakOwnBrandProduct({ productType: '輕盈運動', title: '任意品名' })).toBe(true);
+      expect(resolveDisplayVendor({ title: '乾爽透氣運動內衣', vendor: undefined })).toBe('');
+    });
+
     it('品名命中除毛刀／護衣袋／洗衣袋等周邊配件關鍵字應判定為非自有品牌', () => {
       expect(isNonSaengakOwnBrandProduct({ title: '女性私密美體修整除毛刀' })).toBe(true);
       expect(isNonSaengakOwnBrandProduct({ title: '隨身攜帶型刮毛刀' })).toBe(true);

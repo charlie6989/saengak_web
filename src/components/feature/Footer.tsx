@@ -1,10 +1,29 @@
 import { Link } from 'react-router-dom';
 import { siteContent } from '../../content/site';
+import { ENDORSEMENT, LUCISSI_URL } from '../../content/carePillars';
 
 export default function Footer() {
   return (
     <footer className="border-t border-gray-200" style={{ backgroundColor: '#F8F5F1' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* 母品牌背書 */}
+        <div className="mb-12 flex flex-col gap-4 border-b border-gray-200 pb-10 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <p className="mb-2 text-xs font-medium tracking-[0.18em] text-brand">BY LUCISSI</p>
+            <p className="text-base leading-relaxed text-gray-600">
+              {siteContent.brandName} 是 {ENDORSEMENT}，為妳挑選私密、身體與肌膚保養、舒適內搭與輕盈運動用品。
+            </p>
+          </div>
+          <a
+            href={LUCISSI_URL}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex shrink-0 self-start border-b border-brand pb-1 text-sm font-medium text-brand md:self-auto"
+          >
+            前往 LUCISSI<span aria-hidden="true" className="ml-3">↗</span>
+          </a>
+        </div>
+
         {/* 主要內容區域 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* 客戶服務 */}
@@ -74,20 +93,26 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* 社群 */}
+          {/* 品牌 */}
           <div>
-            <h3 className="text-lg font-bold text-gray-900 mb-6" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-              社群
+            <h3 className="text-lg font-bold text-gray-900 mb-6">
+              品牌
             </h3>
             <ul className="space-y-3">
               <li>
-                <Link 
-                  to="/community" 
-                  className="text-base text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2"
-                  style={{ fontFamily: "Noto Sans TC, sans-serif" }}
-                >
+                <Link to="/about" className="text-base text-gray-600 hover:text-gray-900 transition-colors">
+                  關於我們
+                </Link>
+              </li>
+              <li>
+                <Link to="/community" className="text-base text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2">
                   <i className="ri-article-line text-xl"></i>
-                  健康知識分享
+                  LUCISSI Talk
+                </Link>
+              </li>
+              <li>
+                <Link to="/promotion" className="text-base text-gray-600 hover:text-gray-900 transition-colors">
+                  優惠活動
                 </Link>
               </li>
             </ul>

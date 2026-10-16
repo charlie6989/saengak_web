@@ -85,7 +85,7 @@ export default function BestRated() {
           alt="細心整理 Saengak 護理精選產品"
           eyebrow="LUCISSI CARE · SELECTION"
           title="精選商品"
-          description="從私密護理到貼身穿著，為每天的生活挑選更舒適、自在的選擇。"
+          description="從私密保養到舒適內搭，為每天的生活挑選更舒適、自在的選擇。"
         />
         <section className="mx-auto max-w-7xl px-4 pt-12">
           {loading && products.length === 0 ? (

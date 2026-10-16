@@ -3,6 +3,7 @@ import EditorialHero from '../../components/feature/EditorialHero';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { siteContent } from '../../content/site';
+import { CARE_PILLARS, ENDORSEMENT } from '../../content/carePillars';
 
 const textLink = 'inline-flex min-h-11 items-center gap-3 text-sm font-medium text-brand underline decoration-brand/30 underline-offset-8 transition-colors hover:decoration-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand';
 const eyebrow = 'text-xs font-medium tracking-[0.18em] text-[#78616A]';
@@ -12,7 +13,7 @@ const selectionPrinciples = [
   {
     number: '01',
     title: '從日常需求出發',
-    description: '清潔、保濕、舒緩，或是每天的貼身穿著。我們從實際使用的時刻思考，讓每一件選品都有清楚的位置。',
+    description: '清潔、保濕、舒緩，每天的貼身內搭，或是一段輕鬆的伸展。我們從實際使用的時刻思考，讓每一件選品都有清楚的位置。',
   },
   {
     number: '02',
@@ -36,7 +37,7 @@ export default function AboutPage() {
           alt="選品工作桌前，仔細閱讀護理產品包裝的女性"
           eyebrow="ABOUT LUCISSI CARE"
           title="把照顧自己，放回日常裡。"
-          description="LUCISSI CARE 從私密護理，到每天貼近肌膚的舒適穿著，為女性挑選更自在的日常選擇。"
+          description={`LUCISSI CARE 是 ${ENDORSEMENT}。從私密、身體與肌膚保養、舒適內搭，到輕盈運動，為妳挑選更自在的日常選擇。`}
         >
           <a href="#our-story" className={`${textLink} mt-6`}>
             認識 LUCISSI <span aria-hidden="true">↓</span>
@@ -53,7 +54,7 @@ export default function AboutPage() {
             </div>
             <div className="space-y-5 text-base leading-8">
               <p>忙碌的生活裡，我們常常把時間留給工作、家人與待辦事項。留給自己的照顧，可以從每天用的護理品、早晨換上的貼身衣物開始。</p>
-              <p>LUCISSI CARE 是為女性日常而生的選品品牌。我們把私密護理與貼身穿著放在一起，因為它們都貼近身體，也貼近生活。</p>
+              <p>LUCISSI CARE 是 {ENDORSEMENT}。我們把私密與身體保養、肌膚保養、舒適內搭和輕盈運動放在一起，因為它們都貼近身體，也貼近生活。</p>
               <p>我們希望，當妳想多照顧自己一點時，這裡有清楚的方向，也有適合妳的日常選擇。</p>
             </div>
           </div>
@@ -63,10 +64,10 @@ export default function AboutPage() {
           <div className="mx-auto max-w-6xl px-6 md:px-10">
             <div className="mb-10 md:mb-14">
               <p className={eyebrow}>OUR SELECTION</p>
-              <h2 id="selection-title" className={`${heading} mt-5`}>貼近妳的兩種日常</h2>
+              <h2 id="selection-title" className={`${heading} mt-5`}>貼近妳的五種日常</h2>
             </div>
-            <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16 lg:gap-24">
-              <figure>
+            <div className="grid items-start gap-10 md:grid-cols-2 md:gap-16 lg:gap-24">
+              <figure className="md:sticky md:top-32">
                 <img
                   src="/images/lucissi-v5/about-saengak-portrait.webp"
                   alt="擺放於淺色層架上的私密清潔、噴霧與濕巾選品"
@@ -78,18 +79,14 @@ export default function AboutPage() {
                 <figcaption className="mt-4 text-xs tracking-wider text-[#78616A]">從每天會用到的細節，開始挑選。</figcaption>
               </figure>
               <div className="divide-y divide-[#D9CAC9]">
-                <article className="pb-9 md:pb-10">
-                  <p className={eyebrow}>01 / INTIMATE CARE</p>
-                  <h3 className="mt-4 text-2xl font-medium text-brand">私密護理</h3>
-                  <p className="mt-4 text-base leading-8">精選清潔、保濕與舒緩護理，從不同的使用需求出發，為每天的私密日常，多一點舒適與自在。</p>
-                  <Link to="/search?category=私密護理" className={`${textLink} mt-5`}>探索私密護理 <span aria-hidden="true">↗</span></Link>
-                </article>
-                <article className="pt-9 md:pt-10">
-                  <p className={eyebrow}>02 / EVERYDAY WEAR</p>
-                  <h3 className="mt-4 text-2xl font-medium text-brand">貼身穿著</h3>
-                  <p className="mt-4 text-base leading-8">每天貼近肌膚的穿著，也是私密日常的一部分。從材質的觸感、剪裁到穿著情境，陪妳找到自在的貼身選擇。</p>
-                  <Link to="/search?category=貼身穿著" className={`${textLink} mt-5`}>探索貼身穿著 <span aria-hidden="true">↗</span></Link>
-                </article>
+                {CARE_PILLARS.map((pillar, index) => (
+                  <article key={pillar.id} className="py-6 first:pt-0 last:pb-0">
+                    <p className={eyebrow}>{String(index + 1).padStart(2, '0')} / {pillar.eyebrow}</p>
+                    <h3 className="mt-3 text-2xl font-medium text-brand">{pillar.name}</h3>
+                    <p className="mt-3 text-base leading-8">{pillar.description}</p>
+                    <Link to={`/search?category=${pillar.name}`} className={`${textLink} mt-4`}>探索{pillar.name} <span aria-hidden="true">↗</span></Link>
+                  </article>
+                ))}
               </div>
             </div>
           </div>
@@ -137,7 +134,7 @@ export default function AboutPage() {
               <p className={eyebrow}>LUCISSI Talk｜私密對話</p>
               <h2 id="talk-title" className={`${heading} mt-5`}>讓私密，<br />成為可以自在聊的日常。</h2>
               <div className="mt-6 space-y-4 text-base leading-8">
-                <p>關於私密照護、貼身穿著，或是身體的細微感受，每個人的經驗都值得被好好聽見。</p>
+                <p>關於私密照護、貼身內搭、伸展與保養，或是身體的細微感受，每個人的經驗都值得被好好聽見。</p>
                 <p>在 LUCISSI Talk，我們從生活裡的小提問出發，分享照護觀念與日常靈感。希望妳在閱讀與交流之間，更了解自己的需要，也更自在地談論自己。</p>
               </div>
               <Link to="/community" className={`${textLink} mt-6`}>走進私密對話 <span aria-hidden="true">↗</span></Link>

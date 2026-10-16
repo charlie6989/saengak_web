@@ -49,6 +49,12 @@ const forbiddenContent = [
   ['unverified testing claim', '通過國際權威機構安全檢驗標準'],
   ['fabricated ingredient fallback', '專利益生菌發酵濾液、積雪草萃取、乳酸'],
   ['vague origin fallback', '嚴選優良工廠製造'],
+  // 2026-10-17 品牌審視：分類文案中無專利文件或其他依據的宣稱
+  ['unverified patent claim', '專利高活性修護精華'],
+  ['unverified patent claim', '專利益生菌舒緩修護配方'],
+  ['unverified salon-grade claim', '韓國沙龍級'],
+  ['unverified premium-material claim', '頂級親膚純棉'],
+  ['unverified popularity claim', '探索我們最受歡迎的'],
   ['bundled mock identity', 'demo@example.com'],
   ['bundled mock identity', 'test@gmail.com'],
   ['bundled mock identity', 'user@test.com'],
