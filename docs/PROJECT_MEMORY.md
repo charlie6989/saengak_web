@@ -41,11 +41,20 @@
 - 全站免運門檻為 NT$1,499。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
 - 未達門檻的基本運費為 NT$146（黑貓宅急便常溫宅配，參照 LUCISSI 網站）。`DEFAULT_SHIPPING_FEE` 只是後備值，顧客看到的是 Supabase `site_settings.default_shipping_fee`；改運費時程式碼、Supabase、Shopify 運費三處一起改。
 - 客服暫時只用 Email（`Company@lucissi.com`）。
-- 訪客結帳已決定開放；登入改為會員優惠入口。前後端已隨 PR #37／#38 合併至 `main`，2026-10-16 正式 Vercel 部署頁確認 `bb5f694` 為 Production／Ready／Current，綁定 `lucissicare.com`。正式 Supabase 已存在 migration `20261016024415`，但當日回讀 `guest_checkout_enabled=false`，尚未對外開放。
+- 訪客結帳已決定開放；登入改為會員優惠入口。前後端已隨 PR #37／#38 合併至 `main`，2026-10-16 正式 Vercel 部署頁確認 `99596c0` 為 Production／Ready／Current，綁定 `lucissicare.com`。正式 Supabase 已存在 migration `20261016024415`，但當日回讀 `guest_checkout_enabled=false`，尚未對外開放。
 - 2026-10-16 已建立正式 Turnstile widget 並設定訪客專用 `VITE_PUBLIC_GUEST_CHECKOUT_TURNSTILE_SITE_KEY`／`TURNSTILE_SECRET_KEY`；會員 CAPTCHA 的 `VITE_PUBLIC_TURNSTILE_SITE_KEY` 必須與 Supabase Auth 獨立配置，避免訪客設定誤影響登入。自動瀏覽器出現 300030，仍待真人成功與端到端驗收。
 - 正確 app 的六項實際 webhook 已由舊 `www.saengak.com.tw` 原地更新至 `https://lucissicare.com/api/webhooks/shopify`，ID 不變、無重複；新舊端點簽章 smoke 通過。該 app 不使用舊 Supabase Edge Function v8，本次未更新該函式；不能推論所有其他來源均停用它。
 - Vercel Firewall 已發布結帳 API 每 IP 每 60 秒 10 次限速；完整付款／發票／認領與營運規則完成前，正式訪客開關維持 false。
 - 當日確認 Supabase Auth `mailer_autoconfirm=false`；正確 Shopify 商店 `gh2xgs-zf` 後台的聯絡方式為 Email，且不要求登入結帳。Shopify connector 當時連到另一間 `j97kr5-7b`，不可用該 connector 的結果代替本店設定。完整查核與剩餘步驟見 `docs/GUEST_CHECKOUT_LAUNCH_CHECKLIST.md`。
+
+## 隔離訪客驗收（2026-10-16）
+
+- 指定組織 `tvahbnsbwsnlmwfessvf` 的測試分支 ref 為 `cpgdxvqywuhredsdgvrd`（branch ID `51c87dc4-0fbe-4956-be52-ff3dc19ccc8e`），無正式資料；不可合併測試資料或把測試 Preview 直接提升正式。費用 US$0.01344／小時另加用量。
+- 初次分支建立因正式 migration 歷史缺 baseline 失敗；只在分支補 baseline／缺漏 migration 後 rebase 成功。新增明確 service_role coupon CRUD migration 後 hosted pgTAP 213 項通過；正式庫原有權限，尚未套用該新 migration。
+- Shopify 真實 TapPay 沙盒訂單 #1008（gid 18952978923587）付款 166 元，測試 webhook 寫入分支；使用者確認訂單信收到。驗證信是另一條 Supabase Auth／Resend 路徑，分支 SMTP 535 已以核准的測試寄信金鑰修復；Resend Delivered、使用者已點信且 Auth email_confirmed_at 有值，前端認領仍待通過 Vercel 保護後回讀。
+- `api/invoice/guangmao.ts` 的 Vercel default.fetch 第二參數是 runtime context，不能當 injected fetch。已改直接用 global fetch，新增回歸測試，449 項單元測試通過；目前修正只驗證到隔離 Preview，正式尚未更新。
+- Resend `auth.saengak.com.tw` 網域 Verified；既有 SAENGAK 金鑰僅寄信權限、完整值不可取回。已核准建立僅該網域寄信的測試金鑰並設定分支，驗證信送達。正式 SMTP 是否可用未測；隔離分支原錯誤不能直接當成正式故障。
+- 正式 guest flag 維持 false；TapPay 正式後台仍為測試模式。真人 Turnstile、驗證後認領及營運資料保留規則尚未完成。
 
 ## 素材製作記憶
 

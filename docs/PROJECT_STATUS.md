@@ -4,12 +4,15 @@
 
 ## 訪客結帳上線準備（2026-10-16）
 
-- 本機已同步遠端 `bb5f694`；後續修正：訪客 Turnstile 使用獨立 site key，避免誤啟用會員 Auth CAPTCHA；修正 webhook 查核腳本預設商店常數拼字。
-- 已建立正式 Cloudflare widget、保存 Vercel Production 設定、發布結帳 API 限速（10 次／60 秒／IP）。
-- 已取得正確 app 的 Admin API 回讀；六個 webhook 從舊網域原地更新至 `https://lucissicare.com/api/webhooks/shopify`，ID 不變、無重複。新舊端點均通過有效 HMAC／無效 JSON 的無資料寫入測試。
-- 46 檔／448 單元測試、typecheck、build 通過；從空本機 DB 套用全部 migration，8 檔／213 項 pgTAP 通過（含訪客 43 項）。
-- `guest_checkout_enabled=false`。尚缺真實 Turnstile 成功、隔離付款／webhook／發票／認領完整驗收及訪客個資／發票營運規則；未建立正式測試訂單或發票。
-- 詳細執行證據、限制、回復方式及部署回讀見 [訪客結帳上線查核](GUEST_CHECKOUT_LAUNCH_CHECKLIST.md)。
+- `99596c0` 已推送 main，GitHub Actions 成功；正式 Vercel `Hj585yCVFh7YUt7x3e9eaTeJezwL` Ready／Current，會員登入按鈕已恢復。訪客 Turnstile 使用獨立 site key。
+- 六個正式 Shopify webhook 已原地更新至 `https://lucissicare.com/api/webhooks/shopify`。限速實測前 10 次無登入請求回 401，超限回 429。
+- 已建立無正式資料的 Supabase 分支 `guest-checkout-acceptance`（`cpgdxvqywuhredsdgvrd`）；只有此分支訪客開關為 true。分支費用 US$0.01344／小時另加用量，驗收結束需清理。
+- 隔離驗收：實際 TapPay 沙盒付款訂單 **#1008／NT$166** 成功，Shopify 真實 webhook 寫入隔離 DB；使用者確認 `company@lucissi.com` 收到訂單確認信。
+- 發票：獨立光貿公開沙盒 smoke 發票 `AB12361278` 開立及作廢皆回讀 99。#1008 在 Vercel 發現 `fetcher is not a function`，已修正預設 fetch handler 誤把 runtime context 當 fetch 的問題；隔離部署 `dpl_3ATpoHvu9q54cJzikidENsyuooCC` 測試發票 `AB12361301` 已回讀 99；#1008 已取消並回讀 TapPay 測試退款成功，作廢回讀待續。
+- 新增 migration 明確授予 `service_role` promotions／user_coupons CRUD；只套用隔離分支，正式庫原本已有這些權限。隔離 hosted DB 8 檔／213 項 pgTAP 通過；程式 46 檔／449 項通過，修正後 Preview build 成功。
+- 測試分支 SMTP 535 已以經核准的單一網域寄信金鑰修復，Resend 回讀 Delivered，使用者確認收信並已驗證 Email；Vercel 部署保護擋住回跳，已提供既有限時測試存取，認領仍待回讀。正式 SMTP 未變更。
+- 正式 `guest_checkout_enabled=false`，19:18 回讀訪客訂單／聯絡資料／link 皆 0。仍缺真實 Turnstile 前端成功、Email 驗證認領、取消／退款／發票完整回讀、正式付款與發票設定及訪客個資營運規則。TapPay 仍為測試模式。
+- 詳細證據、暫時訂閱及清理事項見 [訪客結帳上線查核](GUEST_CHECKOUT_LAUNCH_CHECKLIST.md)。
 
 ## 訪客結帳前端（2026-10-16，分支 `claude/guest-checkout-frontend`，疊在 PR #37 上）
 

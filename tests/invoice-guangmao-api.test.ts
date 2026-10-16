@@ -195,6 +195,23 @@ describe('光貿發票 Worker API (api/invoice/guangmao.ts)', () => {
       process.env.AmegoDispatchToken = DISPATCH_TOKEN;
     });
 
+    it('Vercel 傳入執行環境 context 時仍以平台 fetch 派送發票', async () => {
+      const job = buildJob();
+      mocks.getSupabaseAdminClient.mockReturnValue(createAdminClientMock([[job], []]));
+      mocks.dispatchAmegoJob.mockResolvedValue({
+        outcome: 'provider_pending', mutationAccepted: true,
+      });
+
+      const response = await Reflect.apply(vercelHandler.fetch, undefined, [
+        request({ token: DISPATCH_TOKEN }),
+        { waitUntil: vi.fn() },
+      ]);
+
+      expect(response.status).toBe(200);
+      expect(mocks.dispatchAmegoJob.mock.calls[0][2]).toBe(fetchMock);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
     it('目前無待處理任務時，僅嘗試認領一次即回報「無待處理任務」', async () => {
       const admin = createAdminClientMock([[]]);
       mocks.getSupabaseAdminClient.mockReturnValue(admin);

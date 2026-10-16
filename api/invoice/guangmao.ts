@@ -64,10 +64,7 @@ export async function POST(request: Request): Promise<Response> {
   return handler(request);
 }
 
-async function handler(
-  request: Request,
-  customFetcher: typeof fetch = fetch
-): Promise<Response> {
+async function handler(request: Request): Promise<Response> {
   if (request.method !== 'POST' && request.method !== 'GET') {
     return jsonResponse({ error: '不支援此 HTTP 方法' }, { status: 405 });
   }
@@ -158,7 +155,9 @@ async function handler(
     const result = await dispatchAmegoJob(
       job,
       credentials,
-      customFetcher,
+      // Vercel supplies a runtime context as the fetch handler's second argument.
+      // Use the platform fetch directly; that context is not a fetch dependency.
+      fetch,
       async () => {
         await admin.rpc('mark_amego_invoice_mutation_started', {
           p_job_id: job.job_id,
