@@ -1,3 +1,4 @@
+import { isMemberPerkCode, isMemberPerkTitle } from '../_lib/member-perk-code.js';
 import { jsonResponse, isOriginAllowed } from '../_lib/security.js';
 import { SHOPIFY_STORE_DOMAIN, SHOPIFY_ADMIN_API_VERSION } from '../_lib/shopify-config.js';
 import { getSiteSetting } from '../_lib/supabase-admin.js';
@@ -377,18 +378,16 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
  * 自包含、不依賴任何 Request/Response 物件，供其他 API (例如會員領券) import 使用。
  * 查無代碼、代碼非 ACTIVE、憑證未設定或換 token 失敗時一律回傳 undefined，不會 throw。
  */
-/**
- * LUCISSI 會員首單免運使用專屬折扣（每位會員一組代碼），不得出現在公開優惠列表，
- * 也不能經由一般領券流程歸戶。
- */
-export function isMemberPerkDiscount(nodeId: string | undefined): boolean {
-  const perkId = process.env.LUCISSI_MEMBER_PERK_DISCOUNT_ID?.trim();
-  return Boolean(perkId && nodeId && nodeId === perkId);
+/** LUCISSI 會員首單免運的個人折扣：依名稱或代碼辨識，不出現在公開列表、不能經一般領券流程歸戶。 */
+export function isMemberPerkDiscountNode(n: ShopifyDiscountNode): boolean {
+  const cd = n.codeDiscount;
+  if (!cd) return false;
+  return isMemberPerkTitle(cd.title) || (cd.codes?.nodes ?? []).some((node) => isMemberPerkCode(node.code));
 }
 
 export async function fetchShopifyPromotionByCode(code: string): Promise<ShopifyPromotion | undefined> {
   const normalizedCode = code.trim().toUpperCase();
-  if (!normalizedCode) return undefined;
+  if (!normalizedCode || isMemberPerkCode(normalizedCode)) return undefined;
 
   const domain = SHOPIFY_STORE_DOMAIN || 'gh2xgs-zf.myshopify.com';
   const clientId = process.env.SHOPIFY_APP_CLIENT_ID;
@@ -450,7 +449,7 @@ export async function fetchShopifyPromotionByCode(code: string): Promise<Shopify
 
     const shopifyData = (await shopifyRes.json().catch(() => ({}))) as ShopifyGraphQLByCodeResponse;
     const node = shopifyData?.data?.codeDiscountNodeByCode;
-    if (!node || node.codeDiscount?.status !== 'ACTIVE' || isMemberPerkDiscount(node.id)) {
+    if (!node || node.codeDiscount?.status !== 'ACTIVE' || isMemberPerkDiscountNode(node)) {
       return undefined;
     }
 
@@ -537,7 +536,7 @@ export async function GET(request: Request): Promise<Response> {
     const nodes: ShopifyDiscountNode[] = shopifyData?.data?.codeDiscountNodes?.nodes || [];
 
     const promotions = nodes
-      .filter((n) => n.codeDiscount?.status === 'ACTIVE' && !isMemberPerkDiscount(n.id))
+      .filter((n) => n.codeDiscount?.status === 'ACTIVE' && !isMemberPerkDiscountNode(n))
       .map(mapDiscountNodeToPromotion)
       .filter((p): p is NonNullable<typeof p> => Boolean(p));
 

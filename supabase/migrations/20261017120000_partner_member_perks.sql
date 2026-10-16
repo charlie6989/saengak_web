@@ -3,7 +3,7 @@
 -- 1. public.partner_member_exists(email)：供 /api/partner/member-status 以 service_role 查詢
 --    「此 Email 是否為已驗證的 CARE 會員」，只回傳布林值，不開放 anon／authenticated。
 -- 2. public.partner_member_perks：LUCISSI 會員首單免運的領取紀錄（每位會員一筆）。
---    只由伺服器（service_role）寫入；會員只能讀自己的那筆。
+--    狀態 pending → issued → used／expired；只由伺服器（service_role）寫入，會員只能讀自己的那筆。
 -- =============================================================================
 
 begin;
@@ -29,12 +29,20 @@ grant execute on function public.partner_member_exists(text) to service_role;
 
 create table if not exists public.partner_member_perks (
   user_id uuid primary key references auth.users (id) on delete cascade,
+  email_normalized text not null,
   partner text not null default 'lucissi' check (partner in ('lucissi')),
   perk text not null default 'first_order_free_shipping' check (perk in ('first_order_free_shipping')),
   coupon_code text not null unique,
-  status text not null default 'issued' check (status in ('issued', 'used')),
-  claimed_at timestamptz not null default now()
+  status text not null default 'pending' check (status in ('pending', 'issued', 'used', 'expired')),
+  shopify_discount_id text,
+  expires_at timestamptz,
+  claimed_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
+
+-- webhook 依 Email 找出尚未使用的權益
+create index if not exists idx_partner_member_perks_email_status
+  on public.partner_member_perks (email_normalized, status);
 
 alter table public.partner_member_perks enable row level security;
 

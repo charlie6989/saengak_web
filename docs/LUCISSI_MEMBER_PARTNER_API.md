@@ -29,23 +29,26 @@ X-Partner-Signature: hex(HMAC-SHA256(PARTNER_MEMBER_SECRET, `${timestamp}.${rawB
 
 ## CARE 端權益流程（`POST /api/promotions/lucissi-member-perk`）
 
-1. 會員登入且 Email 已驗證。
-2. 已領過 → 回傳原本的代碼。
-3. 在 CARE 已有付款完成的訂單（`payment_status` paid／partially_refunded，或 `status` paid／shipped／completed）→ 不符合（首單限定）。
+1. 會員登入且 Email 已驗證；伺服器端 `LUCISSI_MEMBER_PERK_ENABLED=true`。
+2. 已有 `issued`／`used`／`expired` 紀錄 → 回傳原本的代碼與狀態。2 分鐘內的 `pending` → 回應「建立中」；逾時的 `pending` 清除重來。
+3. 先以會員身分同步呼叫 `claim_guest_orders()` 認領同 Email 的訪客訂單，再檢查付款完成的訂單（`payment_status` paid／partially_refunded，或 `status` paid／shipped／completed）；有就不符合（首單限定）。
 4. 向母站確認同一 Email 是 LUCISSI 會員。
-5. 先寫入 `public.partner_member_perks`（每位會員一筆，`user_id` 為主鍵），再以 `discountRedeemCodeBulkAdd` 在專屬 Shopify 折扣下新增一組 `LC` 開頭、10 碼的代碼；Shopify 失敗則刪除紀錄。
+5. 寫入 `pending`（`user_id` 為主鍵，擋住同時重複領取），以 `discountCodeFreeShippingCreate` 建立**這位會員專屬**的 Shopify 免運折扣：名稱「LUCISSI 會員首單免運｜代碼」、單一代碼（`LC` 開頭 10 碼）、總使用 1 次、每位顧客 1 次、60 天到期、預設綁定該 Email 的 Shopify 顧客（找不到就建立）。建立是同步的，成功後才改為 `issued`；失敗刪除 `pending`。
 6. 會員在購物車的「輸入折扣代碼」貼上使用。
 
-專屬折扣（`LUCISSI_MEMBER_PERK_DISCOUNT_ID`）不會出現在公開優惠列表，也不能經由一般領券 API 歸戶。
+**首單限定在結帳後強制執行**：訂單 webhook 收到這位會員（依 Email）第一筆付款訂單時，用了代碼 → `used`；沒用 → 以 `discountCodeDeactivate` 停用折扣並標記 `expired`。
+
+**不會公開**：公開優惠列表與一般領券 API 以折扣名稱前綴與代碼格式排除會員折扣，不依賴環境變數。
 
 ## 上線步驟（CARE）
 
-1. Shopify `gh2xgs-zf` 建立運送折扣「LUCISSI 會員首單免運」：免運費、無最低消費、每位顧客限用一次、總使用次數不限（每組代碼由 API 個別新增）、不與其他折扣併用；記下 DiscountCodeNode gid。確認 Shopify 應用程式具 `write_discounts` 權限。
+1. 確認 Shopify 應用程式具 `write_discounts`、`read_customers`、`write_customers` 權限。
 2. 套用 migration `20261017120000_partner_member_perks.sql` 到正式 Supabase `tmqzkagkrzhioftvwbqo`。
-3. Vercel（CARE）設定 `PARTNER_MEMBER_SECRET`（與母站相同、32 字元以上）、`PARTNER_MEMBER_STATUS_URL=https://lucissi.com/api/partner/member-status`、`LUCISSI_MEMBER_PERK_DISCOUNT_ID`。
-4. 母站完成同樣的 API 與設定後，兩站互相呼叫驗證；最後把 `VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED` 設為 `true` 並重新部署，才會顯示領取卡片。
+3. Vercel（CARE）設定 `PARTNER_MEMBER_SECRET`（與母站相同、32 字元以上）、`PARTNER_MEMBER_STATUS_URL=https://lucissi.com/api/partner/member-status`、`LUCISSI_MEMBER_PERK_ENABLED=true`。
+4. 以測試會員實際領取並結帳一次，確認綁定顧客的代碼能在結帳套用；若不能，設定 `LUCISSI_MEMBER_PERK_BIND_CUSTOMER=false`（仍是單次使用與到期）。
+5. 母站完成同樣的 API 與設定後，兩站互相呼叫驗證；最後把 `VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED` 設為 `true` 並重新部署，才會顯示領取卡片。
 
 ## 尚未處理
 
-- 代碼使用後，`partner_member_perks.status` 不會自動改為 `used`；單次使用由 Shopify 折扣設定保證。
+- 每位會員一個 Shopify 折扣，折扣清單會隨領取人數增加；可依名稱前綴篩選。
 - 第 2 階段（以 LUCISSI 帳號登入 CARE）與第 3 階段（共用點數）尚未開始。

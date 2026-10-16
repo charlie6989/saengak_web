@@ -5,8 +5,17 @@ export const LUCISSI_MEMBER_PERK_ENABLED = import.meta.env.VITE_PUBLIC_LUCISSI_M
 
 export interface MemberPerk {
   coupon_code: string;
-  status: 'issued' | 'used';
+  status: 'issued' | 'used' | 'expired';
   claimed_at?: string;
+  expires_at?: string | null;
+}
+
+/** 代碼只顯示給載入它的那位會員；登出或換帳號後一律不顯示。 */
+export function visibleMemberPerk(
+  state: { ownerId: string; perk: MemberPerk } | null,
+  currentUserId: string | null | undefined,
+): MemberPerk | null {
+  return state && currentUserId && state.ownerId === currentUserId ? state.perk : null;
 }
 
 export interface MemberPerkResult {
@@ -20,7 +29,8 @@ export interface MemberPerkResult {
 export async function fetchMyMemberPerk(): Promise<MemberPerk | null> {
   const { data, error } = await supabase
     .from('partner_member_perks')
-    .select('coupon_code, status, claimed_at')
+    .select('coupon_code, status, claimed_at, expires_at')
+    .in('status', ['issued', 'used', 'expired'])
     .maybeSingle();
   if (error) return null;
   return (data as MemberPerk | null) ?? null;

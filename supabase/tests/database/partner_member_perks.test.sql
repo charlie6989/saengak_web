@@ -24,10 +24,10 @@ values
 select ok(public.partner_member_exists('  Verified-Perk@Example.test '), 'verified member is found case-insensitively');
 select ok(not public.partner_member_exists('unverified-perk@example.test'), 'unverified email does not count as a member');
 
-insert into public.partner_member_perks (user_id, coupon_code)
+insert into public.partner_member_perks (user_id, email_normalized, coupon_code, status)
 values
-  ('a1111111-1111-4111-8111-111111111111', 'LCTESTCODE01'),
-  ('a2222222-2222-4222-8222-222222222222', 'LCTESTCODE02');
+  ('a1111111-1111-4111-8111-111111111111', 'verified-perk@example.test', 'LCTESTCODE01', 'issued'),
+  ('a2222222-2222-4222-8222-222222222222', 'unverified-perk@example.test', 'LCTESTCODE02', 'issued');
 
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"a1111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
@@ -39,7 +39,7 @@ select results_eq(
 );
 
 select throws_ok(
-  $$ insert into public.partner_member_perks (user_id, coupon_code) values ('a1111111-1111-4111-8111-111111111111', 'LCSELFISSUED') $$,
+  $$ insert into public.partner_member_perks (user_id, email_normalized, coupon_code) values ('a1111111-1111-4111-8111-111111111111', 'verified-perk@example.test', 'LCSELFISSUED') $$,
   '42501',
   null,
   'a member cannot issue a perk to themselves'

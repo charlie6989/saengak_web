@@ -7,11 +7,11 @@
 使用者決定第 1 階段權益為雙向首單免運；母站「女性護理私密凝膠」採「連到 CARE」而非搬移（CARE 只有 SAENGAK 的原廠文件，搬移會多一份需維護的 PIF）。母站部分由另一個工作階段在 `LUCISSI_website` 另開 PR。契約與上線步驟見 `docs/LUCISSI_MEMBER_PARTNER_API.md`。
 
 - 新增 `POST /api/partner/member-status`（HMAC 簽章、300 秒時間窗、只回 `isMember`）與 `api/_lib/partner-member.ts`。
-- 新增 `POST /api/promotions/lucissi-member-perk`：Email 已驗證、CARE 首單、母站確認為會員時，在專屬 Shopify 折扣下發一組 `LC` 開頭的單一代碼；專屬折扣從公開優惠列表與一般領券流程排除。
+- 新增 `POST /api/promotions/lucissi-member-perk`：Email 已驗證、CARE 首單（先同步認領同 Email 訪客訂單）、母站確認為會員時，為這位會員建立專屬 Shopify 免運折扣（單一 `LC` 代碼、總使用 1 次、綁定本人 Shopify 顧客、60 天到期）；紀錄狀態 pending → issued → used／expired，同時領取只回「建立中」。訂單 webhook 在會員第一筆付款訂單後結算：用了代碼標 used，沒用就停用折扣標 expired。會員折扣依名稱前綴與代碼格式從公開列表與一般領券流程排除（不依賴環境變數）。PR #45 Codex 審查後由「共用折扣＋批次代碼」改為此設計。
 - 新增 migration `20261017120000_partner_member_perks.sql`（`public.partner_member_exists` 僅 service_role、`public.partner_member_perks` 會員只能讀自己的）與 pgTAP `partner_member_perks.test.sql`（12 項）。
 - 優惠活動頁與會員中心「我的優惠券」加上領取卡片，以 `VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED` 控制，預設隱藏。隱私權政策新增「與 LUCISSI 的會員資格互認」。
-- 已執行驗證：`npm test -- --run`（48 檔／474 項）、`npm run build`、`npm run verify:content`、`npm run verify:supabase` 通過；本機 Supabase 套用 migration 後 `npm run test:db` 225 項通過。本機開啟旗標確認卡片未登入狀態的畫面與文案；登入後領取流程以單元測試涵蓋，未在瀏覽器端到端執行。
-- 未執行：未套用正式 migration、未建立 Shopify 專屬折扣、未設定 Vercel 環境變數、未部署；母站 API 尚未完成，兩站互相呼叫未驗證。
+- 已執行驗證：`npm test -- --run`（49 檔／482 項）、`npm run build`、`npm run verify:content`、`npm run verify:supabase` 通過；本機 Supabase 套用 migration 後 `npm run test:db` 225 項通過。本機開啟旗標確認卡片未登入狀態的畫面與文案；登入後領取流程以單元測試涵蓋，未在瀏覽器端到端執行。
+- 未執行：未套用正式 migration、未設定 Vercel 環境變數、未部署；綁定顧客的代碼能否在本店結帳套用需上線時實測；母站 API 尚未完成，兩站互相呼叫未驗證。
 
 ## 免運門檻比照 LUCISSI 改為 NT$1,500（2026-10-17，分支 `claude/free-shipping-1500`）
 
