@@ -881,7 +881,8 @@ export default function CartSidebar() {
             </div>
 
             {/* Action Buttons */}
-            {checkoutMessage && (
+            {/* 訪客模式的訊息顯示在訪客送出按鈕旁（SignedOutCheckoutActions），避免手機上捲出可視範圍 */}
+            {checkoutMessage && !isGuestMode && (
               <p className="rounded-sm bg-amber-50 px-3 py-2 text-xs text-amber-800" role="status" data-testid="checkout-message">
                 {checkoutMessage}
               </p>
@@ -893,6 +894,7 @@ export default function CartSidebar() {
                 guestEmail={guestEmail}
                 guestEmailError={guestEmailError}
                 emailFocusKey={guestEmailFocusKey}
+                message={isGuestMode ? checkoutMessage : ''}
                 isBusy={isSubmitting}
                 captchaResetKey={guestCaptchaResetKey}
                 onGuestEmailChange={(email) => {

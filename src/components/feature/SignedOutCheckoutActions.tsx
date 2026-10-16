@@ -46,6 +46,8 @@ interface SignedOutCheckoutActionsProps {
   guestEmailError: string;
   /** 每次遞增都會把焦點移到 Email 欄位（例如驗證失敗時）。 */
   emailFocusKey: number;
+  /** 訪客結帳的提示或錯誤（例如伺服器拒絕），顯示在送出按鈕正上方。 */
+  message: string;
   isBusy: boolean;
   captchaResetKey: number;
   onGuestEmailChange: (email: string) => void;
@@ -66,6 +68,7 @@ export default function SignedOutCheckoutActions({
   guestEmail,
   guestEmailError,
   emailFocusKey,
+  message,
   isBusy,
   captchaResetKey,
   onGuestEmailChange,
@@ -75,6 +78,7 @@ export default function SignedOutCheckoutActions({
   onSubmitGuestCheckout,
 }: SignedOutCheckoutActionsProps) {
   const emailInputRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLParagraphElement>(null);
 
   // 展開訪客結帳或驗證失敗時，把焦點移到 Email 欄位
   useEffect(() => {
@@ -82,6 +86,13 @@ export default function SignedOutCheckoutActions({
       emailInputRef.current?.focus();
     }
   }, [mode, emailFocusKey]);
+
+  // 頁尾可捲動，訊息出現時捲到可視範圍，避免手機上被免運條遮住而看不到
+  useEffect(() => {
+    if (mode === 'guest' && message) {
+      messageRef.current?.scrollIntoView?.({ block: 'nearest' });
+    }
+  }, [mode, message]);
 
   const memberButton = (primary: boolean) => (
     <button
@@ -161,6 +172,16 @@ export default function SignedOutCheckoutActions({
         </div>
         <AuthCaptcha onTokenChange={onCaptchaTokenChange} resetKey={captchaResetKey} action="guest_checkout" />
       </div>
+      {message && (
+        <p
+          ref={messageRef}
+          className="rounded-sm bg-amber-50 px-3 py-2 text-xs text-amber-800"
+          role="status"
+          data-testid="guest-checkout-message"
+        >
+          {message}
+        </p>
+      )}
       <button
         type="button"
         onClick={onSubmitGuestCheckout}

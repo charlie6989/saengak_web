@@ -34,7 +34,7 @@ import OrderStatusPage, {
 } from '../src/pages/order-status/page';
 import { scheduleGuestOrderClaim } from '../src/contexts/AuthContext';
 
-function renderActions(mode: SignedOutCheckoutMode, guestEmail = '', guestEmailError = '') {
+function renderActions(mode: SignedOutCheckoutMode, guestEmail = '', guestEmailError = '', message = '') {
   const noop = () => undefined;
   return renderToStaticMarkup(
     <SignedOutCheckoutActions
@@ -42,6 +42,7 @@ function renderActions(mode: SignedOutCheckoutMode, guestEmail = '', guestEmailE
       guestEmail={guestEmail}
       guestEmailError={guestEmailError}
       emailFocusKey={0}
+      message={message}
       isBusy={false}
       captchaResetKey={3}
       onGuestEmailChange={noop}
@@ -97,6 +98,17 @@ describe('signed-out checkout actions', () => {
     expect(emailInput).toContain('aria-invalid="true"');
     expect(emailInput).toContain('aria-describedby="guest-checkout-email-error guest-checkout-email-help"');
     expect(html).toMatch(/<p id="guest-checkout-email-error"[^>]*role="alert"[^>]*>請輸入有效的 Email<\/p>/);
+  });
+
+  it('shows guest submit errors right above the submit button, announced as status', () => {
+    const html = renderActions('guest', 'guest@example.test', '', '安全驗證未通過或已逾時，請重新完成驗證後再試。');
+    const messageAt = html.indexOf('data-testid="guest-checkout-message"');
+    const submitAt = html.indexOf('data-testid="guest-checkout-submit"');
+
+    expect(html).toMatch(/<p[^>]*role="status"[^>]*data-testid="guest-checkout-message"[^>]*>安全驗證未通過/);
+    expect(messageAt).toBeGreaterThan(html.indexOf('turnstile-widget'));
+    expect(messageAt).toBeLessThan(submitAt);
+    expect(renderActions('guest')).not.toContain('guest-checkout-message');
   });
 
   it('only offers guest checkout when signed out, enabled, and Turnstile is configured', () => {
