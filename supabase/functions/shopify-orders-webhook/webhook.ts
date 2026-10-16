@@ -76,6 +76,34 @@ export interface ShopifyOrderSyncInput {
   p_contact_email: string;
 }
 
+// p_contact_email 是 20261016120000 migration 才加的參數。為空時不送，
+// 尚未套用該 migration 的資料庫找不到新簽章（PostgREST PGRST202）時再不帶它重試一次，
+// 讓 webhook 程式比 migration 先部署也不會中斷訂單同步。
+export type OrderSyncRpcParams = Omit<ShopifyOrderSyncInput, 'p_contact_email'> & {
+  p_contact_email?: string;
+};
+
+const withoutContactEmail = (params: OrderSyncRpcParams): OrderSyncRpcParams => {
+  const legacyParams = { ...params };
+  delete legacyParams.p_contact_email;
+  return legacyParams;
+};
+
+export const isMissingRpcSignatureError = (error: unknown): boolean =>
+  Boolean(error) && typeof error === 'object' && (error as { code?: unknown }).code === 'PGRST202';
+
+export async function callOrderSyncRpc<R extends { error: unknown }>(
+  input: ShopifyOrderSyncInput,
+  call: (params: OrderSyncRpcParams) => PromiseLike<R>,
+): Promise<R> {
+  const params: OrderSyncRpcParams = input.p_contact_email ? input : withoutContactEmail(input);
+  const result = await call(params);
+  if (params.p_contact_email === undefined || !isMissingRpcSignatureError(result.error)) {
+    return result;
+  }
+  return call(withoutContactEmail(params));
+}
+
 export interface ShopifyRefundSyncInput {
   p_webhook_id: string;
   p_topic: 'refunds/create';

@@ -64,8 +64,8 @@ if (!/ok 23 - admin authenticated role can insert into site_settings/i.test(outp
 if (!/ok 6 - idempotent enqueue does not create a duplicate row/i.test(output)) {
   errors.push('pgTAP did not complete all 6 enqueue_amego_invoice_job assertions');
 }
-if (!/ok 39 - only checkout links expired past the grace period and never converted are purged/i.test(output)) {
-  errors.push('pgTAP did not complete all 39 guest checkout assertions');
+if (!/ok 43 - only checkout links expired past the grace period and never converted are purged/i.test(output)) {
+  errors.push('pgTAP did not complete all 43 guest checkout assertions');
 }
 const rollbackCount = output.match(/^ROLLBACK\r?$/gm)?.length ?? 0;
 if (rollbackCount !== testFiles.length) {
@@ -79,7 +79,7 @@ if (errors.length) {
 
 console.log(JSON.stringify({
   ok: true,
-  assertions: 209,
+  assertions: 213,
   testFiles,
   database: 'local Supabase PostgreSQL',
 }, null, 2));

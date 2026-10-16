@@ -7,9 +7,10 @@
 實作 `docs/GUEST_CHECKOUT_PLAN.md` §9 步驟 1–3，細節見該文件 §9.1。
 
 - 程式碼：migration `20261016120000_allow_guest_checkout_orders.sql`、`parseShopifyOrderWebhook` 解析訂單 Email、`api/create-shopify-cart.ts` 訪客分支與 `api/_lib/turnstile.ts`。前端未修改。
-- 已執行驗證：`npm test -- --run`（42 個檔案、382 項通過）；本機 Supabase（Docker）`npm run test:db`，209 項 pgTAP 斷言通過，其中新增 `guest_checkout.test.sql` 39 項。Migration 以 `supabase migration up --local` 套用在既有本機資料庫上，未從空資料庫重建。
+- 已執行驗證：`npm test -- --run`（43 個檔案、400 項通過，含 PR #37 審查修正）；本機 Supabase（Docker）`npm run test:db`，213 項 pgTAP 斷言通過，其中 `guest_checkout.test.sql` 43 項（含認領競態）。Migration 以 `supabase migration up --local` 套用在既有本機資料庫上，未從空資料庫重建。
 - 未執行：未套用到任何遠端 Supabase（`dhktmpcvtoxcicqkwgpn`、`tmqzkagkrzhioftvwbqo` 皆未觸碰）、未部署 Vercel 或 Edge Function、未設定 `TURNSTILE_SECRET_KEY`。§8 的正式設定仍待查證。
-- 部署順序：先套用 migration，再部署 webhook 程式（Vercel 與 Edge Function）。
+- 部署順序：合併前先把 migration 套用到正式 Supabase，再部署 webhook 程式（Vercel 與 Edge Function）。呼叫端在舊 RPC 上會不帶 `p_contact_email` 重試，訂單同步不會中斷，但這只是保險。
+- 審查修正（PR #37）：認領競態的 upsert 條件、`p_contact_email` 為空不送與 `PGRST202` 退回、Turnstile `hostname`／`action` 檢查（`TURNSTILE_ALLOWED_HOSTNAMES`）。
 
 ## 訪客結帳設計（2026-10-16，分支 `claude/guest-checkout-plan`）
 

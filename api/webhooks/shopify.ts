@@ -11,6 +11,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { jsonResponse } from '../_lib/security.js';
 import { getSupabaseAdminClient } from '../_lib/supabase-admin.js';
 import {
+  callOrderSyncRpc,
   parseShopifyOrderWebhook,
   parseShopifyRefundWebhook,
   isAcceptedShopifyWebhookTopic,
@@ -168,11 +169,11 @@ async function handler(request: Request): Promise<Response> {
         return jsonResponse({ error: '無效的 Order Webhook Payload' }, { status: 422 });
       }
 
-      const { data, error } = await rpcWithTransientJwtRetry(
+      const { data, error } = await callOrderSyncRpc(parsedOrder, (params) => rpcWithTransientJwtRetry(
         admin as unknown as SupabaseRpcClient,
         'sync_shopify_order_webhook',
-        parsedOrder,
-      );
+        params,
+      ));
       if (error) {
         console.error('sync_shopify_order_webhook error', error);
         return jsonResponse({ error: '儲存訂單投影失敗' }, { status: 500 });

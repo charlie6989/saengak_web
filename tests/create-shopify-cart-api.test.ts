@@ -65,7 +65,11 @@ function mockGuestCheckoutNetwork(turnstile: Response | Error): void {
   }));
 }
 
-const turnstileResult = (success: boolean) => new Response(JSON.stringify({ success }), {
+const turnstileResult = (success: boolean) => new Response(JSON.stringify({
+  success,
+  hostname: 'lucissicare.com',
+  action: 'guest_checkout',
+}), {
   status: 200,
   headers: { 'content-type': 'application/json' },
 });

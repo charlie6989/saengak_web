@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(39);
+select plan(43);
 
 -- =============================================================================
 -- Schema and grants
@@ -64,6 +64,7 @@ insert into public.shopify_checkout_links (
   ('saengak.myshopify.com', 'guest-cart-token-0001', null, 'guest', '2030-01-01T00:00:00Z'),
   ('saengak.myshopify.com', 'guest-cart-token-0002', null, 'guest', '2030-01-01T00:00:00Z'),
   ('saengak.myshopify.com', 'guest-cart-token-0003', null, 'guest', '2030-01-01T00:00:00Z'),
+  ('saengak.myshopify.com', 'guest-cart-token-0004', null, 'guest', '2030-01-01T00:00:00Z'),
   ('saengak.myshopify.com', 'member-cart-token-0001', '77777777-7777-4777-8777-777777777777', 'member', '2030-01-01T00:00:00Z'),
   ('saengak.myshopify.com', 'member-cart-token-0002', '77777777-7777-4777-8777-777777777777', 'member', '2030-01-01T00:00:00Z');
 
@@ -391,6 +392,70 @@ select throws_ok(
   null,
   'claim_guest_orders requires an authenticated member'
 );
+
+-- =============================================================================
+-- Claim race: the webhook read the link before claim_guest_orders committed
+-- =============================================================================
+set local role service_role;
+select results_eq(
+  $$ select public.sync_shopify_order_webhook(
+    p_webhook_id => 'race-webhook-0001', p_topic => 'orders/create',
+    p_shopify_store_domain => 'saengak.myshopify.com',
+    p_shopify_order_gid => 'gid://shopify/Order/7000000000004',
+    p_shopify_cart_token => 'guest-cart-token-0004', p_order_number => '#2004',
+    p_total_amount => 580, p_currency_code => 'TWD', p_status => 'processing',
+    p_payment_status => 'pending', p_shipping_method => '宅配',
+    p_fulfillment_status => 'unfulfilled',
+    p_shopify_created_at => '2026-10-04T03:00:00Z',
+    p_shopify_updated_at => '2026-10-04T03:00:30Z',
+    p_triggered_at => '2026-10-04T03:00:31Z',
+    p_line_items => '[]'::jsonb, p_fulfillments => '[]'::jsonb,
+    p_contact_email => 'guest-buyer@example.test'
+  ) $$,
+  array['applied'::text],
+  'an unpaid guest order is created before the claim race'
+);
+reset role;
+-- Simulate the claim committing after the next webhook already read the link
+-- (order claimed, link still without a member).
+update public.orders
+set user_id = '55555555-5555-4555-8555-555555555555', guest_claimed_at = now()
+where shopify_order_gid = 'gid://shopify/Order/7000000000004';
+
+set local role service_role;
+select results_eq(
+  $$ select public.sync_shopify_order_webhook(
+    p_webhook_id => 'race-webhook-0002', p_topic => 'orders/paid',
+    p_shopify_store_domain => 'saengak.myshopify.com',
+    p_shopify_order_gid => 'gid://shopify/Order/7000000000004',
+    p_shopify_cart_token => 'guest-cart-token-0004', p_order_number => '#2004',
+    p_total_amount => 580, p_currency_code => 'TWD', p_status => 'paid',
+    p_payment_status => 'paid', p_shipping_method => '宅配',
+    p_fulfillment_status => 'unfulfilled',
+    p_shopify_created_at => '2026-10-04T03:00:00Z',
+    p_shopify_updated_at => '2026-10-04T03:01:00Z',
+    p_triggered_at => '2026-10-04T03:01:01Z',
+    p_line_items => '[]'::jsonb, p_fulfillments => '[]'::jsonb,
+    p_contact_email => 'guest-buyer@example.test'
+  ) $$,
+  array['applied'::text],
+  'a guest paid event that raced a claim is applied, not stale'
+);
+select results_eq(
+  $$ select user_id::text || '|' || payment_status from public.orders
+     where shopify_order_gid = 'gid://shopify/Order/7000000000004' $$,
+  array['55555555-5555-4555-8555-555555555555|paid'::text],
+  'the raced event updates the order without overwriting the claimed member'
+);
+select results_eq(
+  $$ select jobs.status || '|' || (jobs.order_id = orders.id)::text
+     from private.amego_invoice_jobs as jobs
+     join public.orders as orders on orders.shopify_order_gid = jobs.shopify_order_gid
+     where jobs.shopify_order_gid = 'gid://shopify/Order/7000000000004' $$,
+  array['pending|true'::text],
+  'the raced paid event still enqueues the invoice job'
+);
+reset role;
 
 -- =============================================================================
 -- Expired checkout link purge

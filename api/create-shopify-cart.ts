@@ -15,6 +15,7 @@ import { parseTaiwanAddress, toShopifyMailingAddress } from '../src/lib/taiwanDi
 import {
   getTurnstileSecretKey,
   parseTurnstileToken,
+  TURNSTILE_GUEST_CHECKOUT_ACTION,
   verifyTurnstileToken,
 } from './_lib/turnstile.js';
 import { createClient, type User } from '@supabase/supabase-js';
@@ -291,10 +292,10 @@ export async function POST(request: Request): Promise<Response> {
 
     if (isGuest) {
       const hasForwardedIp = Boolean(request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'));
-      const verification = await verifyTurnstileToken(
-        turnstileToken as string,
-        hasForwardedIp ? getClientIp(request) : undefined,
-      );
+      const verification = await verifyTurnstileToken(turnstileToken as string, {
+        remoteIp: hasForwardedIp ? getClientIp(request) : undefined,
+        expectedAction: TURNSTILE_GUEST_CHECKOUT_ACTION,
+      });
       if (verification === 'unavailable') {
         return jsonResponse({
           error: 'Guest checkout verification is unavailable',

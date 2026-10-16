@@ -168,9 +168,11 @@ Email 變更：Supabase 的 Email 變更需要確認，`claim_guest_orders` 只�
   - 過期 link 清除保留 7 天緩衝（`expires_at < now() - 7 days` 且未轉換），避免到期前建立、稍晚才送達的 webhook 變成 `unlinked`。
   - 通知 Email 後備只套用在個人發票（依 §4.5）；公司發票未填通知 Email 時維持原狀。
   - `claim_guest_orders()` 未登入呼叫會丟 `42501`；`service_role` 也沒有執行權限。
-- 解析器：`parseShopifyOrderWebhook` 依序取 `email`、`contact_email`、`customer.email`，只回傳格式正確且 ≤ 254 字元的值（DB 端再做 `lower(btrim())`）。
+  - 認領競態：webhook 讀到 link（`user_id` 仍為 null）之後、upsert 之前，`claim_guest_orders` 才提交。upsert 條件因此另外接受「訂單為訪客、事件 `user_id` 為 null」，且不覆寫已認領的 `user_id`；否則該事件會被判為 `stale`、watermark 已前進，`orders/paid` 的發票工作就此遺失（PR #37 審查）。
+- 解析器：`parseShopifyOrderWebhook` 依序取 `email`、`contact_email`、`customer.email`，只回傳格式正確且 ≤ 254 字元的值（DB 端再做 `lower(btrim())`）。兩個呼叫端都經 `callOrderSyncRpc`：`p_contact_email` 為空就不送；PostgREST 回 `PGRST202`（找不到函式簽章）時不帶它重試一次。
+- Turnstile：除了 `success`，`hostname` 必須在允許清單（預設 `lucissicare.com`、`www.lucissicare.com`、`localhost`；`TURNSTILE_ALLOWED_HOSTNAMES` 以逗號分隔取代預設，例如 Vercel Preview）；回傳 `action` 時必須是 `guest_checkout`，前端 widget 需傳同一個 action。沒有 action 時放行（Cloudflare 測試金鑰）。
 - `api/create-shopify-cart.ts`：訪客分支（§3.1）＋ `api/_lib/turnstile.ts`。錯誤碼：`TURNSTILE_UNAVAILABLE`（503，未設定 secret 或 siteverify 無法連線）、`TURNSTILE_TOKEN_REQUIRED`（400）、`TURNSTILE_VERIFICATION_FAILED`（403）、`GUEST_DISCOUNT_REQUIRES_LOGIN`（400）、`GUEST_EMAIL_REQUIRED`（400）、`GUEST_ORDER_LINK_UNAVAILABLE`（503）、`GUEST_ORDER_LINK_FAILED`（502）。請求欄位：`guestEmail`、`turnstileToken`；回應新增 `checkoutKind`。
-- **部署順序**：必須先套用 migration，再部署 Vercel（`api/webhooks/shopify.ts`）與 Edge Function（`shopify-orders-webhook`）。解析器現在一定會送 `p_contact_email`，舊版 RPC 沒有此參數會讓 webhook 失敗。Migration 本身對舊解析器相容（預設值）。
+- **部署順序**：合併前必須先把 migration 套用到正式 Supabase，再部署 Vercel（`api/webhooks/shopify.ts`）與 Edge Function（`shopify-orders-webhook`）。呼叫端的 `PGRST202` 退回只是保險：在舊 RPC 上訂單仍會同步，但訪客訂單仍是 `unlinked`，也不會記錄訂單 Email。Migration 本身對舊解析器相容（預設值）。
 - 既有 pgTAP 測試的修正（與本案無關、`main` 上原本就跑不完）：`saengak_membership_rls`（管理員政策加入後政策數量）、`shopify_order_sync`（20260904 後函式簽章）、`transaction_logs`（plan 數量與公開設定數量）、`enqueue_amego_invoice_job`（63 字元的 SHA-256 字串）。
 
 ## 10. 為何最初只交付設計

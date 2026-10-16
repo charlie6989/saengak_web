@@ -9,7 +9,7 @@
 --    ('member' | 'guest') 與檢查條件：會員列必須有 user_id。
 -- 2. 訪客 Email 存在 private.guest_order_contacts（PostgREST 不曝露）。
 -- 3. 重建 sync_shopify_order_webhook，新增 p_contact_email text default ''（既有呼叫端相容）：
---    訪客 link 以 user_id = null 寫入訂單；upsert 改用 is not distinct from；
+--    訪客 link 以 user_id = null 寫入訂單；upsert 改用 is not distinct from，並接受已被認領的訪客訂單；
 --    個人發票未填通知 Email 時以訂單 Email 補上（會員與訪客皆適用）。
 --    找不到 link 仍回 'unlinked'（不經網站建立的 Shopify 訂單維持現狀）。
 -- 4. public.claim_guest_orders()：已驗證 Email（email_confirmed_at 不為 null）的會員
@@ -251,8 +251,13 @@ begin
       total_discount_amount = excluded.total_discount_amount,
       shipping_amount = excluded.shipping_amount,
       updated_at = now()
+  -- 第二個條件處理認領競態：webhook 讀到 link 時 user_id 仍為 null，之後 claim_guest_orders 才提交。
+  -- update 不改 user_id，已認領的會員不會被覆寫。
   where excluded.shopify_store_domain = public.orders.shopify_store_domain
-    and excluded.user_id is not distinct from public.orders.user_id
+    and (
+      excluded.user_id is not distinct from public.orders.user_id
+      or (public.orders.checkout_kind = 'guest' and excluded.user_id is null)
+    )
     and (excluded.shopify_updated_at, excluded.shopify_triggered_at)
       > (public.orders.shopify_updated_at, coalesce(public.orders.shopify_triggered_at, '-infinity'::timestamptz))
   returning id into v_order_id;
