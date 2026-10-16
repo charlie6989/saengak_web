@@ -171,7 +171,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
     window.location.reload();
   };
 
-  // 五個照護面向；舊分類網址（私密護理、貼身穿著）也會標示對應面向為目前頁面
+  // 照護入口；舊分類網址（私密護理、貼身穿著、身體保養、輕盈運動…）也會標示對應入口為目前頁面
   const productCategories = CARE_PILLARS.map((pillar) => ({ name: pillar.name, href: `/search?category=${pillar.name}` }));
   const activeCategory = location.pathname === '/search'
     ? resolveCategoryName(new URLSearchParams(location.search).get('category') || '')
