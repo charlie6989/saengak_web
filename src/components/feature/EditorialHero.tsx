@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 /** Shared full-bleed banner. Mobile copy stays below the image so subjects remain unobstructed. */
 export default function EditorialHero({ image, alt, eyebrow, title, description, children, className = '', preserveImage = true, headingLevel = 'h1', compact = false, priority = true }: {
-  image: string; alt: string; eyebrow: string; title: string; description: string; children?: ReactNode; className?: string; preserveImage?: boolean; headingLevel?: 'h1' | 'h2';
+  image: string; alt: string; eyebrow: string; title: ReactNode; description: string; children?: ReactNode; className?: string; preserveImage?: boolean; headingLevel?: 'h1' | 'h2';
   /** 分類／列表頁用的窄版橫幅，讓商品更早出現在首屏 */
   compact?: boolean;
   /** 只有首屏主視覺需要高載入優先權；頁面下方的橫幅改為延遲載入 */

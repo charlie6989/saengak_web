@@ -1,4 +1,4 @@
-export const SITE_TITLE = 'LUCISSI CARE 質感生活選品';
+export const SITE_TITLE = 'LUCISSI CARE｜LUCISSI 的日常照護系列';
 
 // 固定頁面的分頁標題；動態頁（商品、搜尋、文章）在資料載入後另外覆寫
 const ROUTE_TITLES: Array<[RegExp, string]> = [

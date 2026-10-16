@@ -1,4 +1,6 @@
 import BrandLogo from '../base/BrandLogo';
+import { CARE_PILLARS, ENDORSEMENT, resolveCategoryName } from '../../content/carePillars';
+import { DEFAULT_FREE_SHIPPING_THRESHOLD } from '../../domain/shipping';
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
@@ -14,7 +16,6 @@ interface HeaderProps {
 
 export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}) {
   const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
-  const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -155,11 +156,6 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
     setIsSearchOverlayOpen(true);
   };
 
-  const handleProductsClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate('/search?query=all');
-  };
-
   const handleLogoClick = () => {
     navigate('/');
   };
@@ -175,10 +171,14 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
     window.location.reload();
   };
 
-  const productCategories = [
-    { name: '私密護理', href: '/search?category=私密護理' },
-    { name: '貼身穿著', href: '/search?category=貼身穿著' }
-  ];
+  // 五個照護面向；舊分類網址（私密護理、貼身穿著）也會標示對應面向為目前頁面
+  const productCategories = CARE_PILLARS.map((pillar) => ({ name: pillar.name, href: `/search?category=${pillar.name}` }));
+  const activeCategory = location.pathname === '/search'
+    ? resolveCategoryName(new URLSearchParams(location.search).get('category') || '')
+    : '';
+  const desktopNavClass = (active: boolean) =>
+    `font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden ${active ? 'text-brand border-b border-brand' : 'text-[#34302F]'}`;
+  const announcement = `${ENDORSEMENT}｜全館滿 NT$${DEFAULT_FREE_SHIPPING_THRESHOLD.toLocaleString('en-US')} 免運`;
 
   return (
     <>
@@ -187,9 +187,9 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
         className="fixed top-0 left-0 w-full bg-brand text-white text-center overflow-hidden z-50"
         style={{ height: 'var(--marquee-height)', fontFamily: "Noto Sans TC, sans-serif" }}
       >
-        <div className="animate-marquee whitespace-nowrap flex items-center justify-center h-full text-sm">
-          LUCISSI CARE 正式商店｜結帳由 Shopify Checkout 與 TapPay 安全處理
-        </div>
+        <p className="flex h-full items-center justify-center whitespace-nowrap px-4 text-xs text-white sm:text-sm">
+          {announcement}
+        </p>
       </div>
 
       {/* 桌面版 - 滿版導覽列選單，去除左右空隙 */}
@@ -244,103 +244,34 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
               {/* 中央 - 完整導航選單 - 桌面版 */}
               <nav
                 className="hidden lg:flex items-center justify-center flex-1"
-                style={{ gap: 'min(32px, 2.22vw)' }} // 響應式間距
+                style={{ gap: 'min(24px, 1.8vw)' }} // 七個項目，間距略收
               >
-                {/* 產品下拉選單 */}
-                <div className="relative">
-                  <button
-                    onClick={handleProductsClick}
-                    onMouseEnter={() => setIsProductDropdownOpen(true)}
-                    className="font-semibold flex items-center cursor-pointer transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden border-none bg-transparent"
-                    style={{
-                      fontSize: 'min(16px, 1.11vw)',
-                      color: '#34302F',
-                      border: 'none',
-                      background: 'transparent'
-                    }}
+                <Link
+                  to="/search?query=all"
+                  className={desktopNavClass(location.pathname === '/search' && !activeCategory)}
+                  style={{ fontSize: 'min(16px, 1.11vw)' }}
+                >
+                  全部商品
+                </Link>
+
+                {productCategories.map((category) => (
+                  <Link
+                    key={category.name}
+                    to={category.href}
+                    aria-current={activeCategory === category.name ? 'page' : undefined}
+                    className={desktopNavClass(activeCategory === category.name)}
+                    style={{ fontSize: 'min(16px, 1.11vw)' }}
                   >
-                    全部商品
-                  </button>
-
-                  {isProductDropdownOpen && (
-                    <div
-                      className="absolute top-full left-0 mt-2 w-64 shadow-xl border border-gray-100 z-50 rounded-lg overflow-hidden"
-                      style={{ backgroundColor: '#E7D6D4' }}
-                      onMouseEnter={() => setIsProductDropdownOpen(true)}
-                      onMouseLeave={() => setIsProductDropdownOpen(false)}
-                    >
-                      <div className="py-2">
-                        {productCategories.map((category, index) => (
-                          <Link
-                            key={index}
-                            to={category.href}
-                            className="block px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-200 border-b border-gray-50 last:border-b-0 hover:text-brand outline-hidden focus:outline-hidden"
-                            style={{ color: '#34302F' }}
-                          >
-                            {category.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <Link
-                  to="/search?category=私密護理"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
-                  style={{
-                    fontSize: 'min(16px, 1.11vw)',
-                    color: '#34302F'
-                  }}
-                >
-                  私密護理
-                </Link>
-
-
-
-                <Link
-                  to="/search?category=貼身穿著"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
-                  style={{
-                    fontSize: 'min(16px, 1.11vw)',
-                    color: '#34302F'
-                  }}
-                >
-                  貼身穿著
-                </Link>
-
-                <Link
-                  to="/promotion"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
-                  style={{
-                    fontSize: 'min(16px, 1.11vw)',
-                    color: '#34302F'
-                  }}
-                >
-                  優惠活動
-                </Link>
+                    {category.name}
+                  </Link>
+                ))}
 
                 <Link
                   to="/community"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
-                  style={{
-                    fontSize: 'min(16px, 1.11vw)',
-                    color: '#34302F'
-                  }}
+                  className={desktopNavClass(location.pathname.startsWith('/community') || location.pathname.startsWith('/blog'))}
+                  style={{ fontSize: 'min(16px, 1.11vw)' }}
                 >
-                  社群
-                </Link>
-
-                {/* 關於我們 - 直接連結到品牌故事 */}
-                <Link
-                  to="/brand-story"
-                  className="font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden"
-                  style={{
-                    fontSize: 'min(16px, 1.11vw)',
-                    color: '#34302F'
-                  }}
-                >
-                  關於我們
+                  LUCISSI Talk
                 </Link>
               </nav>
 
@@ -616,7 +547,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
 
               {/* 產品分類 */}
               <div className="border-b border-gray-200 pb-2">
-                <div className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">產品分類</div>
+                <div className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">照護面向</div>
                 {productCategories.map((category, index) => (
                   <Link
                     key={index}
@@ -645,8 +576,8 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block w-full text-left px-6 py-4 text-lg font-semibold text-gray-800 hover:bg-gray-50 transition-colors duration-200"
                 >
-                  <i className="ri-team-line mr-3 text-xl text-brand"></i>
-                  社群
+                  <i className="ri-article-line mr-3 text-xl text-brand"></i>
+                  LUCISSI Talk
                 </Link>
 
                 <Link
