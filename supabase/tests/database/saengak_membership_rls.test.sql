@@ -31,6 +31,7 @@ select results_eq(
     from pg_policies
     where schemaname = 'public'
       and tablename in ('profiles', 'orders', 'order_items', 'user_favorites')
+      and policyname not like '%\_admin\_%'
   $$,
   array[9::bigint],
   'all expected ownership policies exist'

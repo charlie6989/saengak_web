@@ -67,6 +67,35 @@ describe('Shopify webhook Vercel API', () => {
     expect(data.ok).not.toBe(true);
   });
 
+  it('passes the order contact email to the order sync RPC', async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: 'applied', error: null });
+    mocks.getSupabaseAdminClient.mockReturnValue({ rpc });
+    const rawBody = JSON.stringify({ ...payload, email: 'guest@example.test' });
+    const hmac = createHmac('sha256', process.env.SHOPIFY_WEBHOOK_SECRET!)
+      .update(rawBody, 'utf8')
+      .digest('base64');
+    const response = await vercelHandler.fetch(new Request(
+      'https://www.saengak.com.tw/api/webhooks/shopify',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-shopify-hmac-sha256': hmac,
+          'x-shopify-topic': 'orders/paid',
+          'x-shopify-shop-domain': 'gh2xgs-zf.myshopify.com',
+          'x-shopify-webhook-id': 'c54557e4-bdd9-4b37-8a5f-bf7d70bcd044',
+          'x-shopify-triggered-at': '2026-08-22T04:00:01Z',
+        },
+        body: rawBody,
+      },
+    ));
+
+    expect(response.status).toBe(200);
+    expect(rpc).toHaveBeenCalledWith('sync_shopify_order_webhook', expect.objectContaining({
+      p_contact_email: 'guest@example.test',
+    }));
+  });
+
   it('retries once when Supabase reports a transient future-issued JWT', async () => {
     const rpc = vi.fn()
       .mockResolvedValueOnce({

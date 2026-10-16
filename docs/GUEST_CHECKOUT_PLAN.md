@@ -1,6 +1,6 @@
 # 訪客結帳設計方案
 
-日期：2026-10-16（Asia/Taipei）。狀態：**設計稿，尚未實作、尚未套用任何 migration**。
+日期：2026-10-16（Asia/Taipei）。狀態：步驟 1–3（§9）已在分支 `claude/guest-checkout-backend` 實作並通過本機測試（`npm test`、本機 Supabase `npm run test:db`）；**尚未套用到任何遠端 Supabase、尚未部署**，`guest_checkout_enabled` 預設關閉。步驟 4 起（前端、端到端驗證）未開始。
 
 營運決策（2026-10-16）：開放訪客結帳；登入改為「會員優惠」的入口；客服只用 Email。本文件說明訪客訂單如何儲存、開立發票、查詢，以及之後註冊時如何併入會員帳號。內容依 `main`（`bd93ea0`）的程式碼整理，正式服務的設定在「待確認」一節另列。
 
@@ -160,6 +160,19 @@ Email 變更：Supabase 的 Email 變更需要確認，`claim_guest_orders` 只�
 
 步驟 1–3 可先部署且保持開關關閉；開關是 `site_settings` 的一個值，可在後台即時關閉。
 
-## 10. 為何本次未實作
+### 9.1 步驟 1–3 實作紀錄（2026-10-16）
+
+- Migration `supabase/migrations/20261016120000_allow_guest_checkout_orders.sql`：§2 schema、§4 RPC（21 個參數，`p_contact_email` 預設 `''`）、§6 `claim_guest_orders()`、過期 link 清除、`site_settings.guest_checkout_enabled = false`（`is_public = true`，`on conflict do nothing` 不覆寫後台值）。
+- 與設計稿的差異：
+  - 另加 `orders_guest_claim_check`：`guest_claimed_at` 只能出現在已有 `user_id` 的訪客訂單。
+  - 過期 link 清除保留 7 天緩衝（`expires_at < now() - 7 days` 且未轉換），避免到期前建立、稍晚才送達的 webhook 變成 `unlinked`。
+  - 通知 Email 後備只套用在個人發票（依 §4.5）；公司發票未填通知 Email 時維持原狀。
+  - `claim_guest_orders()` 未登入呼叫會丟 `42501`；`service_role` 也沒有執行權限。
+- 解析器：`parseShopifyOrderWebhook` 依序取 `email`、`contact_email`、`customer.email`，只回傳格式正確且 ≤ 254 字元的值（DB 端再做 `lower(btrim())`）。
+- `api/create-shopify-cart.ts`：訪客分支（§3.1）＋ `api/_lib/turnstile.ts`。錯誤碼：`TURNSTILE_UNAVAILABLE`（503，未設定 secret 或 siteverify 無法連線）、`TURNSTILE_TOKEN_REQUIRED`（400）、`TURNSTILE_VERIFICATION_FAILED`（403）、`GUEST_DISCOUNT_REQUIRES_LOGIN`（400）、`GUEST_EMAIL_REQUIRED`（400）、`GUEST_ORDER_LINK_UNAVAILABLE`（503）、`GUEST_ORDER_LINK_FAILED`（502）。請求欄位：`guestEmail`、`turnstileToken`；回應新增 `checkoutKind`。
+- **部署順序**：必須先套用 migration，再部署 Vercel（`api/webhooks/shopify.ts`）與 Edge Function（`shopify-orders-webhook`）。解析器現在一定會送 `p_contact_email`，舊版 RPC 沒有此參數會讓 webhook 失敗。Migration 本身對舊解析器相容（預設值）。
+- 既有 pgTAP 測試的修正（與本案無關、`main` 上原本就跑不完）：`saengak_membership_rls`（管理員政策加入後政策數量）、`shopify_order_sync`（20260904 後函式簽章）、`transaction_logs`（plan 數量與公開設定數量）、`enqueue_amego_invoice_job`（63 字元的 SHA-256 字串）。
+
+## 10. 為何最初只交付設計
 
 本案會重建正式訂單同步的核心 RPC（`sync_shopify_order_webhook`），新增不需登入的公開 API，並依賴三項尚未查證的正式設定（§8 第 1–3 項）。資料庫行為需要本機 Supabase 的 pgTAP 測試（`npm run test:db`）才能驗證，單靠 `npm test` 無法覆蓋。因此本次只交付設計，實作留待確認 §8 後另開分支。

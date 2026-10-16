@@ -73,6 +73,7 @@ export interface ShopifyOrderSyncInput {
   p_discount_codes: string[];
   p_discount_amount: string;
   p_shipping_amount: string;
+  p_contact_email: string;
 }
 
 export interface ShopifyRefundSyncInput {
@@ -341,6 +342,19 @@ const memberLinkTokenFromOrderAttributes = (payload: UnknownRecord): string => {
   return '';
 };
 
+const contactEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// 訪客訂單以這個 Email 比對認領與查詢；只接受格式正確且不超過 254 字元的值，否則回空字串。
+const contactEmailFromOrder = (payload: UnknownRecord): string => {
+  const candidates = [payload.email, payload.contact_email, asRecord(payload.customer)?.email];
+  for (const candidate of candidates) {
+    if (typeof candidate !== 'string') continue;
+    const email = candidate.trim();
+    if (email.length <= 254 && contactEmailPattern.test(email)) return email;
+  }
+  return '';
+};
+
 export function parseShopifyOrderWebhook(
   rawPayload: unknown,
   metadata: {
@@ -459,6 +473,7 @@ export function parseShopifyOrderWebhook(
     p_discount_codes: discountCodes,
     p_discount_amount: discountAmount,
     p_shipping_amount: shippingAmount,
+    p_contact_email: contactEmailFromOrder(payload),
   };
 }
 

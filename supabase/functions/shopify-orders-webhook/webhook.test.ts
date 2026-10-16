@@ -139,6 +139,35 @@ describe('Shopify order webhook validation', () => {
     }, metadata)?.p_shipping_amount).toBe('60.00');
   });
 
+  it('extracts the order contact email in Shopify priority order', () => {
+    expect(parseShopifyOrderWebhook(payload, metadata)?.p_contact_email).toBe('');
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      email: ' Guest@Example.test ',
+      contact_email: 'contact@example.test',
+      customer: { email: 'customer@example.test' },
+    }, metadata)?.p_contact_email).toBe('Guest@Example.test');
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      email: '',
+      contact_email: 'contact@example.test',
+    }, metadata)?.p_contact_email).toBe('contact@example.test');
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      email: null,
+      customer: { email: 'customer@example.test' },
+    }, metadata)?.p_contact_email).toBe('customer@example.test');
+  });
+
+  it('ignores malformed or oversized contact emails', () => {
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      email: 'not-an-email',
+      contact_email: `${'a'.repeat(250)}@example.test`,
+      customer: { email: 'two words@example.test' },
+    }, metadata)?.p_contact_email).toBe('');
+  });
+
   it('prefers the stable member link token carried through Shopify order attributes', () => {
     expect(parseShopifyOrderWebhook({
       ...payload,

@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(24);
+select plan(23);
 
 -- 1. 表格存在性與 RLS 狀態檢查
 select has_table('public', 'transaction_logs', 'transaction_logs table exists');
@@ -126,6 +126,7 @@ select results_eq(
     select count(*)::bigint
     from public.site_settings
     where is_public = true
+      and key in ('free_shipping_threshold', 'maintenance_mode')
   $$,
   array[2::bigint],
   'anonymous users can see public site_settings (free_shipping_threshold, maintenance_mode)'

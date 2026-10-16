@@ -45,6 +45,47 @@ function checkoutBody(invoicePreference: Record<string, unknown> = {
   };
 }
 
+const shopifyCartResponse = () => new Response(JSON.stringify({
+  data: {
+    cartCreate: {
+      cart: { id: cartId, checkoutUrl, totalQuantity: 1 },
+      userErrors: [],
+      warnings: [],
+    },
+  },
+}), { status: 200, headers: { 'content-type': 'application/json' } });
+
+function mockGuestCheckoutNetwork(turnstile: Response | Error): void {
+  vi.stubGlobal('fetch', vi.fn().mockImplementation(async (url: string) => {
+    if (String(url).includes('challenges.cloudflare.com')) {
+      if (turnstile instanceof Error) throw turnstile;
+      return turnstile.clone();
+    }
+    return shopifyCartResponse();
+  }));
+}
+
+const turnstileResult = (success: boolean) => new Response(JSON.stringify({ success }), {
+  status: 200,
+  headers: { 'content-type': 'application/json' },
+});
+
+function enableGuestCheckout(): void {
+  mocks.getSiteSetting.mockImplementation(async (key: string) => (
+    key === 'guest_checkout_enabled' ? true : null
+  ));
+  process.env.TURNSTILE_SECRET_KEY = 'turnstile-test-secret';
+}
+
+function guestBody(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    ...checkoutBody(),
+    guestEmail: 'guest@example.test',
+    turnstileToken: 'turnstile-token',
+    ...overrides,
+  };
+}
+
 function mockShopifyCart(): void {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
     data: {
@@ -63,6 +104,7 @@ describe('create-shopify-cart Vercel API', () => {
     vi.unstubAllGlobals();
     mocks.getSupabaseAdminClient.mockReturnValue(null);
     mocks.getSiteSetting.mockResolvedValue(null);
+    delete process.env.TURNSTILE_SECRET_KEY;
     process.env.SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_ANON_KEY = 'test-publishable-key';
     mocks.createClient.mockReturnValue({
@@ -145,6 +187,7 @@ describe('create-shopify-cart Vercel API', () => {
 
     expect(response.status).toBe(200);
     expect(data.orderTrackingLinked).toBe(true);
+    expect(data.checkoutKind).toBe('member');
 
     const storefrontRequest = vi.mocked(fetch).mock.calls[0]?.[1];
     const storefrontBody = JSON.parse(String(storefrontRequest?.body)) as {
@@ -161,9 +204,169 @@ describe('create-shopify-cart Vercel API', () => {
     expect(upsert).toHaveBeenCalledWith(expect.objectContaining({
       shopify_cart_token: memberLinkToken,
       user_id: 'member-123',
+      checkout_kind: 'member',
     }), { onConflict: 'shopify_store_domain,shopify_cart_token' });
     expect(upsert.mock.invocationCallOrder[0]).toBeLessThan(
       vi.mocked(fetch).mock.invocationCallOrder[0],
     );
+  });
+
+  describe('guest checkout', () => {
+    it('keeps requiring sign-in while the launch switch is off', async () => {
+      mocks.getSiteSetting.mockImplementation(async (key: string) => (
+        key === 'guest_checkout_enabled' ? false : null
+      ));
+      process.env.TURNSTILE_SECRET_KEY = 'turnstile-test-secret';
+
+      const response = await POST(request(guestBody()));
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(response.status).toBe(401);
+      expect(data.code).toBe('MEMBER_LOGIN_REQUIRED');
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('does not downgrade an invalid member session to guest checkout', async () => {
+      enableGuestCheckout();
+      mocks.createClient.mockReturnValue({
+        auth: {
+          getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: { message: 'JWT expired' } }),
+        },
+      });
+
+      const response = await POST(request(guestBody(), 'expired-member-token'));
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(response.status).toBe(401);
+      expect(data.code).toBe('MEMBER_SESSION_INVALID');
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:3000');
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('fails closed when the Turnstile secret is not configured', async () => {
+      enableGuestCheckout();
+      delete process.env.TURNSTILE_SECRET_KEY;
+
+      const response = await POST(request(guestBody()));
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(response.status).toBe(503);
+      expect(data.code).toBe('TURNSTILE_UNAVAILABLE');
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('requires a Turnstile token', async () => {
+      enableGuestCheckout();
+
+      const response = await POST(request(guestBody({ turnstileToken: undefined })));
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(response.status).toBe(400);
+      expect(data.code).toBe('TURNSTILE_TOKEN_REQUIRED');
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('rejects member discount codes', async () => {
+      enableGuestCheckout();
+
+      const response = await POST(request(guestBody({ discountCodes: ['WELCOME100'] })));
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(response.status).toBe(400);
+      expect(data.code).toBe('GUEST_DISCOUNT_REQUIRES_LOGIN');
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it.each([undefined, '', 'not-an-email', `${'a'.repeat(250)}@example.test`])(
+      'requires a valid guest email (%s)',
+      async (guestEmail) => {
+        enableGuestCheckout();
+
+        const response = await POST(request(guestBody({ guestEmail })));
+        const data = await response.json() as Record<string, unknown>;
+
+        expect(response.status).toBe(400);
+        expect(data.code).toBe('GUEST_EMAIL_REQUIRED');
+        expect(fetch).not.toHaveBeenCalled();
+      },
+    );
+
+    it('rejects a failed Turnstile challenge before writing anything', async () => {
+      enableGuestCheckout();
+      mockGuestCheckoutNetwork(turnstileResult(false));
+      const upsert = vi.fn().mockResolvedValue({ error: null });
+      const rpc = vi.fn().mockResolvedValue({ error: null });
+      mocks.getSupabaseAdminClient.mockReturnValue({ rpc, from: vi.fn().mockReturnValue({ upsert }) });
+
+      const response = await POST(request(guestBody()));
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(response.status).toBe(403);
+      expect(data.code).toBe('TURNSTILE_VERIFICATION_FAILED');
+      expect(upsert).not.toHaveBeenCalled();
+      expect(rpc).not.toHaveBeenCalled();
+      expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1);
+    });
+
+    it('fails closed when Turnstile cannot be reached', async () => {
+      enableGuestCheckout();
+      mockGuestCheckoutNetwork(new Error('network down'));
+      const upsert = vi.fn().mockResolvedValue({ error: null });
+      mocks.getSupabaseAdminClient.mockReturnValue({ rpc: vi.fn(), from: vi.fn().mockReturnValue({ upsert }) });
+
+      const response = await POST(request(guestBody()));
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(response.status).toBe(503);
+      expect(data.code).toBe('TURNSTILE_UNAVAILABLE');
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it('verifies Turnstile and links the cart without a member', async () => {
+      enableGuestCheckout();
+      mockGuestCheckoutNetwork(turnstileResult(true));
+      const upsert = vi.fn().mockResolvedValue({ error: null });
+      const from = vi.fn().mockReturnValue({ upsert });
+      mocks.getSupabaseAdminClient.mockReturnValue({ rpc: vi.fn().mockResolvedValue({ error: null }), from });
+
+      const response = await POST(request(guestBody()));
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(response.status).toBe(200);
+      expect(data).toMatchObject({ checkoutUrl, orderTrackingLinked: false, checkoutKind: 'guest' });
+      expect(mocks.createClient).not.toHaveBeenCalled();
+      expect(from).not.toHaveBeenCalledWith('profiles');
+
+      const [turnstileUrl, turnstileInit] = vi.mocked(fetch).mock.calls[0] ?? [];
+      expect(String(turnstileUrl)).toBe('https://challenges.cloudflare.com/turnstile/v0/siteverify');
+      const turnstileForm = new URLSearchParams(String(turnstileInit?.body));
+      expect(turnstileForm.get('secret')).toBe('turnstile-test-secret');
+      expect(turnstileForm.get('response')).toBe('turnstile-token');
+
+      const storefrontBody = JSON.parse(String(vi.mocked(fetch).mock.calls[1]?.[1]?.body)) as {
+        variables: { input: {
+          attributes: Array<{ key: string; value: string }>;
+          buyerIdentity: Record<string, unknown>;
+          discountCodes?: unknown;
+        } };
+      };
+      const linkToken = storefrontBody.variables.input.attributes.find(
+        (attribute) => attribute.key === '_saengak_member_link_token',
+      )?.value;
+      expect(linkToken).toMatch(/^[0-9a-f-]{36}$/i);
+      expect(storefrontBody.variables.input.buyerIdentity).toEqual({
+        countryCode: 'TW',
+        email: 'guest@example.test',
+      });
+      expect(storefrontBody.variables.input.discountCodes).toBeUndefined();
+      expect(upsert).toHaveBeenCalledWith(expect.objectContaining({
+        shopify_cart_token: linkToken,
+        user_id: null,
+        checkout_kind: 'guest',
+      }), { onConflict: 'shopify_store_domain,shopify_cart_token' });
+      expect(upsert.mock.invocationCallOrder[0]).toBeLessThan(
+        vi.mocked(fetch).mock.invocationCallOrder[1],
+      );
+    });
   });
 });
