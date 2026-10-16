@@ -9,7 +9,15 @@ import {
   validateInvoicePreference,
   describeInvoicePreference,
 } from '../../domain/invoice';
-import { createShopifyCheckout } from '../../lib/shopifyCheckout';
+import {
+  createShopifyCheckout,
+  fetchGuestCheckoutEnabled,
+  GUEST_CHECKOUT_DISABLED_ERROR_CODES,
+  LOGIN_REQUIRED_ERROR_CODES,
+  ShopifyCheckoutError,
+  shouldReportCheckoutError,
+  type GuestCheckoutDetails,
+} from '../../lib/shopifyCheckout';
 import { captureExceptionSafe } from '../../lib/sentry';
 import { supabase } from '../../lib/supabase';
 import {
@@ -25,6 +33,12 @@ import {
 } from '../../lib/promotions';
 import type { UserCoupon } from '../../types/promotions';
 import AuthModal from './AuthModal';
+import SignedOutCheckoutActions, {
+  GUEST_EMAIL_ERROR_MESSAGE,
+  getGuestCheckoutValidationError,
+  isGuestCheckoutAvailable,
+  type SignedOutCheckoutMode,
+} from './SignedOutCheckoutActions';
 
 export default function CartSidebar() {
   const [checkoutMessage, setCheckoutMessage] = useState('');
@@ -43,7 +57,16 @@ export default function CartSidebar() {
   const [selectedCouponCode, setSelectedCouponCode] = useState<string>('');
   const [manualCouponInput, setManualCouponInput] = useState<string>('');
   const [shippingSettings, setShippingSettings] = useState({ freeShippingThreshold: DEFAULT_FREE_SHIPPING_THRESHOLD, defaultShippingFee: DEFAULT_SHIPPING_FEE });
+  const [guestCheckoutEnabled, setGuestCheckoutEnabled] = useState(false);
+  const [signedOutMode, setSignedOutMode] = useState<SignedOutCheckoutMode>('member');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestCaptchaToken, setGuestCaptchaToken] = useState('');
+  const [guestCaptchaResetKey, setGuestCaptchaResetKey] = useState(0);
+  const [guestEmailError, setGuestEmailError] = useState('');
+  const [guestEmailFocusKey, setGuestEmailFocusKey] = useState(0);
   const { user, isLoading: isAuthLoading } = useAuth();
+  const canGuestCheckout = isGuestCheckoutAvailable(Boolean(user), guestCheckoutEnabled);
+  const isGuestMode = canGuestCheckout && signedOutMode === 'guest';
 
   const { 
     items, 
@@ -89,6 +112,27 @@ export default function CartSidebar() {
         });
     }
   }, [isCartOpen, user?.id]);
+
+  // 未登入時讀取訪客結帳開關（site_settings.guest_checkout_enabled，公開設定）
+  useEffect(() => {
+    if (isCartOpen && !isAuthLoading && !user) {
+      void fetchGuestCheckoutEnabled().then(setGuestCheckoutEnabled);
+    }
+  }, [isCartOpen, isAuthLoading, user]);
+
+  // 關閉購物車時清除 Turnstile token，避免下次送出已過期的舊 token
+  useEffect(() => {
+    if (!isCartOpen) {
+      setGuestCaptchaToken('');
+    }
+  }, [isCartOpen]);
+
+  // 登入狀態改變時回到預設的會員結帳，並清除訪客驗證
+  useEffect(() => {
+    setSignedOutMode('member');
+    setGuestCaptchaToken('');
+    setGuestEmailError('');
+  }, [user?.id]);
 
   // 當購物車開啟時，自動同步後台免運門檻設定，避免與 site_settings 脫鉤
   useEffect(() => {
@@ -173,7 +217,7 @@ export default function CartSidebar() {
     }
   };
 
-  const submitCheckout = async () => {
+  const submitCheckout = async (guest?: GuestCheckoutDetails) => {
     setIsSubmitting(true);
     try {
       const shopifyLines = items.map(item => {
@@ -182,8 +226,9 @@ export default function CartSidebar() {
         return { merchandiseId, quantity: item.quantity };
       });
       
-      const discountCodes = selectedCouponCode.trim() ? [selectedCouponCode.trim()] : undefined;
-      const result = await createShopifyCheckout(shopifyLines, invoicePreference, discountCodes);
+      // 訪客不可使用會員優惠，不送折扣碼
+      const discountCodes = !guest && selectedCouponCode.trim() ? [selectedCouponCode.trim()] : undefined;
+      const result = await createShopifyCheckout(shopifyLines, invoicePreference, discountCodes, guest);
       if (result.invalidDiscountCodes.length > 0) {
         setSelectedCouponCode('');
         setCheckoutMessage(
@@ -195,10 +240,25 @@ export default function CartSidebar() {
     } catch (err: any) {
       const msg = err?.message || '建立結帳失敗，請稍後再試。';
       setCheckoutMessage(msg);
-      if (/登入|會員登入狀態/.test(msg)) {
+      if (guest) {
+        // Turnstile token 只能使用一次，送出後不論成敗都要重新驗證
+        setGuestCaptchaToken('');
+        setGuestCaptchaResetKey((key) => key + 1);
+      }
+      const code = err instanceof ShopifyCheckoutError ? err.code : undefined;
+      if (guest && code && GUEST_CHECKOUT_DISABLED_ERROR_CODES.has(code)) {
+        // 後台已關閉訪客結帳或驗證服務不可用：收起訪客選項，只留會員結帳
+        setGuestCheckoutEnabled(false);
+      }
+      if (guest && code === 'GUEST_EMAIL_REQUIRED') {
+        setGuestEmailError(GUEST_EMAIL_ERROR_MESSAGE);
+        setGuestEmailFocusKey((key) => key + 1);
+      }
+      const needsLogin = code ? LOGIN_REQUIRED_ERROR_CODES.has(code) : /登入|會員登入狀態/.test(msg);
+      if (needsLogin) {
         setIsAuthModalOpen(true);
-      } else {
-        captureExceptionSafe(err, { source: 'CartSidebarCheckout' });
+      } else if (shouldReportCheckoutError(code)) {
+        captureExceptionSafe(err, { source: guest ? 'CartSidebarGuestCheckout' : 'CartSidebarCheckout' });
       }
     } finally {
       setIsSubmitting(false);
@@ -239,6 +299,41 @@ export default function CartSidebar() {
     }
 
     await submitCheckout();
+  };
+
+  const handleGuestCheckout = async () => {
+    setCheckoutMessage('');
+    if (items.length === 0) {
+      setCheckoutMessage('購物車是空的，尚無法進行結帳。');
+      return;
+    }
+
+    const invoiceError = validateInvoicePreference(invoicePreference);
+    if (invoiceError) {
+      setCheckoutMessage(invoiceError);
+      setIsInvoiceOpen(true);
+      return;
+    }
+
+    const guestError = getGuestCheckoutValidationError(guestEmail, guestCaptchaToken);
+    if (guestError) {
+      if (guestError.field === 'email') {
+        setGuestEmailError(guestError.message);
+        setGuestEmailFocusKey((key) => key + 1);
+      } else {
+        setCheckoutMessage(guestError.message);
+      }
+      return;
+    }
+
+    await submitCheckout({ email: guestEmail.trim(), turnstileToken: guestCaptchaToken });
+  };
+
+  const handleChooseGuestCheckout = () => {
+    setCheckoutMessage('');
+    setSelectedCouponCode('');
+    setIsCouponSectionOpen(false);
+    setSignedOutMode('guest');
   };
 
   const handleAuthenticated = async () => {
@@ -433,9 +528,9 @@ export default function CartSidebar() {
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer：內容（優惠券、發票、訪客結帳）在矮螢幕上會超過可視高度，限制高度並可獨立捲動，確保結帳按鈕可到達 */}
         {items.length > 0 && (
-          <div className="border-t border-gray-200 px-6 py-4 bg-white space-y-3 shrink-0">
+          <div className="border-t border-gray-200 px-6 py-4 bg-white space-y-3 shrink-0 max-h-[65dvh] overflow-y-auto overscroll-contain" data-testid="cart-footer">
             {/* Total */}
             <div className="py-2 space-y-1">
               <div className="flex items-center justify-between text-xs text-gray-600">
@@ -469,7 +564,8 @@ export default function CartSidebar() {
               </div>
             </div>
 
-            {/* 優惠券折抵區塊 */}
+            {/* 優惠券折抵區塊（訪客結帳不可使用會員優惠，改在訪客區塊提示登入） */}
+            {!isGuestMode && (
             <div className="border-t border-gray-100 pt-3 pb-1">
               <button
                 type="button"
@@ -617,6 +713,7 @@ export default function CartSidebar() {
                 </div>
               )}
             </div>
+            )}
 
             {/* Invoice Form */}
             <div className="space-y-3 pt-4 pb-2 border-t border-gray-100">
@@ -784,12 +881,32 @@ export default function CartSidebar() {
             </div>
 
             {/* Action Buttons */}
-            {checkoutMessage && (
+            {/* 訪客模式的訊息顯示在訪客送出按鈕旁（SignedOutCheckoutActions），避免手機上捲出可視範圍 */}
+            {checkoutMessage && !isGuestMode && (
               <p className="rounded-sm bg-amber-50 px-3 py-2 text-xs text-amber-800" role="status" data-testid="checkout-message">
                 {checkoutMessage}
               </p>
             )}
 
+            {canGuestCheckout ? (
+              <SignedOutCheckoutActions
+                mode={signedOutMode}
+                guestEmail={guestEmail}
+                guestEmailError={guestEmailError}
+                emailFocusKey={guestEmailFocusKey}
+                message={isGuestMode ? checkoutMessage : ''}
+                isBusy={isSubmitting}
+                captchaResetKey={guestCaptchaResetKey}
+                onGuestEmailChange={(email) => {
+                  setGuestEmail(email);
+                  setGuestEmailError('');
+                }}
+                onCaptchaTokenChange={setGuestCaptchaToken}
+                onMemberCheckout={() => void handleCheckout()}
+                onChooseGuestCheckout={handleChooseGuestCheckout}
+                onSubmitGuestCheckout={() => void handleGuestCheckout()}
+              />
+            ) : (
             <button
               onClick={handleCheckout}
               disabled={isSubmitting || isAuthLoading}
@@ -806,6 +923,7 @@ export default function CartSidebar() {
                  <span>{user ? '前往結帳' : '登入會員後結帳'}</span>
               )}
             </button>
+            )}
             
             <p className="text-xs text-gray-500 text-center mt-2">
               下一步選擇取貨方式與付款，最終金額以結帳頁為準。

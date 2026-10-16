@@ -1,15 +1,62 @@
+import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { useAuth } from '../../contexts/AuthContext';
 import { siteContent } from '../../content/site';
+import { fetchGuestCheckoutEnabled } from '../../lib/shopifyCheckout';
 
 const ordersPath = '/profile?tab=orders';
+
+/**
+ * 只有開放訪客結帳時才顯示訪客說明；開關關閉時與原本的會員版頁面完全相同，
+ * 避免已有帳號、登入狀態失效的會員被引導重新註冊。
+ */
+export function shouldShowGuestOrderNotice(
+  isAuthLoading: boolean,
+  isSignedIn: boolean,
+  guestCheckoutEnabled: boolean,
+): boolean {
+  return guestCheckoutEnabled && !isAuthLoading && !isSignedIn;
+}
+
+export function GuestOrderNotice() {
+  return (
+    <div
+      className="mx-auto mt-6 max-w-2xl rounded-xl border border-stone-200 bg-[#F8F5F1] p-5 text-left text-sm leading-7 text-stone-600"
+      data-testid="guest-order-notice"
+    >
+      <p className="font-semibold text-stone-900">若以訪客身分結帳，可以這樣查詢訂單：</p>
+      <ul className="mt-2 list-disc space-y-1 pl-5">
+        <li>請查看 Shopify 寄出的訂單確認信，點信中的「訂單狀態」連結，即可查看付款、出貨與物流進度。</li>
+        <li>以結帳時填寫的同一個 Email 註冊並完成 Email 驗證，登入後即可在會員中心「我的訂單」看到這筆訂單。</li>
+      </ul>
+      <p className="mt-3">
+        <Link to="/register" className="font-semibold text-brand underline">以同一 Email 註冊會員</Link>
+        <span className="mx-2 text-stone-400" aria-hidden="true">｜</span>
+        <Link
+          to="/login"
+          state={{ from: { pathname: ordersPath } }}
+          className="font-semibold text-brand underline"
+        >
+          已有帳號？登入
+        </Link>
+      </p>
+    </div>
+  );
+}
 
 export default function OrderStatusPage() {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('order_id');
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
+  const [guestCheckoutEnabled, setGuestCheckoutEnabled] = useState(false);
+  useEffect(() => {
+    if (!isAuthLoading && !user) {
+      void fetchGuestCheckoutEnabled().then(setGuestCheckoutEnabled);
+    }
+  }, [isAuthLoading, user]);
+  const showGuestNotice = shouldShowGuestOrderNotice(isAuthLoading, Boolean(user), guestCheckoutEnabled);
   const isSandbox = import.meta.env.VITE_COMMERCE_SANDBOX_MODE === 'true';
 
   // 只有結帳返回時帶著 order_id 才顯示感謝訊息；一般從頁尾進入的顧客看到的是訂單查詢說明
@@ -36,6 +83,7 @@ export default function OrderStatusPage() {
                 </span>
               )}
             </p>
+            {showGuestNotice && <GuestOrderNotice />}
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 to="/products"
@@ -86,6 +134,9 @@ export default function OrderStatusPage() {
           </div>
           <div className="mt-10 border-t border-stone-200 pt-6 text-sm leading-7 text-stone-600">
             <p>找不到訂單？請先查看下單時收到的訂單確認信，信中附有訂單狀態連結。</p>
+            {guestCheckoutEnabled && (
+              <p>以訪客身分結帳的訂單，以同一 Email 註冊會員並完成驗證後，也會出現在「我的訂單」。</p>
+            )}
             <p>{siteContent.supportContact}</p>
           </div>
         </section>

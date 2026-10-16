@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Turnstile } from '@marsidev/react-turnstile';
 
 const configuredSiteKey = import.meta.env.VITE_PUBLIC_TURNSTILE_SITE_KEY?.trim();
@@ -18,21 +19,41 @@ export function captchaTokenOptions(token: string): { captchaToken?: string } {
 interface AuthCaptchaProps {
   onTokenChange: (token: string) => void;
   resetKey: number;
+  /** Turnstile action，伺服器端可比對 siteverify 回傳的 action（例如 'guest_checkout'）。 */
+  action?: string;
 }
 
-export default function AuthCaptcha({ onTokenChange, resetKey }: AuthCaptchaProps) {
+export default function AuthCaptcha({ onTokenChange, resetKey, action }: AuthCaptchaProps) {
+  const [hasToken, setHasToken] = useState(false);
+  const onTokenChangeRef = useRef(onTokenChange);
+  useEffect(() => {
+    onTokenChangeRef.current = onTokenChange;
+  });
+
+  // 重新驗證時清除提示狀態；元件卸載時清除 token，避免送出已離開畫面的舊 token
+  useEffect(() => {
+    setHasToken(false);
+  }, [resetKey]);
+  useEffect(() => () => onTokenChangeRef.current(''), []);
+
   if (!configuredSiteKey) return null;
+
+  const updateToken = (token: string) => {
+    setHasToken(Boolean(token));
+    onTokenChange(token);
+  };
 
   return (
     <div className="space-y-2">
       <Turnstile
         key={resetKey}
         siteKey={configuredSiteKey}
-        onSuccess={onTokenChange}
-        onExpire={() => onTokenChange('')}
-        onError={() => onTokenChange('')}
+        options={action ? { action } : undefined}
+        onSuccess={updateToken}
+        onExpire={() => updateToken('')}
+        onError={() => updateToken('')}
       />
-      <p className="text-xs text-gray-500">請完成安全驗證後繼續。</p>
+      {!hasToken && <p className="text-xs text-gray-500">請完成安全驗證後繼續。</p>}
     </div>
   );
 }

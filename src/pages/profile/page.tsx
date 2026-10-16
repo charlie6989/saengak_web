@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { claimGuestOrders } from '../../lib/guestOrders';
 import { mockUsers, mockOrders, mockFavorites, mockAuthState, simulateApiDelay } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
@@ -443,6 +444,8 @@ export default function ProfilePage() {
   };
 
   const loadOrders = async (userId: string) => {
+    // 先認領同 Email 的訪客訂單；失敗只記錄，不阻擋訂單載入。
+    await claimGuestOrders();
     try {
       const { data, error } = await supabase
         .from('orders')
