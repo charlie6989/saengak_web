@@ -15,7 +15,7 @@
 - 主要網域設定為 `lucissicare.com`，repository 名稱仍為 `saengak_web`。
 - `vercel.json` 將 `saengak.com.tw` 與 `www.saengak.com.tw` 一般頁面永久轉址至新網域；排除 `/api`、`/auth/confirm`、`/reset-password`，以保留服務回呼。修改時須一起檢查相關測試、CSP、Origin 白名單、sitemap 與 robots。
 
-- **子品牌定位（2026-10-17 使用者確認，同日收斂）**：LUCISSI CARE 是「LUCISSI 的日常照護系列」，主張「貼近身體的日常照護」。導覽為私密保養、舒適內搭兩個核心面向，加跨分類的「生理期照護」；身體保養商品併入私密保養，運動內衣併入舒適內搭，肌膚保養與輕盈運動不做分類（理由：沒有或只有 1 件商品、母站 lucissi.com 已有對應分類、台灣臉部保養與女性運動服市場擁擠、PIF 自 2026-07-01 全面實施）。設定集中在 `src/content/carePillars.ts`。不承接情趣與性健康品類。重新加回面向的條件：至少 6–8 件非母站同款商品、能用貼身照護說清楚的角度、化粧品已完成 PIF。待決：與母站重疊品類的分工、會員是否互通、免運門檻（母站 NT$1,500 vs 本站 NT$1,499）、新照片。
+- **子品牌定位（2026-10-17 使用者確認，同日收斂）**：LUCISSI CARE 是「LUCISSI 的日常照護系列」，主張「貼近身體的日常照護」。導覽為私密保養、舒適內搭兩個核心面向，加跨分類的「生理期照護」；身體保養商品併入私密保養，運動內衣併入舒適內搭，肌膚保養與輕盈運動不做分類（理由：沒有或只有 1 件商品、母站 lucissi.com 已有對應分類、台灣臉部保養與女性運動服市場擁擠、PIF 自 2026-07-01 全面實施）。設定集中在 `src/content/carePillars.ts`。不承接情趣與性健康品類。重新加回面向的條件：至少 6–8 件非母站同款商品、能用貼身照護說清楚的角度、化粧品已完成 PIF。待決：與母站重疊品類的分工、會員是否互通、新照片。
 - **Logo（2026-10-17）**：已選定方向 A「家族字標」（LUCISSI 沿用母站 Cormorant Garamond 400、字距 0.32em，下方細線夾 CARE，單色 plum #5B3D48）。規格與設計師需求在設計系統 artifact（https://claude.ai/artifact/LuJEPWJzPNbHwEe5UgDaKp）；SVG 交付前網站續用 `lucissi-care-logo.png`。
 
 ## 架構與整合
@@ -49,7 +49,7 @@
 
 ## 營運決策（2026-10-16）
 
-- 全站免運門檻為 NT$1,499。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
+- 全站免運門檻為 NT$1,500（2026-10-17 決定比照 LUCISSI 母站，原為 NT$1,499；migration `20261017030000` 與 Shopify 運費規則／FREESHIP 門檻需一起上線）。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
 - 未達門檻的基本運費為 NT$146（黑貓宅急便常溫宅配，參照 LUCISSI 網站）。`DEFAULT_SHIPPING_FEE` 只是後備值，顧客看到的是 Supabase `site_settings.default_shipping_fee`；改運費時程式碼、Supabase、Shopify 運費三處一起改。
 - 客服暫時只用 Email（`Company@lucissi.com`）。
 - 訪客結帳已決定開放；登入改為會員優惠入口。前後端已隨 PR #37／#38 合併至 `main`，2026-10-16 正式 Vercel API 確認 `530b2c3` 為 Production／Ready／Current，綁定 `lucissicare.com`。正式 Supabase 已存在 migration `20261016024415`，但當日回讀 `guest_checkout_enabled=false`，尚未對外開放。

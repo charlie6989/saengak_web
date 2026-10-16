@@ -46,7 +46,7 @@ export const DEFAULT_PROMOTIONS: Promotion[] = [
     code: 'FREESHIP',
     title: '滿額免運',
     subtitle: '超商與宅配滿額免運費',
-    description: '消費滿 NT$ 1,499 即可享免運費優惠，結帳時直接折抵運費。',
+    description: `消費滿 NT$ ${DEFAULT_FREE_SHIPPING_THRESHOLD.toLocaleString('en-US')} 即可享免運費優惠，結帳時直接折抵運費。`,
     category: 'shipping',
     discount_type: 'free_shipping',
     discount_value: 0,
