@@ -6,8 +6,8 @@
 
 - 正式 SMTP 已獨立驗證可寄送：Resend `smtp.resend.com:465`、寄件地址 `noreply@auth.saengak.com.tw`，正式 site_url／回跳白名單為 lucissicare.com。顯示名稱已從 SAENGAK 更新為 LUCISSI CARE；未更換正式 SMTP key。實際驗證信 HTTP 200、Resend Delivered，使用者手機收信及回跳另行確認，不以測試分支成功替代。
 - TapPay Shopify 設定仍為測試模式；TapPay Portal 與光貿登入待使用者完成。Vercel Amego sensitive 欄位存在但不可解密讀回，不能把存在當成正式配置驗收。
-- 正式 outbox 的 #1006、#1007 已由正確 Shopify 商店 API 確認為 test=true。仍 pending／attempts=0，尚未取消或調整；正式發票放行前須先排除舊測試工作。
-- Vercel 發票 release gate 必須與 Edge Function 一致，只有字串 `true` 才可派送；缺值／其他值不得默認啟用。本輪回讀訪客開關仍為 false。
+- 正式 outbox 的 #1006、#1007 已由正確 Shopify 商店 API 確認為 test=true。已將兩筆發票工作由 pending 改為 manual_review，標記 SHOPIFY_TEST_ORDER，回讀 attempts=0／未開票；排除自動派送，未變更 Shopify 訂單或退款。
+- Vercel 發票 release gate 必須與 Edge Function 一致，只有字串 `true` 才可派送；缺值／其他值不得默認啟用。b26667a 已部署正式並回讀 alias，CI 通過；本輪回讀訪客開關仍為 false。
 
 ## 品牌與網域
 
