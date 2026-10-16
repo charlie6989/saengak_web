@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { siteContent } from '../../content/site';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { captureExceptionSafe } from '../../lib/sentry';
-import { DEFAULT_FREE_SHIPPING_THRESHOLD } from '../../domain/shipping';
+import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface OperationalSettings {
@@ -18,7 +18,7 @@ interface OperationalSettings {
 
 const DEFAULT_SETTINGS: OperationalSettings = {
   freeShippingThreshold: DEFAULT_FREE_SHIPPING_THRESHOLD,
-  defaultShippingFee: 80,
+  defaultShippingFee: DEFAULT_SHIPPING_FEE,
   lowStockThreshold: 5,
   maintenanceMode: false,
   contactEmail: 'service@saengak.com.tw',

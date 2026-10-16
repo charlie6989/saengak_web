@@ -33,6 +33,16 @@ Node.js v26.3.1、npm 11.16.0；另以 `npx npm@10.9.4` 模擬 CI 的 npm 10。
 
 未比對：已登入會員頁、管理後台、hover／focus 等互動狀態。GitHub Actions 在 Node 22 上的結果以 PR 的 CI 執行為準。
 
+## 2026-10-16 基本運費統一為 NT$146（分支 `claude/shipping-fee-146`）
+
+參照 LUCISSI 網站（`LUCISSI_website/config/brands/lucissi.manifest.json`：黑貓宅急便常溫宅配 `standardFee` 146，2026-10-11 驗證）。本店 Shopify 結帳本來就收 $146，網站卻沿用舊初始值 80，購物車顯示的運費比結帳低。
+
+- 程式碼：`src/domain/shipping.ts` 的 `DEFAULT_SHIPPING_FEE` 改為 146；後台 `SiteSettings` 預設值改用此常數。
+- 資料庫：migration `supabase/migrations/20261016020514_unify_default_shipping_fee.sql`，2026-10-16 已以 MCP `apply_migration` 套用到正式 Supabase `tmqzkagkrzhioftvwbqo`（版本 `20261016020514`）；套用前回讀 80，套用後回讀 146。
+- 正式 API：`https://lucissicare.com/api/shopify/discounts` 回讀 `siteSettings` 為 `{freeShippingThreshold: 1499, defaultShippingFee: 146}`。
+- 免運門檻維持本店決定的 NT$1,499（LUCISSI 為 1,500，未跟著改）。
+- Shopify 運費規則未變動（原本即 $146）。
+
 ## 2026-10-16 免運門檻統一為 NT$1,499（分支 `claude/guest-checkout-free-ship`，PR #35）
 
 營運決定全站免運門檻為 NT$1,499、客服先只用 Email、訪客結帳開放（實作待發票設計）。
@@ -48,7 +58,7 @@ Node.js v26.3.1、npm 11.16.0；另以 `npx npm@10.9.4` 模擬 CI 的 npm 10。
 | --- | --- |
 | Supabase `tmqzkagkrzhioftvwbqo` 的 `free_shipping_threshold` | 1499（10/15 已由後台設定；套用本 migration 後回讀仍為 1499） |
 | Supabase FREESHIP 促銷 | 2026-10-16 已以 MCP `apply_migration` 套用本 migration（正式資料庫 migration 版本 `20261015225032`，檔名同步）；回讀標題「滿額免運」、min_spend 1499 |
-| Shopify 運費規則 | 已顯示「滿 $1499.00 免費」；但 Shopify 運費為 $146，與網站 `default_shipping_fee` 80 不一致，待確認 |
+| Shopify 運費規則 | 已顯示「滿 $1499.00 免費」；運費 $146，2026-10-16 已將網站 `default_shipping_fee` 統一為 146（見下節） |
 
 ### 本次驗證
 
