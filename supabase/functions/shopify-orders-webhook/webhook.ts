@@ -76,7 +76,7 @@ export interface ShopifyOrderSyncInput {
   p_contact_email: string;
 }
 
-// p_contact_email 是 20261016120000 migration 才加的參數。為空時不送，
+// p_contact_email 是 20261016024415 migration 才加的參數。為空時不送，
 // 尚未套用該 migration 的資料庫找不到新簽章（PostgREST PGRST202）時再不帶它重試一次，
 // 讓 webhook 程式比 migration 先部署也不會中斷訂單同步。
 export type OrderSyncRpcParams = Omit<ShopifyOrderSyncInput, 'p_contact_email'> & {

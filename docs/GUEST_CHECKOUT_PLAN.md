@@ -162,7 +162,7 @@ Email 變更：Supabase 的 Email 變更需要確認，`claim_guest_orders` 只�
 
 ### 9.1 步驟 1–3 實作紀錄（2026-10-16）
 
-- Migration `supabase/migrations/20261016120000_allow_guest_checkout_orders.sql`：§2 schema、§4 RPC（21 個參數，`p_contact_email` 預設 `''`）、§6 `claim_guest_orders()`、過期 link 清除、`site_settings.guest_checkout_enabled = false`（`is_public = true`，`on conflict do nothing` 不覆寫後台值）。
+- Migration `supabase/migrations/20261016024415_allow_guest_checkout_orders.sql`：§2 schema、§4 RPC（21 個參數，`p_contact_email` 預設 `''`）、§6 `claim_guest_orders()`、過期 link 清除、`site_settings.guest_checkout_enabled = false`（`is_public = true`，`on conflict do nothing` 不覆寫後台值）。
 - 與設計稿的差異：
   - 另加 `orders_guest_claim_check`：`guest_claimed_at` 只能出現在已有 `user_id` 的訪客訂單。
   - 過期 link 清除保留 7 天緩衝（`expires_at < now() - 7 days` 且未轉換），避免到期前建立、稍晚才送達的 webhook 變成 `unlinked`。
