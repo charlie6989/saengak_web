@@ -1245,7 +1245,7 @@ export default function ProductPreviewPage() {
                           value={questionInput}
                           onChange={(e) => setQuestionInput(e.target.value)}
                           placeholder="在此輸入您的問題..."
-                          className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:border-brand focus:ring-1 focus:ring-[#5B3D48] focus:outline-hidden bg-white placeholder-gray-400 resize-none transition-all"
+                          className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:border-brand focus:ring-1 focus:ring-[#5B3D48] focus:outline-hidden bg-white placeholder-gray-500 resize-none transition-all"
                         />
                       </div>
 

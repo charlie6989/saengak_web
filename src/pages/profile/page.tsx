@@ -1707,7 +1707,7 @@ export default function ProfilePage() {
                   onChange={(e) => setCommentInput(e.target.value)}
                   placeholder="請分享您對此商品的實際穿著體驗、材質觸感或尺寸剪裁感受..."
                   data-testid="review-comment-input"
-                  className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:border-brand focus:ring-1 focus:ring-[#5B3D48] focus:outline-hidden placeholder-gray-400"
+                  className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:border-brand focus:ring-1 focus:ring-[#5B3D48] focus:outline-hidden placeholder-gray-500"
                 />
                 <p className="mt-1 text-xs text-gray-500 text-right">
                   {commentInput.length} 字

@@ -123,7 +123,7 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="搜尋商品、文章、關鍵字…"
                   aria-label="搜尋商品、文章、關鍵字"
-                  className="flex-1 outline-hidden text-base md:text-lg placeholder-gray-400"
+                  className="flex-1 outline-hidden text-base md:text-lg placeholder-gray-500"
                 />
                 <button
                   type="button"
