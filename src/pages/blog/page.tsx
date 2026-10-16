@@ -428,7 +428,7 @@ export default function BlogArticle() {
                       <i className="ri-list-check text-brand text-lg"></i>
                       文章章節目錄
                     </h3>
-                    <span className="text-xs text-gray-400 font-normal">
+                    <span className="text-xs text-gray-500 font-normal">
                       {Math.round(readingProgress)}% 進度
                     </span>
                   </div>
@@ -470,7 +470,7 @@ export default function BlogArticle() {
                     <i className="ri-heart-3-line text-brand text-lg"></i>
                     推薦日常護理
                   </h3>
-                  <span className="text-xs text-gray-400 font-normal">編輯推薦</span>
+                  <span className="text-xs text-gray-500 font-normal">編輯推薦</span>
                 </div>
                 <div className="space-y-3.5">
                   {recommendedProducts.map((product) => (
@@ -493,7 +493,7 @@ export default function BlogArticle() {
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-xs text-brand">{formatTwd(product.price)}</span>
                           {product.originalPrice && product.originalPrice > product.price && (
-                            <span className="text-[10px] line-through text-gray-400">{formatTwd(product.originalPrice)}</span>
+                            <span className="text-[10px] line-through text-gray-500">{formatTwd(product.originalPrice)}</span>
                           )}
                         </div>
                       </div>

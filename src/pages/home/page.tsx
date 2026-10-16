@@ -86,16 +86,10 @@ export default function Home() {
 
         <BrandSection />
 
-        {/* 白色間隔區域 */}
-        <section className="py-12 bg-white"></section>
-
         <SolutionSection />
 
-        {/* 白色間隔區域 */}
-        <section className="py-12 bg-white"></section>
-
-        {/* LUCISSI Talk｜私密對話 區塊 */}
-        <section className="py-20" style={{ backgroundColor: '#F8F5F1' }}>
+        {/* LUCISSI Talk｜私密對話 區塊：白底與上方象牙色主視覺區隔 */}
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
@@ -211,7 +205,7 @@ export default function Home() {
                         <p className="text-gray-600 text-sm line-clamp-2 flex-1" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                           {article.excerpt || article.contentHtml?.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...'}
                         </p>
-                        <p className="text-xs text-gray-400 mt-4">
+                        <p className="text-xs text-gray-500 mt-4">
                           {new Date(article.publishedAt).toLocaleDateString()}
                         </p>
                       </div>

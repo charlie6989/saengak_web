@@ -2,6 +2,18 @@
 
 更新日期：2026-10-17（Asia/Taipei）。最新工作為正式金流、發票與寄信查核；其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
 
+## 品牌檢視低風險視覺修正（2026-10-17，分支 `claude/compassionate-chaum-640a12`）
+
+依 LUCISSI CARE 品牌檢視只做機械性修正；導覽分類、文案定位、LUCISSI 背書與 Logo 仍待營運決策，未變更。
+
+- 字型：`--font-sans` 改為 `"Noto Sans TC"` 優先（Apple 裝置原本會先用 `-apple-system`），Google Fonts 載入補上 800／900 字重供 `font-extrabold`／`font-black` 使用；移除未使用的 Pacifico 字型載入與 `.logo-font`。
+- 對比：`text-gray-400`（#8A7B79，在 #F8F5F1 上 3.72:1）的文字用途（文章日期、刪除線原價、說明文字、收藏愛心、規格選項、後台輔助文字）及 input／textarea placeholder（全域規則與 14 處明確的 `placeholder-gray-400`）改為 `gray-500`（#655859）。保留 `gray-400` 的只有圖示、✕ 關閉鈕與停用／不可選狀態（非文字 3:1 已達標，停用元件不受 WCAG 對比要求）。
+- 首頁：移除兩個空白 `py-12 bg-white` 間隔區；LUCISSI Talk 區改為白底，與上方象牙色 EditorialHero 以底色區隔。刪除未被引用的 `StorySection.tsx`。
+- 跑馬燈：`--marquee-height` 由 28px 改為 32px，`Header.tsx` 的橫幅高度與兩個 header 的 `marginTop` 改用該變數（`.page-content` 頁面內容因此下移 4px）；`prefers-reduced-motion: reduce` 時停止動畫，改為靜止並以省略號截斷。
+- 商品卡（`ProductCard` 與首頁 `SolutionSection` 同款卡片）：價格改為 `NT$`；BEST／NEW 標籤由紅／藍改為品牌紫 `bg-brand`＋`text-white`（#5B3D48／#FFFDFC）；手機（`sm` 以下）價格字級由 18px 改 16px，避免 `NT$` 前綴在 320px 寬超出卡片內距。移除未使用的韓元換算函式。
+- 已執行驗證：`npm run typecheck`、`npm test -- --run`（46 檔／453 項）、`npm run build`（僅既有 chunk 大小警告）、`npm run verify:content`（160 檔）皆通過。以本機 dev server（連既有 Shopify 資料）用 Chrome 擷取首頁與 `/search` 修改前後全頁畫面（桌機 1280、手機 390），另測 reduced-motion 與 320／360 寬價格寬度；首頁桌機高度少 192px（兩個間隔區），其餘版面無回歸。目前商品資料沒有 BEST／NEW 標籤，新標籤顏色僅經程式碼確認。
+- 未執行：未部署、未在實體 iOS 裝置確認字型。
+
 ## 正式服務查核（2026-10-17）
 
 - 正式 Supabase Auth：site_url 為 `https://lucissicare.com`，回跳白名單包含正式 `/auth/confirm` 與 `/reset-password`，Email 驗證開啟。SMTP 為 `smtp.resend.com:465`／`resend`，寄件地址 `noreply@auth.saengak.com.tw`；原寄件者顯示名稱 SAENGAK 已改為 LUCISSI CARE，API 回讀其餘 SMTP 憑證及 Auth 設定未變。

@@ -165,7 +165,7 @@ export const ProductList: React.FC = () => {
                           <div className="font-semibold text-gray-900 line-clamp-1">
                             {product.title}
                           </div>
-                          <div className="text-[11px] text-gray-400">
+                          <div className="text-[11px] text-gray-500">
                             {/* 先判斷是否為 SAENGAK 自有品類再決定顯示邏輯，嚴禁無條件 vendor || 'SAENGAK'：
                                 內褲、生理褲等舒適穿著商品絕對不是 SAENGAK 品牌（見 src/lib/brandOwnership.ts） */}
                             {resolveDisplayVendor(product) || '未標示廠牌'} | {product.productType || '護理保養'}
@@ -179,7 +179,7 @@ export const ProductList: React.FC = () => {
                     <td className="px-4 py-3.5 font-medium text-gray-900">
                       NT$ {product.price.toLocaleString()}
                       {product.originalPrice && product.originalPrice > product.price && (
-                        <span className="ml-1.5 text-[11px] text-gray-400 line-through">
+                        <span className="ml-1.5 text-[11px] text-gray-500 line-through">
                           NT$ {product.originalPrice.toLocaleString()}
                         </span>
                       )}
@@ -223,7 +223,7 @@ export const ProductList: React.FC = () => {
                           </span>
                         ))}
                         {product.tags.length > 3 && (
-                          <span className="text-[10px] text-gray-400">
+                          <span className="text-[10px] text-gray-500">
                             +{product.tags.length - 3}
                           </span>
                         )}
@@ -281,7 +281,7 @@ export const ProductList: React.FC = () => {
                     <div key={v.id} className="flex items-center justify-between p-3 text-xs">
                       <div>
                         <div className="font-semibold text-gray-800">{v.title}</div>
-                        <div className="text-[11px] text-gray-400 font-mono">
+                        <div className="text-[11px] text-gray-500 font-mono">
                           SKU: {v.sku || '無 SKU'} | GID: {v.id.split('/').pop()}
                         </div>
                       </div>

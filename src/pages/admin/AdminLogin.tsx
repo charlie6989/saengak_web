@@ -130,7 +130,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess }) => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="管理員電子郵件"
                 disabled={isLoading}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-[#5B3D48]/20 disabled:bg-gray-100"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 transition-colors focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-[#5B3D48]/20 disabled:bg-gray-100"
               />
             </div>
 
@@ -151,7 +151,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
                 disabled={isLoading}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-[#5B3D48]/20 disabled:bg-gray-100"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 transition-colors focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-[#5B3D48]/20 disabled:bg-gray-100"
               />
             </div>
 

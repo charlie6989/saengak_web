@@ -32,6 +32,7 @@
 ## 既有商品與介面決策
 
 - 保留新版 LUCISSI CARE 視覺、首頁主題與各頁 EditorialHero。
+- 文字色最淺用 `gray-500`（#655859）；`gray-400` 只用於圖示與停用狀態。商品價格顯示 `NT$`，商品標籤用品牌紫底。首頁區塊以底色交替區隔，不放空白間隔 section。（2026-10-17）
 - 精選商品支援 Shopify featured 等標籤，核心護理商品包含舒緩凝膠。
 - 首頁 Solution 支援超值組合、經典單品、全部分類；商品細節依 Shopify 資料呈現。
 - 圖片在 `public/images/`。`editorial-v2`、`lucissi-v3`、`lucissi-v4`、`lucissi-v5` 是既有版本目錄，不能未查引用就刪除。

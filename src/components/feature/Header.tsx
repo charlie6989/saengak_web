@@ -185,7 +185,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
       {/* 頂部橫幅 - 固定在最頂部，固定高度 */}
       <div
         className="fixed top-0 left-0 w-full bg-brand text-white text-center overflow-hidden z-50"
-        style={{ height: '32px', fontFamily: "Noto Sans TC, sans-serif" }}
+        style={{ height: 'var(--marquee-height)', fontFamily: "Noto Sans TC, sans-serif" }}
       >
         <div className="animate-marquee whitespace-nowrap flex items-center justify-center h-full text-sm">
           LUCISSI CARE 正式商店｜結帳由 Shopify Checkout 與 TapPay 安全處理
@@ -195,7 +195,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
       {/* 桌面版 - 滿版導覽列選單，去除左右空隙 */}
       <header
         className="hidden lg:block fixed top-0 left-0 w-full z-50 bg-blush"
-        style={{ marginTop: '32px', height: '64px' }}
+        style={{ marginTop: 'var(--marquee-height)', height: '64px' }}
       >
         <div
           className="w-full px-6 lg:px-12"
@@ -410,7 +410,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
                             {user.email}
                           </div>
                         ) : (
-                          <div className="text-gray-400 text-xs mt-0.5">
+                          <div className="text-gray-500 text-xs mt-0.5">
                             一般會員
                           </div>
                         )}
@@ -501,7 +501,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
       {/* 手機版 - 頂部簡化 Logo 欄 */}
       <header
         className="lg:hidden fixed top-0 left-0 w-full z-50 bg-blush"
-        style={{ marginTop: '32px', height: '64px' }}
+        style={{ marginTop: 'var(--marquee-height)', height: '64px' }}
       >
         <div className="flex items-center justify-center h-16 px-4">
           <Link to="/" className="flex items-center cursor-pointer">

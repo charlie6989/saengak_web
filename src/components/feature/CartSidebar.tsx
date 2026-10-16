@@ -438,7 +438,7 @@ export default function CartSidebar() {
               <p className="text-base text-gray-700 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 購物車是空的
               </p>
-              <p className="text-xs text-gray-400 mt-1" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+              <p className="text-xs text-gray-500 mt-1" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                 快去挑選喜歡的商品吧！
               </p>
             </div>
@@ -484,7 +484,7 @@ export default function CartSidebar() {
                           {formatTwd(item.price)}
                         </span>
                         {item.originalPrice && item.originalPrice > item.price && (
-                          <span className="text-[11px] text-gray-400 line-through" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                          <span className="text-[11px] text-gray-500 line-through" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
                             {formatTwd(item.originalPrice)}
                           </span>
                         )}
@@ -514,7 +514,7 @@ export default function CartSidebar() {
                         
                         <button
                           onClick={() => removeFromCart(lineKey)}
-                          className="text-xs text-gray-400 hover:text-red-500 px-2 py-1 transition-colors cursor-pointer"
+                          className="text-xs text-gray-500 hover:text-red-500 px-2 py-1 transition-colors cursor-pointer"
                           aria-label="移除商品"
                         >
                           刪除
@@ -555,7 +555,7 @@ export default function CartSidebar() {
                     總結帳金額
                   </span>
                   {selectedCouponCode && (
-                    <p className="text-[10px] text-gray-400">實際金額於 Shopify Checkout 結算</p>
+                    <p className="text-[10px] text-gray-500">實際金額於 Shopify Checkout 結算</p>
                   )}
                 </div>
                 <span className="text-xl font-bold text-brand" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>

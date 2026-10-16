@@ -263,10 +263,10 @@ export default function SolutionSection() {
                               </span>
                             )}
                             {product.isBest && (
-                              <span className="bg-red-500 text-white text-xs px-2 py-1 font-medium">BEST</span>
+                              <span className="bg-brand text-white text-xs px-2 py-1 font-medium">BEST</span>
                             )}
                             {product.isNew && !isBundle(product) && (
-                              <span className="bg-blue-500 text-white text-xs px-2 py-1 font-medium">NEW</span>
+                              <span className="bg-brand text-white text-xs px-2 py-1 font-medium">NEW</span>
                             )}
                           </div>
 
@@ -330,7 +330,7 @@ export default function SolutionSection() {
                               }}
                               className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded-sm transition-colors cursor-pointer shrink-0"
                             >
-                              <i className="ri-heart-line text-gray-400 text-sm"></i>
+                              <i className="ri-heart-line text-gray-500 text-sm"></i>
                             </button>
                           </div>
 
@@ -339,18 +339,18 @@ export default function SolutionSection() {
                             <div className="flex items-center justify-between">
                               <div className="flex flex-col gap-1">
                                 {product.originalPrice && product.originalPrice > product.price ? (
-                                  <span className="text-sm text-gray-400 line-through" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                                    ${product.originalPrice.toLocaleString()}
+                                  <span className="text-sm text-gray-500 line-through" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                                    NT${product.originalPrice.toLocaleString()}
                                   </span>
                                 ) : (
                                   <div className="h-5"></div>
                                 )}
                                 <div className="flex items-center gap-2">
                                   {discountRate > 0 ? (
-                                    <span className="text-lg font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>-{discountRate}%</span>
+                                    <span className="text-base sm:text-lg font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>-{discountRate}%</span>
                                   ) : null}
-                                  <span className="text-lg font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
-                                    ${product.price.toLocaleString()}
+                                  <span className="text-base sm:text-lg font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
+                                    NT${product.price.toLocaleString()}
                                   </span>
                                 </div>
                               </div>

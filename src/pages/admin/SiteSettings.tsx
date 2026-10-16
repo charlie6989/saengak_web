@@ -193,7 +193,7 @@ export const SiteSettings: React.FC = () => {
                     className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden"
                   />
                 </div>
-                <p className="mt-1 text-[11px] text-gray-400">
+                <p className="mt-1 text-[11px] text-gray-500">
                   當購物車金額達到此門檻時，自動折抵常規超商/宅配運費。
                 </p>
               </div>
@@ -215,7 +215,7 @@ export const SiteSettings: React.FC = () => {
                     className="w-full pl-10 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden"
                   />
                 </div>
-                <p className="mt-1 text-[11px] text-gray-400">
+                <p className="mt-1 text-[11px] text-gray-500">
                   未達免運門檻時套用之標準物流處理費（配合 ShipAny 超商取貨）。
                 </p>
               </div>
@@ -232,7 +232,7 @@ export const SiteSettings: React.FC = () => {
                   onChange={(e) => handleChange('lowStockThreshold', Number(e.target.value))}
                   className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden"
                 />
-                <p className="mt-1 text-[11px] text-gray-400">
+                <p className="mt-1 text-[11px] text-gray-500">
                   當單一 Variant 可售庫存低於此數值時，於商品看板標註警示。
                 </p>
               </div>
@@ -303,7 +303,7 @@ export const SiteSettings: React.FC = () => {
                   placeholder="https://line.me/R/ti/p/@saengak"
                   className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden font-mono"
                 />
-                <p className="mt-1 text-[11px] text-gray-400">
+                <p className="mt-1 text-[11px] text-gray-500">
                   前台商品頁、客服中心與頁尾導引之官方 LINE OA 連結網址。
                 </p>
               </div>
@@ -359,19 +359,19 @@ export const SiteSettings: React.FC = () => {
             </h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 text-xs">
               <div className="rounded-lg border border-gray-100 p-3 bg-gray-50/40">
-                <span className="text-gray-400">品牌名稱：</span>
+                <span className="text-gray-500">品牌名稱：</span>
                 <span className="font-semibold text-gray-900 ml-1">{siteContent.brandName}</span>
               </div>
               <div className="rounded-lg border border-gray-100 p-3 bg-gray-50/40">
-                <span className="text-gray-400">公司登記名稱：</span>
+                <span className="text-gray-500">公司登記名稱：</span>
                 <span className="font-semibold text-gray-900 ml-1">{siteContent.legalName}</span>
               </div>
               <div className="rounded-lg border border-gray-100 p-3 bg-gray-50/40">
-                <span className="text-gray-400">統一編號：</span>
+                <span className="text-gray-500">統一編號：</span>
                 <span className="font-semibold text-gray-900 ml-1">{siteContent.taxId}</span>
               </div>
               <div className="rounded-lg border border-gray-100 p-3 bg-gray-50/40">
-                <span className="text-gray-400">登記地址：</span>
+                <span className="text-gray-500">登記地址：</span>
                 <span className="font-semibold text-gray-900 ml-1">{siteContent.registeredAddress}</span>
               </div>
             </div>
@@ -380,7 +380,7 @@ export const SiteSettings: React.FC = () => {
           {/* 儲存按鈕 */}
           <div className="flex items-center justify-end space-x-3">
             {isLoading && (
-              <span className="text-[11px] text-gray-400">正在同步 site_settings 最新數值...</span>
+              <span className="text-[11px] text-gray-500">正在同步 site_settings 最新數值...</span>
             )}
             <button
               type="submit"

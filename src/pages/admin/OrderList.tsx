@@ -283,7 +283,7 @@ export const OrderList: React.FC = () => {
                     <td className="px-4 py-3">{orderStatusBadge(order.status)}</td>
                     <td className="px-4 py-3">{order.payment_status}</td>
                     <td className="px-4 py-3">{invoiceStatusBadge(order.order_invoices?.[0])}</td>
-                    <td className="px-4 py-3 text-gray-400">
+                    <td className="px-4 py-3 text-gray-500">
                       {new Date(order.created_at).toLocaleString('zh-TW')}
                     </td>
                   </tr>

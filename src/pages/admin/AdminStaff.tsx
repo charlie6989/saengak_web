@@ -223,7 +223,7 @@ export const AdminStaff: React.FC = () => {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-400 font-mono">ID: {admin.id.slice(0, 8)}...</div>
+                            <div className="text-xs text-gray-500 font-mono">ID: {admin.id.slice(0, 8)}...</div>
                           </div>
                         </div>
                       </td>

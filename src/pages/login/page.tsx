@@ -211,7 +211,7 @@ export default function LoginPage() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="電子郵件"
                 />
               </div>
@@ -225,7 +225,7 @@ export default function LoginPage() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
                   placeholder="密碼"
                 />
               </div>

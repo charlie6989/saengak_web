@@ -411,7 +411,7 @@ export const AdminQA: React.FC = () => {
                                 {q.answer}
                               </p>
                               {q.answered_at && (
-                                <div className="text-[10px] text-gray-400 mt-1">
+                                <div className="text-[10px] text-gray-500 mt-1">
                                   回覆時間：
                                   {new Date(q.answered_at).toLocaleString('zh-TW', {
                                     year: 'numeric',
@@ -446,7 +446,7 @@ export const AdminQA: React.FC = () => {
                         {q.user_email && (
                           <div className="text-[11px] text-gray-500">{q.user_email}</div>
                         )}
-                        <div className="text-[11px] text-gray-400 mt-1">
+                        <div className="text-[11px] text-gray-500 mt-1">
                           {q.created_at
                             ? new Date(q.created_at).toLocaleString('zh-TW', {
                                 year: 'numeric',
@@ -463,7 +463,7 @@ export const AdminQA: React.FC = () => {
                       <td className="px-6 py-4 text-center">
                         <div className="space-y-1">
                           <div>{renderStatusBadge(q.status)}</div>
-                          <div className="text-[10px] text-gray-400">
+                          <div className="text-[10px] text-gray-500">
                             {q.is_public ? '🌐 前台公開' : '🔒 前台隱藏'}
                           </div>
                         </div>
@@ -536,7 +536,7 @@ export const AdminQA: React.FC = () => {
               <p className="text-gray-900 font-medium whitespace-pre-wrap">
                 {replyingQuestion.question}
               </p>
-              <div className="text-[11px] text-gray-400">
+              <div className="text-[11px] text-gray-500">
                 提問者：{replyingQuestion.user_name || replyingQuestion.display_name || 'LUCISSI CARE 會員'}
               </div>
             </div>

@@ -341,7 +341,7 @@ export const AdminReviews: React.FC = () => {
                         <div className="text-xs font-mono text-gray-800">
                           訂單: {review.order_id ? `${review.order_id.slice(0, 8)}...` : '-'}
                         </div>
-                        <div className="text-[11px] font-mono text-gray-400 mt-0.5">
+                        <div className="text-[11px] font-mono text-gray-500 mt-0.5">
                           品項: {review.order_item_id ? `${review.order_item_id.slice(0, 8)}...` : '-'}
                         </div>
                       </td>
@@ -354,7 +354,7 @@ export const AdminReviews: React.FC = () => {
                         {review.user_email && (
                           <div className="text-[11px] text-gray-500">{review.user_email}</div>
                         )}
-                        <div className="text-[11px] text-gray-400 mt-1">
+                        <div className="text-[11px] text-gray-500 mt-1">
                           {review.created_at
                             ? new Date(review.created_at).toLocaleString('zh-TW', {
                                 year: 'numeric',
