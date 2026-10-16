@@ -200,7 +200,10 @@ describe('POST /api/promotions/lucissi-member-perk', () => {
     expect(body.perk.coupon_code).toMatch(/^LC[A-Z2-9]{10}$/);
 
     const input = JSON.parse(fetchMock.mock.calls[2][1].body).variables.input;
-    expect(input).toMatchObject({ code: body.perk.coupon_code, usageLimit: 1, appliesOncePerCustomer: true, appliesOnOneTimePurchase: true, appliesOnSubscription: false, context: { customers: { add: ['gid://shopify/Customer/9'] } } });
+    // Shopify rejects appliesOnOneTimePurchase/appliesOnSubscription on shops without subscriptions
+    expect(input).not.toHaveProperty('appliesOnOneTimePurchase');
+    expect(input).not.toHaveProperty('appliesOnSubscription');
+    expect(input).toMatchObject({ code: body.perk.coupon_code, usageLimit: 1, appliesOncePerCustomer: true, context: { customers: { add: ['gid://shopify/Customer/9'] } } });
     expect(input.title).toBe(`LUCISSI 會員首單免運｜${body.perk.coupon_code}`);
     expect(calls.updates[0]).toMatchObject({ status: 'issued', shopify_discount_id: 'gid://shopify/DiscountCodeNode/77' });
   });
