@@ -10,8 +10,8 @@ const authState = vi.hoisted(() => ({
 
 vi.mock('../src/components/feature/AuthCaptcha', () => ({
   isAuthCaptchaEnabled: true,
-  default: ({ resetKey }: { resetKey: number }) => (
-    <div data-testid="turnstile-widget" data-reset-key={resetKey} />
+  default: ({ resetKey, action }: { resetKey: number; action?: string }) => (
+    <div data-testid="turnstile-widget" data-reset-key={resetKey} data-action={action} />
   ),
 }));
 
@@ -28,15 +28,20 @@ import SignedOutCheckoutActions, {
   isGuestCheckoutAvailable,
   type SignedOutCheckoutMode,
 } from '../src/components/feature/SignedOutCheckoutActions';
-import OrderStatusPage from '../src/pages/order-status/page';
+import OrderStatusPage, {
+  GuestOrderNotice,
+  shouldShowGuestOrderNotice,
+} from '../src/pages/order-status/page';
 import { scheduleGuestOrderClaim } from '../src/contexts/AuthContext';
 
-function renderActions(mode: SignedOutCheckoutMode, guestEmail = '') {
+function renderActions(mode: SignedOutCheckoutMode, guestEmail = '', guestEmailError = '') {
   const noop = () => undefined;
   return renderToStaticMarkup(
     <SignedOutCheckoutActions
       mode={mode}
       guestEmail={guestEmail}
+      guestEmailError={guestEmailError}
+      emailFocusKey={0}
       isBusy={false}
       captchaResetKey={3}
       onGuestEmailChange={noop}
@@ -75,9 +80,23 @@ describe('signed-out checkout actions', () => {
     expect(emailInput).toContain('value="guest@example.test"');
     expect(html).toContain('data-testid="turnstile-widget"');
     expect(html).toContain('data-reset-key="3"');
+    expect(html).toContain('data-action="guest_checkout"');
+    // 手機 16px 避免 iOS 自動放大
+    expect(emailInput).toContain('text-base');
+    expect(emailInput).toContain('aria-describedby="guest-checkout-email-help"');
+    expect(emailInput).not.toContain('aria-invalid');
     expect(html).toContain('登入後可使用會員優惠');
     expect(html).toContain('以訪客身分前往結帳');
     expect(html).toContain('登入結帳（使用會員優惠）');
+  });
+
+  it('shows the email error next to the field and links it for assistive technology', () => {
+    const html = renderActions('guest', 'bad', '請輸入有效的 Email');
+    const emailInput = html.match(/<input[^>]*id="guest-checkout-email"[^>]*>/)?.[0] || '';
+
+    expect(emailInput).toContain('aria-invalid="true"');
+    expect(emailInput).toContain('aria-describedby="guest-checkout-email-error guest-checkout-email-help"');
+    expect(html).toMatch(/<p id="guest-checkout-email-error"[^>]*role="alert"[^>]*>請輸入有效的 Email<\/p>/);
   });
 
   it('only offers guest checkout when signed out, enabled, and Turnstile is configured', () => {
@@ -88,11 +107,14 @@ describe('signed-out checkout actions', () => {
   });
 
   it('validates the guest email and Turnstile token before submitting', () => {
-    expect(getGuestCheckoutValidationError('', 'token')).toContain('有效的 Email');
-    expect(getGuestCheckoutValidationError('not-an-email', 'token')).toContain('有效的 Email');
-    expect(getGuestCheckoutValidationError(`${'a'.repeat(250)}@x.tw`, 'token')).toContain('有效的 Email');
-    expect(getGuestCheckoutValidationError('guest@example.test', '')).toContain('安全驗證');
-    expect(getGuestCheckoutValidationError(' guest@example.test ', 'token')).toBe('');
+    expect(getGuestCheckoutValidationError('', 'token')?.field).toBe('email');
+    expect(getGuestCheckoutValidationError('not-an-email', 'token')?.message).toContain('有效的 Email');
+    expect(getGuestCheckoutValidationError(`${'a'.repeat(250)}@x.tw`, 'token')?.field).toBe('email');
+    expect(getGuestCheckoutValidationError('guest@example.test', '')).toMatchObject({
+      field: 'captcha',
+      message: expect.stringContaining('安全驗證'),
+    });
+    expect(getGuestCheckoutValidationError(' guest@example.test ', 'token')).toBeNull();
   });
 });
 
@@ -102,29 +124,43 @@ describe('order-status thank-you page', () => {
     authState.isLoading = false;
   });
 
-  it('explains how a guest finds the order', () => {
+  it('shows the guest notice only when guest checkout is on and the visitor is signed out', () => {
+    expect(shouldShowGuestOrderNotice(false, false, true)).toBe(true);
+    expect(shouldShowGuestOrderNotice(false, false, false)).toBe(false);
+    expect(shouldShowGuestOrderNotice(false, true, true)).toBe(false);
+    expect(shouldShowGuestOrderNotice(true, false, true)).toBe(false);
+  });
+
+  it('keeps the signed-out page identical to the member version while the switch is off', () => {
+    // 初次渲染時開關尚未讀取，等同關閉
     const html = renderOrderStatus('/order-status?order_id=gid://shopify/Order/1001');
 
-    expect(html).toContain('data-testid="guest-order-notice"');
+    expect(html).not.toContain('guest-order-notice');
+    expect(html).not.toContain('href="/register"');
+    expect(html).toContain('聯絡客服');
+  });
+
+  it('explains how a guest finds the order, with register and login links', () => {
+    const html = renderToStaticMarkup(
+      <MemoryRouter>
+        <GuestOrderNotice />
+      </MemoryRouter>,
+    );
+
+    expect(html).toContain('若以訪客身分結帳');
     expect(html).toContain('訂單確認信');
     expect(html).toContain('訂單狀態');
     expect(html).toContain('同一個 Email 註冊');
     expect(html).toContain('href="/register"');
+    expect(html).toContain('href="/login"');
   });
 
-  it('does not show the guest notice to signed-in members', () => {
+  it('shows members their orders link', () => {
     authState.user = { id: 'member-1' };
     const html = renderOrderStatus('/order-status?order_id=gid://shopify/Order/1001');
 
     expect(html).not.toContain('guest-order-notice');
     expect(html).toContain('查看我的訂單');
-  });
-
-  it('waits for the auth state before deciding', () => {
-    authState.isLoading = true;
-    const html = renderOrderStatus('/order-status?order_id=gid://shopify/Order/1001');
-
-    expect(html).not.toContain('guest-order-notice');
   });
 });
 

@@ -40,6 +40,24 @@ export const LOGIN_REQUIRED_ERROR_CODES: ReadonlySet<string> = new Set([
   'GUEST_DISCOUNT_REQUIRES_LOGIN',
 ]);
 
+/** 訪客結帳已無法使用（後台關閉開關或伺服器缺少 Turnstile 設定），前端應隱藏訪客選項。 */
+export const GUEST_CHECKOUT_DISABLED_ERROR_CODES: ReadonlySet<string> = new Set([
+  'MEMBER_LOGIN_REQUIRED',
+  'TURNSTILE_UNAVAILABLE',
+]);
+
+/** 顧客端可預期的錯誤（未登入、驗證未通過、Email 格式），不送 Sentry。 */
+const expectedCheckoutErrorCodes: ReadonlySet<string> = new Set([
+  ...LOGIN_REQUIRED_ERROR_CODES,
+  'TURNSTILE_TOKEN_REQUIRED',
+  'TURNSTILE_VERIFICATION_FAILED',
+  'GUEST_EMAIL_REQUIRED',
+]);
+
+export function shouldReportCheckoutError(code: string | undefined): boolean {
+  return !code || !expectedCheckoutErrorCodes.has(code);
+}
+
 const guestCheckoutErrorMessages: Record<string, string> = {
   TURNSTILE_UNAVAILABLE: '訪客結帳的安全驗證服務暫時無法使用，請稍後再試，或改用會員結帳。',
   TURNSTILE_TOKEN_REQUIRED: '請先完成安全驗證，再進行訪客結帳。',

@@ -31,8 +31,10 @@ import {
   createShopifyCheckout,
   fetchGuestCheckoutEnabled,
   getShopifyCheckoutErrorMessage,
+  GUEST_CHECKOUT_DISABLED_ERROR_CODES,
   LOGIN_REQUIRED_ERROR_CODES,
   ShopifyCheckoutError,
+  shouldReportCheckoutError,
 } from '../src/lib/shopifyCheckout';
 import { claimGuestOrders } from '../src/lib/guestOrders';
 import { captureExceptionSafe } from '../src/lib/sentry';
@@ -171,6 +173,35 @@ describe('guest checkout error messages', () => {
     expect(LOGIN_REQUIRED_ERROR_CODES.has('MEMBER_LOGIN_REQUIRED')).toBe(true);
     expect(LOGIN_REQUIRED_ERROR_CODES.has('TURNSTILE_UNAVAILABLE')).toBe(false);
     expect(LOGIN_REQUIRED_ERROR_CODES.has('GUEST_ORDER_LINK_FAILED')).toBe(false);
+  });
+});
+
+describe('guest checkout error handling', () => {
+  it('hides guest checkout when the server says it is off or unverifiable', () => {
+    expect(GUEST_CHECKOUT_DISABLED_ERROR_CODES.has('MEMBER_LOGIN_REQUIRED')).toBe(true);
+    expect(GUEST_CHECKOUT_DISABLED_ERROR_CODES.has('TURNSTILE_UNAVAILABLE')).toBe(true);
+    expect(GUEST_CHECKOUT_DISABLED_ERROR_CODES.has('TURNSTILE_VERIFICATION_FAILED')).toBe(false);
+  });
+
+  it.each([
+    'MEMBER_LOGIN_REQUIRED',
+    'MEMBER_SESSION_INVALID',
+    'GUEST_DISCOUNT_REQUIRES_LOGIN',
+    'TURNSTILE_TOKEN_REQUIRED',
+    'TURNSTILE_VERIFICATION_FAILED',
+    'GUEST_EMAIL_REQUIRED',
+  ])('does not report expected customer-side error %s to Sentry', (code) => {
+    expect(shouldReportCheckoutError(code)).toBe(false);
+  });
+
+  it.each([
+    undefined,
+    'TURNSTILE_UNAVAILABLE',
+    'GUEST_ORDER_LINK_UNAVAILABLE',
+    'GUEST_ORDER_LINK_FAILED',
+    'MEMBER_ORDER_LINK_FAILED',
+  ])('reports server-side error %s', (code) => {
+    expect(shouldReportCheckoutError(code)).toBe(true);
   });
 });
 

@@ -12,8 +12,10 @@ import {
 import {
   createShopifyCheckout,
   fetchGuestCheckoutEnabled,
+  GUEST_CHECKOUT_DISABLED_ERROR_CODES,
   LOGIN_REQUIRED_ERROR_CODES,
   ShopifyCheckoutError,
+  shouldReportCheckoutError,
   type GuestCheckoutDetails,
 } from '../../lib/shopifyCheckout';
 import { captureExceptionSafe } from '../../lib/sentry';
@@ -32,6 +34,7 @@ import {
 import type { UserCoupon } from '../../types/promotions';
 import AuthModal from './AuthModal';
 import SignedOutCheckoutActions, {
+  GUEST_EMAIL_ERROR_MESSAGE,
   getGuestCheckoutValidationError,
   isGuestCheckoutAvailable,
   type SignedOutCheckoutMode,
@@ -59,6 +62,8 @@ export default function CartSidebar() {
   const [guestEmail, setGuestEmail] = useState('');
   const [guestCaptchaToken, setGuestCaptchaToken] = useState('');
   const [guestCaptchaResetKey, setGuestCaptchaResetKey] = useState(0);
+  const [guestEmailError, setGuestEmailError] = useState('');
+  const [guestEmailFocusKey, setGuestEmailFocusKey] = useState(0);
   const { user, isLoading: isAuthLoading } = useAuth();
   const canGuestCheckout = isGuestCheckoutAvailable(Boolean(user), guestCheckoutEnabled);
   const isGuestMode = canGuestCheckout && signedOutMode === 'guest';
@@ -114,6 +119,20 @@ export default function CartSidebar() {
       void fetchGuestCheckoutEnabled().then(setGuestCheckoutEnabled);
     }
   }, [isCartOpen, isAuthLoading, user]);
+
+  // 關閉購物車時清除 Turnstile token，避免下次送出已過期的舊 token
+  useEffect(() => {
+    if (!isCartOpen) {
+      setGuestCaptchaToken('');
+    }
+  }, [isCartOpen]);
+
+  // 登入狀態改變時回到預設的會員結帳，並清除訪客驗證
+  useEffect(() => {
+    setSignedOutMode('member');
+    setGuestCaptchaToken('');
+    setGuestEmailError('');
+  }, [user?.id]);
 
   // 當購物車開啟時，自動同步後台免運門檻設定，避免與 site_settings 脫鉤
   useEffect(() => {
@@ -227,10 +246,18 @@ export default function CartSidebar() {
         setGuestCaptchaResetKey((key) => key + 1);
       }
       const code = err instanceof ShopifyCheckoutError ? err.code : undefined;
+      if (guest && code && GUEST_CHECKOUT_DISABLED_ERROR_CODES.has(code)) {
+        // 後台已關閉訪客結帳或驗證服務不可用：收起訪客選項，只留會員結帳
+        setGuestCheckoutEnabled(false);
+      }
+      if (guest && code === 'GUEST_EMAIL_REQUIRED') {
+        setGuestEmailError(GUEST_EMAIL_ERROR_MESSAGE);
+        setGuestEmailFocusKey((key) => key + 1);
+      }
       const needsLogin = code ? LOGIN_REQUIRED_ERROR_CODES.has(code) : /登入|會員登入狀態/.test(msg);
       if (needsLogin) {
         setIsAuthModalOpen(true);
-      } else {
+      } else if (shouldReportCheckoutError(code)) {
         captureExceptionSafe(err, { source: guest ? 'CartSidebarGuestCheckout' : 'CartSidebarCheckout' });
       }
     } finally {
@@ -290,7 +317,12 @@ export default function CartSidebar() {
 
     const guestError = getGuestCheckoutValidationError(guestEmail, guestCaptchaToken);
     if (guestError) {
-      setCheckoutMessage(guestError);
+      if (guestError.field === 'email') {
+        setGuestEmailError(guestError.message);
+        setGuestEmailFocusKey((key) => key + 1);
+      } else {
+        setCheckoutMessage(guestError.message);
+      }
       return;
     }
 
@@ -496,9 +528,9 @@ export default function CartSidebar() {
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer：內容（優惠券、發票、訪客結帳）在矮螢幕上會超過可視高度，限制高度並可獨立捲動，確保結帳按鈕可到達 */}
         {items.length > 0 && (
-          <div className="border-t border-gray-200 px-6 py-4 bg-white space-y-3 shrink-0">
+          <div className="border-t border-gray-200 px-6 py-4 bg-white space-y-3 shrink-0 max-h-[65dvh] overflow-y-auto overscroll-contain" data-testid="cart-footer">
             {/* Total */}
             <div className="py-2 space-y-1">
               <div className="flex items-center justify-between text-xs text-gray-600">
@@ -859,9 +891,14 @@ export default function CartSidebar() {
               <SignedOutCheckoutActions
                 mode={signedOutMode}
                 guestEmail={guestEmail}
+                guestEmailError={guestEmailError}
+                emailFocusKey={guestEmailFocusKey}
                 isBusy={isSubmitting}
                 captchaResetKey={guestCaptchaResetKey}
-                onGuestEmailChange={setGuestEmail}
+                onGuestEmailChange={(email) => {
+                  setGuestEmail(email);
+                  setGuestEmailError('');
+                }}
                 onCaptchaTokenChange={setGuestCaptchaToken}
                 onMemberCheckout={() => void handleCheckout()}
                 onChooseGuestCheckout={handleChooseGuestCheckout}

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import AuthCaptcha, { isAuthCaptchaEnabled } from './AuthCaptcha';
 
 export type SignedOutCheckoutMode = 'member' | 'guest';
@@ -16,21 +17,35 @@ export function isGuestCheckoutAvailable(
   return !isSignedIn && guestCheckoutEnabled && captchaEnabled;
 }
 
-/** 送出訪客結帳前的檢查；回傳錯誤訊息，通過則回傳空字串。 */
-export function getGuestCheckoutValidationError(email: string, turnstileToken: string): string {
+export const GUEST_EMAIL_ERROR_MESSAGE = '請輸入有效的 Email，訂單確認信會寄到這個信箱。';
+
+export interface GuestCheckoutValidationError {
+  field: 'email' | 'captcha';
+  message: string;
+}
+
+/** 送出訪客結帳前的檢查；通過則回傳 null。 */
+export function getGuestCheckoutValidationError(
+  email: string,
+  turnstileToken: string,
+): GuestCheckoutValidationError | null {
   const trimmed = email.trim();
   if (!trimmed || trimmed.length > 254 || !guestEmailPattern.test(trimmed)) {
-    return '請輸入有效的 Email，訂單確認信會寄到這個信箱。';
+    return { field: 'email', message: GUEST_EMAIL_ERROR_MESSAGE };
   }
   if (!turnstileToken) {
-    return '請先完成安全驗證，再進行訪客結帳。';
+    return { field: 'captcha', message: '請先完成安全驗證，再進行訪客結帳。' };
   }
-  return '';
+  return null;
 }
 
 interface SignedOutCheckoutActionsProps {
   mode: SignedOutCheckoutMode;
   guestEmail: string;
+  /** Email 欄位旁顯示的錯誤；空字串代表沒有錯誤。 */
+  guestEmailError: string;
+  /** 每次遞增都會把焦點移到 Email 欄位（例如驗證失敗時）。 */
+  emailFocusKey: number;
   isBusy: boolean;
   captchaResetKey: number;
   onGuestEmailChange: (email: string) => void;
@@ -49,6 +64,8 @@ const fontStyle = { fontFamily: 'Noto Sans TC, sans-serif' };
 export default function SignedOutCheckoutActions({
   mode,
   guestEmail,
+  guestEmailError,
+  emailFocusKey,
   isBusy,
   captchaResetKey,
   onGuestEmailChange,
@@ -57,6 +74,15 @@ export default function SignedOutCheckoutActions({
   onChooseGuestCheckout,
   onSubmitGuestCheckout,
 }: SignedOutCheckoutActionsProps) {
+  const emailInputRef = useRef<HTMLInputElement>(null);
+
+  // 展開訪客結帳或驗證失敗時，把焦點移到 Email 欄位
+  useEffect(() => {
+    if (mode === 'guest') {
+      emailInputRef.current?.focus();
+    }
+  }, [mode, emailFocusKey]);
+
   const memberButton = (primary: boolean) => (
     <button
       type="button"
@@ -104,7 +130,9 @@ export default function SignedOutCheckoutActions({
           <label htmlFor="guest-checkout-email" className="block text-xs font-semibold text-gray-700 mb-1">
             Email <span className="text-red-500">*</span>
           </label>
+          {/* 手機上用 16px 字級，避免 iOS 聚焦時自動放大 */}
           <input
+            ref={emailInputRef}
             id="guest-checkout-email"
             name="guestEmail"
             type="email"
@@ -114,13 +142,24 @@ export default function SignedOutCheckoutActions({
             value={guestEmail}
             onChange={(e) => onGuestEmailChange(e.target.value)}
             placeholder="name@example.com"
-            className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-hidden focus:border-brand transition-colors"
+            aria-invalid={guestEmailError ? true : undefined}
+            aria-describedby={guestEmailError
+              ? 'guest-checkout-email-error guest-checkout-email-help'
+              : 'guest-checkout-email-help'}
+            className={`w-full h-11 px-3 rounded-lg border text-base sm:text-sm bg-white focus:outline-hidden transition-colors ${
+              guestEmailError ? 'border-red-500 focus:border-red-600' : 'border-gray-300 focus:border-brand'
+            }`}
           />
-          <p className="mt-1 text-[11px] text-gray-500 leading-relaxed">
+          {guestEmailError && (
+            <p id="guest-checkout-email-error" className="mt-1 text-xs text-red-600" role="alert">
+              {guestEmailError}
+            </p>
+          )}
+          <p id="guest-checkout-email-help" className="mt-1 text-[11px] text-gray-500 leading-relaxed">
             訂單確認信會寄到這個信箱；之後以同一 Email 註冊會員，即可在會員中心看到這筆訂單。
           </p>
         </div>
-        <AuthCaptcha onTokenChange={onCaptchaTokenChange} resetKey={captchaResetKey} />
+        <AuthCaptcha onTokenChange={onCaptchaTokenChange} resetKey={captchaResetKey} action="guest_checkout" />
       </div>
       <button
         type="button"
