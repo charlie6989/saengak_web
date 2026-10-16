@@ -13,7 +13,7 @@ const selectionPrinciples = [
   {
     number: '01',
     title: '從日常需求出發',
-    description: '清潔、保濕、舒緩，每天的貼身內搭，或是一段輕鬆的伸展。我們從實際使用的時刻思考，讓每一件選品都有清楚的位置。',
+    description: '清潔、保濕、舒緩，每天的貼身內搭，或是生理期的每一天。我們從實際使用的時刻思考，讓每一件選品都有清楚的位置。',
   },
   {
     number: '02',
@@ -37,7 +37,7 @@ export default function AboutPage() {
           alt="選品工作桌前，仔細閱讀護理產品包裝的女性"
           eyebrow="ABOUT LUCISSI CARE"
           title="把照顧自己，放回日常裡。"
-          description={`LUCISSI CARE 是 ${ENDORSEMENT}。從私密、身體與肌膚保養、舒適內搭，到輕盈運動，為妳挑選更自在的日常選擇。`}
+          description={`LUCISSI CARE 是 ${ENDORSEMENT}。從私密保養、舒適內搭到生理期照護，為妳挑選更自在的日常選擇。`}
         >
           <a href="#our-story" className={`${textLink} mt-6`}>
             認識 LUCISSI <span aria-hidden="true">↓</span>
@@ -54,7 +54,7 @@ export default function AboutPage() {
             </div>
             <div className="space-y-5 text-base leading-8">
               <p>忙碌的生活裡，我們常常把時間留給工作、家人與待辦事項。留給自己的照顧，可以從每天用的護理品、早晨換上的貼身衣物開始。</p>
-              <p>LUCISSI CARE 是 {ENDORSEMENT}。我們把私密與身體保養、肌膚保養、舒適內搭和輕盈運動放在一起，因為它們都貼近身體，也貼近生活。</p>
+              <p>LUCISSI CARE 是 {ENDORSEMENT}。我們把私密保養、舒適內搭與生理期照護放在一起，因為它們都貼近身體，也貼近生活。</p>
               <p>我們希望，當妳想多照顧自己一點時，這裡有清楚的方向，也有適合妳的日常選擇。</p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default function AboutPage() {
           <div className="mx-auto max-w-6xl px-6 md:px-10">
             <div className="mb-10 md:mb-14">
               <p className={eyebrow}>OUR SELECTION</p>
-              <h2 id="selection-title" className={`${heading} mt-5`}>貼近妳的五種日常</h2>
+              <h2 id="selection-title" className={`${heading} mt-5`}>貼近妳的日常照護</h2>
             </div>
             <div className="grid items-start gap-10 md:grid-cols-2 md:gap-16 lg:gap-24">
               <figure className="md:sticky md:top-32">

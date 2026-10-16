@@ -1,19 +1,19 @@
 import { Link } from 'react-router-dom';
 import { CARE_PILLARS } from '../../../content/carePillars';
 
-/** 首頁五個照護面向入口：桌機五欄，手機橫向捲動。 */
+/** 首頁照護入口：桌機三欄，手機橫向捲動。 */
 export default function PillarSection() {
   return (
     <section aria-labelledby="care-pillars-title" className="bg-white py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6">
-        <p className="mb-3 text-xs font-medium tracking-[0.18em] text-brand">LUCISSI CARE · FIVE WAYS TO CARE</p>
+        <p className="mb-3 text-xs font-medium tracking-[0.18em] text-brand">LUCISSI CARE · CLOSE-TO-BODY CARE</p>
         <h2 id="care-pillars-title" className="mb-3 text-3xl font-semibold text-brand md:text-4xl" style={{ textWrap: 'balance' }}>
-          從頭到腳，<br className="md:hidden" />照顧每一個日常
+          貼近身體的，<br className="md:hidden" />日常照護
         </h2>
         <p className="mb-10 max-w-2xl text-base leading-relaxed text-gray-500 md:text-lg">
-          私密與身體保養、肌膚保養、舒適內搭和輕盈運動，依照自己的需要開始。
+          私密保養、舒適內搭，與生理期的每一天，依照自己的需要開始。
         </p>
-        <ul className="no-scrollbar -mx-6 flex snap-x gap-4 overflow-x-auto px-6 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0">
+        <ul className="no-scrollbar -mx-6 flex snap-x gap-4 overflow-x-auto px-6 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
           {CARE_PILLARS.map((pillar) => (
             <li key={pillar.id} className="w-[62%] shrink-0 snap-start sm:w-[40%] md:w-auto">
               <Link to={`/search?category=${pillar.name}`} className="group flex h-full flex-col border border-gray-200 bg-ivory">

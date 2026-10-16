@@ -13,7 +13,7 @@ import { getShopifyProducts } from '../../lib/shopify';
 import { formatPageTitle } from '../../lib/pageTitle';
 import { captureExceptionSafe } from '../../lib/sentry';
 import PillarArticles from '../../components/feature/PillarArticles';
-import { CARE_PILLARS, SUBCATEGORY_DESCRIPTIONS, classifyCarePillar, findCarePillarByName, matchesCareSubcategory, resolveCategoryName } from '../../content/carePillars';
+import { CARE_PILLARS, PRODUCT_TYPE_SUBCATEGORIES, SUBCATEGORY_DESCRIPTIONS, belongsToCarePillar, classifyCarePillar, findCarePillarByName, matchesCareSubcategory, resolveCategoryLink } from '../../content/carePillars';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -48,8 +48,11 @@ export default function Search() {
 
   // 從 URL 參數讀取分類和搜尋字串 (支援 query, q, keyword, search 並處理 all)
   const rawCategory = searchParams.get('category') || '';
-  // 舊分類網址（私密護理、貼身穿著、舒適穿著）解析到新的照護面向名稱
-  const category = rawCategory.trim().toLowerCase() === 'all' ? '' : resolveCategoryName(rawCategory.trim());
+  // 舊分類網址（私密護理、貼身穿著、身體保養、肌膚保養、輕盈運動…）解析到目前的照護入口與預選子分類
+  const isAllCategory = rawCategory.trim().toLowerCase() === 'all';
+  const categoryLink = resolveCategoryLink(isAllCategory ? '' : rawCategory.trim());
+  const category = categoryLink.category;
+  const legacySubcategory = categoryLink.subcategory;
   const activePillar = findCarePillarByName(category);
 
   const rawQuery =
@@ -206,7 +209,7 @@ export default function Search() {
 
     // 重置所有篩選
     setSelectedCategories(category ? [category] : []);
-    setActiveSubcategory('');
+    setActiveSubcategory(legacySubcategory);
     setSelectedUsages([]);
     setSelectedSizes([]);
     setSelectedColors([]);
@@ -214,7 +217,7 @@ export default function Search() {
     setPriceRange([0, 200000]);
     setSearchQuery(q || '');
     setSortBy('最受歡迎');
-  }, [category, q, collectionHandle, tag]);
+  }, [category, legacySubcategory, q, collectionHandle, tag]);
 
   // 🆕 Filter 開啟時鎖 body 捲動
   useEffect(() => {
@@ -289,14 +292,14 @@ export default function Search() {
     // 精準分類比對邏輯 (避免單字拆解導致全品項誤判)
     const matchesCategory = selectedCategories.length === 0 ||
       selectedCategories.some(catName => {
-        // 五個照護面向：以共用分類判斷，關鍵字優先（除毛刀→身體保養、護衣袋→舒適內搭、運動內衣→輕盈運動）
+        // 照護入口：以共用分類判斷，關鍵字優先（除毛刀→私密保養、護衣袋與運動內衣→舒適內搭），生理期照護跨分類
         const pillar = findCarePillarByName(catName);
-        if (pillar) return classifyCarePillar(product) === pillar.id;
+        if (pillar) return belongsToCarePillar(product, pillar.id);
         const parentPillar = CARE_PILLARS.find((item) => item.subcategories.includes(catName));
-        if (parentPillar && parentPillar.id !== 'intimate') {
-          return classifyCarePillar(product) === parentPillar.id && matchesCareSubcategory(product, catName);
+        if (parentPillar && !PRODUCT_TYPE_SUBCATEGORIES.includes(catName)) {
+          return belongsToCarePillar(product, parentPillar.id) && matchesCareSubcategory(product, catName);
         }
-        if (parentPillar?.id === 'intimate' && classifyCarePillar(product) !== 'intimate') return false;
+        if (parentPillar && classifyCarePillar(product) !== 'intimate') return false;
         const catNorm = catName.trim().toLowerCase();
         const pType = (product.productType || '').trim().toLowerCase();
         const pName = (product.name || '').toLowerCase();
@@ -379,7 +382,7 @@ export default function Search() {
       product.name.includes(brand) || product.description.includes(brand)
     );
 
-    const matchesSubcategory = !activeSubcategory || !activePillar || (activePillar.id === 'intimate'
+    const matchesSubcategory = !activeSubcategory || !activePillar || (PRODUCT_TYPE_SUBCATEGORIES.includes(activeSubcategory)
       ? (product.productType || '').trim() === activeSubcategory
       : matchesCareSubcategory(product, activeSubcategory));
 
@@ -447,10 +450,10 @@ export default function Search() {
     if (q) {
       return `搜尋: ${q}`;
     }
-    return '照顧身體的每一個日常';
+    return '貼近身體的每一個日常';
   };
 
-  // 子分類橫幅與描述；五個照護面向的頁首文案在 src/content/carePillars.ts。
+  // 子分類橫幅與描述；照護入口的頁首文案在 src/content/carePillars.ts。
   const CATEGORY_CONFIG: Record<string, { image: string; description: string }> = {
     '女性護理': {
       image: '/images/lucissi-v5/catalog-feminine.webp',
@@ -511,7 +514,7 @@ export default function Search() {
     if (q) {
       return `"${q}" 的搜尋結果`;
     }
-    return '從私密、身體與肌膚保養、舒適內搭，到輕盈運動，為妳細心挑選。';
+    return '私密保養、舒適內搭，與生理期的每一天，為妳細心挑選。';
   };
 
   const scrollToProductListTop = () => {
@@ -533,7 +536,7 @@ export default function Search() {
   // 商品不足的面向：以 LUCISSI Talk 文章陪伴。以「套用篩選前」的面向商品數判斷，
   // 尺寸、顏色、價格等篩選把結果篩到 0 時，仍顯示一般的「找不到符合條件的商品」。
   const pillarInventoryCount = activePillar
-    ? products.filter((product) => classifyCarePillar(product) === activePillar.id).length
+    ? products.filter((product) => belongsToCarePillar(product, activePillar.id)).length
     : 0;
   const showPillarArticles = Boolean(activePillar) && !loading && !loadFailed && pillarInventoryCount < 4;
   const showPillarPlaceholderOnly = showPillarArticles && pillarInventoryCount === 0;
