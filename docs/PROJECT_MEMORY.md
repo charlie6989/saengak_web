@@ -1,6 +1,6 @@
 # 項目記憶
 
-更新日期：2026-10-15（Asia/Taipei）。本文件依 repository 與本次同步可查證資料整理；不包含聊天紀錄或外部服務資料的完整備份。
+更新日期：2026-10-16（Asia/Taipei）。本文件依 repository 與本次同步可查證資料整理；不包含聊天紀錄或外部服務資料的完整備份。
 
 ## 品牌與網域
 
@@ -39,6 +39,7 @@
 ## 營運決策（2026-10-16）
 
 - 全站免運門檻為 NT$1,499。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
+- 未達門檻的基本運費為 NT$146（黑貓宅急便常溫宅配，參照 LUCISSI 網站）。`DEFAULT_SHIPPING_FEE` 只是後備值，顧客看到的是 Supabase `site_settings.default_shipping_fee`；改運費時程式碼、Supabase、Shopify 運費三處一起改。
 - 客服暫時只用 Email（`Company@lucissi.com`）。
 - 訪客結帳已決定開放，但未登入訂單目前無法對應發票，需先完成資料與發票設計再改介面。
 
