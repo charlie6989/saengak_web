@@ -1,6 +1,16 @@
 # 項目狀態
 
-更新日期：2026-10-17（Asia/Taipei）。最新工作為照護入口收斂為「貼身照護」；前一項為五個照護面向導覽與背書文案；前一項為正式金流、發票與寄信查核；其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-17（Asia/Taipei）。最新工作為免運門檻比照 LUCISSI 改為 NT$1,500；前一項為照護入口收斂為「貼身照護」；前一項為五個照護面向導覽與背書文案；前一項為正式金流、發票與寄信查核；其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## 免運門檻比照 LUCISSI 改為 NT$1,500（2026-10-17，分支 `claude/free-shipping-1500`）
+
+使用者決定免運門檻「按照 LUCISSI」；母站 `LUCISSI_website/config/brands/lucissi.manifest.json` 為滿 NT$1,500、未滿 NT$146。
+
+- 程式碼：`DEFAULT_FREE_SHIPPING_THRESHOLD` 1499 → 1500；公告列、購物車免運進度、後台預設值隨常數更新；FREESHIP 後備促銷說明改由常數產生。
+- 資料庫：新增 migration `supabase/migrations/20261017030000_align_free_shipping_threshold_with_lucissi.sql`（`site_settings.free_shipping_threshold` 與 FREESHIP `min_spend`／說明改為 1500）。**尚未套用到正式 Supabase `tmqzkagkrzhioftvwbqo`**。
+- Shopify `gh2xgs-zf` 後台：運費規則「滿額免運」與 FREESHIP 折扣門檻需同步改為 1500，**尚未變更**。三處須一起上線，否則公告列、購物車與結帳顯示不一致。
+- 已執行驗證：`npm test -- --run`（47 檔／461 項）、`npm run build`、`npm run verify:content`、`npm run verify:supabase`（靜態檢查）通過。
+- 未執行：未部署、未套用 migration、未改 Shopify。
 
 ## 照護入口收斂為「貼身照護」（2026-10-17，分支 `claude/care-pillars-narrow`）
 
