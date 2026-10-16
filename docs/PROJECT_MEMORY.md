@@ -20,7 +20,7 @@
 - Sentry 的事件處理與資料清理在 `src/lib/sentry.ts`。
 - Vercel CLI 不再是 devDependency（其 `@vercel/*` → ts-morph → fast-glob 會帶入沒有修補版本的 `braces`，最新 64.x 仍是如此）；`npm run dev:vercel` 以 `npx --yes vercel@64 dev` 執行。原本只為 Vercel CLI 依賴樹存在的 `overrides` 已全部移除。
 - 若之後需要 `overrides`，必須同時被 npm 10（CI 的 Node 22）與 npm 11 的 `npm ci` 接受：npm 10 對部分以版本為鍵的 override 會誤判 lock 不同步。修改後以乾淨目錄的 `npx npm@10.9.4 ci --ignore-scripts` 與 `npm ci` 驗證，不要用 npm 10 重建 lock。
-- CI 稽核目前分為正式依賴 moderate 與全部依賴 critical 兩段；開發依賴剩餘問題見 `PROJECT_STATUS.md`。
+- CI 已恢復完整 `npm audit --audit-level=moderate`；2026-10-16 本機乾淨安裝回報 0 項漏洞，見 `PROJECT_STATUS.md`。
 
 ## 既有商品與介面決策
 
@@ -41,7 +41,11 @@
 - 全站免運門檻為 NT$1,499。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
 - 未達門檻的基本運費為 NT$146（黑貓宅急便常溫宅配，參照 LUCISSI 網站）。`DEFAULT_SHIPPING_FEE` 只是後備值，顧客看到的是 Supabase `site_settings.default_shipping_fee`；改運費時程式碼、Supabase、Shopify 運費三處一起改。
 - 客服暫時只用 Email（`Company@lucissi.com`）。
-- 訪客結帳已決定開放；登入改為會員優惠入口。設計見 `docs/GUEST_CHECKOUT_PLAN.md`。後端（migration、webhook 解析器、`create-shopify-cart` 訪客分支）在分支 `claude/guest-checkout-backend` 實作，未套用到遠端、未部署；正式環境仍是「未登入訂單不寫入、不開發票」，直到 migration 套用並開啟 `site_settings.guest_checkout_enabled`。部署時 migration 必須先於 webhook 程式。前端（步驟 4）在分支 `claude/guest-checkout-frontend`，疊在後端分支上。
+- 訪客結帳已決定開放；登入改為會員優惠入口。前後端已隨 PR #37／#38 合併至 `main`，2026-10-16 正式 Vercel 部署頁確認 `bb5f694` 為 Production／Ready／Current，綁定 `lucissicare.com`。正式 Supabase 已存在 migration `20261016024415`，但當日回讀 `guest_checkout_enabled=false`，尚未對外開放。
+- 2026-10-16 已建立正式 Turnstile widget 並設定訪客專用 `VITE_PUBLIC_GUEST_CHECKOUT_TURNSTILE_SITE_KEY`／`TURNSTILE_SECRET_KEY`；會員 CAPTCHA 的 `VITE_PUBLIC_TURNSTILE_SITE_KEY` 必須與 Supabase Auth 獨立配置，避免訪客設定誤影響登入。自動瀏覽器出現 300030，仍待真人成功與端到端驗收。
+- 正確 app 的六項實際 webhook 已由舊 `www.saengak.com.tw` 原地更新至 `https://lucissicare.com/api/webhooks/shopify`，ID 不變、無重複；新舊端點簽章 smoke 通過。該 app 不使用舊 Supabase Edge Function v8，本次未更新該函式；不能推論所有其他來源均停用它。
+- Vercel Firewall 已發布結帳 API 每 IP 每 60 秒 10 次限速；完整付款／發票／認領與營運規則完成前，正式訪客開關維持 false。
+- 當日確認 Supabase Auth `mailer_autoconfirm=false`；正確 Shopify 商店 `gh2xgs-zf` 後台的聯絡方式為 Email，且不要求登入結帳。Shopify connector 當時連到另一間 `j97kr5-7b`，不可用該 connector 的結果代替本店設定。完整查核與剩餘步驟見 `docs/GUEST_CHECKOUT_LAUNCH_CHECKLIST.md`。
 
 ## 素材製作記憶
 

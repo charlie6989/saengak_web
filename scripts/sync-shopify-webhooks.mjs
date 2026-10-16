@@ -10,7 +10,7 @@ import {
 
 const apply = process.argv.includes('--apply');
 const config = validateWebhookConfiguration({
-  shopDomain: process.env.SHOPIFY_SHOP_DOMAIN || LUCISSI_CARE_SHOP_DOMAIN,
+  shopDomain: process.env.SHOPIFY_SHOP_DOMAIN || LUCISSI_CARE_SHOPIFY_DOMAIN,
   apiVersion: process.env.SHOPIFY_API_VERSION || LUCISSI_CARE_SHOPIFY_API_VERSION,
   webhookUri: process.env.SHOPIFY_WEBHOOK_URI || LUCISSI_CARE_ORDER_WEBHOOK_URI,
 });

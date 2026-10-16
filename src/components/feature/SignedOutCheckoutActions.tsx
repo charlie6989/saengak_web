@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import AuthCaptcha, { isAuthCaptchaEnabled } from './AuthCaptcha';
+import AuthCaptcha, { guestCheckoutSiteKey, isGuestCheckoutCaptchaEnabled } from './AuthCaptcha';
 
 export type SignedOutCheckoutMode = 'member' | 'guest';
 
@@ -12,7 +12,7 @@ const guestEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function isGuestCheckoutAvailable(
   isSignedIn: boolean,
   guestCheckoutEnabled: boolean,
-  captchaEnabled = isAuthCaptchaEnabled,
+  captchaEnabled = isGuestCheckoutCaptchaEnabled,
 ): boolean {
   return !isSignedIn && guestCheckoutEnabled && captchaEnabled;
 }
@@ -170,7 +170,7 @@ export default function SignedOutCheckoutActions({
             訂單確認信會寄到這個信箱；之後以同一 Email 註冊會員，即可在會員中心看到這筆訂單。
           </p>
         </div>
-        <AuthCaptcha onTokenChange={onCaptchaTokenChange} resetKey={captchaResetKey} action="guest_checkout" />
+        <AuthCaptcha siteKey={guestCheckoutSiteKey} onTokenChange={onCaptchaTokenChange} resetKey={captchaResetKey} action="guest_checkout" />
       </div>
       {message && (
         <p

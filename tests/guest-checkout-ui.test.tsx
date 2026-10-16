@@ -9,7 +9,8 @@ const authState = vi.hoisted(() => ({
 }));
 
 vi.mock('../src/components/feature/AuthCaptcha', () => ({
-  isAuthCaptchaEnabled: true,
+  isGuestCheckoutCaptchaEnabled: true,
+  guestCheckoutSiteKey: 'guest-site-key',
   default: ({ resetKey, action }: { resetKey: number; action?: string }) => (
     <div data-testid="turnstile-widget" data-reset-key={resetKey} data-action={action} />
   ),

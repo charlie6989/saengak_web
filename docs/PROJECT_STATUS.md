@@ -1,6 +1,15 @@
 # 項目狀態
 
-更新日期：2026-10-16（Asia/Taipei）。最新工作依序為 Tailwind CSS 4 遷移與完整依賴稽核（PR #32）、免運門檻統一（PR #35，已合併）、UX 審視修正（PR #30，已合併）與 CI 修復（PR #31，已合併）；其下保留 2026-10-15 的 Git 同步紀錄。
+更新日期：2026-10-16（Asia/Taipei）。最新工作為本機同步遠端與訪客結帳上線設定及驗證；其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## 訪客結帳上線準備（2026-10-16）
+
+- 本機已同步遠端 `bb5f694`；後續修正：訪客 Turnstile 使用獨立 site key，避免誤啟用會員 Auth CAPTCHA；修正 webhook 查核腳本預設商店常數拼字。
+- 已建立正式 Cloudflare widget、保存 Vercel Production 設定、發布結帳 API 限速（10 次／60 秒／IP）。
+- 已取得正確 app 的 Admin API 回讀；六個 webhook 從舊網域原地更新至 `https://lucissicare.com/api/webhooks/shopify`，ID 不變、無重複。新舊端點均通過有效 HMAC／無效 JSON 的無資料寫入測試。
+- 46 檔／448 單元測試、typecheck、build 通過；從空本機 DB 套用全部 migration，8 檔／213 項 pgTAP 通過（含訪客 43 項）。
+- `guest_checkout_enabled=false`。尚缺真實 Turnstile 成功、隔離付款／webhook／發票／認領完整驗收及訪客個資／發票營運規則；未建立正式測試訂單或發票。
+- 詳細執行證據、限制、回復方式及部署回讀見 [訪客結帳上線查核](GUEST_CHECKOUT_LAUNCH_CHECKLIST.md)。
 
 ## 訪客結帳前端（2026-10-16，分支 `claude/guest-checkout-frontend`，疊在 PR #37 上）
 

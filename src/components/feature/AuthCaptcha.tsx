@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Turnstile } from '@marsidev/react-turnstile';
 
 const configuredSiteKey = import.meta.env.VITE_PUBLIC_TURNSTILE_SITE_KEY?.trim();
+export const guestCheckoutSiteKey = import.meta.env.VITE_PUBLIC_GUEST_CHECKOUT_TURNSTILE_SITE_KEY?.trim();
+export const isGuestCheckoutCaptchaEnabled = Boolean(guestCheckoutSiteKey);
 
 export const isAuthCaptchaEnabled = Boolean(configuredSiteKey);
 
@@ -21,9 +23,10 @@ interface AuthCaptchaProps {
   resetKey: number;
   /** Turnstile action，伺服器端可比對 siteverify 回傳的 action（例如 'guest_checkout'）。 */
   action?: string;
+  siteKey?: string;
 }
 
-export default function AuthCaptcha({ onTokenChange, resetKey, action }: AuthCaptchaProps) {
+export default function AuthCaptcha({ onTokenChange, resetKey, action, siteKey = configuredSiteKey }: AuthCaptchaProps) {
   const [hasToken, setHasToken] = useState(false);
   const onTokenChangeRef = useRef(onTokenChange);
   useEffect(() => {
@@ -36,7 +39,7 @@ export default function AuthCaptcha({ onTokenChange, resetKey, action }: AuthCap
   }, [resetKey]);
   useEffect(() => () => onTokenChangeRef.current(''), []);
 
-  if (!configuredSiteKey) return null;
+  if (!siteKey) return null;
 
   const updateToken = (token: string) => {
     setHasToken(Boolean(token));
@@ -47,7 +50,7 @@ export default function AuthCaptcha({ onTokenChange, resetKey, action }: AuthCap
     <div className="space-y-2">
       <Turnstile
         key={resetKey}
-        siteKey={configuredSiteKey}
+        siteKey={siteKey}
         options={action ? { action } : undefined}
         onSuccess={updateToken}
         onExpire={() => updateToken('')}
