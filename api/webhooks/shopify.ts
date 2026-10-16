@@ -7,6 +7,7 @@
  * - 投影寫入 orders / order_items / order_fulfillments
  */
 
+import { readOrderForPerk, settleMemberPerkAfterOrder } from '../_lib/member-perk.js';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { jsonResponse } from '../_lib/security.js';
 import { getSupabaseAdminClient } from '../_lib/supabase-admin.js';
@@ -177,6 +178,16 @@ async function handler(request: Request): Promise<Response> {
       if (error) {
         console.error('sync_shopify_order_webhook error', error);
         return jsonResponse({ error: '儲存訂單投影失敗' }, { status: 500 });
+      }
+
+      // LUCISSI 會員首單免運：第一筆付款訂單成立後結算（用掉或停用），失敗不影響訂單同步
+      const perkOrder = readOrderForPerk(payload);
+      if (perkOrder) {
+        try {
+          await settleMemberPerkAfterOrder(admin, perkOrder);
+        } catch (perkError) {
+          console.error('member perk settlement failed', perkError);
+        }
       }
 
       return jsonResponse({ ok: true, result: data });

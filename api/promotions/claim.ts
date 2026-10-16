@@ -2,6 +2,7 @@ import { isOriginAllowed, jsonResponse } from '../_lib/security.js';
 import { getSupabaseAdminClient } from '../_lib/supabase-admin.js';
 import { fetchShopifyPromotionByCode } from '../shopify/discounts.js';
 import { createClient } from '@supabase/supabase-js';
+import { isMemberPerkCode } from '../_lib/member-perk-code.js';
 
 interface ClaimRequestBody {
   code?: unknown;
@@ -104,6 +105,13 @@ export async function POST(request: Request): Promise<Response> {
         success: false,
         message: '折扣代碼格式錯誤，請重新確認',
         code: 'INVALID_CODE',
+      }, { status: 400, headers: corsHeaders });
+    }
+    if (isMemberPerkCode(code)) {
+      return jsonResponse({
+        success: false,
+        message: '這是 LUCISSI 會員專屬代碼，請直接在購物車輸入使用',
+        code: 'PERK_CODE_NOT_CLAIMABLE',
       }, { status: 400, headers: corsHeaders });
     }
 
