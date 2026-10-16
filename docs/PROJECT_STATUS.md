@@ -10,9 +10,10 @@
 - 隔離驗收：實際 TapPay 沙盒付款訂單 **#1008／NT$166** 成功，Shopify 真實 webhook 寫入隔離 DB；使用者確認 `company@lucissi.com` 收到訂單確認信。
 - 發票：獨立光貿公開沙盒 smoke 發票 `AB12361278` 開立及作廢皆回讀 99。#1008 在 Vercel 發現 `fetcher is not a function`，已修正預設 fetch handler 誤把 runtime context 當 fetch 的問題；隔離部署 `dpl_3ATpoHvu9q54cJzikidENsyuooCC` 測試發票 `AB12361301` 已回讀 99；#1008 已取消並回讀 TapPay 測試退款成功，作廢亦回讀 99。
 - 新增 migration 明確授予 `service_role` promotions／user_coupons CRUD；只套用隔離分支，正式庫原本已有這些權限。隔離 hosted DB 8 檔／213 項 pgTAP 通過；程式 46 檔／449 項通過，修正後 Preview build 成功。
-- 測試分支 SMTP 535 已以經核准的單一網域寄信金鑰修復，Resend 回讀 Delivered，使用者確認收信並已驗證 Email；使用者在手機被 Vercel 保護擋住回跳，已寄限時測試存取連結及新登入信，認領仍待回讀。正式 SMTP 未變更。
-- 正式 `guest_checkout_enabled=false`，本輪最後回讀訪客訂單／聯絡資料／link 皆 0。仍缺真實 Turnstile 前端成功、Email 驗證認領、正式付款與發票設定及訪客個資營運規則。TapPay 仍為測試模式。
-- 五項測試 webhook 已刪除，Admin API 回讀只剩原六項正式訂閱。測試分支與寄信金鑰暫保留供認領驗收。
+- 測試分支 SMTP 535 已以經核准的單一網域寄信金鑰修復，Resend 回讀 Delivered，使用者確認收信並已驗證 Email；使用者在手機被 Vercel 保護擋住回跳，已寄限時存取連結及新登入信。20:22 使用者確認進入會員頁，DB 回讀 #1008 已認領且正確歸屬該已驗證會員。正式 SMTP 未變更。
+- 正式 `guest_checkout_enabled=false`，本輪最後回讀訪客訂單／聯絡資料／link 皆 0。真實 Turnstile 已通過隔離桌機前端與 API，手機已見驗證成功；仍缺正式付款與發票設定及訪客個資營運規則。TapPay 仍為測試模式。
+- 五項測試 webhook 已刪除，Admin API 回讀只剩原六項正式訂閱。測試分支與寄信金鑰暫保留供真人 Turnstile 驗收。
+- 真人 Turnstile Preview `dpl_HY7KGcAykeeTqqrSKpofn6xE6uDb` 與 alias `saengak-web-d2ux-guest-acceptance.vercel.app` 已建立，Cloudflare 與伺服器精確 whitelist，20:27 使用者手機截圖顯示驗證成功（Email 空白阻擋符合預期）；20:29 桌機完成真實驗證並導向 Shopify，DB 新增 guest link，未付款。手機填 Email 後導向待確認。
 - 詳細證據、暫時訂閱及清理事項見 [訪客結帳上線查核](GUEST_CHECKOUT_LAUNCH_CHECKLIST.md)。
 
 ## 訪客結帳前端（2026-10-16，分支 `claude/guest-checkout-frontend`，疊在 PR #37 上）

@@ -51,11 +51,13 @@
 
 - 指定組織 `tvahbnsbwsnlmwfessvf` 的測試分支 ref 為 `cpgdxvqywuhredsdgvrd`（branch ID `51c87dc4-0fbe-4956-be52-ff3dc19ccc8e`），無正式資料；不可合併測試資料或把測試 Preview 直接提升正式。費用 US$0.01344／小時另加用量。
 - 初次分支建立因正式 migration 歷史缺 baseline 失敗；只在分支補 baseline／缺漏 migration 後 rebase 成功。新增明確 service_role coupon CRUD migration 後 hosted pgTAP 213 項通過；正式庫原有權限，尚未套用該新 migration。
-- Shopify 真實 TapPay 沙盒訂單 #1008（gid 18952978923587）付款 166 元，測試 webhook 寫入分支；使用者確認訂單信收到。驗證信是另一條 Supabase Auth／Resend 路徑，分支 SMTP 535 已以核准的測試寄信金鑰修復；Resend Delivered、使用者已點信且 Auth email_confirmed_at 有值，使用者在手機受 Vercel 保護阻擋，已寄限時測試存取連結及新登入信，前端認領仍待回讀。
+- Shopify 真實 TapPay 沙盒訂單 #1008（gid 18952978923587）付款 166 元，測試 webhook 寫入分支；使用者確認訂單信收到。驗證信是另一條 Supabase Auth／Resend 路徑，分支 SMTP 535 已以核准的測試寄信金鑰修復；Resend Delivered、使用者已點信且 Auth email_confirmed_at 有值，使用者在手機受 Vercel 保護阻擋，已寄限時測試存取連結及新登入信，20:22 已確認手機登入，DB 回讀 #1008 已認領且 correct_owner=true。
 - `api/invoice/guangmao.ts` 的 Vercel default.fetch 第二參數是 runtime context，不能當 injected fetch。已改直接用 global fetch，新增回歸測試，449 項單元測試通過；修正已透過 `530b2c3` 上正式部署，CI 成功且正式 alias 回讀確認。
 - Resend `auth.saengak.com.tw` 網域 Verified；既有 SAENGAK 金鑰僅寄信權限、完整值不可取回。已核准建立僅該網域寄信的測試金鑰並設定分支，驗證信送達。正式 SMTP 是否可用未測；隔離分支原錯誤不能直接當成正式故障。
 - #1008 已取消，TapPay 測試 REFUND SUCCESS；發票 AB12361301 開立及作廢皆回讀 99。五項測試 webhook 已刪除，正式六項回讀未變。
-- 正式 guest flag 維持 false；TapPay 正式後台仍為測試模式。真人 Turnstile、驗證後認領及營運資料保留規則尚未完成。
+- 正式 guest flag 維持 false；TapPay 正式後台仍為測試模式。驗證後認領已通過；真人 Turnstile 已通過隔離桌機前端＋API，手機截圖確認驗證成功；正式設定及營運資料保留規則尚未完成。
+
+- 真人驗證使用 `saengak-web-d2ux-guest-acceptance.vercel.app`（Preview `dpl_HY7KGcAykeeTqqrSKpofn6xE6uDb`），真實 widget 的 Cloudflare／server whitelist 都已加入精確測試 alias；測試完移除該 hostname、alias 與短效分享連結。
 
 ## 素材製作記憶
 
