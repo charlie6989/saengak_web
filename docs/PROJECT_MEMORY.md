@@ -40,7 +40,7 @@
 
 - 全站免運門檻為 NT$1,499。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
 - 客服暫時只用 Email（`Company@lucissi.com`）。
-- 訪客結帳已決定開放；登入改為會員優惠入口。設計見 `docs/GUEST_CHECKOUT_PLAN.md`。後端（migration、webhook 解析器、`create-shopify-cart` 訪客分支）在分支 `claude/guest-checkout-backend` 實作，未套用到遠端、未部署；正式環境仍是「未登入訂單不寫入、不開發票」，直到 migration 套用並開啟 `site_settings.guest_checkout_enabled`。部署時 migration 必須先於 webhook 程式。
+- 訪客結帳已決定開放；登入改為會員優惠入口。設計見 `docs/GUEST_CHECKOUT_PLAN.md`。後端（migration、webhook 解析器、`create-shopify-cart` 訪客分支）在分支 `claude/guest-checkout-backend` 實作，未套用到遠端、未部署；正式環境仍是「未登入訂單不寫入、不開發票」，直到 migration 套用並開啟 `site_settings.guest_checkout_enabled`。部署時 migration 必須先於 webhook 程式。前端（步驟 4）在分支 `claude/guest-checkout-frontend`，疊在後端分支上。
 
 ## 素材製作記憶
 

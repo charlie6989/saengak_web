@@ -1,6 +1,6 @@
 # 訪客結帳設計方案
 
-日期：2026-10-16（Asia/Taipei）。狀態：步驟 1–3（§9）已在分支 `claude/guest-checkout-backend` 實作並通過本機測試（`npm test`、本機 Supabase `npm run test:db`）；**尚未套用到任何遠端 Supabase、尚未部署**，`guest_checkout_enabled` 預設關閉。步驟 4 起（前端、端到端驗證）未開始。
+日期：2026-10-16（Asia/Taipei）。狀態：步驟 1–3（§9）已在分支 `claude/guest-checkout-backend` 實作並通過本機測試（`npm test`、本機 Supabase `npm run test:db`）；**尚未套用到任何遠端 Supabase、尚未部署**，`guest_checkout_enabled` 預設關閉。步驟 4（前端）已在分支 `claude/guest-checkout-frontend` 實作並通過 `npm test`（§9.2）；步驟 5 起（端到端驗證）未開始。
 
 營運決策（2026-10-16）：開放訪客結帳；登入改為「會員優惠」的入口；客服只用 Email。本文件說明訪客訂單如何儲存、開立發票、查詢，以及之後註冊時如何併入會員帳號。內容依 `main`（`bd93ea0`）的程式碼整理，正式服務的設定在「待確認」一節另列。
 
@@ -174,6 +174,15 @@ Email 變更：Supabase 的 Email 變更需要確認，`claim_guest_orders` 只�
 - `api/create-shopify-cart.ts`：訪客分支（§3.1）＋ `api/_lib/turnstile.ts`。錯誤碼：`TURNSTILE_UNAVAILABLE`（503，未設定 secret 或 siteverify 無法連線）、`TURNSTILE_TOKEN_REQUIRED`（400）、`TURNSTILE_VERIFICATION_FAILED`（403）、`GUEST_DISCOUNT_REQUIRES_LOGIN`（400）、`GUEST_EMAIL_REQUIRED`（400）、`GUEST_ORDER_LINK_UNAVAILABLE`（503）、`GUEST_ORDER_LINK_FAILED`（502）。請求欄位：`guestEmail`、`turnstileToken`；回應新增 `checkoutKind`。
 - **部署順序**：合併前必須先把 migration 套用到正式 Supabase，再部署 Vercel（`api/webhooks/shopify.ts`）與 Edge Function（`shopify-orders-webhook`）。呼叫端的 `PGRST202` 退回只是保險：在舊 RPC 上訂單仍會同步，但訪客訂單仍是 `unlinked`，也不會記錄訂單 Email。Migration 本身對舊解析器相容（預設值）。
 - 既有 pgTAP 測試的修正（與本案無關、`main` 上原本就跑不完）：`saengak_membership_rls`（管理員政策加入後政策數量）、`shopify_order_sync`（20260904 後函式簽章）、`transaction_logs`（plan 數量與公開設定數量）、`enqueue_amego_invoice_job`（63 字元的 SHA-256 字串）。
+
+### 9.2 步驟 4 前端實作紀錄（2026-10-16）
+
+- `src/components/feature/SignedOutCheckoutActions.tsx`：未登入、`guest_checkout_enabled` 為 `true`，且前端有 `VITE_PUBLIC_TURNSTILE_SITE_KEY` 時，購物車顯示「登入結帳（使用會員優惠）」與「訪客結帳」。選擇訪客後展開必填 Email、既有 `AuthCaptcha`（Turnstile）與「登入後可使用會員優惠」提示；優惠券區塊隱藏，已選的折扣碼清除且不送出。沒有 Turnstile site key 時不顯示訪客選項（伺服器必定回 `TURNSTILE_TOKEN_REQUIRED`）。
+- `CartSidebar`：開關以 `fetchGuestCheckoutEnabled()` 直接讀公開的 `site_settings`，讀取失敗視為關閉。訪客送出後不論成敗都重設 Turnstile（token 只能用一次）。是否開啟登入視窗改依錯誤碼判斷（`MEMBER_LOGIN_REQUIRED`、`MEMBER_SESSION_INVALID`、`GUEST_DISCOUNT_REQUIRES_LOGIN`），避免訪客錯誤訊息含「登入」字樣時誤開。
+- `src/lib/shopifyCheckout.ts`：`createShopifyCheckout` 第 4 個參數 `guest`（`email`、`turnstileToken`）；訪客請求不帶 `Authorization`、不送折扣碼，`assertMemberOrderTracking` 只檢查會員。§9.1 的 7 個錯誤碼皆有繁中訊息；錯誤以 `ShopifyCheckoutError` 帶出 `code`。
+- 認領：`src/lib/guestOrders.ts` 的 `claimGuestOrders()` 呼叫 `claim_guest_orders`，錯誤只記錄不拋出（`PGRST202`、`42501` 不回報 Sentry）。`AuthContext` 在 `SIGNED_IN` 時以 `setTimeout` 移出 auth 回呼後呼叫，同一使用者每次頁面載入只呼叫一次；會員中心 `loadOrders` 先認領再查詢。
+- 感謝頁 `/order-status?order_id=`：auth 狀態確定且未登入時視為訪客訂單（會員結帳必須登入），說明 Shopify 確認信中的「訂單狀態」連結，以及用同一 Email 註冊並驗證後可在「我的訂單」看到；按鈕改為前往 `/register`。已登入但以訪客身分結帳的少數情況仍顯示會員版文字。
+- 測試：`tests/guest-checkout-client.test.ts`（請求內容、錯誤碼、開關讀取、認領）、`tests/guest-checkout-ui.test.tsx`（按鈕區、驗證、感謝頁、`SIGNED_IN` 認領排程）。專案沒有 DOM 測試環境，元件以 `renderToStaticMarkup` 驗證；`CartSidebar` 內的狀態切換未有自動化測試，需在步驟 5 手動驗證。
 
 ## 10. 為何最初只交付設計
 

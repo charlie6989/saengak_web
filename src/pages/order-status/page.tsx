@@ -9,7 +9,9 @@ const ordersPath = '/profile?tab=orders';
 export default function OrderStatusPage() {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('order_id');
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
+  // 未登入看到感謝頁，代表這筆是訪客結帳（會員結帳必須登入），訂單尚未綁定會員
+  const isGuestOrder = !isAuthLoading && !user;
   const isSandbox = import.meta.env.VITE_COMMERCE_SANDBOX_MODE === 'true';
 
   // 只有結帳返回時帶著 order_id 才顯示感謝訊息；一般從頁尾進入的顧客看到的是訂單查詢說明
@@ -36,6 +38,18 @@ export default function OrderStatusPage() {
                 </span>
               )}
             </p>
+            {isGuestOrder && (
+              <div
+                className="mx-auto mt-6 max-w-2xl rounded-xl border border-stone-200 bg-[#F8F5F1] p-5 text-left text-sm leading-7 text-stone-600"
+                data-testid="guest-order-notice"
+              >
+                <p className="font-semibold text-stone-900">訪客訂單如何查詢？</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  <li>請查看 Shopify 寄出的訂單確認信，點信中的「訂單狀態」連結，即可查看付款、出貨與物流進度。</li>
+                  <li>以結帳時填寫的同一個 Email 註冊並完成 Email 驗證，登入後即可在會員中心「我的訂單」看到這筆訂單。</li>
+                </ul>
+              </div>
+            )}
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 to="/products"
@@ -43,12 +57,21 @@ export default function OrderStatusPage() {
               >
                 繼續購物
               </Link>
-              <Link
-                to={user ? ordersPath : '/customer-service'}
-                className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-stone-200 bg-white px-8 py-3.5 font-semibold text-stone-700 transition-colors hover:bg-stone-50"
-              >
-                {user ? '查看我的訂單' : '聯絡客服'}
-              </Link>
+              {isGuestOrder ? (
+                <Link
+                  to="/register"
+                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-stone-200 bg-white px-8 py-3.5 font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+                >
+                  以同一 Email 註冊會員
+                </Link>
+              ) : (
+                <Link
+                  to={user ? ordersPath : '/customer-service'}
+                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-stone-200 bg-white px-8 py-3.5 font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+                >
+                  {user ? '查看我的訂單' : '聯絡客服'}
+                </Link>
+              )}
             </div>
           </section>
         </main>
@@ -86,6 +109,7 @@ export default function OrderStatusPage() {
           </div>
           <div className="mt-10 border-t border-stone-200 pt-6 text-sm leading-7 text-stone-600">
             <p>找不到訂單？請先查看下單時收到的訂單確認信，信中附有訂單狀態連結。</p>
+            <p>以訪客身分結帳的訂單，以同一 Email 註冊會員並完成驗證後，也會出現在「我的訂單」。</p>
             <p>{siteContent.supportContact}</p>
           </div>
         </section>

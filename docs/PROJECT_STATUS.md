@@ -2,6 +2,14 @@
 
 更新日期：2026-10-16（Asia/Taipei）。最新工作依序為 Tailwind CSS 4 遷移與完整依賴稽核（PR #32）、免運門檻統一（PR #35，已合併）、UX 審視修正（PR #30，已合併）與 CI 修復（PR #31，已合併）；其下保留 2026-10-15 的 Git 同步紀錄。
 
+## 訪客結帳前端（2026-10-16，分支 `claude/guest-checkout-frontend`，疊在 PR #37 上）
+
+實作 `docs/GUEST_CHECKOUT_PLAN.md` §9 步驟 4，細節見該文件 §9.2。
+
+- 程式碼：`CartSidebar` 與新元件 `SignedOutCheckoutActions`（未登入且開關開啟時顯示「登入結帳（使用會員優惠）」與「訪客結帳」）、`src/lib/shopifyCheckout.ts` 訪客請求與新錯誤碼、`src/lib/guestOrders.ts`（`claim_guest_orders`）、`AuthContext` 於 `SIGNED_IN` 認領、會員中心載入訂單前認領、`/order-status` 訪客說明。
+- 已執行驗證：`npm test -- --run`（44 個檔案、413 項通過，新增 31 項）；`npm run build` 通過。
+- 未執行：未在瀏覽器實測訪客流程（需要開關為 true 與 `VITE_PUBLIC_TURNSTILE_SITE_KEY`）；未開啟 `guest_checkout_enabled`、未套用任何遠端 migration、未部署。
+
 ## 訪客結帳後端（2026-10-16，分支 `claude/guest-checkout-backend`）
 
 實作 `docs/GUEST_CHECKOUT_PLAN.md` §9 步驟 1–3，細節見該文件 §9.1。
