@@ -176,18 +176,22 @@ describe('光貿發票 Worker API (api/invoice/guangmao.ts)', () => {
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
-    it('發票開立閘門關閉時回 503，且不觸碰網路', async () => {
-      process.env.AmegoDispatchToken = DISPATCH_TOKEN;
-      process.env.AmegoInvoiceReleaseEnabled = 'false';
+    it.each([undefined, '', 'false', 'TRUE', 'invalid'])(
+      '發票開立閘門未明確啟用（%s）時回 503，且不認領工作或派送', async (flag) => {
+        process.env.AmegoDispatchToken = DISPATCH_TOKEN;
+        if (flag === undefined) delete process.env.AmegoInvoiceReleaseEnabled;
+        else process.env.AmegoInvoiceReleaseEnabled = flag;
 
-      const response = await vercelHandler.fetch(request({ token: DISPATCH_TOKEN }));
-      const data = await response.json() as Record<string, unknown>;
+        const response = await vercelHandler.fetch(request({ token: DISPATCH_TOKEN }));
+        const data = await response.json() as Record<string, unknown>;
 
-      expect(response.status).toBe(503);
-      expect(data.error).toBeTruthy();
-      expect(mocks.dispatchAmegoJob).not.toHaveBeenCalled();
-      expect(fetchMock).not.toHaveBeenCalled();
-    });
+        expect(response.status).toBe(503);
+        expect(data.error).toBeTruthy();
+        expect(mocks.getSupabaseAdminClient).not.toHaveBeenCalled();
+        expect(mocks.dispatchAmegoJob).not.toHaveBeenCalled();
+        expect(fetchMock).not.toHaveBeenCalled();
+      },
+    );
   });
 
   describe('P0-3：單次呼叫應持續認領直到 Outbox 淨空，而非只處理 1 筆', () => {

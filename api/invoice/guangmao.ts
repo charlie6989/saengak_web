@@ -89,7 +89,7 @@ async function handler(request: Request): Promise<Response> {
   }
 
   // 2. 檢查發票開立閘門
-  if (process.env.AmegoInvoiceReleaseEnabled === 'false') {
+  if (process.env.AmegoInvoiceReleaseEnabled !== 'true') {
     return jsonResponse({ error: '光貿發票模組目前已停用' }, { status: 503 });
   }
 

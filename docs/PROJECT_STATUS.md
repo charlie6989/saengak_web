@@ -1,6 +1,16 @@
 # 項目狀態
 
-更新日期：2026-10-16（Asia/Taipei）。最新工作為本機同步遠端與訪客結帳上線設定及驗證；其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-17（Asia/Taipei）。最新工作為正式金流、發票與寄信查核；其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## 正式服務查核（2026-10-17）
+
+- 正式 Supabase Auth：site_url 為 `https://lucissicare.com`，回跳白名單包含正式 `/auth/confirm` 與 `/reset-password`，Email 驗證開啟。SMTP 為 `smtp.resend.com:465`／`resend`，寄件地址 `noreply@auth.saengak.com.tw`；原寄件者顯示名稱 SAENGAK 已改為 LUCISSI CARE，API 回讀其餘 SMTP 憑證及 Auth 設定未變。
+- 實際正式驗證信寄送 HTTP 200，Resend `01a145c3-72b7-7ee8-b487-3e1470c5414a` 回讀 LUCISSI CARE 寄件者、01:30 Delivered。測試 Email 為 `company@lucissi.com`；本輪在正式 Auth 建立待驗證帳號，未建立訂單／付款。使用者收信及正式回跳仍待確認。
+- Shopify `gh2xgs-zf` 的 TapPay 顯示「啟用中／測試模式已開啟」，無實際收款。管理入口需 TapPay Portal 登入；光貿也停在登入頁，使用者表示將登入兩者。尚不能確認正式商家資格與光貿 seller／API key。
+- 正式 outbox 兩筆 pending／attempts=0 對應 #1006（8330730242115）、#1007（8339114950723）；Shopify API 確認兩筆 test=true、TapPay SALE SUCCESS/test=true。未取消或改寫舊訂單／發票工作，啟用正式發票前須排除這兩筆測試工作，避免發出正式發票。
+- Vercel 中 Amego 欄位存在，但為 sensitive、不可解密讀回；「欄位存在」不代表正式憑證或 release/mode 已驗證。本輪未呼叫正式發票派送 API，未變更任何金流／發票開關。正式 `guest_checkout_enabled=false`。
+- 修正 Vercel 發票開關為只有明確 `AmegoInvoiceReleaseEnabled=true` 才能派送，與 Edge Function 一致；缺值、空值、false、大寫 TRUE 及其他值皆回 503，不認領工作／不呼叫供應商。46 檔／453 項測試、typecheck、build 通過；此段不代表已部署，部署以後續 SHA／平台回讀為準。
+
 
 ## 訪客結帳上線準備（2026-10-16）
 

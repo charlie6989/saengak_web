@@ -1,5 +1,16 @@
 # 訪客結帳上線查核
 
+## 最新正式服務查核（2026-10-17）
+
+- **正式寄信已送達**：Supabase Auth 配置回讀 SMTP `smtp.resend.com:465`／`resend`、寄件地址 `noreply@auth.saengak.com.tw`，site_url `https://lucissicare.com`，正式回跳白名單及 Email 驗證均正確。只將 sender name 從 SAENGAK 改為 LUCISSI CARE，回讀其餘 SMTP 與 Auth 配置不變。向 `company@lucissi.com` 發送正式驗證信 HTTP 200；Resend `01a145c3-72b7-7ee8-b487-3e1470c5414a` 顯示正確寄件者及 01:30 Delivered。正式 Auth 新增待驗證帳號，沒有新增訂單／付款；收件者實際收信與回跳待確認。
+- **TapPay 仍為測試**：Shopify `gh2xgs-zf` 畫面顯示「啟用中／測試模式已開啟」。管理入口的 TapPay Portal 及光貿後台未登入，使用者將登入既有帳號；未建立新帳號或更改收款模式。
+- **正式光貿設定仍未確定**：Vercel seller/key/mode/release 等欄位存在但 sensitive 不可解密讀回，不能據此確認配置值。未呼叫正式派送 API，也未開立正式發票。
+- **兩筆歷史測試工作**：正式 outbox pending／attempts=0 的 #1006（8330730242115）、#1007（8339114950723）均由 Shopify API 證實 test=true、TapPay SALE SUCCESS/test=true。未變更兩筆資料；正式放行前須排除它們。
+- **程式修正**：Vercel 發票 release gate 改為明確 `true` 才派送；缺值、空值、false、TRUE、其他值皆 503，且不認領工作、不對外派送。46 檔／453 項、typecheck、build 通過。部署狀態須另以平台回讀確認。
+- 正式 guest flag 本輪仍回讀 false；以下 10/16 紀錄保留歷史範圍，正式寄信「未驗證」已由本節更新，其餘付款、發票與營運待辦仍有效。
+
+## 先前查核紀錄
+
 更新：2026-10-16（Asia/Taipei）。本機先同步 `bb5f694`，後續修正 `530b2c3` 已推送並部署正式（CI `38899581967` 成功，部署 `dpl_5rAjoDsTwBHiuFkdsN7jvJZSoeRR` Ready／正式 alias 回讀確認）。**訪客開關維持 false；尚未通過正式端到端驗收。**
 
 ## 本次已完成
