@@ -125,13 +125,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const displayTitle = sanitizeProductTitle(product.name);
   const singleSentenceDesc = extractSingleSentenceDescription(product);
 
-  // 韓元轉新台幣匯率 (1 KRW = 0.024 TWD)
-  const convertToTWD = (krwPrice: number) => {
-    return Math.round(krwPrice * 0.024);
-  };
-
   const formatTWDPrice = (twdPrice: number) => {
-    return `$${twdPrice.toLocaleString()}`;
+    return `NT$${twdPrice.toLocaleString()}`;
   };
 
   const handleCardClick = () => {
@@ -174,10 +169,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Product Labels */}
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
           {product.isBest && (
-            <span className="bg-red-500 text-white text-xs px-2 py-1 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>BEST</span>
+            <span className="bg-brand text-white text-xs px-2 py-1 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>BEST</span>
           )}
           {product.isNew && (
-            <span className="bg-blue-500 text-white text-xs px-2 py-1 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>NEW</span>
+            <span className="bg-brand text-white text-xs px-2 py-1 font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>NEW</span>
           )}
         </div>
 
@@ -236,8 +231,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {/* Left side - Old price */}
                 <div className="flex flex-col gap-1">
                   {product.originalPrice && product.originalPrice > product.price ? (
-                    <span className="text-sm text-gray-400 line-through" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                      ${product.originalPrice.toLocaleString()}
+                    <span className="text-sm text-gray-500 line-through" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                      {formatTWDPrice(product.originalPrice)}
                     </span>
                   ) : (
                     <div className="h-5"></div>
@@ -245,10 +240,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                   {/* 折扣比率移到折扣後價格前面，字體大小和顏色與折扣後價格一致，顏色改為 #5B3D48 */}
                   <div className="flex items-center gap-2">
                     {discountPercentage > 0 ? (
-                      <span className="text-lg font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>-{discountPercentage}%</span>
+                      <span className="text-base sm:text-lg font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>-{discountPercentage}%</span>
                     ) : null}
-                    <span className="text-lg font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
-                      ${product.price.toLocaleString()}
+                    <span className="text-base sm:text-lg font-medium" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5B3D48" }}>
+                      {formatTWDPrice(product.price)}
                     </span>
                   </div>
                 </div>
@@ -263,7 +258,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             aria-label={isWishlisted ? `從收藏移除 ${product.name}` : `收藏 ${product.name}`}
             className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded-sm transition-colors cursor-pointer shrink-0"
           >
-            <i className={`${isWishlisted ? 'ri-heart-fill text-red-500' : 'ri-heart-line text-gray-400'} text-sm`}></i>
+            <i className={`${isWishlisted ? 'ri-heart-fill text-red-500' : 'ri-heart-line text-gray-500'} text-sm`}></i>
           </button>
         </div>
 

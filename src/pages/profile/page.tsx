@@ -1096,7 +1096,7 @@ export default function ProfilePage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="p-3.5 bg-gray-50 border border-dashed border-gray-300 rounded-lg text-sm text-gray-400 flex items-center gap-2">
+                      <div className="p-3.5 bg-gray-50 border border-dashed border-gray-300 rounded-lg text-sm text-gray-500 flex items-center gap-2">
                         <i className="ri-map-pin-line text-gray-400"></i>
                         尚未設定常用收件地址，點擊右上角「編輯資料」即可設定
                       </div>
@@ -1174,7 +1174,7 @@ export default function ProfilePage() {
                         <i className="ri-checkbox-circle-line"></i> 已連結
                       </span>
                     ) : (
-                      <span className="text-xs text-gray-400">未連結</span>
+                      <span className="text-xs text-gray-500">未連結</span>
                     )}
                   </div>
                 </div>
@@ -1582,7 +1582,7 @@ export default function ProfilePage() {
 
                             {/* 日期與動作按鈕 */}
                             <div className="flex items-center justify-between pt-1">
-                              <span className="text-[11px] text-gray-400">
+                              <span className="text-[11px] text-gray-500">
                                 {promo?.ends_at
                                   ? `到期日：${new Date(promo.ends_at).toLocaleDateString('zh-TW')}`
                                   : `領取於 ${new Date(item.claimed_at).toLocaleDateString('zh-TW')}`}
@@ -1597,7 +1597,7 @@ export default function ProfilePage() {
                                   立即去使用
                                 </button>
                               ) : (
-                                <span className="text-xs text-gray-400 font-medium">
+                                <span className="text-xs text-gray-500 font-medium">
                                   {item.status === 'used' ? '已於訂單中使用' : '已過期'}
                                 </span>
                               )}
@@ -1709,7 +1709,7 @@ export default function ProfilePage() {
                   data-testid="review-comment-input"
                   className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-xl focus:border-brand focus:ring-1 focus:ring-[#5B3D48] focus:outline-hidden placeholder-gray-400"
                 />
-                <p className="mt-1 text-xs text-gray-400 text-right">
+                <p className="mt-1 text-xs text-gray-500 text-right">
                   {commentInput.length} 字
                 </p>
               </div>

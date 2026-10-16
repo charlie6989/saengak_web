@@ -185,7 +185,7 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 max-w-md mx-auto">
               <i className="ri-shopping-bag-line text-gray-400 text-4xl mb-4"></i>
               <p className="text-gray-500 mb-4">暫無產品資料</p>
-              <p className="text-gray-400 text-sm mb-4">請檢查網絡連接或稍後再試</p>
+              <p className="text-gray-500 text-sm mb-4">請檢查網絡連接或稍後再試</p>
               <button
                 onClick={handleRefresh}
                 className="px-4 py-2 bg-brand text-white rounded-sm hover:bg-brand transition-colors"

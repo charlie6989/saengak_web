@@ -555,7 +555,7 @@ export default function ProductPreviewPage() {
 
             {/* 3. 原價與折扣價 */}
             <div className="space-y-1 border-t border-gray-200/60 pt-4">
-              <div className="text-sm text-gray-400 line-through">
+              <div className="text-sm text-gray-500 line-through">
                 原價 {formatTwd(product.originalPrice)}
               </div>
               <div className="flex items-baseline gap-3">
@@ -858,7 +858,7 @@ export default function ProductPreviewPage() {
                           版型與著感指標 (Fit & Feeling Guide)
                         </h3>
                       </div>
-                      <span className="text-xs text-gray-400 font-medium">示範資料</span>
+                      <span className="text-xs text-gray-500 font-medium">示範資料</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-10">
@@ -869,9 +869,9 @@ export default function ProductPreviewPage() {
                           <span className="text-brand">合身 (Regular Fit)</span>
                         </div>
                         <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                          <div className="py-2 rounded-lg bg-gray-100 text-gray-400">緊身 (Slim)</div>
+                          <div className="py-2 rounded-lg bg-gray-100 text-gray-500">緊身 (Slim)</div>
                           <div className="py-2 rounded-lg bg-brand text-white font-bold">合身 (Regular)</div>
-                          <div className="py-2 rounded-lg bg-gray-100 text-gray-400">寬鬆 (Oversized)</div>
+                          <div className="py-2 rounded-lg bg-gray-100 text-gray-500">寬鬆 (Oversized)</div>
                         </div>
                       </div>
 
@@ -882,9 +882,9 @@ export default function ProductPreviewPage() {
                           <span className="text-brand">適中 (Moderate)</span>
                         </div>
                         <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                          <div className="py-2 rounded-lg bg-gray-100 text-gray-400">輕薄 (Light)</div>
+                          <div className="py-2 rounded-lg bg-gray-100 text-gray-500">輕薄 (Light)</div>
                           <div className="py-2 rounded-lg bg-brand text-white font-bold">適中 (Moderate)</div>
-                          <div className="py-2 rounded-lg bg-gray-100 text-gray-400">厚實 (Heavy)</div>
+                          <div className="py-2 rounded-lg bg-gray-100 text-gray-500">厚實 (Heavy)</div>
                         </div>
                       </div>
 
@@ -895,8 +895,8 @@ export default function ProductPreviewPage() {
                           <span className="text-brand">彈性良好 (High)</span>
                         </div>
                         <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                          <div className="py-2 rounded-lg bg-gray-100 text-gray-400">無彈性 (None)</div>
-                          <div className="py-2 rounded-lg bg-gray-100 text-gray-400">微彈 (Slight)</div>
+                          <div className="py-2 rounded-lg bg-gray-100 text-gray-500">無彈性 (None)</div>
+                          <div className="py-2 rounded-lg bg-gray-100 text-gray-500">微彈 (Slight)</div>
                           <div className="py-2 rounded-lg bg-brand text-white font-bold">良好 (High)</div>
                         </div>
                       </div>
@@ -909,8 +909,8 @@ export default function ProductPreviewPage() {
                         </div>
                         <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
                           <div className="py-2 rounded-lg bg-brand text-white font-bold">不透 (Opaque)</div>
-                          <div className="py-2 rounded-lg bg-gray-100 text-gray-400">微透 (Slight)</div>
-                          <div className="py-2 rounded-lg bg-gray-100 text-gray-400">透膚 (Sheer)</div>
+                          <div className="py-2 rounded-lg bg-gray-100 text-gray-500">微透 (Slight)</div>
+                          <div className="py-2 rounded-lg bg-gray-100 text-gray-500">透膚 (Sheer)</div>
                         </div>
                       </div>
                     </div>
@@ -1081,7 +1081,7 @@ export default function ProductPreviewPage() {
                       <div key={idx} className="p-5 rounded-xl border border-gray-200 bg-white space-y-2">
                         <div className="flex justify-between items-center text-xs">
                           <span className="font-bold text-gray-800">{rev.name}</span>
-                          <span className="text-gray-400">{rev.date}</span>
+                          <span className="text-gray-500">{rev.date}</span>
                         </div>
                         <div className="text-amber-400 text-xs">
                           {Array.from({ length: rev.rating }).map((_, i) => (
@@ -1188,7 +1188,7 @@ export default function ProductPreviewPage() {
                             {/* 價格資訊 */}
                             <div className="pt-2 space-y-0.5">
                               {item.originalPrice && (
-                                <div className="text-xs text-gray-400 line-through">
+                                <div className="text-xs text-gray-500 line-through">
                                   ${item.originalPrice}
                                 </div>
                               )}
@@ -1235,7 +1235,7 @@ export default function ProductPreviewPage() {
                           <label className="block text-sm font-medium text-gray-700">
                             您的問題
                           </label>
-                          <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                          <span className="text-[11px] text-gray-500 flex items-center gap-1">
                             <i className="ri-shield-user-line text-brand"></i>
                             <span>為保護隱私，提問將以部分遮蔽之 Email 帳號公開</span>
                           </span>
@@ -1276,7 +1276,7 @@ export default function ProductPreviewPage() {
                               </span>
                               <span className="font-mono text-gray-700 font-medium">{item.author}</span>
                             </div>
-                            <span className="text-gray-400 text-xs font-mono">{item.date}</span>
+                            <span className="text-gray-500 text-xs font-mono">{item.date}</span>
                           </div>
 
                           {/* 問題 */}

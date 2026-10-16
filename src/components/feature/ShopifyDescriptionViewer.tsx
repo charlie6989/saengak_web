@@ -435,9 +435,9 @@ export default function ShopifyDescriptionViewer({
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className={`py-2 rounded-lg ${fitValue.includes('緊身') || fitValue.toLowerCase().includes('slim') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>緊身 (Slim)</div>
-                  <div className={`py-2 rounded-lg ${fitValue.includes('合身') || (!fitValue.includes('緊身') && !fitValue.includes('寬鬆')) ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>合身 (Regular)</div>
-                  <div className={`py-2 rounded-lg ${fitValue.includes('寬鬆') || fitValue.toLowerCase().includes('loose') || fitValue.toLowerCase().includes('oversized') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>寬鬆 (Oversized)</div>
+                  <div className={`py-2 rounded-lg ${fitValue.includes('緊身') || fitValue.toLowerCase().includes('slim') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>緊身 (Slim)</div>
+                  <div className={`py-2 rounded-lg ${fitValue.includes('合身') || (!fitValue.includes('緊身') && !fitValue.includes('寬鬆')) ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>合身 (Regular)</div>
+                  <div className={`py-2 rounded-lg ${fitValue.includes('寬鬆') || fitValue.toLowerCase().includes('loose') || fitValue.toLowerCase().includes('oversized') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>寬鬆 (Oversized)</div>
                 </div>
               </div>
 
@@ -455,9 +455,9 @@ export default function ShopifyDescriptionViewer({
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className={`py-2 rounded-lg ${thicknessValue.includes('薄') || thicknessValue.toLowerCase().includes('light') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>輕薄 (Light)</div>
-                  <div className={`py-2 rounded-lg ${thicknessValue.includes('中') || (!thicknessValue.includes('薄') && !thicknessValue.includes('厚')) ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>適中 (Moderate)</div>
-                  <div className={`py-2 rounded-lg ${thicknessValue.includes('厚') || thicknessValue.toLowerCase().includes('heavy') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>厚實 (Heavy)</div>
+                  <div className={`py-2 rounded-lg ${thicknessValue.includes('薄') || thicknessValue.toLowerCase().includes('light') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>輕薄 (Light)</div>
+                  <div className={`py-2 rounded-lg ${thicknessValue.includes('中') || (!thicknessValue.includes('薄') && !thicknessValue.includes('厚')) ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>適中 (Moderate)</div>
+                  <div className={`py-2 rounded-lg ${thicknessValue.includes('厚') || thicknessValue.toLowerCase().includes('heavy') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>厚實 (Heavy)</div>
                 </div>
               </div>
 
@@ -475,9 +475,9 @@ export default function ShopifyDescriptionViewer({
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className={`py-2 rounded-lg ${elasticityValue.includes('無') || elasticityValue.toLowerCase().includes('none') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>無彈 (None)</div>
-                  <div className={`py-2 rounded-lg ${elasticityValue.includes('微') || elasticityValue.toLowerCase().includes('slight') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>微彈 (Slight)</div>
-                  <div className={`py-2 rounded-lg ${elasticityValue.includes('高') || (!elasticityValue.includes('無') && !elasticityValue.includes('微')) ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>高彈力 (High)</div>
+                  <div className={`py-2 rounded-lg ${elasticityValue.includes('無') || elasticityValue.toLowerCase().includes('none') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>無彈 (None)</div>
+                  <div className={`py-2 rounded-lg ${elasticityValue.includes('微') || elasticityValue.toLowerCase().includes('slight') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>微彈 (Slight)</div>
+                  <div className={`py-2 rounded-lg ${elasticityValue.includes('高') || (!elasticityValue.includes('無') && !elasticityValue.includes('微')) ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>高彈力 (High)</div>
                 </div>
               </div>
 
@@ -495,9 +495,9 @@ export default function ShopifyDescriptionViewer({
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 text-center text-xs font-medium">
-                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('一般') || breathabilityValue.toLowerCase().includes('normal') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>一般 (Normal)</div>
-                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('良好') || breathabilityValue.toLowerCase().includes('good') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>良好 (Good)</div>
-                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('極佳') || (!breathabilityValue.includes('一般') && !breathabilityValue.includes('良好')) ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-400'}`}>極佳 (Excellent)</div>
+                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('一般') || breathabilityValue.toLowerCase().includes('normal') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>一般 (Normal)</div>
+                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('良好') || breathabilityValue.toLowerCase().includes('good') ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>良好 (Good)</div>
+                  <div className={`py-2 rounded-lg ${breathabilityValue.includes('極佳') || (!breathabilityValue.includes('一般') && !breathabilityValue.includes('良好')) ? 'bg-brand text-white font-bold' : 'bg-gray-100 text-gray-500'}`}>極佳 (Excellent)</div>
                 </div>
               </div>
             </div>

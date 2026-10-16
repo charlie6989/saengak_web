@@ -203,7 +203,7 @@ export default function FAQPage() {
               <div className="text-center py-12">
                 <i className="ri-search-line text-6xl text-gray-300 mb-4"></i>
                 <h3 className="text-xl font-semibold text-gray-500 mb-2">找不到相關問題</h3>
-                <p className="text-gray-400">請嘗試其他關鍵字或聯絡客服獲得協助</p>
+                <p className="text-gray-500">請嘗試其他關鍵字或聯絡客服獲得協助</p>
               </div>
             )}
           </div>

@@ -467,7 +467,7 @@ export default function PromotionPage() {
                         </div>
 
                         <div className="flex items-center justify-between gap-3 pt-1">
-                          <span className="text-[11px] text-gray-400">
+                          <span className="text-[11px] text-gray-500">
                             {promo.ends_at ? `有效期限至 ${new Date(promo.ends_at).toLocaleDateString('zh-TW')}` : '無使用期限 • 長期有效'}
                           </span>
 

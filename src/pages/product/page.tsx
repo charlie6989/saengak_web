@@ -1138,7 +1138,7 @@ export default function ProductPage() {
             {/* 3. 原價與折扣價 */}
             <div className="space-y-1 border-t border-gray-200/60 pt-4">
               {currentCompareAtPrice && currentCompareAtPrice > currentPrice && (
-                <div className="text-sm text-gray-400 line-through">
+                <div className="text-sm text-gray-500 line-through">
                   原價 {formatTwd(currentCompareAtPrice)}
                 </div>
               )}
@@ -1470,14 +1470,14 @@ export default function ProductPage() {
                               <i className="ri-check-line"></i> ✓ 已驗證購買
                             </span>
                           </div>
-                          <span className="text-xs text-gray-400">{formatDate(review.created_at)}</span>
+                          <span className="text-xs text-gray-500">{formatDate(review.created_at)}</span>
                         </div>
 
                         <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
                           {review.comment}
                         </p>
 
-                        <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+                        <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
                           <span className="font-medium text-gray-600">
                             {review.display_name || 'LUCISSI CARE 會員'}
                           </span>
@@ -1634,7 +1634,7 @@ export default function ProductPage() {
                           {/* 商品資訊區塊 */}
                           <div className="p-4 sm:p-5 space-y-1.5 flex-1 flex flex-col justify-between">
                             <div className="space-y-1">
-                              <div className="flex items-center justify-between text-xs text-gray-400">
+                              <div className="flex items-center justify-between text-xs text-gray-500">
                                 <span>{item.category || '女性護理'}</span>
                                 <button
                                   type="button"
@@ -1671,7 +1671,7 @@ export default function ProductPage() {
 
                             <div className="pt-2 border-t border-gray-100 space-y-0.5">
                               {item.originalPrice && item.originalPrice > item.price && (
-                                <div className="text-xs text-gray-400 line-through">
+                                <div className="text-xs text-gray-500 line-through">
                                   {formatTwd(item.originalPrice)}
                                 </div>
                               )}
@@ -1742,7 +1742,7 @@ export default function ProductPage() {
                             <label className="block text-sm font-medium text-gray-700">
                               您的問題
                             </label>
-                            <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                            <span className="text-[11px] text-gray-500 flex items-center gap-1">
                               <i className="ri-shield-user-line text-brand"></i>
                               <span>為保護隱私，提問將以部分遮蔽之帳號公開</span>
                             </span>
@@ -1842,7 +1842,7 @@ export default function ProductPage() {
                               </span>
                               <span className="font-mono text-gray-700 font-medium">{item.display_name || 'LUCISSI CARE 會員'}</span>
                             </div>
-                            <span className="text-gray-400 text-xs font-mono">{formatDate(item.created_at)}</span>
+                            <span className="text-gray-500 text-xs font-mono">{formatDate(item.created_at)}</span>
                           </div>
 
                           {/* 問題 */}

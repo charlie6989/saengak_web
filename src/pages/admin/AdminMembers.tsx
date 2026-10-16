@@ -320,7 +320,7 @@ export const AdminMembers: React.FC = () => {
                           <div className="font-medium text-gray-900">
                             {profile.name || '未設定姓名'}
                           </div>
-                          <div className="text-xs text-gray-400 font-mono">ID: {profile.id.slice(0, 8)}...</div>
+                          <div className="text-xs text-gray-500 font-mono">ID: {profile.id.slice(0, 8)}...</div>
                         </div>
                       </div>
                     </td>
@@ -563,7 +563,7 @@ export const AdminMembers: React.FC = () => {
                         <div className="text-right text-[11px] text-gray-500">
                           <div>{sa.provider_email || '-'}</div>
                           {sa.last_sign_in_at && (
-                            <div className="text-[10px] text-gray-400">
+                            <div className="text-[10px] text-gray-500">
                               上次登入: {new Date(sa.last_sign_in_at).toLocaleDateString('zh-TW')}
                             </div>
                           )}
@@ -572,7 +572,7 @@ export const AdminMembers: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="rounded-lg border border-dashed border-gray-300 p-3 text-center text-xs text-gray-400">
+                  <div className="rounded-lg border border-dashed border-gray-300 p-3 text-center text-xs text-gray-500">
                     尚未綁定第三方社群帳號 (使用信箱密碼註冊)
                   </div>
                 )}
