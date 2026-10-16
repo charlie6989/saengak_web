@@ -7,10 +7,12 @@
 使用者決定免運門檻「按照 LUCISSI」；母站 `LUCISSI_website/config/brands/lucissi.manifest.json` 為滿 NT$1,500、未滿 NT$146。
 
 - 程式碼：`DEFAULT_FREE_SHIPPING_THRESHOLD` 1499 → 1500；公告列、購物車免運進度、後台預設值隨常數更新；FREESHIP 後備促銷說明改由常數產生。
-- 資料庫：新增 migration `supabase/migrations/20261017030000_align_free_shipping_threshold_with_lucissi.sql`（`site_settings.free_shipping_threshold` 與 FREESHIP `min_spend`／說明改為 1500）。**尚未套用到正式 Supabase `tmqzkagkrzhioftvwbqo`**。
-- Shopify `gh2xgs-zf` 後台：運費規則「滿額免運」與 FREESHIP 折扣門檻需同步改為 1500，**尚未變更**。三處須一起上線，否則公告列、購物車與結帳顯示不一致。
+- 資料庫：migration `supabase/migrations/20261016195154_align_free_shipping_threshold_with_lucissi.sql`（`site_settings.free_shipping_threshold` 改 1500；FREESHIP `min_spend` 改 1500，說明只替換金額、保留「每位顧客限用一次・不可與其他折扣併用」）。使用者同意後，2026-10-17 以 MCP `apply_migration` 套用到正式 Supabase `tmqzkagkrzhioftvwbqo`（版本 `20261016195154`，檔名同步）；套用前回讀 1499，套用後回讀 threshold 1500、FREESHIP 1500。
+- Shopify `gh2xgs-zf` 後台（使用者授權，經 Chrome 已登入的後台操作）：運送設定檔「一般設定檔」› Domestic › 標準：最低訂單金額 1,499 → 1,500，運費 $146 不變，重新載入回讀「滿 $1500.00 免費」；折扣「初夏免運專案 - 滿額免運費」（代碼 FREESHIP）：最低消費 $1,499 → $1,500，重新載入回讀「最低消費金額 $1,500.00」。折扣標題仍含過季的「初夏」，未更動。
+- 正式 API `https://lucissicare.com/api/shopify/discounts` 回讀 `siteSettings` `{freeShippingThreshold: 1500, defaultShippingFee: 146}`，FREESHIP `min_spend` 1500。
+- 注意：FREESHIP 由「SAENGAK Order Sync」應用程式建立並曾編輯；若該應用程式日後重新同步折扣，需確認不會改回 1,499。
 - 已執行驗證：`npm test -- --run`（47 檔／461 項）、`npm run build`、`npm run verify:content`、`npm run verify:supabase`（靜態檢查）通過。
-- 未執行：未部署、未套用 migration、未改 Shopify。
+- 未執行：本分支程式碼尚未合併部署；合併前公告列仍顯示舊的 1,499（購物車與結帳已是 1,500）。
 
 ## 照護入口收斂為「貼身照護」（2026-10-17，分支 `claude/care-pillars-narrow`）
 

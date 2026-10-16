@@ -51,7 +51,7 @@
 
 ## 營運決策（2026-10-16）
 
-- 全站免運門檻為 NT$1,500（2026-10-17 決定比照 LUCISSI 母站，原為 NT$1,499；migration `20261017030000` 與 Shopify 運費規則／FREESHIP 門檻需一起上線）。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
+- 全站免運門檻為 NT$1,500（2026-10-17 決定比照 LUCISSI 母站，原為 NT$1,499；migration `20261016195154` 已套用正式 Supabase，Shopify 運費規則與 FREESHIP 已改為 1,500）。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
 - 未達門檻的基本運費為 NT$146（黑貓宅急便常溫宅配，參照 LUCISSI 網站）。`DEFAULT_SHIPPING_FEE` 只是後備值，顧客看到的是 Supabase `site_settings.default_shipping_fee`；改運費時程式碼、Supabase、Shopify 運費三處一起改。
 - 客服暫時只用 Email（`Company@lucissi.com`）。
 - 訪客結帳已決定開放；登入改為會員優惠入口。前後端已隨 PR #37／#38 合併至 `main`，2026-10-16 正式 Vercel API 確認 `530b2c3` 為 Production／Ready／Current，綁定 `lucissicare.com`。正式 Supabase 已存在 migration `20261016024415`，但當日回讀 `guest_checkout_enabled=false`，尚未對外開放。
