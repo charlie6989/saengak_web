@@ -24,7 +24,7 @@ select ok(
 select ok(
   not has_function_privilege(
     'authenticated',
-    'public.sync_shopify_order_webhook(text,text,text,text,text,text,numeric,text,text,text,text,text,timestamptz,timestamptz,timestamptz,jsonb,jsonb)',
+    'public.sync_shopify_order_webhook(text,text,text,text,text,text,numeric,text,text,text,text,text,timestamptz,timestamptz,timestamptz,jsonb,jsonb,text[],numeric,numeric,text)',
     'EXECUTE'
   ),
   'members cannot call the order sync function'

@@ -9,6 +9,7 @@ const testFiles = [
   'supabase/tests/database/amego_allowance_lifecycle.test.sql',
   'supabase/tests/database/transaction_logs.test.sql',
   'supabase/tests/database/enqueue_amego_invoice_job.test.sql',
+  'supabase/tests/database/guest_checkout.test.sql',
 ];
 const sql = testFiles.map((testFile) => readFileSync(testFile, 'utf8')).join('\n');
 const result = spawnSync(
@@ -57,11 +58,14 @@ if (!/ok 43 - order owner can read the confirmed provider projection/i.test(outp
 if (!/ok 34 - anonymous visitors have no allowance table grant/i.test(output)) {
   errors.push('pgTAP did not complete all 34 allowance lifecycle assertions');
 }
-if (!/ok 24 - admin authenticated role can insert into site_settings/i.test(output)) {
-  errors.push('pgTAP did not complete all 24 transaction_logs/site_settings assertions');
+if (!/ok 23 - admin authenticated role can insert into site_settings/i.test(output)) {
+  errors.push('pgTAP did not complete all 23 transaction_logs/site_settings assertions');
 }
 if (!/ok 6 - idempotent enqueue does not create a duplicate row/i.test(output)) {
   errors.push('pgTAP did not complete all 6 enqueue_amego_invoice_job assertions');
+}
+if (!/ok 43 - only checkout links expired past the grace period and never converted are purged/i.test(output)) {
+  errors.push('pgTAP did not complete all 43 guest checkout assertions');
 }
 const rollbackCount = output.match(/^ROLLBACK\r?$/gm)?.length ?? 0;
 if (rollbackCount !== testFiles.length) {
@@ -75,7 +79,7 @@ if (errors.length) {
 
 console.log(JSON.stringify({
   ok: true,
-  assertions: 171,
+  assertions: 213,
   testFiles,
   database: 'local Supabase PostgreSQL',
 }, null, 2));

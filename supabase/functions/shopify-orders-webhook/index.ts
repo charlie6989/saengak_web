@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { getPreferredSecretKey } from '../_shared/auth.ts';
 import {
+  callOrderSyncRpc,
   isAcceptedShopifyWebhookTopic,
   isValidWebhookId,
   MAX_WEBHOOK_BODY_BYTES,
@@ -98,13 +99,12 @@ Deno.serve(async (request: Request) => {
   const adminClient = createClient(supabaseUrl, secretKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const rpcName = refundSyncInput
-    ? 'sync_shopify_refund_webhook'
-    : 'sync_shopify_order_webhook';
-  const { data, error } = await adminClient.rpc(
-    rpcName,
-    refundSyncInput ?? orderSyncInput,
-  );
+  const { data, error } = refundSyncInput
+    ? await adminClient.rpc('sync_shopify_refund_webhook', refundSyncInput)
+    : await callOrderSyncRpc(
+      orderSyncInput!,
+      (params) => adminClient.rpc('sync_shopify_order_webhook', params),
+    );
 
   if (error) {
     console.error('Shopify commerce projection failed', {

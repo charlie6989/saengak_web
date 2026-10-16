@@ -73,6 +73,35 @@ export interface ShopifyOrderSyncInput {
   p_discount_codes: string[];
   p_discount_amount: string;
   p_shipping_amount: string;
+  p_contact_email: string;
+}
+
+// p_contact_email 是 20261016024415 migration 才加的參數。為空時不送，
+// 尚未套用該 migration 的資料庫找不到新簽章（PostgREST PGRST202）時再不帶它重試一次，
+// 讓 webhook 程式比 migration 先部署也不會中斷訂單同步。
+export type OrderSyncRpcParams = Omit<ShopifyOrderSyncInput, 'p_contact_email'> & {
+  p_contact_email?: string;
+};
+
+const withoutContactEmail = (params: OrderSyncRpcParams): OrderSyncRpcParams => {
+  const legacyParams = { ...params };
+  delete legacyParams.p_contact_email;
+  return legacyParams;
+};
+
+export const isMissingRpcSignatureError = (error: unknown): boolean =>
+  Boolean(error) && typeof error === 'object' && (error as { code?: unknown }).code === 'PGRST202';
+
+export async function callOrderSyncRpc<R extends { error: unknown }>(
+  input: ShopifyOrderSyncInput,
+  call: (params: OrderSyncRpcParams) => PromiseLike<R>,
+): Promise<R> {
+  const params: OrderSyncRpcParams = input.p_contact_email ? input : withoutContactEmail(input);
+  const result = await call(params);
+  if (params.p_contact_email === undefined || !isMissingRpcSignatureError(result.error)) {
+    return result;
+  }
+  return call(withoutContactEmail(params));
 }
 
 export interface ShopifyRefundSyncInput {
@@ -341,6 +370,19 @@ const memberLinkTokenFromOrderAttributes = (payload: UnknownRecord): string => {
   return '';
 };
 
+const contactEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// 訪客訂單以這個 Email 比對認領與查詢；只接受格式正確且不超過 254 字元的值，否則回空字串。
+const contactEmailFromOrder = (payload: UnknownRecord): string => {
+  const candidates = [payload.email, payload.contact_email, asRecord(payload.customer)?.email];
+  for (const candidate of candidates) {
+    if (typeof candidate !== 'string') continue;
+    const email = candidate.trim();
+    if (email.length <= 254 && contactEmailPattern.test(email)) return email;
+  }
+  return '';
+};
+
 export function parseShopifyOrderWebhook(
   rawPayload: unknown,
   metadata: {
@@ -459,6 +501,7 @@ export function parseShopifyOrderWebhook(
     p_discount_codes: discountCodes,
     p_discount_amount: discountAmount,
     p_shipping_amount: shippingAmount,
+    p_contact_email: contactEmailFromOrder(payload),
   };
 }
 

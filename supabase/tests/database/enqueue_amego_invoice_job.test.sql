@@ -24,7 +24,7 @@ select lives_ok(
     'gid://shopify/Order/9990009991111',
     'S9990009991111',
     '{"totalAmount":680,"lineItems":[]}'::jsonb,
-    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b85',
+    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
     680,
     '0000000000',
     null
@@ -45,7 +45,7 @@ select lives_ok(
     'gid://shopify/Order/9990009991111',
     'S9990009991111',
     '{"totalAmount":680,"lineItems":[]}'::jsonb,
-    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b85',
+    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
     680,
     '0000000000',
     null

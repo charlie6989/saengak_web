@@ -2,6 +2,25 @@
 
 更新日期：2026-10-16（Asia/Taipei）。最新工作依序為 Tailwind CSS 4 遷移與完整依賴稽核（PR #32）、免運門檻統一（PR #35，已合併）、UX 審視修正（PR #30，已合併）與 CI 修復（PR #31，已合併）；其下保留 2026-10-15 的 Git 同步紀錄。
 
+## 訪客結帳後端（2026-10-16，分支 `claude/guest-checkout-backend`）
+
+實作 `docs/GUEST_CHECKOUT_PLAN.md` §9 步驟 1–3，細節見該文件 §9.1。
+
+- 程式碼：migration `20261016024415_allow_guest_checkout_orders.sql`、`parseShopifyOrderWebhook` 解析訂單 Email、`api/create-shopify-cart.ts` 訪客分支與 `api/_lib/turnstile.ts`。前端未修改。
+- 已執行驗證：`npm test -- --run`（43 個檔案、400 項通過，含 PR #37 審查修正）；本機 Supabase（Docker）`npm run test:db`，213 項 pgTAP 斷言通過，其中 `guest_checkout.test.sql` 43 項（含認領競態）。Migration 以 `supabase migration up --local` 套用在既有本機資料庫上，未從空資料庫重建。
+- 正式資料庫：2026-10-16 已以 MCP `apply_migration` 套用到正式 Supabase `tmqzkagkrzhioftvwbqo`（正式版本 `20261016024415`，檔名同步）。套用前確認：既有 11 筆 checkout link、2 筆訂單皆有會員；正式 `sync_shopify_order_webhook` 與 repo 20260904 版本內容相同（md5 一致）。套用後回讀：三個函式內容與 migration 檔 md5 一致；5 個 check constraint 已驗證；`guest_checkout_enabled` 為 `false`；`private.guest_order_contacts` 未授權 anon／authenticated、RLS 開啟；`claim_guest_orders` 只授權 authenticated。
+- 未執行：`dhktmpcvtoxcicqkwgpn` 未觸碰；未部署 Edge Function `shopify-orders-webhook`（舊版呼叫新 RPC 相容，因 `p_contact_email` 有預設值）；未設定 `TURNSTILE_SECRET_KEY`。§8 的正式設定仍待查證。
+- 部署順序：合併前先把 migration 套用到正式 Supabase，再部署 webhook 程式（Vercel 與 Edge Function）。呼叫端在舊 RPC 上會不帶 `p_contact_email` 重試，訂單同步不會中斷，但這只是保險。
+- 審查修正（PR #37）：認領競態的 upsert 條件、`p_contact_email` 為空不送與 `PGRST202` 退回、Turnstile `hostname`／`action` 檢查（`TURNSTILE_ALLOWED_HOSTNAMES`）。
+
+## 訪客結帳設計（2026-10-16，分支 `claude/guest-checkout-plan`）
+
+只新增設計文件 `docs/GUEST_CHECKOUT_PLAN.md`，未修改程式碼或 migration，也未查詢或變更任何正式服務。
+
+- 阻塞點已確認：`sync_shopify_order_webhook` 找不到會員 link 就回 `unlinked` 並提早結束（不寫 orders、不建立發票工作）；`orders.user_id`、`shopify_checkout_links.user_id` 為 `not null`；upsert 條件 `excluded.user_id = orders.user_id` 對 null 不成立；webhook 解析器不讀訂單 Email。
+- 方案重點：link 與 orders 加 `checkout_kind`、`user_id` 可為 null；訪客 Email 存 `private.guest_order_contacts`；訪客購物車需 Turnstile、不得帶折扣碼、以 `site_settings.guest_checkout_enabled` 控制上線；認領只比對**已驗證**的 Email；查詢 API 只回傳限縮欄位並限速。
+- 未實作原因：需重建正式訂單同步 RPC、新增免登入 API，且依賴尚未查證的正式設定（Supabase Email 確認、Shopify 顧客聯絡方式、實際 webhook 端點）。見設計文件 §8、§10。
+
 ## Tailwind CSS 4 遷移與完整稽核（2026-10-16，分支 `claude/tailwind4-full-audit`）
 
 接續 CI 修復分支，移除剩餘 25 項開發依賴稽核問題，CI 恢復為單一 `npm audit --audit-level=moderate`。合併含 PR #30 的 `main` 時，以同一流程（先移除 v3 無效 class、再跑升級工具、再套用修正）重新遷移 `main` 版本的 `src/`，而非手動合併 class 字串；對 `main` 未改動的檔案，該流程輸出與本分支先前結果一致。

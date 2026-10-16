@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
+  callOrderSyncRpc,
   httpsUrl,
   parseShopifyOrderWebhook,
   parseShopifyRefundWebhook,
@@ -137,6 +138,65 @@ describe('Shopify order webhook validation', () => {
       total_shipping_price_set: undefined,
       shipping_lines: [{ title: '7-ELEVEN', price: '60.00' }],
     }, metadata)?.p_shipping_amount).toBe('60.00');
+  });
+
+  it('extracts the order contact email in Shopify priority order', () => {
+    expect(parseShopifyOrderWebhook(payload, metadata)?.p_contact_email).toBe('');
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      email: ' Guest@Example.test ',
+      contact_email: 'contact@example.test',
+      customer: { email: 'customer@example.test' },
+    }, metadata)?.p_contact_email).toBe('Guest@Example.test');
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      email: '',
+      contact_email: 'contact@example.test',
+    }, metadata)?.p_contact_email).toBe('contact@example.test');
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      email: null,
+      customer: { email: 'customer@example.test' },
+    }, metadata)?.p_contact_email).toBe('customer@example.test');
+  });
+
+  it('ignores malformed or oversized contact emails', () => {
+    expect(parseShopifyOrderWebhook({
+      ...payload,
+      email: 'not-an-email',
+      contact_email: `${'a'.repeat(250)}@example.test`,
+      customer: { email: 'two words@example.test' },
+    }, metadata)?.p_contact_email).toBe('');
+  });
+
+  it('omits an empty contact email from the order sync RPC', async () => {
+    const call = vi.fn().mockResolvedValue({ data: 'applied', error: null });
+    await callOrderSyncRpc(parseShopifyOrderWebhook(payload, metadata)!, call);
+
+    expect(call).toHaveBeenCalledTimes(1);
+    expect(call.mock.calls[0][0]).not.toHaveProperty('p_contact_email');
+  });
+
+  it('retries without the contact email when the database has the older RPC signature', async () => {
+    const call = vi.fn()
+      .mockResolvedValueOnce({ data: null, error: { code: 'PGRST202', message: 'Could not find the function' } })
+      .mockResolvedValueOnce({ data: 'applied', error: null });
+    const input = parseShopifyOrderWebhook({ ...payload, email: 'guest@example.test' }, metadata)!;
+
+    await expect(callOrderSyncRpc(input, call)).resolves.toEqual({ data: 'applied', error: null });
+    expect(call).toHaveBeenCalledTimes(2);
+    expect(call.mock.calls[0][0]).toMatchObject({ p_contact_email: 'guest@example.test' });
+    expect(call.mock.calls[1][0]).not.toHaveProperty('p_contact_email');
+    expect(call.mock.calls[1][0]).toMatchObject({ p_webhook_id: metadata.webhookId });
+  });
+
+  it('does not retry the order sync RPC for other errors', async () => {
+    const error = { code: 'P0001', message: 'line items and fulfillments must be arrays' };
+    const call = vi.fn().mockResolvedValue({ data: null, error });
+    const input = parseShopifyOrderWebhook({ ...payload, email: 'guest@example.test' }, metadata)!;
+
+    await expect(callOrderSyncRpc(input, call)).resolves.toEqual({ data: null, error });
+    expect(call).toHaveBeenCalledTimes(1);
   });
 
   it('prefers the stable member link token carried through Shopify order attributes', () => {

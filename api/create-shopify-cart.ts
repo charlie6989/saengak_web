@@ -12,7 +12,13 @@ import {
 } from './_lib/shopify-config.js';
 import { isValidTaiwanTaxId, type InvoicePreference } from '../src/domain/invoice.js';
 import { parseTaiwanAddress, toShopifyMailingAddress } from '../src/lib/taiwanDistricts.js';
-import { createClient } from '@supabase/supabase-js';
+import {
+  getTurnstileSecretKey,
+  parseTurnstileToken,
+  TURNSTILE_GUEST_CHECKOUT_ACTION,
+  verifyTurnstileToken,
+} from './_lib/turnstile.js';
+import { createClient, type User } from '@supabase/supabase-js';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const mobileBarcodePattern = /^\/[0-9A-Z+\-.]{7}$/;
@@ -68,6 +74,8 @@ interface CreateCartRequestBody {
   lines?: unknown;
   invoicePreference?: unknown;
   discountCodes?: unknown;
+  guestEmail?: unknown;
+  turnstileToken?: unknown;
 }
 
 function parseDiscountCodes(value: unknown): string[] | undefined {
@@ -120,6 +128,45 @@ const isCheckoutLine = (value: unknown): value is CheckoutLine => {
   );
 };
 
+async function authenticateMember(authorization: string): Promise<User | Response> {
+  const bearerMatch = /^Bearer\s+(\S+)$/i.exec(authorization);
+  if (!bearerMatch) {
+    return jsonResponse({
+      error: 'Invalid Authorization header',
+      code: 'MEMBER_SESSION_INVALID',
+    }, { status: 401 });
+  }
+
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_PUBLIC_SUPABASE_URL;
+  const publicKey = process.env.SUPABASE_PUBLISHABLE_KEY ||
+    process.env.VITE_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !publicKey) {
+    return jsonResponse({
+      error: 'Membership authentication is unavailable',
+      code: 'MEMBERSHIP_AUTH_UNAVAILABLE',
+    }, { status: 503 });
+  }
+
+  const authClient = createClient(supabaseUrl, publicKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data, error } = await authClient.auth.getUser(bearerMatch[1]);
+  if (error || !data.user) {
+    return jsonResponse({
+      error: 'Invalid or expired member session',
+      code: 'MEMBER_SESSION_INVALID',
+    }, { status: 401 });
+  }
+  return data.user;
+}
+
+function withCors(response: Response, corsHeaders: Record<string, string>): Response {
+  for (const [key, value] of Object.entries(corsHeaders)) response.headers.set(key, value);
+  return response;
+}
+
 export async function OPTIONS(request: Request): Promise<Response> {
   const requestOrigin = request.headers.get('Origin');
   if (!isOriginAllowed(requestOrigin, request)) {
@@ -157,45 +204,30 @@ export async function POST(request: Request): Promise<Response> {
       }, { status: 503, headers: corsHeaders });
     }
 
+    // 有 Authorization 一律走會員流程；無效 session 不降級為訪客（會員以為有優惠卻沒有）。
+    // 沒有 Authorization 時，只有 site_settings.guest_checkout_enabled 為 true 才走訪客流程。
     const authorization = request.headers.get('Authorization');
+    let member: User | null = null;
     if (!authorization) {
-      return jsonResponse({
-        error: 'Sign in before checkout',
-        code: 'MEMBER_LOGIN_REQUIRED',
-      }, { status: 401, headers: corsHeaders });
+      const guestCheckoutEnabled = await getSiteSetting<boolean>('guest_checkout_enabled');
+      if (guestCheckoutEnabled !== true) {
+        return jsonResponse({
+          error: 'Sign in before checkout',
+          code: 'MEMBER_LOGIN_REQUIRED',
+        }, { status: 401, headers: corsHeaders });
+      }
+      if (!getTurnstileSecretKey()) {
+        return jsonResponse({
+          error: 'Guest checkout verification is unavailable',
+          code: 'TURNSTILE_UNAVAILABLE',
+        }, { status: 503, headers: corsHeaders });
+      }
+    } else {
+      const authResult = await authenticateMember(authorization);
+      if (authResult instanceof Response) return withCors(authResult, corsHeaders);
+      member = authResult;
     }
-
-    const bearerMatch = /^Bearer\s+(\S+)$/i.exec(authorization);
-    if (!bearerMatch) {
-      return jsonResponse({
-        error: 'Invalid Authorization header',
-        code: 'MEMBER_SESSION_INVALID',
-      }, { status: 401, headers: corsHeaders });
-    }
-
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_PUBLIC_SUPABASE_URL;
-    const publicKey = process.env.SUPABASE_PUBLISHABLE_KEY ||
-      process.env.VITE_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-      process.env.SUPABASE_ANON_KEY ||
-      process.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
-    if (!supabaseUrl || !publicKey) {
-      return jsonResponse({
-        error: 'Membership authentication is unavailable',
-        code: 'MEMBERSHIP_AUTH_UNAVAILABLE',
-      }, { status: 503, headers: corsHeaders });
-    }
-
-    const authClient = createClient(supabaseUrl, publicKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-    const { data, error } = await authClient.auth.getUser(bearerMatch[1]);
-    if (error || !data.user) {
-      return jsonResponse({
-        error: 'Invalid or expired member session',
-        code: 'MEMBER_SESSION_INVALID',
-      }, { status: 401, headers: corsHeaders });
-    }
-    const checkoutUserId = data.user.id;
+    const isGuest = member === null;
 
     const body = await request.json().catch(() => null) as CreateCartRequestBody | null;
     const invoicePreference = parseInvoicePreference(body?.invoicePreference ?? {
@@ -205,6 +237,8 @@ export async function POST(request: Request): Promise<Response> {
       carrierId: '',
     });
     const discountCodes = parseDiscountCodes(body?.discountCodes);
+    const guestEmail = text(body?.guestEmail, 254);
+    const turnstileToken = parseTurnstileToken(body?.turnstileToken);
 
     if (
       !body ||
@@ -220,16 +254,60 @@ export async function POST(request: Request): Promise<Response> {
       }, { status: 400, headers: corsHeaders });
     }
 
+    if (isGuest) {
+      if (discountCodes && discountCodes.length > 0) {
+        return jsonResponse({
+          error: 'Sign in to use member discounts',
+          code: 'GUEST_DISCOUNT_REQUIRES_LOGIN',
+        }, { status: 400, headers: corsHeaders });
+      }
+      if (!guestEmail || !emailPattern.test(guestEmail)) {
+        return jsonResponse({
+          error: 'Provide a valid email for guest checkout',
+          code: 'GUEST_EMAIL_REQUIRED',
+        }, { status: 400, headers: corsHeaders });
+      }
+      if (!turnstileToken) {
+        return jsonResponse({
+          error: 'Complete the verification challenge',
+          code: 'TURNSTILE_TOKEN_REQUIRED',
+        }, { status: 400, headers: corsHeaders });
+      }
+    }
+
     const hasSensitiveInvoicePreference = invoicePreference.kind === 'company' ||
       Boolean(invoicePreference.notificationEmail) ||
       (invoicePreference.kind === 'personal' && invoicePreference.carrier !== 'none');
 
     const adminClient = getSupabaseAdminClient();
     if (!adminClient) {
-      return jsonResponse({
+      return jsonResponse(isGuest ? {
+        error: 'Guest order tracking is unavailable',
+        code: 'GUEST_ORDER_LINK_UNAVAILABLE',
+      } : {
         error: 'Member order tracking is unavailable',
         code: 'MEMBER_ORDER_LINK_UNAVAILABLE',
       }, { status: 503, headers: corsHeaders });
+    }
+
+    if (isGuest) {
+      const hasForwardedIp = Boolean(request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'));
+      const verification = await verifyTurnstileToken(turnstileToken as string, {
+        remoteIp: hasForwardedIp ? getClientIp(request) : undefined,
+        expectedAction: TURNSTILE_GUEST_CHECKOUT_ACTION,
+      });
+      if (verification === 'unavailable') {
+        return jsonResponse({
+          error: 'Guest checkout verification is unavailable',
+          code: 'TURNSTILE_UNAVAILABLE',
+        }, { status: 503, headers: corsHeaders });
+      }
+      if (verification === 'rejected') {
+        return jsonResponse({
+          error: 'Verification challenge failed',
+          code: 'TURNSTILE_VERIFICATION_FAILED',
+        }, { status: 403, headers: corsHeaders });
+      }
     }
 
     const query = `
@@ -258,6 +336,7 @@ export async function POST(request: Request): Promise<Response> {
       }
     `;
 
+    // 訪客沿用同一個 attribute 名稱；webhook 解析器以它找回 checkout link。
     const checkoutLinkToken = randomUUID();
     const attributes: Array<{ key: string; value: string }> = [
       { key: '_saengak_member_link_token', value: checkoutLinkToken },
@@ -305,7 +384,8 @@ export async function POST(request: Request): Promise<Response> {
       .upsert({
         shopify_store_domain: SHOPIFY_STORE_DOMAIN,
         shopify_cart_token: checkoutLinkToken,
-        user_id: checkoutUserId,
+        user_id: member?.id ?? null,
+        checkout_kind: isGuest ? 'guest' : 'member',
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       }, { onConflict: 'shopify_store_domain,shopify_cart_token' });
 
@@ -313,23 +393,27 @@ export async function POST(request: Request): Promise<Response> {
       console.error('Unable to persist checkout link', {
         code: linkError.code,
       });
-      return jsonResponse({
+      return jsonResponse(isGuest ? {
+        error: 'Unable to link checkout to order history',
+        code: 'GUEST_ORDER_LINK_FAILED',
+      } : {
         error: 'Unable to link checkout to member order history',
         code: 'MEMBER_ORDER_LINK_FAILED',
       }, { status: 502, headers: corsHeaders });
     }
 
     // 查詢會員姓名、手機與台灣標準收件地址，準備預填至 Shopify Checkout
+    // 訪客不查 profiles、不預填地址。
     let memberName = '';
     let memberPhone = '';
     let memberAddress = '';
     try {
-      if (typeof adminClient.from === 'function') {
+      if (member && typeof adminClient.from === 'function') {
         const queryBuilder = adminClient.from('profiles') as any;
         if (typeof queryBuilder?.select === 'function') {
           const { data: memberProfile } = await queryBuilder
             .select('name, phone, address')
-            .eq('id', checkoutUserId)
+            .eq('id', member.id)
             .maybeSingle();
 
           if (memberProfile) {
@@ -343,13 +427,13 @@ export async function POST(request: Request): Promise<Response> {
       console.warn('讀取會員個人資料以預填結帳失敗（不阻斷結帳）:', profileErr);
     }
 
-    if (!memberName) {
-      memberName = (typeof data.user.user_metadata?.name === 'string' ? data.user.user_metadata.name : '') ||
-        (typeof data.user.user_metadata?.full_name === 'string' ? data.user.user_metadata.full_name : '');
+    if (member && !memberName) {
+      memberName = (typeof member.user_metadata?.name === 'string' ? member.user_metadata.name : '') ||
+        (typeof member.user_metadata?.full_name === 'string' ? member.user_metadata.full_name : '');
     }
-    if (!memberPhone) {
-      memberPhone = (typeof data.user.user_metadata?.phone === 'string' ? data.user.user_metadata.phone : '') ||
-        (typeof data.user.phone === 'string' ? data.user.phone : '');
+    if (member && !memberPhone) {
+      memberPhone = (typeof member.user_metadata?.phone === 'string' ? member.user_metadata.phone : '') ||
+        (typeof member.phone === 'string' ? member.phone : '');
     }
 
     const addressComponents = parseTaiwanAddress(memberAddress);
@@ -369,8 +453,9 @@ export async function POST(request: Request): Promise<Response> {
     const buyerIdentity: Record<string, unknown> = {
       countryCode: 'TW',
     };
-    if (data.user.email) {
-      buyerIdentity.email = data.user.email;
+    const buyerEmail = isGuest ? guestEmail : member?.email;
+    if (buyerEmail) {
+      buyerIdentity.email = buyerEmail;
     }
     if (shopifyAddress.phone) {
       buyerIdentity.phone = shopifyAddress.phone;
@@ -479,7 +564,8 @@ export async function POST(request: Request): Promise<Response> {
       cartId: payload.cart.id,
       totalQuantity: payload.cart.totalQuantity,
       warnings: payload.warnings ?? [],
-      orderTrackingLinked: true,
+      orderTrackingLinked: !isGuest,
+      checkoutKind: isGuest ? 'guest' : 'member',
       invalidDiscountCodes,
     }, { status: 200, headers: corsHeaders });
 
