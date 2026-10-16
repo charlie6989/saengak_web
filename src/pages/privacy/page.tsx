@@ -49,6 +49,12 @@ export default function Privacy() {
         </section>
 
         <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
+          <h2 className="text-2xl font-semibold">與 LUCISSI 的會員資格互認</h2>
+          <p className="leading-7">LUCISSI CARE 與 LUCISSI 官網（lucissi.com）同屬{siteContent.legalName}（統一編號 {siteContent.taxId}）。為了提供兩站會員的首單禮遇，當您在其中一站申請領取時，該站會以您已驗證的 Email 向另一站確認「是否為已驗證 Email 的會員」，只取得是或否的結果，不交換姓名、地址、電話或訂單資料。</p>
+          <p className="leading-7">這項確認只在您主動領取禮遇時進行，不會用於寄送行銷訊息；若日後要用於行銷，會另外徵求您的同意。</p>
+        </section>
+
+        <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">查詢、更正與刪除</h2>
           <p className="leading-7">您可依適用法令請求查詢、閱覽、更正、停止利用或刪除個人資料。請來信 {siteContent.companyEmail} 提出申請；{siteContent.supportSafetyNotice}</p>
           <Link to="/customer-service" className="inline-flex rounded-md bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand">前往客服中心</Link>

@@ -23,6 +23,7 @@ import {
   formatTaiwanAddress,
   parseTaiwanAddress,
 } from '../../lib/taiwanDistricts';
+import LucissiMemberPerkCard from '../../components/feature/LucissiMemberPerkCard';
 
 interface UserProfile {
   id: string;
@@ -1440,6 +1441,8 @@ export default function ProfilePage() {
                   <i className="ri-external-link-line text-xs"></i>
                 </Link>
               </div>
+
+              <LucissiMemberPerkCard className="mb-6" />
 
               {couponToast && (
                 <div className="mb-6 p-3 text-sm rounded-lg bg-blush text-brand border border-blush flex items-center gap-2">

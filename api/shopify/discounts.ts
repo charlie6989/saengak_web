@@ -180,7 +180,7 @@ const CODE_DISCOUNT_FIELDS = `
 // (增加延遲並消耗 Shopify API 配額)。快取存活時間依 expires_in 扣除 60 秒安全緩衝。
 let cachedAdminToken: { token: string; expiresAt: number } | null = null;
 
-async function getShopifyAdminAccessToken(
+export async function getShopifyAdminAccessToken(
   domain: string,
   clientId: string,
   clientSecret: string,
@@ -377,6 +377,15 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
  * 自包含、不依賴任何 Request/Response 物件，供其他 API (例如會員領券) import 使用。
  * 查無代碼、代碼非 ACTIVE、憑證未設定或換 token 失敗時一律回傳 undefined，不會 throw。
  */
+/**
+ * LUCISSI 會員首單免運使用專屬折扣（每位會員一組代碼），不得出現在公開優惠列表，
+ * 也不能經由一般領券流程歸戶。
+ */
+export function isMemberPerkDiscount(nodeId: string | undefined): boolean {
+  const perkId = process.env.LUCISSI_MEMBER_PERK_DISCOUNT_ID?.trim();
+  return Boolean(perkId && nodeId && nodeId === perkId);
+}
+
 export async function fetchShopifyPromotionByCode(code: string): Promise<ShopifyPromotion | undefined> {
   const normalizedCode = code.trim().toUpperCase();
   if (!normalizedCode) return undefined;
@@ -441,7 +450,7 @@ export async function fetchShopifyPromotionByCode(code: string): Promise<Shopify
 
     const shopifyData = (await shopifyRes.json().catch(() => ({}))) as ShopifyGraphQLByCodeResponse;
     const node = shopifyData?.data?.codeDiscountNodeByCode;
-    if (!node || node.codeDiscount?.status !== 'ACTIVE') {
+    if (!node || node.codeDiscount?.status !== 'ACTIVE' || isMemberPerkDiscount(node.id)) {
       return undefined;
     }
 
@@ -528,7 +537,7 @@ export async function GET(request: Request): Promise<Response> {
     const nodes: ShopifyDiscountNode[] = shopifyData?.data?.codeDiscountNodes?.nodes || [];
 
     const promotions = nodes
-      .filter((n) => n.codeDiscount?.status === 'ACTIVE')
+      .filter((n) => n.codeDiscount?.status === 'ACTIVE' && !isMemberPerkDiscount(n.id))
       .map(mapDiscountNodeToPromotion)
       .filter((p): p is NonNullable<typeof p> => Boolean(p));
 

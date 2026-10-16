@@ -6,6 +6,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import AuthModal from '../../components/feature/AuthModal';
 import { useAuth } from '../../contexts/AuthContext';
+import LucissiMemberPerkCard from '../../components/feature/LucissiMemberPerkCard';
 import { supabase } from '../../lib/supabase';
 import {
   fetchActivePromotions,
@@ -246,6 +247,11 @@ export default function PromotionPage() {
               </div>
             )}
         </EditorialHero>
+
+        {/* LUCISSI 會員首單免運（以 VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED 控制） */}
+        <div className="mx-auto max-w-6xl px-4 pt-8 sm:px-6 lg:px-8">
+          <LucissiMemberPerkCard />
+        </div>
 
         {/* 分類過濾頁籤 */}
         <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 mb-10 pt-8">
