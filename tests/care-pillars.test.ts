@@ -35,6 +35,15 @@ describe('LUCISSI CARE 五個照護面向', () => {
     expect(classifyCarePillar({ name: '未分類商品' })).toBeUndefined();
   });
 
+  it('一般凝膠不歸私密保養，面向名稱的 productType 直接採用', () => {
+    expect(classifyCarePillar({ name: '蘆薈保濕凝膠', productType: '' })).toBeUndefined();
+    expect(classifyCarePillar({ name: '蘆薈保濕凝膠', tags: ['私密護理'] })).toBe('intimate');
+    expect(classifyCarePillar({ name: '日常保濕精華', productType: '身體保養' })).toBe('body');
+    expect(classifyCarePillar({ name: '日常保濕精華', productType: '肌膚保養' })).toBe('skin');
+    expect(classifyCarePillar({ name: '日常保濕精華', productType: '私密保養' })).toBe('intimate');
+    expect(classifyCarePillar({ name: '日常伸展帶', productType: '輕盈運動' })).toBe('movement');
+  });
+
   it('子分類只挑出對應商品', () => {
     expect(matchesCareSubcategory({ name: '涼感冰絲無痕內褲' }, '無痕內褲')).toBe(true);
     expect(matchesCareSubcategory({ name: '純棉高腰防漏生理褲' }, '純棉內褲')).toBe(false);

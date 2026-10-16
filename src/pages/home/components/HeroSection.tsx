@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const heroSlides = [
-  { image: 'home-welcome', position: 'right center', label: 'LUCISSI CARE · BY LUCISSI', title: '照顧身體的日常。', description: 'LUCISSI 的日常照護系列：\n私密與身體保養、舒適內搭，到輕盈運動。', link: '/search', action: '開始選購', alt: '將隨身護理用品放入收納包的日常片刻' },
+  { image: 'home-welcome', position: 'right center', label: 'LUCISSI CARE · BY LUCISSI', title: '照顧身體的日常。', description: 'LUCISSI 的日常照護系列：\n私密、身體與肌膚保養、舒適內搭，到輕盈運動。', link: '/search', action: '開始選購', alt: '將隨身護理用品放入收納包的日常片刻' },
   { image: 'home-care', position: 'right center', label: 'INTIMATE CARE', title: '私密保養，從溫和開始', description: '清潔、舒緩與修護，為每天的私密日常，多一點安心。', link: '/search?category=私密保養', action: '認識私密保養', alt: 'Saengak 潔淨慕斯與修護噴霧的透光展示' },
-  { image: 'home-wear', position: 'right center', label: 'EVERYDAY COMFORT', title: '貼身的，更要舒服', description: '從無痕內搭到運動內衣，每天都穿得自在。', link: '/search?category=舒適內搭', action: '探索舒適內搭', alt: '棉質內著自然垂放於柔軟座凳' },
+  { image: 'home-wear', position: 'right center', label: 'EVERYDAY COMFORT', title: '貼身的，更要舒服', description: '從無痕、純棉到生理期內搭，每天都穿得自在。', link: '/search?category=舒適內搭', action: '探索舒適內搭', alt: '棉質內著自然垂放於柔軟座凳' },
 ];
 
 export default function HeroSection() {

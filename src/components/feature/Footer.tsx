@@ -11,7 +11,7 @@ export default function Footer() {
           <div className="max-w-2xl">
             <p className="mb-2 text-xs font-medium tracking-[0.18em] text-brand">BY LUCISSI</p>
             <p className="text-base leading-relaxed text-gray-600">
-              {siteContent.brandName} 是 {ENDORSEMENT}，為妳挑選私密與身體保養、舒適內搭與輕盈運動用品。
+              {siteContent.brandName} 是 {ENDORSEMENT}，為妳挑選私密、身體與肌膚保養、舒適內搭與輕盈運動用品。
             </p>
           </div>
           <a

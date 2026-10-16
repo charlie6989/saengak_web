@@ -150,11 +150,21 @@ const COMFORT_ACCESSORY_KEYWORDS = ['護衣袋', '洗衣袋', '清洗袋'];
 const COMFORT_KEYWORDS = ['內褲', '內著', '生理褲', '安全褲', '防漏褲', '平口褲', '三角褲', '丁字褲'];
 const SKIN_KEYWORDS = ['面膜', '臉部', '洗面', '化妝水', '面霜', '眼霜'];
 const INTIMATE_TYPES = ['每日清潔', '女性護理', '深層修護'];
+const INTIMATE_TAGS = ['私密護理', '私密保養', '女性護理'];
 const COMFORT_TYPES = ['舒適穿著', '舒適內搭'];
 
+/** Shopify productType 直接設為面向名稱時，以後台的明確設定為準。 */
+const PILLAR_PRODUCT_TYPES: Record<string, CarePillarId> = {
+  私密保養: 'intimate',
+  身體保養: 'body',
+  肌膚保養: 'skin',
+  舒適內搭: 'comfort',
+  輕盈運動: 'movement',
+};
+
 /**
- * 判斷商品屬於哪個照護面向。關鍵字優先於 productType，
- * 例如除毛刀與護衣袋在 Shopify 仍標為「每日清潔」，運動內衣仍標為「舒適穿著」。
+ * 判斷商品屬於哪個照護面向。productType 等於面向名稱時直接採用；
+ * 其餘以關鍵字優先於舊 productType，例如除毛刀與護衣袋在 Shopify 仍標為「每日清潔」，運動內衣仍標為「舒適穿著」。
  */
 export function classifyCarePillar(product: CareClassifiable): CarePillarId | undefined {
   const name = `${product.name || ''} ${product.title || ''}`;
@@ -166,11 +176,13 @@ export function classifyCarePillar(product: CareClassifiable): CarePillarId | un
   // 運動與身體保養只看品名與 productType：內褲常帶「運動時穿著」之類的使用情境標籤
   const named = (keywords: string[]) => keywords.some((keyword) => nameAndType.includes(keyword));
 
+  if (PILLAR_PRODUCT_TYPES[type]) return PILLAR_PRODUCT_TYPES[type];
   if (named(MOVEMENT_KEYWORDS)) return 'movement';
   if (named(BODY_KEYWORDS)) return 'body';
   if (has(COMFORT_ACCESSORY_KEYWORDS) || COMFORT_TYPES.includes(type) || has(COMFORT_KEYWORDS)) return 'comfort';
   if (has(SKIN_KEYWORDS)) return 'skin';
-  if (INTIMATE_TYPES.includes(type) || text.includes('私密') || text.includes('凝膠')) return 'intimate';
+  // 私密保養需有明確訊號：舊 productType、品名含「私密」或私密護理標籤；一般凝膠不算
+  if (INTIMATE_TYPES.includes(type) || name.includes('私密') || tags.some((tag) => INTIMATE_TAGS.includes(tag))) return 'intimate';
   return undefined;
 }
 

@@ -9,7 +9,7 @@ export default function BrandSection() {
       headingLevel="h2"
       priority={false}
       title="為妳的日常，細心挑選"
-      description="從私密與身體保養、舒適內搭，到輕盈運動，每一個選擇，都回到自己的舒適感受。"
+      description="從私密、身體與肌膚保養、舒適內搭，到輕盈運動，每一個選擇，都回到自己的舒適感受。"
     >
       <a href="/search" className="mt-7 inline-flex bg-brand px-6 py-3 text-sm font-semibold text-white">查看所有產品</a>
     </EditorialHero>

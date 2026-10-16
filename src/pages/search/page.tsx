@@ -273,6 +273,7 @@ export default function Search() {
 
   const clearAllFilters = () => {
     setSelectedCategories([]);
+    setActiveSubcategory('');
     setSelectedUsages([]);
     setSelectedSizes([]);
     setSelectedColors([]);
@@ -510,7 +511,7 @@ export default function Search() {
     if (q) {
       return `"${q}" 的搜尋結果`;
     }
-    return '從私密與身體保養、舒適內搭，到輕盈運動，為妳細心挑選。';
+    return '從私密、身體與肌膚保養、舒適內搭，到輕盈運動，為妳細心挑選。';
   };
 
   const scrollToProductListTop = () => {
@@ -529,9 +530,13 @@ export default function Search() {
     }
   };
 
-  // 商品不足的面向：以 LUCISSI Talk 文章陪伴，沒有商品時不顯示「找不到商品」
-  const showPillarArticles = Boolean(activePillar) && !loading && !loadFailed && sortedProducts.length < 4;
-  const showPillarPlaceholderOnly = showPillarArticles && !activeSubcategory && selectedCategories.length === 1 && sortedProducts.length === 0;
+  // 商品不足的面向：以 LUCISSI Talk 文章陪伴。以「套用篩選前」的面向商品數判斷，
+  // 尺寸、顏色、價格等篩選把結果篩到 0 時，仍顯示一般的「找不到符合條件的商品」。
+  const pillarInventoryCount = activePillar
+    ? products.filter((product) => classifyCarePillar(product) === activePillar.id).length
+    : 0;
+  const showPillarArticles = Boolean(activePillar) && !loading && !loadFailed && pillarInventoryCount < 4;
+  const showPillarPlaceholderOnly = showPillarArticles && pillarInventoryCount === 0;
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -1051,7 +1056,7 @@ export default function Search() {
             </div>
           )}
           {showPillarArticles && activePillar && (
-            <PillarArticles pillar={activePillar} hasProducts={sortedProducts.length > 0} />
+            <PillarArticles pillar={activePillar} hasProducts={pillarInventoryCount > 0} />
           )}
         </div>
       </main>

@@ -37,7 +37,7 @@ export default function AboutPage() {
           alt="選品工作桌前，仔細閱讀護理產品包裝的女性"
           eyebrow="ABOUT LUCISSI CARE"
           title="把照顧自己，放回日常裡。"
-          description={`LUCISSI CARE 是 ${ENDORSEMENT}。從私密與身體保養、舒適內搭，到輕盈運動，為妳挑選更自在的日常選擇。`}
+          description={`LUCISSI CARE 是 ${ENDORSEMENT}。從私密、身體與肌膚保養、舒適內搭，到輕盈運動，為妳挑選更自在的日常選擇。`}
         >
           <a href="#our-story" className={`${textLink} mt-6`}>
             認識 LUCISSI <span aria-hidden="true">↓</span>
