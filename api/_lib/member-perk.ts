@@ -85,6 +85,8 @@ export async function createMemberPerkDiscount(options: { code: string; email: s
         endsAt,
         usageLimit: 1,
         appliesOncePerCustomer: true,
+        appliesOnOneTimePurchase: true,
+        appliesOnSubscription: false,
         context,
         destination: { all: true },
         combinesWith: { orderDiscounts: false, productDiscounts: false, shippingDiscounts: false },
