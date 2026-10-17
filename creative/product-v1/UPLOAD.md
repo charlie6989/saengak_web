@@ -31,3 +31,5 @@
 | 25 | Saengak 益生菌舒緩養膚組 | [開啟](https://admin.shopify.com/store/gh2xgs-zf/products/7829163966531) | — | — | 已完成 |
 | 26 | Saengak 潔淨調理舒緩組 | [開啟](https://admin.shopify.com/store/gh2xgs-zf/products/7829164752963) | — | — | 已完成 |
 | 27 | Saengak 全效微生態修護組 | [開啟](https://admin.shopify.com/store/gh2xgs-zf/products/7829164785731) | — | — | 已完成 |
+
+第 22 件：2026-10-18 改以 `main/22-single.jpg`（單片包裝）為第一張，原 `main/22.jpg` 三盒版保留在第二張。
