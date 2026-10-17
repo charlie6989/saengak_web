@@ -184,7 +184,7 @@ export default function PromotionPage() {
     : promotions.filter((p) => p.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-[#F8F5F1]" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+    <div className="min-h-screen bg-[#F7F6F3]" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
       <Header />
 
       {/* Toast 提示 */}
@@ -359,9 +359,9 @@ export default function PromotionPage() {
 
                     {/* 票券切口裝飾條 (Ticket Notches & Dashed Divider) */}
                     <div className="relative flex items-center justify-between px-2 bg-white">
-                      <div className="h-5 w-5 -ml-4 rounded-full bg-[#F8F5F1] border-r border-gray-200/90"></div>
+                      <div className="h-5 w-5 -ml-4 rounded-full bg-[#F7F6F3] border-r border-gray-200/90"></div>
                       <div className="w-full border-t border-dashed border-gray-300 mx-2"></div>
-                      <div className="h-5 w-5 -mr-4 rounded-full bg-[#F8F5F1] border-l border-gray-200/90"></div>
+                      <div className="h-5 w-5 -mr-4 rounded-full bg-[#F7F6F3] border-l border-gray-200/90"></div>
                     </div>
 
                     {/* 下方內容與互動區塊 */}

@@ -268,17 +268,21 @@ export default function ProductCard({ product }: ProductCardProps) {
           aria-label={`查看 ${product.name} 商品詳情`}
           className="add-to-cart-btn mt-auto"
           style={{
-            backgroundColor: isSoldOut ? '#F8F5F1' : '#E7D6D4',
-            color: isSoldOut ? '#655859' : '#34302F',
+            backgroundColor: isSoldOut ? '#F7F6F3' : '#FFFFFF',
+            color: isSoldOut ? '#5C5552' : '#5B3D48',
+            border: `1px solid ${isSoldOut ? '#D6D0C8' : '#8A827D'}`,
+            fontWeight: 600,
             fontFamily: "Noto Sans TC, sans-serif"
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = isSoldOut ? '#DDD6D1' : '#5B3D48';
-            e.currentTarget.style.color = isSoldOut ? '#655859' : '#FFFDFC';
+            e.currentTarget.style.backgroundColor = isSoldOut ? '#D6D0C8' : '#5B3D48';
+            e.currentTarget.style.color = isSoldOut ? '#5C5552' : '#FFFFFF';
+            e.currentTarget.style.borderColor = isSoldOut ? '#D6D0C8' : '#5B3D48';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = isSoldOut ? '#F8F5F1' : '#E7D6D4';
-            e.currentTarget.style.color = isSoldOut ? '#655859' : '#34302F';
+            e.currentTarget.style.backgroundColor = isSoldOut ? '#F7F6F3' : '#FFFFFF';
+            e.currentTarget.style.color = isSoldOut ? '#5C5552' : '#5B3D48';
+            e.currentTarget.style.borderColor = isSoldOut ? '#D6D0C8' : '#8A827D';
           }}
         >
           {isSoldOut ? '已售完・查看詳情' : '查看商品'}

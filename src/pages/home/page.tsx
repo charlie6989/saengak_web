@@ -106,7 +106,7 @@ export default function Home() {
                       style={{
                         fontFamily: "Noto Sans TC, sans-serif",
                         backgroundColor: '#5B3D48',
-                        color: '#FFFDFC',
+                        color: '#FFFFFF',
                         borderRadius: '12px'
                       }}
                     >

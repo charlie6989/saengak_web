@@ -1,6 +1,16 @@
 # 項目狀態
 
-更新日期：2026-10-18（Asia/Taipei）。最新工作為會員首單免運 CARE 端實單驗證與開放領取；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-18（Asia/Taipei）。最新工作為 Calm Care 色票上線、商店改名與母站權益開啟；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## Calm Care 色票上線、商店改名與母站權益開啟（2026-10-18，分支 `claude/calm-care-palette`）
+
+使用者同意設計系統「色彩重新定位（提案）」與下列營運動作：
+
+- **色票**：`src/index.css` 的 `@theme` 改為 Calm Care 值，`ivory`／`blush` 保留名稱但改為 `porcelain` #F7F6F3／`stone` #ECE8E2，新增 `stone`、`porcelain`、`line-strong`、`ink-muted`、`eucalyptus`、`eucalyptus-tint`、`rose-tint`；文字 `charcoal` #2A2725、`gray-500` #5C5552、`gray-400` #6E6662（修正原 3.72:1 不合格）；`surface` 改純白。元件內寫死的舊色碼（23 檔、138 處）一併換成新值。商品卡「查看商品」改白底＋1px `line-strong` 框＋`plum` 字，hover `plum` 實心；商品頁信任列改 `eucalyptus-tint` 底與 `eucalyptus` 圖示；首頁「生理期照護」入口改 `rose-tint` 底；`theme-color` 與分享圖背景改 `stone`／`porcelain`。Logo 不變。
+- **Shopify 商店名稱**：`gh2xgs-zf` 由「My Store 7」改為「LUCISSI CARE」（結帳頁抬頭同步）。
+- **Migration 紀錄**：正式站 `supabase_migrations.schema_migrations` 補記 `20261016111000_grant_coupon_service_access`（權限本已存在，同時再執行一次 grant，結果不變）。
+- **母站權益**：`lucissi-website` production 設 `CARE_MEMBER_PERK_ENABLED=true` 並重新部署；兩站 `member-status` 簽章呼叫仍正常。母站實際領取需在母站登入測試（母站仍有 Private Access 門禁）。
+- 已驗證：Vitest 482 項、build、`verify:content`、typecheck、lint 通過；本機首頁頁首已為 `stone`。商品卡與商品頁需資料，於 Vercel preview 驗證（見 PR）。
 
 ## 會員首單免運：CARE 端實單驗證與開放領取（2026-10-18，分支 `claude/perk-rollout-results`）
 

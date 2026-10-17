@@ -77,7 +77,7 @@ export default function BestRated() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8F5F1]">
+    <div className="min-h-screen bg-[#F7F6F3]">
       <Header />
       <main className="pb-20 pt-24">
         <EditorialHero
