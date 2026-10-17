@@ -309,7 +309,7 @@ export async function submitProductReview(
     if (!isDelivered) {
       return {
         data: null,
-        error: new Error('商品尚未確認送達或超商取件完成，尚無法填寫評價'),
+        error: new Error('商品尚未確認送達，尚無法填寫評價'),
       };
     }
 

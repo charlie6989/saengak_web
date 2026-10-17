@@ -53,6 +53,7 @@
 
 - 全站免運門檻為 NT$1,500（2026-10-17 決定比照 LUCISSI 母站，原為 NT$1,499；migration `20261016195154` 已套用正式 Supabase，Shopify 運費規則與 FREESHIP 已改為 1,500）。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
 - 未達門檻的基本運費為 NT$146（黑貓宅急便常溫宅配，參照 LUCISSI 網站）。`DEFAULT_SHIPPING_FEE` 只是後備值，顧客看到的是 Supabase `site_settings.default_shipping_fee`；改運費時程式碼、Supabase、Shopify 運費三處一起改。
+- 配送方式比照 LUCISSI（2026-10-17 讀取兩店 Shopify 後台）：兩店都只有台灣「標準」宅配（NT$146、滿 NT$1,500 免運；CARE 標示 3 至 5 個工作天、出貨地點汐止倉庫），沒有超商取貨運費；國際運費存在但國家未加入市場、實際不開放。母站設定檔已列 7-11（黑貓 NT$118）、全家（NT$65）、萊爾富（順豐 NT$82）但皆關閉。CARE 文案只寫黑貓宅急便常溫宅配，`verify:content` 擋超商取貨宣稱；開通超商取貨前須先建立 Shopify 運費與 ShipAny 門市選擇。
 - 客服暫時只用 Email（`Company@lucissi.com`）。
 - 訪客結帳已決定開放；登入改為會員優惠入口。前後端已隨 PR #37／#38 合併至 `main`，2026-10-16 正式 Vercel API 確認 `530b2c3` 為 Production／Ready／Current，綁定 `lucissicare.com`。正式 Supabase 已存在 migration `20261016024415`，但當日回讀 `guest_checkout_enabled=false`，尚未對外開放。
 - 2026-10-16 已建立正式 Turnstile widget 並設定訪客專用 `VITE_PUBLIC_GUEST_CHECKOUT_TURNSTILE_SITE_KEY`／`TURNSTILE_SECRET_KEY`；會員 CAPTCHA 的 `VITE_PUBLIC_TURNSTILE_SITE_KEY` 必須與 Supabase Auth 獨立配置，避免訪客設定誤影響登入。自動瀏覽器出現 300030，仍待真人成功與端到端驗收。

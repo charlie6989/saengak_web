@@ -55,6 +55,12 @@ const forbiddenContent = [
   ['unverified salon-grade claim', '韓國沙龍級'],
   ['unverified premium-material claim', '頂級親膚純棉'],
   ['unverified popularity claim', '探索我們最受歡迎的'],
+  // 2026-10-17 物流比照 LUCISSI：只提供黑貓宅急便常溫宅配，超商取貨開通前不得宣稱
+  ['unsupported convenience-store pickup claim', '超商 / 宅配'],
+  ['unsupported convenience-store pickup claim', '超商與宅配'],
+  ['unsupported convenience-store pickup claim', '超商門市'],
+  ['unsupported convenience-store pickup claim', '宅配或超商取貨'],
+  ['unsupported convenience-store pickup claim', '超商取貨簡訊'],
   ['bundled mock identity', 'demo@example.com'],
   ['bundled mock identity', 'test@gmail.com'],
   ['bundled mock identity', 'user@test.com'],

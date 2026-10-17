@@ -194,7 +194,7 @@ export const SiteSettings: React.FC = () => {
                   />
                 </div>
                 <p className="mt-1 text-[11px] text-gray-500">
-                  當購物車金額達到此門檻時，自動折抵常規超商/宅配運費。
+                  當購物車金額達到此門檻時，自動折抵宅配運費。須與 Shopify 運費設定一致。
                 </p>
               </div>
 
@@ -216,7 +216,7 @@ export const SiteSettings: React.FC = () => {
                   />
                 </div>
                 <p className="mt-1 text-[11px] text-gray-500">
-                  未達免運門檻時套用之標準物流處理費（配合 ShipAny 超商取貨）。
+                  未達免運門檻時的宅配運費（目前為黑貓宅急便常溫宅配，須與 Shopify 運費設定一致）。
                 </p>
               </div>
 

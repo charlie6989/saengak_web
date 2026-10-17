@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { siteContent } from '../../content/site';
+import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
 
 interface FAQItem {
   id: string;
@@ -57,13 +58,13 @@ export default function FAQPage() {
       id: '5',
       category: 'shipping',
       question: '配送需要多長時間？',
-      answer: '一般出貨後約 2 至 4 個工作天送達指定地址或超商門市（不含例假日與國定假日）。若遇特殊節日或偏遠離島地區，配送時間可能依物流狀況略有調整。'
+      answer: '以黑貓宅急便常溫宅配寄送，付款完成後約 3 至 5 個工作天送達指定地址（不含例假日與國定假日），結帳頁會顯示相同的預估時間。目前不提供超商取貨。若遇特殊節日或偏遠離島地區，配送時間可能依物流狀況略有調整。'
     },
     {
       id: '6',
       category: 'shipping',
       question: '配送費用如何計算？',
-      answer: '運費將於結帳時依您所選的配送方式（宅配或超商取貨）及促銷優惠門檻自動計算，以結帳頁面顯示之最終金額為準。'
+      answer: `台灣宅配運費 NT$${DEFAULT_SHIPPING_FEE}，訂單滿 NT$${DEFAULT_FREE_SHIPPING_THRESHOLD.toLocaleString('en-US')} 免運；實際金額以結帳頁面顯示為準。`
     },
     {
       id: '7',
