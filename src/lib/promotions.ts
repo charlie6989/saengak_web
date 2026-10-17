@@ -45,7 +45,7 @@ export const DEFAULT_PROMOTIONS: Promotion[] = [
     id: 'promo-free-ship',
     code: 'FREESHIP',
     title: '滿額免運',
-    subtitle: '超商與宅配滿額免運費',
+    subtitle: '黑貓宅配滿額免運費',
     description: `消費滿 NT$ ${DEFAULT_FREE_SHIPPING_THRESHOLD.toLocaleString('en-US')} 即可享免運費優惠，結帳時直接折抵運費。`,
     category: 'shipping',
     discount_type: 'free_shipping',

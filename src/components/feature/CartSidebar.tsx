@@ -926,7 +926,7 @@ export default function CartSidebar() {
             )}
             
             <p className="text-xs text-gray-500 text-center mt-2">
-              下一步選擇取貨方式與付款，最終金額以結帳頁為準。
+              下一步填寫收件資料與付款，最終金額以結帳頁為準。
             </p>
 
             {/* 清空購物車與主按鈕保持距離，並需再次確認，避免手機誤觸 */}
@@ -996,7 +996,7 @@ export default function CartSidebar() {
               <div className="rounded-xl bg-gray-50 p-3.5 text-xs text-gray-600 space-y-1">
                 <p className="font-medium text-gray-800">🚚 為什麼需要填寫手機號碼？</p>
                 <p className="text-gray-500 leading-relaxed">
-                  物流快遞配送、超商取貨簡訊通知與電子發票開立通知皆需正確之手機號碼。
+                  宅配聯繫收件與電子發票開立通知皆需正確之手機號碼。
                 </p>
               </div>
 

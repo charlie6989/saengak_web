@@ -1305,7 +1305,7 @@ export default function ProductPage() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-truck-line text-brand"></i>
-                  <span>超商 / 宅配 配送</span>
+                  <span>黑貓宅急便宅配</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-refresh-line text-brand"></i>

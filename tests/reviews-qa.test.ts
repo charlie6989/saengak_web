@@ -218,7 +218,7 @@ describe('reviews-qa 資料存取與脫敏模組測試', () => {
       });
 
       expect(res.error).not.toBeNull();
-      expect(res.error?.message).toContain('尚未確認送達或超商取件完成');
+      expect(res.error?.message).toContain('尚未確認送達');
       expect(res.data).toBeNull();
     });
 
