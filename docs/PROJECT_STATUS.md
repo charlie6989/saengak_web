@@ -15,6 +15,8 @@
 - 觀察：CARE `orders.shipping_amount` 記錄折扣前運費 146（實付總額 20 正確），之後做運費報表需扣除折扣。
 - 尚未驗證：「首單未使用代碼 → 停用折扣並標記 `expired`」的分支（需第二個符合資格的測試會員）。
 
+**Migration 版本對齊（2026-10-18）**：`partner_member_perks` 檔名由 `20261017120000` 改為正式站實際記錄的 `20261016205350`（母站 repo 另改為 `20261016205402`），避免日後 `supabase db push` 以為尚未套用。另發現 `20261016111000_grant_coupon_service_access.sql` 不在正式站 migration 紀錄，但正式站 `service_role` 已具 `promotions`／`user_coupons` 的 select／insert／update／delete 權限，內容等同已生效；是否補記錄需使用者同意，未變更正式站。ShipAny 端 #1009 已確認為「訂單取消」。
+
 **母站權限**：`j97kr5-7b` 的 LUCISSI Product Sync 第 12 版核准後已授予 `read_customers`／`write_customers`，但同時移除了未寫在 `shopify.app.toml` 的 `write_inventory`／`read_locations`。母站 PR #36 補回 `read_inventory`／`write_inventory`／`read_locations` 並加測試，發布第 13 版且已核准；以新 token 實測顧客、地點、庫存查詢皆成功。母站權益 `CARE_MEMBER_PERK_ENABLED` 仍關閉。
 
 **開放領取**：本次將 CARE production 的 `VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED` 設為 `true` 並重新部署，優惠活動頁與會員中心「我的優惠券」顯示領取卡片（驗證結果見 PR 說明）。
@@ -50,7 +52,7 @@
 
 **會員首單免運正式上線進度**（依 `docs/LUCISSI_MEMBER_PARTNER_API.md` 步驟）：
 
-- 已完成：兩站正式 Supabase 套用 `partner_member_perks`（MCP 記錄版本 CARE `20261016205350`、母站 `20261016205402`，與 repo 檔名 `20261017120000` 不同，尚未對齊）；兩站 Vercel production 設定 `PARTNER_MEMBER_SECRET`、`PARTNER_MEMBER_STATUS_URL`；母站 PR #33、修正 PR #34 已合併；兩站互相簽章呼叫 `member-status` 回 200、未簽章與錯誤簽章回 401。
+- 已完成：兩站正式 Supabase 套用 `partner_member_perks`（MCP 記錄版本 CARE `20261016205350`、母站 `20261016205402`；2026-10-18 已將兩個 repo 的檔名改為這兩個版本）；兩站 Vercel production 設定 `PARTNER_MEMBER_SECRET`、`PARTNER_MEMBER_STATUS_URL`；母站 PR #33、修正 PR #34 已合併；兩站互相簽章呼叫 `member-status` 回 200、未簽章與錯誤簽章回 401。
 - CARE 已開 `LUCISSI_MEMBER_PERK_ENABLED=true`（前台卡片仍隱藏）。首次領取時 Shopify 拒絕 `appliesOnOneTimePurchase`／`appliesOnSubscription`（商店未使用訂閱），PR #46 移除後，測試會員 `charlie.liu6989+lucissitest@gmail.com` 成功領取 `issued` 代碼並建立綁定顧客的 Shopify 折扣（亦證實 CARE app 具顧客權限）；代碼不在公開優惠列表。
 - （已由 2026-10-18 一節取代）當時待解決：使用者以此代碼與 TapPay 測試卡完成結帳、結帳頁運費為免運，但訂單未寫入 CARE 資料庫（正式 `orders` 最新為 2026-08-26 的 #1007），代碼仍為 `issued`；需查 Shopify `gh2xgs-zf` 的 webhook 投遞結果。母站 app 第 12 版已要求 `read_customers`／`write_customers`，但 `j97kr5-7b` 安裝仍未授予，母站權益維持關閉。尚未做「不用代碼的首單」停用測試、未開前台卡片旗標、測試訂單尚未取消。
 
@@ -60,7 +62,7 @@
 
 - 新增 `POST /api/partner/member-status`（HMAC 簽章、300 秒時間窗、只回 `isMember`）與 `api/_lib/partner-member.ts`。
 - 新增 `POST /api/promotions/lucissi-member-perk`：Email 已驗證、CARE 首單（先同步認領同 Email 訪客訂單）、母站確認為會員時，為這位會員建立專屬 Shopify 免運折扣（單一 `LC` 代碼、總使用 1 次、綁定本人 Shopify 顧客、60 天到期）；紀錄狀態 pending → issued → used／expired，同時領取只回「建立中」。訂單 webhook 在會員第一筆付款訂單後結算：用了代碼標 used，沒用就停用折扣標 expired。會員折扣依名稱前綴與代碼格式從公開列表與一般領券流程排除（不依賴環境變數）。PR #45 Codex 審查後由「共用折扣＋批次代碼」改為此設計。
-- 新增 migration `20261017120000_partner_member_perks.sql`（`public.partner_member_exists` 僅 service_role、`public.partner_member_perks` 會員只能讀自己的）與 pgTAP `partner_member_perks.test.sql`（12 項）。
+- 新增 migration `20261016205350_partner_member_perks.sql`（原檔名 `20261017120000`，2026-10-18 對齊正式站版本）（`public.partner_member_exists` 僅 service_role、`public.partner_member_perks` 會員只能讀自己的）與 pgTAP `partner_member_perks.test.sql`（12 項）。
 - 優惠活動頁與會員中心「我的優惠券」加上領取卡片，以 `VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED` 控制，預設隱藏。隱私權政策新增「與 LUCISSI 的會員資格互認」。
 - 已執行驗證：`npm test -- --run`（49 檔／482 項）、`npm run build`、`npm run verify:content`、`npm run verify:supabase` 通過；本機 Supabase 套用 migration 後 `npm run test:db` 225 項通過。本機開啟旗標確認卡片未登入狀態的畫面與文案；登入後領取流程以單元測試涵蓋，未在瀏覽器端到端執行。
 - 未執行：未套用正式 migration、未設定 Vercel 環境變數、未部署；綁定顧客的代碼能否在本店結帳套用需上線時實測；母站 API 尚未完成，兩站互相呼叫未驗證。
