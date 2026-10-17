@@ -1,6 +1,6 @@
 # 項目記憶
 
-更新日期：2026-10-17（Asia/Taipei）。本文件依 repository 與本次同步可查證資料整理；不包含聊天紀錄或外部服務資料的完整備份。
+更新日期：2026-10-18（Asia/Taipei）。本文件依 repository 與本次同步可查證資料整理；不包含聊天紀錄或外部服務資料的完整備份。
 
 ## 正式服務補充（2026-10-17）
 
@@ -80,6 +80,7 @@
 - `scripts/hero-image-api.mjs` 保存既有 Gemini／Photoroom 製圖流程；金鑰由本機環境取得，工作輸出寫入 `.tmp/image-audit/`。
 - 來源紀錄中的歷史本機路徑只是製作出處；對應原始工作檔可能未包含在 Git，不能保證所有圖片可僅憑 repository 完整重製。
 - 商品圖應保留真實包裝、標籤、比例，公開網站不可使用 Sandbox 浮水印輸出；具體歷史規格見素材紀錄。
+- 商品主圖規範（2026-10-18）：`docs/PRODUCT_IMAGE_STYLE.md`（Ivory Studio：象牙 #F8F5F1 背景、左上柔光、1:1、商品約 70%、無文字貼紙道具）。工具在 `scripts/product-images/`（macOS Vision 去背 + Python 合成）；AI 重繪圖也要再去背合成到同一背景。第一批 27 張在 `creative/product-v1/`，2026-10-18 已上傳 Shopify 並設為第一張（第 14 件因與第 20 件重複改為草稿，第 10 件改為 MEDION 私密淨化凝膠）。主圖顏色以網站預設規格（第一個有庫存的規格）為準；沒有該色實拍照時，改調整規格順序而不是 AI 改色。本機 `.env.local` 的 GEMINI／PHOTOROOM 金鑰目前為空，2026-10-18 改用 Canva generate-image（以原圖為參考）。
 
 ## Git 與交接
 
