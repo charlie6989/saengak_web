@@ -883,7 +883,7 @@ export default function ProductPage() {
    * ------------------------------------------------------------------- */
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#F8F5F1' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#F7F6F3' }}>
         <Header />
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
@@ -898,7 +898,7 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#F8F5F1' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#F7F6F3' }}>
         <Header />
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center space-y-4">
@@ -920,7 +920,7 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="min-h-screen pb-24 lg:pb-0" style={{ backgroundColor: '#F8F5F1' }}>
+    <div className="min-h-screen pb-24 lg:pb-0" style={{ backgroundColor: '#F7F6F3' }}>
       <Header hideMobileBottomNav />
 
       <main className="mx-auto max-w-[1280px] px-4 pb-16 pt-[108px] sm:pt-[116px] md:pt-[124px] lg:pt-[132px]">
@@ -1041,7 +1041,7 @@ export default function ProductPage() {
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F8F5F1]"
+                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F7F6F3]"
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -1298,18 +1298,18 @@ export default function ProductPage() {
               </div>
 
               {/* 官方保證小標籤 */}
-              <div className="pt-2 flex items-center justify-between text-xs text-gray-500">
+              <div className="mt-2 flex items-center justify-between gap-2 border border-[#CCD9D3] bg-eucalyptus-tint px-3 py-2.5 text-xs text-charcoal">
                 <div className="flex items-center gap-1.5">
-                  <i className="ri-shield-check-line text-brand"></i>
+                  <i className="ri-shield-check-line text-eucalyptus" aria-hidden="true"></i>
                   <span>官方網站販售</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <i className="ri-truck-line text-brand"></i>
+                  <i className="ri-truck-line text-eucalyptus" aria-hidden="true"></i>
                   <span>黑貓宅急便宅配</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <i className="ri-refresh-line text-brand"></i>
-                  <Link to="/return-policy" className="hover:text-brand hover:underline">退換貨說明</Link>
+                  <i className="ri-refresh-line text-eucalyptus" aria-hidden="true"></i>
+                  <Link to="/return-policy" className="underline-offset-2 hover:text-brand hover:underline">退換貨說明</Link>
                 </div>
               </div>
             </div>
@@ -1603,7 +1603,7 @@ export default function ProductPage() {
                           className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200/80 hover:shadow-md hover:border-brand/40 transition-all duration-300"
                         >
                           {/* 3:4 直長型長方形圖片 */}
-                          <div className="relative aspect-3/4 overflow-hidden bg-[#F8F5F1]">
+                          <div className="relative aspect-3/4 overflow-hidden bg-[#F7F6F3]">
                             <Link to={`/product/${cleanId}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                               <img
                                 src={item.image || FALLBACK_PRODUCT_IMAGE}
@@ -1860,7 +1860,7 @@ export default function ProductPage() {
 
                           {/* 回覆 */}
                           {item.answer && (
-                            <div className="flex items-start gap-3 bg-[#F8F5F1] p-3.5 rounded-xl border border-gray-100">
+                            <div className="flex items-start gap-3 bg-[#F7F6F3] p-3.5 rounded-xl border border-gray-100">
                               <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-blush text-brand text-xs font-bold shrink-0 mt-0.5 select-none">
                                 A
                               </span>

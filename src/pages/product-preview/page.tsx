@@ -365,7 +365,7 @@ export default function ProductPreviewPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F8F5F1' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#F7F6F3' }}>
       <Header />
 
       <main className="mx-auto max-w-[1280px] px-4 pb-16 pt-[108px] sm:pt-[116px] md:pt-[124px] lg:pt-[132px]">
@@ -477,7 +477,7 @@ export default function ProductPreviewPage() {
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
                 onClick={handleMainImageClick}
-                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F8F5F1]"
+                className="relative w-full rounded-xl overflow-hidden group flex items-center justify-center select-none touch-pan-y cursor-grab active:cursor-grabbing bg-white sm:bg-[#F7F6F3]"
               >
                 {/* 左右導覽箭頭 */}
                 {selectedImage > 0 && (
@@ -1122,7 +1122,7 @@ export default function ProductPreviewPage() {
                           }}
                         >
                           {/* 3:4 直長型長方形圖片 (對齊第 1 版規格) */}
-                          <div className="relative aspect-3/4 overflow-hidden bg-[#F8F5F1]">
+                          <div className="relative aspect-3/4 overflow-hidden bg-[#F7F6F3]">
                             <img
                               src={item.image}
                               alt={item.name}
@@ -1293,7 +1293,7 @@ export default function ProductPreviewPage() {
                           </div>
 
                           {/* 回覆 */}
-                          <div className="flex items-start gap-3 bg-[#F8F5F1] p-3.5 rounded-xl border border-gray-100">
+                          <div className="flex items-start gap-3 bg-[#F7F6F3] p-3.5 rounded-xl border border-gray-100">
                             <span className="inline-flex items-center justify-center w-6 h-6 rounded-sm bg-blush text-brand text-xs font-bold shrink-0 mt-0.5 select-none">
                               A
                             </span>

@@ -11,7 +11,43 @@
 - 使用者決定（2026-10-18）：第 10 件改名為 MEDION 並刪除缺貨的 SAENGAK 規格；第 14 件下架（保留選項結構較好的第 20 件，兩件 SKU 完全相同）；預設規格沒有實拍照的 7 件，改把有照片的顏色排到第一個規格（網站預設選第一個有庫存的規格，`pickInitialVariant`）。
 - 主圖顏色第二版：11 張改成預設規格顏色並重新合成（01 霧光藍、02 魅惑紫、05 櫻花粉、08 極雅黑、09 灰藍、11 粉色、12 藍邊、13 午夜藍、16 飄雪白、17 極雅黑、18 雪紗白），每件顯示的顏色記在 `provenance.json` 的 `color_shown`。
 - Shopify（經 Chrome 已登入後台，使用者授權，2026-10-18 完成）：26 件新主圖上傳並排第一張、原圖保留在後；第 10 件標題改「MEDION 私密淨化凝膠」、廠商改 MEDION、刪除「益生菌私密舒緩凝膠（單支，盒裝7隻）」規格；第 14 件設為草稿；第 3、4、9、15、18、19 件把有實拍照的顏色排到第一個規格。Storefront API 逐件回讀：新圖皆為第一張、每件只多一張、無重複；第 14 件不再公開；網站預設規格顏色與主圖一致。正式站 `/products` 目視確認新主圖已顯示。
-- 未處理：第 10 件的說明、標籤（SAENGAK、益生菌凝膠）與商品中繼欄位仍是 SAENGAK 凝膠內容，需 MEDION 原廠資料才能改寫；AI 圖細節（#8、#16 改色、#13 腰頭字樣、#18 印標小字、#15 色名推定）仍待對照實品；第二張情境圖尚未製作。上傳方式：後台多媒體欄位在 shadow DOM，經頁面內代理 file input 轉交後再以指標事件拖曳排序。
+- 未處理：第 10 件的說明、標籤（SAENGAK、益生菌凝膠）與商品中繼欄位仍是 SAENGAK 凝膠內容，需 MEDION 原廠資料才能改寫；AI 圖細節（#8、#16 改色、#13 腰頭字樣、#18 印標小字、#15 色名推定）仍待對照實品；第二張情境圖尚未製作。主圖背景用 `#F8F5F1`，與同日合併的 Calm Care 色票 porcelain `#F7F6F3` 略有差異（肉眼幾乎無差），未重製。上傳方式：後台多媒體欄位在 shadow DOM，經頁面內代理 file input 轉交後再以指標事件拖曳排序。
+
+## 品牌照片重新調色（2026-10-18，分支 `claude/photo-neutral-grade`）
+
+使用者選擇「重新調色」取代重拍。`scripts/regrade-brand-photos.mjs`（sharp）逐像素把粉色調拉向暖灰米：只處理色相約 340°–36°、飽和度 ≤0.45、明度 ≥0.3 的區域（實測粉牆與道具在色相 6–12°、飽和 0.21–0.27），色相往 34°（`stone`）拉、飽和度最多降 55%；皮膚與唇色（飽和 0.4 以上）、深色道具（plum 收納包）與 Saengak 綠色包裝不受影響。`public/images/lucissi-v5/` 41 張全部重新輸出（webp 品質 82，總量 4.1 MB → 2.6 MB）；檔名不變，元件不需修改。
+
+- 已驗證：抽樣前後對照（粉牆、人物、商品平拍、粉色最重的 thumb-wear／social-gentle／promotion-discount）確認牆面轉為暖灰米、膚色與唇色保留、商品顏色不變。
+- 未處理：設計系統 Photography 素材組仍是舊圖；Shopify 商品圖不在此範圍。
+
+## Calm Care 色票上線、商店改名與母站權益開啟（2026-10-18，分支 `claude/calm-care-palette`）
+
+使用者同意設計系統「色彩重新定位（提案）」與下列營運動作：
+
+- **色票**：`src/index.css` 的 `@theme` 改為 Calm Care 值，`ivory`／`blush` 保留名稱但改為 `porcelain` #F7F6F3／`stone` #ECE8E2，新增 `stone`、`porcelain`、`line-strong`、`ink-muted`、`eucalyptus`、`eucalyptus-tint`、`rose-tint`；文字 `charcoal` #2A2725、`gray-500` #5C5552、`gray-400` #6E6662（修正原 3.72:1 不合格）；`surface` 改純白。元件內寫死的舊色碼（23 檔、138 處）一併換成新值。商品卡「查看商品」改白底＋1px `line-strong` 框＋`plum` 字，hover `plum` 實心；商品頁信任列改 `eucalyptus-tint` 底與 `eucalyptus` 圖示；首頁「生理期照護」入口改 `rose-tint` 底；`theme-color` 與分享圖背景改 `stone`／`porcelain`。Logo 不變。
+- **Shopify 商店名稱**：`gh2xgs-zf` 由「My Store 7」改為「LUCISSI CARE」（結帳頁抬頭同步）。
+- **Migration 紀錄**：正式站 `supabase_migrations.schema_migrations` 補記 `20261016111000_grant_coupon_service_access`（權限本已存在，同時再執行一次 grant，結果不變）。
+- **母站權益**：`lucissi-website` production 設 `CARE_MEMBER_PERK_ENABLED=true` 並重新部署；兩站 `member-status` 簽章呼叫仍正常。母站實際領取需在母站登入測試（母站仍有 Private Access 門禁）。
+- 已驗證：Vitest 482 項、build、`verify:content`、typecheck、lint 通過；本機首頁頁首已為 `stone`。商品卡與商品頁需資料，於 Vercel preview 驗證（見 PR）。
+
+## 會員首單免運：CARE 端實單驗證與開放領取（2026-10-18，分支 `claude/perk-rollout-results`）
+
+**CARE 端整段流程已在正式站驗證通過**（取代下方各節的「待解決」）：
+
+- 測試會員 `charlie.liu6989+lucissitest@gmail.com`（兩站皆為已驗證會員、CARE 無訂單）領取代碼 `LCKQ4A74N7WC`，Shopify 建立綁定該顧客的免運折扣。
+- 第一次測試結帳停在 TapPay 付款頁，Shopify 只留下未完成結帳（待顧客付款 NT$20），所以沒有訂單，不是 webhook 故障。
+- 第二次在 TapPay 沙盒付款頁完成付款並回到 Shopify 感謝頁（確認碼 M6NL0EZXQ）：訂單 **#1009** 已付款 NT$20，運費 NT$146 由代碼折抵為免運。
+- 訂單 webhook 寫入 CARE `orders`（`paid`、`discount_codes` 含代碼、已綁會員），6 秒後 `partner_member_perks` 由 `issued` 變為 **`used`**。
+- 收尾：使用者同意後於 Shopify 取消 #1009，退款 NT$20 至 TapPay（沙盒）、補回庫存、封存，未寄顧客通知。CARE `orders` 同步為 `cancelled`／`refunded`；該單的電子發票工作（`private.amego_invoice_jobs`，operation `issue`）在 0 次嘗試時轉為 `cancelled`，未開立發票。代碼維持 `used`（依設計，取消訂單不退回首單權益）。
+- ShipAny：為 #1009 建立的出貨單（ShipAny Order ID `456668fc…`）於 2026-10-18 在 ShipAny 後台「全部訂單」確認為「訂單取消」，不會出貨。
+- 觀察：CARE `orders.shipping_amount` 記錄折扣前運費 146（實付總額 20 正確），之後做運費報表需扣除折扣。
+- 尚未驗證：「首單未使用代碼 → 停用折扣並標記 `expired`」的分支（需第二個符合資格的測試會員）。
+
+**Migration 版本對齊（2026-10-18）**：`partner_member_perks` 檔名由 `20261017120000` 改為正式站實際記錄的 `20261016205350`（母站 repo 另改為 `20261016205402`），避免日後 `supabase db push` 以為尚未套用。另發現 `20261016111000_grant_coupon_service_access.sql` 不在正式站 migration 紀錄，但正式站 `service_role` 已具 `promotions`／`user_coupons` 的 select／insert／update／delete 權限，內容等同已生效；是否補記錄需使用者同意，未變更正式站。ShipAny 端 #1009 已確認為「訂單取消」。
+
+**母站權限**：`j97kr5-7b` 的 LUCISSI Product Sync 第 12 版核准後已授予 `read_customers`／`write_customers`，但同時移除了未寫在 `shopify.app.toml` 的 `write_inventory`／`read_locations`。母站 PR #36 補回 `read_inventory`／`write_inventory`／`read_locations` 並加測試，發布第 13 版且已核准；以新 token 實測顧客、地點、庫存查詢皆成功。母站權益 `CARE_MEMBER_PERK_ENABLED` 仍關閉。
+
+**開放領取**：本次將 CARE production 的 `VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED` 設為 `true` 並重新部署，優惠活動頁與會員中心「我的優惠券」顯示領取卡片（驗證結果見 PR 說明）。
 
 ## 分享圖與主畫面圖示（2026-10-17，分支 `claude/share-icons`）
 
@@ -44,9 +80,9 @@
 
 **會員首單免運正式上線進度**（依 `docs/LUCISSI_MEMBER_PARTNER_API.md` 步驟）：
 
-- 已完成：兩站正式 Supabase 套用 `partner_member_perks`（MCP 記錄版本 CARE `20261016205350`、母站 `20261016205402`，與 repo 檔名 `20261017120000` 不同，尚未對齊）；兩站 Vercel production 設定 `PARTNER_MEMBER_SECRET`、`PARTNER_MEMBER_STATUS_URL`；母站 PR #33、修正 PR #34 已合併；兩站互相簽章呼叫 `member-status` 回 200、未簽章與錯誤簽章回 401。
+- 已完成：兩站正式 Supabase 套用 `partner_member_perks`（MCP 記錄版本 CARE `20261016205350`、母站 `20261016205402`；2026-10-18 已將兩個 repo 的檔名改為這兩個版本）；兩站 Vercel production 設定 `PARTNER_MEMBER_SECRET`、`PARTNER_MEMBER_STATUS_URL`；母站 PR #33、修正 PR #34 已合併；兩站互相簽章呼叫 `member-status` 回 200、未簽章與錯誤簽章回 401。
 - CARE 已開 `LUCISSI_MEMBER_PERK_ENABLED=true`（前台卡片仍隱藏）。首次領取時 Shopify 拒絕 `appliesOnOneTimePurchase`／`appliesOnSubscription`（商店未使用訂閱），PR #46 移除後，測試會員 `charlie.liu6989+lucissitest@gmail.com` 成功領取 `issued` 代碼並建立綁定顧客的 Shopify 折扣（亦證實 CARE app 具顧客權限）；代碼不在公開優惠列表。
-- 待解決：使用者以此代碼與 TapPay 測試卡完成結帳、結帳頁運費為免運，但訂單未寫入 CARE 資料庫（正式 `orders` 最新為 2026-08-26 的 #1007），代碼仍為 `issued`；需查 Shopify `gh2xgs-zf` 的 webhook 投遞結果。母站 app 第 12 版已要求 `read_customers`／`write_customers`，但 `j97kr5-7b` 安裝仍未授予，母站權益維持關閉。尚未做「不用代碼的首單」停用測試、未開前台卡片旗標、測試訂單尚未取消。
+- （已由 2026-10-18 一節取代）當時待解決：使用者以此代碼與 TapPay 測試卡完成結帳、結帳頁運費為免運，但訂單未寫入 CARE 資料庫（正式 `orders` 最新為 2026-08-26 的 #1007），代碼仍為 `issued`；需查 Shopify `gh2xgs-zf` 的 webhook 投遞結果。母站 app 第 12 版已要求 `read_customers`／`write_customers`，但 `j97kr5-7b` 安裝仍未授予，母站權益維持關閉。尚未做「不用代碼的首單」停用測試、未開前台卡片旗標、測試訂單尚未取消。
 
 ## LUCISSI 會員首單免運（會員互通第 1 階段，2026-10-17，分支 `claude/lucissi-member-perk`）
 
@@ -54,7 +90,7 @@
 
 - 新增 `POST /api/partner/member-status`（HMAC 簽章、300 秒時間窗、只回 `isMember`）與 `api/_lib/partner-member.ts`。
 - 新增 `POST /api/promotions/lucissi-member-perk`：Email 已驗證、CARE 首單（先同步認領同 Email 訪客訂單）、母站確認為會員時，為這位會員建立專屬 Shopify 免運折扣（單一 `LC` 代碼、總使用 1 次、綁定本人 Shopify 顧客、60 天到期）；紀錄狀態 pending → issued → used／expired，同時領取只回「建立中」。訂單 webhook 在會員第一筆付款訂單後結算：用了代碼標 used，沒用就停用折扣標 expired。會員折扣依名稱前綴與代碼格式從公開列表與一般領券流程排除（不依賴環境變數）。PR #45 Codex 審查後由「共用折扣＋批次代碼」改為此設計。
-- 新增 migration `20261017120000_partner_member_perks.sql`（`public.partner_member_exists` 僅 service_role、`public.partner_member_perks` 會員只能讀自己的）與 pgTAP `partner_member_perks.test.sql`（12 項）。
+- 新增 migration `20261016205350_partner_member_perks.sql`（原檔名 `20261017120000`，2026-10-18 對齊正式站版本）（`public.partner_member_exists` 僅 service_role、`public.partner_member_perks` 會員只能讀自己的）與 pgTAP `partner_member_perks.test.sql`（12 項）。
 - 優惠活動頁與會員中心「我的優惠券」加上領取卡片，以 `VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED` 控制，預設隱藏。隱私權政策新增「與 LUCISSI 的會員資格互認」。
 - 已執行驗證：`npm test -- --run`（49 檔／482 項）、`npm run build`、`npm run verify:content`、`npm run verify:supabase` 通過；本機 Supabase 套用 migration 後 `npm run test:db` 225 項通過。本機開啟旗標確認卡片未登入狀態的畫面與文案；登入後領取流程以單元測試涵蓋，未在瀏覽器端到端執行。
 - 未執行：未套用正式 migration、未設定 Vercel 環境變數、未部署；綁定顧客的代碼能否在本店結帳套用需上線時實測；母站 API 尚未完成，兩站互相呼叫未驗證。

@@ -69,7 +69,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess }) => {
   return (
     <div
       data-testid="admin-login-page"
-      className="flex min-h-screen flex-col items-center justify-center bg-[#F8F5F1] px-4 py-12"
+      className="flex min-h-screen flex-col items-center justify-center bg-[#F7F6F3] px-4 py-12"
     >
       <div className="w-full max-w-md">
         {/* 標頭與 Logo */}

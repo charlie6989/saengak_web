@@ -22,7 +22,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
     return (
       <div
         data-testid="admin-guard-loading"
-        className="flex min-h-screen flex-col items-center justify-center bg-[#F8F5F1] px-4"
+        className="flex min-h-screen flex-col items-center justify-center bg-[#F7F6F3] px-4"
       >
         <div className="flex flex-col items-center space-y-4">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
@@ -42,7 +42,7 @@ export const AdminGuard: React.FC<AdminGuardProps> = ({ children }) => {
     return (
       <div
         data-testid="admin-guard-forbidden"
-        className="flex min-h-screen flex-col items-center justify-center bg-[#F8F5F1] px-4 text-center"
+        className="flex min-h-screen flex-col items-center justify-center bg-[#F7F6F3] px-4 text-center"
       >
         <div className="w-full max-w-md rounded-2xl border border-red-200 bg-white p-8 shadow-xs">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">

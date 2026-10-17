@@ -43,7 +43,7 @@ X-Partner-Signature: hex(HMAC-SHA256(PARTNER_MEMBER_SECRET, `${timestamp}.${rawB
 ## 上線步驟（CARE）
 
 1. 確認 Shopify 應用程式具 `write_discounts`、`read_customers`、`write_customers` 權限。
-2. 套用 migration `20261017120000_partner_member_perks.sql` 到正式 Supabase `tmqzkagkrzhioftvwbqo`。
+2. 套用 migration `20261016205350_partner_member_perks.sql` 到正式 Supabase `tmqzkagkrzhioftvwbqo`（2026-10-17 已套用；檔名已改為正式站記錄的版本）。
 3. Vercel（CARE）設定 `PARTNER_MEMBER_SECRET`（與母站相同、32 字元以上）、`PARTNER_MEMBER_STATUS_URL=https://lucissi.com/api/partner/member-status`、`LUCISSI_MEMBER_PERK_ENABLED=true`。
 4. 以測試會員實際領取並結帳一次，確認綁定顧客的代碼能在結帳套用；若不能，設定 `LUCISSI_MEMBER_PERK_BIND_CUSTOMER=false`（仍是單次使用與到期）。
 5. 母站完成同樣的 API 與設定後，兩站互相呼叫驗證；最後把 `VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED` 設為 `true` 並重新部署，才會顯示領取卡片。

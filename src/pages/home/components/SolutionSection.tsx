@@ -136,7 +136,7 @@ export default function SolutionSection() {
 
   return (
     <>
-      <section className="py-16 px-4" style={{ backgroundColor: '#E7D6D4' }}>
+      <section className="py-16 px-4" style={{ backgroundColor: '#ECE8E2' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-4">
@@ -318,7 +318,7 @@ export default function SolutionSection() {
                                   {product.subtitle}
                                 </p>
                               )}
-                              <p className="text-sm line-clamp-3 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#655859" }}>
+                              <p className="text-sm line-clamp-3 leading-relaxed" style={{ fontFamily: "Noto Sans TC, sans-serif", color: "#5C5552" }}>
                                 {product.description}
                               </p>
                             </div>
@@ -363,17 +363,17 @@ export default function SolutionSection() {
                             aria-label={`查看 ${product.name} 商品詳情`}
                             className="add-to-cart-btn mt-auto cursor-pointer"
                             style={{
-                              backgroundColor: isSoldOut ? '#F8F5F1' : '#E7D6D4',
-                              color: isSoldOut ? '#655859' : '#34302F',
+                              backgroundColor: isSoldOut ? '#F7F6F3' : '#ECE8E2',
+                              color: isSoldOut ? '#5C5552' : '#2A2725',
                               fontFamily: "Noto Sans TC, sans-serif"
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = isSoldOut ? '#DDD6D1' : '#5B3D48';
-                              e.currentTarget.style.color = isSoldOut ? '#655859' : '#FFFDFC';
+                              e.currentTarget.style.backgroundColor = isSoldOut ? '#D6D0C8' : '#5B3D48';
+                              e.currentTarget.style.color = isSoldOut ? '#5C5552' : '#FFFFFF';
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = isSoldOut ? '#F8F5F1' : '#E7D6D4';
-                              e.currentTarget.style.color = isSoldOut ? '#655859' : '#34302F';
+                              e.currentTarget.style.backgroundColor = isSoldOut ? '#F7F6F3' : '#ECE8E2';
+                              e.currentTarget.style.color = isSoldOut ? '#5C5552' : '#2A2725';
                             }}
                           >
                             {isSoldOut ? '已售完・查看詳情' : isBundle(product) ? '查看特惠組合' : '查看商品'}

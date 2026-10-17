@@ -5,28 +5,36 @@ layer(base);
 @import 'tailwindcss';
 
 @theme {
-  --color-ivory: #f8f5f1;
-  --color-white: #fffdfc;
+  --color-ivory: #f7f6f3;
+  --color-white: #ffffff;
 
   --color-brand: #5b3d48;
-  --color-brand-ink: #48303a;
+  --color-brand-ink: #45303a;
 
-  --color-mauve: #a9838b;
-  --color-blush: #e7d6d4;
-  --color-sage: #a9ada2;
-  --color-charcoal: #34302f;
-  --color-border: #ddd6d1;
+  /* 2026-10-18 Calm Care 色票：blush／ivory 保留名稱以免大量改 class，值改為中性的 stone／porcelain。 */
+  --color-mauve: #8a827d;
+  --color-blush: #ece8e2;
+  --color-stone: #ece8e2;
+  --color-porcelain: #f7f6f3;
+  --color-line-strong: #8a827d;
+  --color-ink-muted: #6e6662;
+  --color-eucalyptus: #3d5a51;
+  --color-eucalyptus-tint: #e4ece8;
+  --color-rose-tint: #f1e6e3;
+  --color-sage: #9db0a7;
+  --color-charcoal: #2a2725;
+  --color-border: #d6d0c8;
 
-  --color-gray-50: #f8f5f1;
-  --color-gray-100: #f0eae5;
-  --color-gray-200: #ddd6d1;
-  --color-gray-300: #c8beb8;
-  --color-gray-400: #8a7b79;
-  --color-gray-500: #655859;
-  --color-gray-600: #615556;
-  --color-gray-700: #514749;
-  --color-gray-800: #40383a;
-  --color-gray-900: #34302f;
+  --color-gray-50: #f7f6f3;
+  --color-gray-100: #efece7;
+  --color-gray-200: #d6d0c8;
+  --color-gray-300: #c4bdb6;
+  --color-gray-400: #6e6662;
+  --color-gray-500: #5c5552;
+  --color-gray-600: #57504d;
+  --color-gray-700: #4a4441;
+  --color-gray-800: #38322f;
+  --color-gray-900: #2a2725;
 }
 
 /*
@@ -256,32 +264,32 @@ layer(base);
 
 /* Design Tokens (CSS Variables) - Updated Color Palette */
 :root {
-  /* Warm Ivory / Deep Plum palette. Muted colors are decorative, not body text. */
+  /* Calm Care palette (2026-10-18): neutral porcelain/stone grounds, plum brand, eucalyptus trust colour. */
   --color-brand: #5B3D48;
-  --color-brand-ink: #48303A;
-  --color-accent: #A9838B;
-  --color-sage: #A9ADA2;
-  --color-text: #34302F;
-  --color-text-weak: #655859;
-  --color-text-light: #655859;
-  --color-border: #DDD6D1;
-  --color-bg: #FFFDFC;
-  --color-bg-weak: #F8F5F1;
-  --color-bg-soft: #F8F5F1;
-  --color-bg-accent: #E7D6D4;
-  --color-bg-light: #F8F5F1;
+  --color-brand-ink: #45303A;
+  --color-accent: #8A827D;
+  --color-sage: #9DB0A7;
+  --color-text: #2A2725;
+  --color-text-weak: #5C5552;
+  --color-text-light: #5C5552;
+  --color-border: #D6D0C8;
+  --color-bg: #FFFFFF;
+  --color-bg-weak: #F7F6F3;
+  --color-bg-soft: #F7F6F3;
+  --color-bg-accent: #ECE8E2;
+  --color-bg-light: #F7F6F3;
   --color-sale: #5B3D48;
-  --color-warm-neutral: #A9838B;
-  --color-warm-light: #A9ADA2;
-  --color-gray-light: #DDD6D1;
-  --color-gray-medium: #655859;
-  --color-gray-dark: #34302F;
-  --color-black-light: #34302F;
+  --color-warm-neutral: #8A827D;
+  --color-warm-light: #9DB0A7;
+  --color-gray-light: #D6D0C8;
+  --color-gray-medium: #5C5552;
+  --color-gray-dark: #2A2725;
+  --color-black-light: #2A2725;
   --color-black-medium: #5B3D48;
-  --color-black-dark: #34302F;
+  --color-black-dark: #2A2725;
   --color-accent-dark: #5B3D48;
   --color-cart-btn: #5B3D48;
-  --color-cart-btn-hover: #E7D6D4;
+  --color-cart-btn-hover: #ECE8E2;
 
   /* Layout */
   --container-max: 1200px;         
@@ -413,13 +421,13 @@ p {
 .add-to-cart-btn {
   width: 100%;
   height: 47px;
-  border: none;
+  border: 1px solid #8A827D;
   border-radius: 0;
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 600;
   cursor: pointer;
-  background-color: var(--color-cart-btn-hover);
-  color: var(--color-text);
+  background-color: var(--color-bg);
+  color: var(--color-brand);
   transition: background-color 0.3s ease, color 0.3s ease;
   font-family: var(--font-sans);
   white-space: nowrap;
@@ -427,6 +435,7 @@ p {
 
 .add-to-cart-btn:hover {
   background-color: var(--color-cart-btn);
+  border-color: var(--color-cart-btn);
   color: var(--color-bg);
 }
 
@@ -963,7 +972,7 @@ a:focus {
    ========================================================================== */
 .article-content {
   font-family: var(--font-sans);
-  color: #34302F;
+  color: #2A2725;
   font-size: 1.0625rem; /* ~17px */
   line-height: 2;
   letter-spacing: 0.015em;
@@ -972,7 +981,7 @@ a:focus {
 .article-content p {
   margin-bottom: 1.75rem;
   line-height: 2;
-  color: #34302F;
+  color: #2A2725;
 }
 
 .article-content h2 {
@@ -982,7 +991,7 @@ a:focus {
   margin-top: 3.5rem;
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid #E7D6D4;
+  border-bottom: 2px solid #ECE8E2;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -992,7 +1001,7 @@ a:focus {
 .article-content h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #34302F;
+  color: #2A2725;
   margin-top: 2.25rem;
   margin-bottom: 0.875rem;
   position: relative;
@@ -1025,7 +1034,7 @@ a:focus {
   position: relative;
   padding-left: 1.75rem;
   line-height: 1.85;
-  color: #655859;
+  color: #5C5552;
 }
 
 .article-content ul li::before {
@@ -1050,15 +1059,15 @@ a:focus {
 
 .article-content ol li {
   line-height: 1.85;
-  color: #655859;
+  color: #5C5552;
   padding-left: 0.25rem;
 }
 
 .article-content .lead {
   font-size: 1.125rem;
   line-height: 1.9;
-  color: #48303A;
-  background-color: #E7D6D4;
+  color: #45303A;
+  background-color: #ECE8E2;
   padding: 1.5rem 1.75rem;
   border-radius: 12px;
   border-left: 4px solid #5B3D48;

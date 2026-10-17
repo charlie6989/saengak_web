@@ -10,9 +10,9 @@ export default function EditorialHero({ image, alt, eyebrow, title, description,
 }) {
   const Heading = headingLevel;
   return (
-    <section data-editorial-hero className={`relative overflow-hidden bg-[#F8F5F1] ${compact ? 'md:min-h-[220px]' : 'md:min-h-[460px]'} ${className}`}>
+    <section data-editorial-hero className={`relative overflow-hidden bg-[#F7F6F3] ${compact ? 'md:min-h-[220px]' : 'md:min-h-[460px]'} ${className}`}>
       <img src={image} alt={alt} width={1920} height={1080} fetchPriority={priority ? 'high' : 'auto'} loading={priority ? 'eager' : 'lazy'} className={`${compact ? 'hidden md:block' : 'h-[240px]'} w-full object-cover object-right md:absolute md:inset-0 md:h-full ${preserveImage ? 'md:object-contain' : ''}`} />
-      <div className={`pointer-events-none absolute inset-0 hidden bg-linear-to-r/srgb md:block ${preserveImage ? 'from-[#F8F5F1] from-40% via-[#F8F5F1]/70 via-52% to-transparent to-68%' : 'from-[#F8F5F1]/95 via-[#F8F5F1]/75 to-transparent'}`} />
+      <div className={`pointer-events-none absolute inset-0 hidden bg-linear-to-r/srgb md:block ${preserveImage ? 'from-[#F7F6F3] from-40% via-[#F7F6F3]/70 via-52% to-transparent to-68%' : 'from-[#F7F6F3]/95 via-[#F7F6F3]/75 to-transparent'}`} />
       <div className={`relative mx-auto max-w-7xl px-6 md:flex md:items-center md:px-12 ${compact ? 'py-6 md:min-h-[220px] md:py-8' : 'py-10 md:min-h-[460px] md:py-16'}`}>
         <div className="max-w-xl md:w-[52%]">
           <p className="mb-4 text-xs font-medium tracking-[0.18em] text-brand">{eyebrow}</p>

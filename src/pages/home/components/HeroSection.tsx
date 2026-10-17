@@ -11,18 +11,18 @@ export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   return (
-    <section aria-label="LUCISSI CARE 日常照護主題" aria-roledescription="輪播" className="relative h-[650px] md:h-[640px] overflow-hidden bg-[#F8F5F1]">
+    <section aria-label="LUCISSI CARE 日常照護主題" aria-roledescription="輪播" className="relative h-[650px] md:h-[640px] overflow-hidden bg-[#F7F6F3]">
       {heroSlides.map((slide, index) => (
         <div key={slide.image} aria-hidden={index !== currentSlide} inert={index !== currentSlide} className={`absolute inset-0 flex flex-col md:block ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0'}`}>
           <div className="h-[330px] shrink-0 md:h-full">
             <img src={`/images/lucissi-v5/${slide.image}.webp`} alt={slide.alt} width={1920} height={1080} fetchPriority={index === 0 ? 'high' : 'auto'} loading={index === 0 ? 'eager' : 'lazy'} className="h-full w-full object-cover md:object-contain" style={{ objectPosition: slide.position }} />
           </div>
-          <div className="hidden md:block absolute inset-0 bg-linear-to-r/srgb from-[#F8F5F1] from-35% via-[#F8F5F1]/60 via-48% to-transparent to-65%" />
+          <div className="hidden md:block absolute inset-0 bg-linear-to-r/srgb from-[#F7F6F3] from-35% via-[#F7F6F3]/60 via-48% to-transparent to-65%" />
           <div className="relative px-7 pt-7 pb-16 md:absolute md:inset-0 md:flex md:items-center md:px-[8%] md:py-16">
             <div className="max-w-[540px]">
               <p className="text-xs tracking-[0.22em] text-brand mb-3">{slide.label}</p>
               <h1 className="text-[28px] md:text-5xl md:leading-none font-semibold leading-snug text-brand" style={{ textWrap: 'balance' }}>{slide.title}</h1>
-              <p className="mt-3 md:mt-5 text-sm md:text-lg md:leading-7 leading-relaxed whitespace-pre-line text-[#5F5955]">{slide.description}</p>
+              <p className="mt-3 md:mt-5 text-sm md:text-lg md:leading-7 leading-relaxed whitespace-pre-line text-[#5C5552]">{slide.description}</p>
               <Link to={slide.link} className="inline-flex mt-5 md:mt-7 border-b border-brand pb-1 text-sm font-medium text-brand">{slide.action}<span aria-hidden="true" className="ml-4">→</span></Link>
             </div>
           </div>
