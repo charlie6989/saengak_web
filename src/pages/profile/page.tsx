@@ -1683,7 +1683,7 @@ export default function ProfilePage() {
                         aria-label={`給予 ${star} 顆星`}
                         data-testid={`star-${star}`}
                         className="p-1 text-2xl transition-transform hover:scale-110 focus:outline-hidden cursor-pointer"
-                        style={{ color: isFilled ? '#F59E0B' : '#DDD6D1' }}
+                        style={{ color: isFilled ? '#F59E0B' : '#D6D0C8' }}
                       >
                         <i className={isFilled ? 'ri-star-fill' : 'ri-star-line'}></i>
                       </button>

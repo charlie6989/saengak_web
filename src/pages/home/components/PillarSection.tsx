@@ -16,7 +16,7 @@ export default function PillarSection() {
         <ul className="no-scrollbar -mx-6 flex snap-x gap-4 overflow-x-auto px-6 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
           {CARE_PILLARS.map((pillar) => (
             <li key={pillar.id} className="w-[62%] shrink-0 snap-start sm:w-[40%] md:w-auto">
-              <Link to={`/search?category=${pillar.name}`} className="group flex h-full flex-col border border-gray-200 bg-ivory">
+              <Link to={`/search?category=${pillar.name}`} className={`group flex h-full flex-col border border-gray-200 ${pillar.id === 'period' ? 'bg-rose-tint' : 'bg-ivory'}`}>
                 <div className="aspect-4/5 overflow-hidden bg-blush">
                   <img src={pillar.cardImage} alt={pillar.cardAlt} loading="lazy" className="h-full w-full object-cover" />
                 </div>

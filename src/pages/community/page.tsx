@@ -134,7 +134,7 @@ export default function Community() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F5F1]">
+    <div className="min-h-screen bg-[#F7F6F3]">
       <Header />
 
       {/* Hero Section - 手機版優化 */}
@@ -147,8 +147,8 @@ export default function Community() {
         description="專業的私密護理知識、使用心得與健康觀念分享，讓妳在社群中獲得支持與啟發"
       />
 
-      <main className="page-content bg-[#F8F5F1]">
-        <section className="py-4 px-4 bg-[#F8F5F1] -mt-px">
+      <main className="page-content bg-[#F7F6F3]">
+        <section className="py-4 px-4 bg-[#F7F6F3] -mt-px">
           <div className="max-w-7xl mx-auto">
             {/* Blog Content */}
               <>
@@ -189,14 +189,14 @@ export default function Community() {
                         }}
                         onMouseEnter={(e) => {
                           if (!((selectedTag === tag) || (selectedTag === '' && tag === '全部'))) {
-                            e.currentTarget.style.backgroundColor = '#E7D6D4';
+                            e.currentTarget.style.backgroundColor = '#ECE8E2';
                             e.currentTarget.style.color = '#5B3D48';
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (!((selectedTag === tag) || (selectedTag === '' && tag === '全部'))) {
                             e.currentTarget.style.backgroundColor = 'white';
-                            e.currentTarget.style.color = '#655859';
+                            e.currentTarget.style.color = '#5C5552';
                           }
                         }}
                       >
@@ -357,7 +357,7 @@ export default function Community() {
         </section>
 
         {/* Member Registration Section - 手機版優化 */}
-        <section className="py-12 md:py-16 px-4" style={{ backgroundColor: '#E7D6D4' }}>
+        <section className="py-12 md:py-16 px-4" style={{ backgroundColor: '#ECE8E2' }}>
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6">
               加入我們的健康社群
@@ -388,7 +388,7 @@ export default function Community() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-left">
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
-                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#E7D6D4' }}>
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#ECE8E2' }}>
                   <i className="ri-mail-line text-xl" style={{ color: '#5B3D48' }}></i>
                 </div>
                 <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">專屬會員禮遇</h3>
@@ -396,7 +396,7 @@ export default function Community() {
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
-                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#E7D6D4' }}>
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#ECE8E2' }}>
                   <i className="ri-user-heart-line text-xl" style={{ color: '#5B3D48' }}></i>
                 </div>
                 <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">安全隱私保障</h3>
@@ -404,7 +404,7 @@ export default function Community() {
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
-                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#E7D6D4' }}>
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#ECE8E2' }}>
                   <i className="ri-vip-crown-line text-xl" style={{ color: '#5B3D48' }}></i>
                 </div>
                 <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">即時訂單查詢</h3>

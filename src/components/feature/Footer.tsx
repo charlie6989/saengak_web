@@ -4,7 +4,7 @@ import { ENDORSEMENT, LUCISSI_URL } from '../../content/carePillars';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200" style={{ backgroundColor: '#F8F5F1' }}>
+    <footer className="border-t border-gray-200" style={{ backgroundColor: '#F7F6F3' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* 母品牌背書 */}
         <div className="mb-12 flex flex-col gap-4 border-b border-gray-200 pb-10 md:flex-row md:items-end md:justify-between">

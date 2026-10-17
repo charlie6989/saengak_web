@@ -262,7 +262,7 @@ export default function BlogArticle() {
       </EditorialHero>
 
       {/* Main Content Area */}
-      <main className="page-content bg-[#F8F5F1]">
+      <main className="page-content bg-[#F7F6F3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
           {/* Breadcrumb Navigation */}
           <nav className="flex items-center space-x-2 text-sm mb-10 text-gray-500">
@@ -374,7 +374,7 @@ export default function BlogArticle() {
               )}
 
               {/* 作者與編輯承諾區塊 */}
-              <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-[#F8F5F1] border border-brand/10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+              <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-[#F7F6F3] border border-brand/10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
                 <div className="w-14 h-14 rounded-2xl bg-brand text-white flex items-center justify-center shrink-0 shadow-xs">
                   <i className="ri-leaf-line text-2xl"></i>
                 </div>

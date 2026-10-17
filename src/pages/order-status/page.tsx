@@ -23,7 +23,7 @@ export function shouldShowGuestOrderNotice(
 export function GuestOrderNotice() {
   return (
     <div
-      className="mx-auto mt-6 max-w-2xl rounded-xl border border-stone-200 bg-[#F8F5F1] p-5 text-left text-sm leading-7 text-stone-600"
+      className="mx-auto mt-6 max-w-2xl rounded-xl border border-stone-200 bg-[#F7F6F3] p-5 text-left text-sm leading-7 text-stone-600"
       data-testid="guest-order-notice"
     >
       <p className="font-semibold text-stone-900">若以訪客身分結帳，可以這樣查詢訂單：</p>
@@ -62,7 +62,7 @@ export default function OrderStatusPage() {
   // 只有結帳返回時帶著 order_id 才顯示感謝訊息；一般從頁尾進入的顧客看到的是訂單查詢說明
   if (orderId) {
     return (
-      <div className="min-h-screen bg-[#F8F5F1]">
+      <div className="min-h-screen bg-[#F7F6F3]">
         <Header />
         <main className="mx-auto max-w-4xl px-4 pb-20 pt-36">
           <section className="rounded-2xl border border-stone-200 bg-white p-8 md:p-12 shadow-xs text-center">
@@ -106,7 +106,7 @@ export default function OrderStatusPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F5F1]">
+    <div className="min-h-screen bg-[#F7F6F3]">
       <Header />
       <main className="mx-auto max-w-4xl px-4 pb-20 pt-36">
         <section className="rounded-2xl border border-stone-200 bg-white p-8 md:p-12 shadow-xs">

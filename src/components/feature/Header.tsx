@@ -177,7 +177,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
     ? resolveCategoryName(new URLSearchParams(location.search).get('category') || '')
     : '';
   const desktopNavClass = (active: boolean) =>
-    `font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden ${active ? 'text-brand border-b border-brand' : 'text-[#34302F]'}`;
+    `font-semibold transition-colors duration-200 whitespace-nowrap hover:text-brand outline-hidden focus:outline-hidden ${active ? 'text-brand border-b border-brand' : 'text-[#2A2725]'}`;
   const announcement = `${ENDORSEMENT}｜全館滿 NT$${DEFAULT_FREE_SHIPPING_THRESHOLD.toLocaleString('en-US')} 免運`;
 
   return (
@@ -200,7 +200,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
         <div
           className="w-full px-6 lg:px-12"
           style={{
-            backgroundColor: '#E7D6D4'
+            backgroundColor: '#ECE8E2'
           }}
         >
           {/* 主導航 - 滿版設計，無左右空隙 */}
@@ -208,7 +208,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
             className="w-full"
             style={{
               height: '64px',
-              backgroundColor: '#E7D6D4',
+              backgroundColor: '#ECE8E2',
               borderRadius: '0px'
             }}
           >
@@ -229,7 +229,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
                   className={isMobileMenuOpen ? "ri-close-line" : "ri-menu-line"}
                   style={{
                     fontSize: '32px',
-                    color: '#34302F'
+                    color: '#2A2725'
                   }}
                 ></i>
               </button>
@@ -296,7 +296,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
                     className="ri-search-line"
                     style={{
                       fontSize: '28px',
-                      color: '#34302F'
+                      color: '#2A2725'
                     }}
                   ></i>
                 </button>
@@ -318,7 +318,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
                       className="ri-user-line"
                       style={{
                         fontSize: 'min(24px, 1.67vw)',
-                        color: '#34302F'
+                        color: '#2A2725'
                       }}
                     ></i>
                   </button>
@@ -406,7 +406,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
                     className="ri-shopping-bag-line"
                     style={{
                       fontSize: '28px',
-                      color: '#34302F'
+                      color: '#2A2725'
                     }}
                   ></i>
                   <span
@@ -458,7 +458,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
               className={isMobileMenuOpen ? "ri-close-line" : "ri-menu-line"}
               style={{
                 fontSize: '24px',
-                color: '#34302F'
+                color: '#2A2725'
               }}
             ></i>
             <span className="text-sm font-semibold text-gray-900">選單</span>
@@ -474,7 +474,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
               className="ri-search-line"
               style={{
                 fontSize: '24px',
-                color: '#FFFDFC'
+                color: '#FFFFFF'
               }}
             ></i>
           </button>
@@ -493,7 +493,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
               className="ri-shopping-bag-line"
               style={{
                 fontSize: '24px',
-                color: '#34302F'
+                color: '#2A2725'
               }}
             ></i>
             <span className="text-sm font-semibold text-gray-900">購物車</span>

@@ -6,7 +6,7 @@ import { siteContent } from '../../content/site';
 import { CARE_PILLARS, ENDORSEMENT } from '../../content/carePillars';
 
 const textLink = 'inline-flex min-h-11 items-center gap-3 text-sm font-medium text-brand underline decoration-brand/30 underline-offset-8 transition-colors hover:decoration-brand focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand';
-const eyebrow = 'text-xs font-medium tracking-[0.18em] text-[#78616A]';
+const eyebrow = 'text-xs font-medium tracking-[0.18em] text-[#6E6662]';
 const heading = 'text-3xl font-medium leading-snug text-brand md:text-4xl md:leading-10';
 
 const selectionPrinciples = [
@@ -29,7 +29,7 @@ const selectionPrinciples = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#F8F5F1] font-sans text-gray-500">
+    <div className="min-h-screen bg-[#F7F6F3] font-sans text-gray-500">
       <Header />
       <main className="pt-24">
         <EditorialHero
@@ -76,7 +76,7 @@ export default function AboutPage() {
                   height={960}
                   loading="lazy"
                 />
-                <figcaption className="mt-4 text-xs tracking-wider text-[#78616A]">從每天會用到的細節，開始挑選。</figcaption>
+                <figcaption className="mt-4 text-xs tracking-wider text-[#6E6662]">從每天會用到的細節，開始挑選。</figcaption>
               </figure>
               <div className="divide-y divide-[#D9CAC9]">
                 {CARE_PILLARS.map((pillar, index) => (
@@ -100,7 +100,7 @@ export default function AboutPage() {
               <div className="mt-8 divide-y divide-[#E8DFDB]">
                 {selectionPrinciples.map((principle) => (
                   <div key={principle.number} className="flex gap-5 py-6 first:pt-0 last:pb-0">
-                    <span aria-hidden="true" className="pt-1 text-xs tracking-widest text-[#78616A]">{principle.number}</span>
+                    <span aria-hidden="true" className="pt-1 text-xs tracking-widest text-[#6E6662]">{principle.number}</span>
                     <div>
                       <h3 className="text-lg font-medium text-brand">{principle.title}</h3>
                       <p className="mt-2 text-sm leading-7 md:text-base md:leading-6">{principle.description}</p>
@@ -147,7 +147,7 @@ export default function AboutPage() {
             <p className="text-xs tracking-[0.18em] text-blush">A LITTLE CARE, EVERY DAY</p>
             <h2 id="shop-title" className="mt-5 text-3xl font-medium leading-snug text-white md:text-4xl md:leading-10">從今天，多留一點照顧給自己。</h2>
             <p className="mt-5 text-base leading-8 text-blush">從一件貼近日常的選品開始，找到屬於妳的舒適步調。</p>
-            <Link to="/search" className="mt-8 inline-flex min-h-12 items-center justify-center gap-6 bg-[#F8F5F1] px-8 py-3 text-sm font-medium text-brand transition-colors hover:bg-blush focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            <Link to="/search" className="mt-8 inline-flex min-h-12 items-center justify-center gap-6 bg-[#F7F6F3] px-8 py-3 text-sm font-medium text-brand transition-colors hover:bg-blush focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
               開始選購 <span aria-hidden="true">→</span>
             </Link>
           </div>
@@ -157,10 +157,10 @@ export default function AboutPage() {
           <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-[1fr_3fr] md:gap-12">
             <h2 id="business-title" className="text-base font-medium text-brand">營運與聯絡資訊</h2>
             <dl className="grid gap-6 text-sm leading-6 sm:grid-cols-2">
-              <div><dt className="text-xs text-[#78616A]">營運公司</dt><dd className="mt-1">{siteContent.legalName}</dd></div>
-              <div><dt className="text-xs text-[#78616A]">統一編號</dt><dd className="mt-1">{siteContent.taxId}</dd></div>
-              <div><dt className="text-xs text-[#78616A]">登記地址</dt><dd className="mt-1">{siteContent.registeredAddress}</dd></div>
-              <div><dt className="text-xs text-[#78616A]">公司信箱</dt><dd className="mt-1"><a href={`mailto:${siteContent.companyEmail}`} className="break-all underline underline-offset-4 hover:text-brand">{siteContent.companyEmail}</a></dd></div>
+              <div><dt className="text-xs text-[#6E6662]">營運公司</dt><dd className="mt-1">{siteContent.legalName}</dd></div>
+              <div><dt className="text-xs text-[#6E6662]">統一編號</dt><dd className="mt-1">{siteContent.taxId}</dd></div>
+              <div><dt className="text-xs text-[#6E6662]">登記地址</dt><dd className="mt-1">{siteContent.registeredAddress}</dd></div>
+              <div><dt className="text-xs text-[#6E6662]">公司信箱</dt><dd className="mt-1"><a href={`mailto:${siteContent.companyEmail}`} className="break-all underline underline-offset-4 hover:text-brand">{siteContent.companyEmail}</a></dd></div>
             </dl>
           </div>
         </section>
