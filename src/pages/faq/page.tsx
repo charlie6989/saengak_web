@@ -1,11 +1,12 @@
 import EditorialHero from '../../components/feature/EditorialHero';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { siteContent } from '../../content/site';
 import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
+import { fetchShippingSettings } from '../../lib/promotions';
 
 interface FAQItem {
   id: string;
@@ -18,6 +19,14 @@ export default function FAQPage() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
   const [searchTerm, setSearchTerm] = useState('');
+  // 運費與門檻以 site_settings 為準（與購物車、結帳相同來源），讀取前先顯示程式預設值
+  const [shipping, setShipping] = useState({ freeShippingThreshold: DEFAULT_FREE_SHIPPING_THRESHOLD, defaultShippingFee: DEFAULT_SHIPPING_FEE });
+
+  useEffect(() => {
+    let active = true;
+    void fetchShippingSettings().then((settings) => { if (active) setShipping(settings); });
+    return () => { active = false; };
+  }, []);
 
   const categories = [
     { id: 'all', name: '全部問題', icon: 'ri-question-line' },
@@ -64,7 +73,7 @@ export default function FAQPage() {
       id: '6',
       category: 'shipping',
       question: '配送費用如何計算？',
-      answer: `台灣宅配運費 NT$${DEFAULT_SHIPPING_FEE}，訂單滿 NT$${DEFAULT_FREE_SHIPPING_THRESHOLD.toLocaleString('en-US')} 免運；實際金額以結帳頁面顯示為準。`
+      answer: `台灣宅配運費 NT$${shipping.defaultShippingFee.toLocaleString('en-US')}，訂單滿 NT$${shipping.freeShippingThreshold.toLocaleString('en-US')} 免運；實際金額以結帳頁面顯示為準。`
     },
     {
       id: '7',
