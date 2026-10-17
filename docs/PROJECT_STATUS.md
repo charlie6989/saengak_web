@@ -1,6 +1,23 @@
 # 項目狀態
 
-更新日期：2026-10-17（Asia/Taipei）。最新工作為分享圖與主畫面圖示；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-18（Asia/Taipei）。最新工作為會員首單免運 CARE 端實單驗證與開放領取；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## 會員首單免運：CARE 端實單驗證與開放領取（2026-10-18，分支 `claude/perk-rollout-results`）
+
+**CARE 端整段流程已在正式站驗證通過**（取代下方各節的「待解決」）：
+
+- 測試會員 `charlie.liu6989+lucissitest@gmail.com`（兩站皆為已驗證會員、CARE 無訂單）領取代碼 `LCKQ4A74N7WC`，Shopify 建立綁定該顧客的免運折扣。
+- 第一次測試結帳停在 TapPay 付款頁，Shopify 只留下未完成結帳（待顧客付款 NT$20），所以沒有訂單，不是 webhook 故障。
+- 第二次在 TapPay 沙盒付款頁完成付款並回到 Shopify 感謝頁（確認碼 M6NL0EZXQ）：訂單 **#1009** 已付款 NT$20，運費 NT$146 由代碼折抵為免運。
+- 訂單 webhook 寫入 CARE `orders`（`paid`、`discount_codes` 含代碼、已綁會員），6 秒後 `partner_member_perks` 由 `issued` 變為 **`used`**。
+- 收尾：使用者同意後於 Shopify 取消 #1009，退款 NT$20 至 TapPay（沙盒）、補回庫存、封存，未寄顧客通知。CARE `orders` 同步為 `cancelled`／`refunded`；該單的電子發票工作（`private.amego_invoice_jobs`，operation `issue`）在 0 次嘗試時轉為 `cancelled`，未開立發票。代碼維持 `used`（依設計，取消訂單不退回首單權益）。
+- 未確認：ShipAny 為 #1009 建立的出貨單（ShipAny Order ID `456668fc…`）在 ShipAny 端是否已取消，需使用者於 ShipAny 後台確認。
+- 觀察：CARE `orders.shipping_amount` 記錄折扣前運費 146（實付總額 20 正確），之後做運費報表需扣除折扣。
+- 尚未驗證：「首單未使用代碼 → 停用折扣並標記 `expired`」的分支（需第二個符合資格的測試會員）。
+
+**母站權限**：`j97kr5-7b` 的 LUCISSI Product Sync 第 12 版核准後已授予 `read_customers`／`write_customers`，但同時移除了未寫在 `shopify.app.toml` 的 `write_inventory`／`read_locations`。母站 PR #36 補回 `read_inventory`／`write_inventory`／`read_locations` 並加測試，發布第 13 版且已核准；以新 token 實測顧客、地點、庫存查詢皆成功。母站權益 `CARE_MEMBER_PERK_ENABLED` 仍關閉。
+
+**開放領取**：本次將 CARE production 的 `VITE_PUBLIC_LUCISSI_MEMBER_PERK_ENABLED` 設為 `true` 並重新部署，優惠活動頁與會員中心「我的優惠券」顯示領取卡片（驗證結果見 PR 說明）。
 
 ## 分享圖與主畫面圖示（2026-10-17，分支 `claude/share-icons`）
 
@@ -35,7 +52,7 @@
 
 - 已完成：兩站正式 Supabase 套用 `partner_member_perks`（MCP 記錄版本 CARE `20261016205350`、母站 `20261016205402`，與 repo 檔名 `20261017120000` 不同，尚未對齊）；兩站 Vercel production 設定 `PARTNER_MEMBER_SECRET`、`PARTNER_MEMBER_STATUS_URL`；母站 PR #33、修正 PR #34 已合併；兩站互相簽章呼叫 `member-status` 回 200、未簽章與錯誤簽章回 401。
 - CARE 已開 `LUCISSI_MEMBER_PERK_ENABLED=true`（前台卡片仍隱藏）。首次領取時 Shopify 拒絕 `appliesOnOneTimePurchase`／`appliesOnSubscription`（商店未使用訂閱），PR #46 移除後，測試會員 `charlie.liu6989+lucissitest@gmail.com` 成功領取 `issued` 代碼並建立綁定顧客的 Shopify 折扣（亦證實 CARE app 具顧客權限）；代碼不在公開優惠列表。
-- 待解決：使用者以此代碼與 TapPay 測試卡完成結帳、結帳頁運費為免運，但訂單未寫入 CARE 資料庫（正式 `orders` 最新為 2026-08-26 的 #1007），代碼仍為 `issued`；需查 Shopify `gh2xgs-zf` 的 webhook 投遞結果。母站 app 第 12 版已要求 `read_customers`／`write_customers`，但 `j97kr5-7b` 安裝仍未授予，母站權益維持關閉。尚未做「不用代碼的首單」停用測試、未開前台卡片旗標、測試訂單尚未取消。
+- （已由 2026-10-18 一節取代）當時待解決：使用者以此代碼與 TapPay 測試卡完成結帳、結帳頁運費為免運，但訂單未寫入 CARE 資料庫（正式 `orders` 最新為 2026-08-26 的 #1007），代碼仍為 `issued`；需查 Shopify `gh2xgs-zf` 的 webhook 投遞結果。母站 app 第 12 版已要求 `read_customers`／`write_customers`，但 `j97kr5-7b` 安裝仍未授予，母站權益維持關閉。尚未做「不用代碼的首單」停用測試、未開前台卡片旗標、測試訂單尚未取消。
 
 ## LUCISSI 會員首單免運（會員互通第 1 階段，2026-10-17，分支 `claude/lucissi-member-perk`）
 
