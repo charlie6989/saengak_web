@@ -1,6 +1,16 @@
 # 項目狀態
 
-更新日期：2026-10-18（Asia/Taipei）。最新工作為商品主圖視覺規範與第一批重製圖；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-18（Asia/Taipei）。最新工作為 Google 登入驗證與登入流程文案整理；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## Google 登入驗證與登入流程整理（2026-10-18，分支 `claude/funny-gauss-04be10`）
+
+- 正式站 Google 登入：2026-10-18 05:05（台灣時間）由使用者實測成功，走 Supabase 轉址流程（`signInWithOAuth` → `/auth/confirm` → `/welcome`）。原因為 client secret 不一致，已在 OAuth client 新增 secret 並存入 Supabase（該設定由另一個工作階段完成，本分支未變更 Supabase、Google Cloud 或 Vercel）。使用中的 OAuth client：`293650056136-joulemc5ltdtfqlb9pb65c7n0rg7v1bg`，Google Cloud 專案 `lucissi-care-auth`。
+- 尚待處理：Google 同意畫面仍顯示 `tmqzkagkrzhioftvwbqo.supabase.co`，未顯示品牌名稱或網域（需品牌驗證或 Supabase 自訂網域，屬後台設定）。
+- 程式修正：`/welcome`、`/auth/confirm` 原本分頁標題為「找不到頁面」，改為「歡迎加入」「登入驗證」，並由 `robotsForPath` 將兩頁的 robots meta 設為 `noindex, nofollow`（僅前端設定，未加 `X-Robots-Tag` 標頭）。
+- OAuth 回呼失敗時改顯示中性文案「登入暫時無法完成，請稍後再試或改用電子郵件登入。」並提供「返回登入頁」；技術細節只寫入 console。歡迎頁「您的電子郵件會員已完成登入」改為「您已完成登入」。
+- `src/lib/googleAuth.ts` 的 `GOOGLE_CLIENT_ID` 預設值改為現行 client；該模組（GIS 按鈕）目前沒有被引用，登入不經過它。
+- 已驗證：`npm run typecheck`、`npm test`（49 檔／483 項）、`npm run verify:content`（120 檔）通過；未在瀏覽器實測修改後畫面、未部署。
+- 尚未處理：`/auth/confirm` 標題仍寫「電子郵件認證」，成功訊息寫「3秒後自動跳轉到首頁」但實際 1.5 秒後前往 `/welcome`。
 
 ## 商品主圖視覺規範與第一批重製（2026-10-18，分支 `claude/website-product-visual-style-07e360`）
 

@@ -1,9 +1,11 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { captureExceptionSafe } from './sentry';
 
+// 目前登入走 Supabase 轉址流程（GoogleLoginButton → signInWithOAuth），本模組的 GIS 按鈕未被引用。
+// 保留時須與 Supabase Google provider 使用同一個 OAuth client（Google Cloud 專案 lucissi-care-auth）。
 export const GOOGLE_CLIENT_ID =
   import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-  '1070435250760-tegmugca3bvmn1k5l8i437ctndajq844.apps.googleusercontent.com';
+  '293650056136-joulemc5ltdtfqlb9pb65c7n0rg7v1bg.apps.googleusercontent.com';
 
 declare global {
   interface Window {
