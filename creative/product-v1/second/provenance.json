@@ -1,15 +1,154 @@
 {
  "created": "2026-10-18",
  "style": "docs/PRODUCT_IMAGE_STYLE.md（情境圖方向：Daylight Linen）",
- "status": "試做，等使用者核可；尚未上傳 Shopify",
+ "status": "26 件全部完成（試做 4 件已核可＋其餘 22 件），等使用者看過；尚未上傳 Shopify",
  "template": "creative/product-v1/second/PROMPT_TEMPLATE.md",
  "canvas": "1600x1600 JPEG q90（生成圖 1264px 放大）",
  "canva_export_design": "DAHYTPORdmA（暫存，僅供全尺寸匯出）",
  "review_sheets": [
-  "creative/product-v1/second/before-after.jpg",
+  "creative/product-v1/second/before-after-1.jpg",
+  "creative/product-v1/second/before-after-2.jpg",
+  "creative/product-v1/second/before-after-3.jpg",
+  "creative/product-v1/second/grid-second.jpg",
   "creative/product-v1/second/qc-sheet.jpg"
  ],
+ "decision": "2026-10-18 使用者核可試做：瓶罐用合成版、內著用 AI 版；21-ai／23-ai 留作備選不上架。",
+ "scenes": {
+  "stone-ledge": {
+   "canva_media": "MAHYTM4PD9w",
+   "used_by": [
+    "21",
+    "27"
+   ]
+  },
+  "oak-tray": {
+   "canva_media": "MAHYTPkMieU",
+   "used_by": [
+    "23",
+    "10"
+   ]
+  },
+  "stone-counter": {
+   "canva_media": "MAHYTMexWX4",
+   "used_by": [
+    "24",
+    "26"
+   ]
+  },
+  "oak-shelf": {
+   "canva_media": "MAHYTN5J4YQ",
+   "used_by": [
+    "22",
+    "25"
+   ]
+  },
+  "linen-flatlay": {
+   "canva_media": "MAHYTIT0frg",
+   "used_by": [
+    "11",
+    "12"
+   ]
+  }
+ },
+ "color_check": "Vision 去背後比較主圖與第二張的商品中位 Lab；ΔE 主要來自情境光線亮度差，色相差小於 3。",
  "items": [
+  {
+   "index": 1,
+   "title": "透氣親膚純棉三角褲",
+   "file": "creative/product-v1/second/01.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02___221727_2b1b00df-f594-445e-ac82-06fd407f8c5c.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e54798dd-4fc7-4c5d-9ed4-9f75680cf138.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTJPK-j8"
+   ],
+   "canva_generated_media_id": "MAHYTONgvR4",
+   "color_check_deltaE_vs_main": 1.3,
+   "review": "對折，腰頭蝴蝶結與緹花針織保留。只給主圖（原圖為白色款）。"
+  },
+  {
+   "index": 2,
+   "title": "細帶純棉無痕女內褲",
+   "file": "creative/product-v1/second/02.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_154935.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_45f7b315-6c9a-4ab9-917d-0f54f37230b2.jpg",
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_154935.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTMxxZN4",
+    "MAHYTCio0Bs"
+   ],
+   "canva_generated_media_id": "MAHYTAH4kXE",
+   "color_check_deltaE_vs_main": 3.7,
+   "review": "方折，雙細帶側邊保留。原圖為多色並排，提示只留淡紫。"
+  },
+  {
+   "index": 3,
+   "title": "細帶純棉無痕女內褲",
+   "file": "creative/product-v1/second/03.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246828267_162408_e8e4ba44-ec77-4415-8911-93ba331d4e22.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_4f3d215b-89a8-46a8-9d14-e53b63389e16.jpg",
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246828267_162408_e8e4ba44-ec77-4415-8911-93ba331d4e22.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTOear5A",
+    "MAHYTDDFGvA"
+   ],
+   "canva_generated_media_id": "MAHYTDhAqu8",
+   "color_check_deltaE_vs_main": 0.8,
+   "review": "對折，側邊銀環與後腰小白標保留（無字）。"
+  },
+  {
+   "index": 4,
+   "title": "細帶純棉無痕女內褲",
+   "file": "creative/product-v1/second/04.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_12___230316_bc4a018a-feb5-4fa1-aa2a-22b16fa8f3f0.jpg",
+   "method": "ai-scene+color-correct",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_95213490-d285-4eb6-b70f-1bd246fb0f85.jpg",
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_57927a59-c0af-45b9-bab7-7f4f9a85927c.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTG6h7FU",
+    "MAHYTOZH-q0"
+   ],
+   "canva_generated_media_id": "MAHYTFEfiZA",
+   "color_check_deltaE_vs_main": 5.9,
+   "review": "第一版把低腰比基尼畫成較高腰的方形，已重繪第二版平放；第二版偏黃，以遮罩把布料亮部校回主圖顏色（RGB 比例 0.996/1.006/1.041）。",
+   "rejected_first_attempt": {
+    "canva_generated_media_id": "MAHYTNuJeac",
+    "reason": "版型變成較高腰方形"
+   }
+  },
+  {
+   "index": 5,
+   "title": "透氣親膚純棉三角褲",
+   "file": "creative/product-v1/second/05.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_577d84bc-2d76-4497-93ea-7d4ed99ca60b.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_51bd0a6e-4aa0-4f0e-8d14-ef6897443691.jpg",
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_b76dbc36-0cab-40c7-bc3b-6bdfae5ee5e3.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTOSz5KQ",
+    "MAHYTGYdfVY"
+   ],
+   "canva_generated_media_id": "MAHYTLI9Qus",
+   "color_check_deltaE_vs_main": 4.0,
+   "review": "對折，灰色蕾絲腰頭、蝴蝶結、褲口蕾絲保留。"
+  },
   {
    "index": 6,
    "title": "蕾絲邊高腰純棉三角褲",
@@ -25,7 +164,100 @@
    ],
    "canva_generated_media_id": "MAHYTIaA6I0",
    "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_162710_b7b37f42-6e51-4bfc-952e-e3461c225562.jpg",
-   "review": "對折放在象牙棉麻上，下墊淺霧粉布。蕾絲側片、扇形腰頭、蝴蝶結、褲口蕾絲與主圖一致；顏色維持偏淡紫的白。"
+   "review": "對折放在象牙棉麻上，下墊淺霧粉布。蕾絲側片、扇形腰頭、蝴蝶結、褲口蕾絲與主圖一致；顏色維持偏淡紫的白。",
+   "batch": "pilot"
+  },
+  {
+   "index": 7,
+   "title": "涼感冰絲無痕內褲",
+   "file": "creative/product-v1/second/07.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_1bd715a0-cc28-422b-a663-9bcbcc7bf1d2.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/07_3d574a5d-e705-473a-ae1c-34c01a4a5698.jpg",
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_e5badd19-60f0-455b-b9e2-8017147ec5c3.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTEMEOfE",
+    "MAHYTM_7vSk"
+   ],
+   "canva_generated_media_id": "MAHYTDNXBYQ",
+   "color_check_deltaE_vs_main": 3.2,
+   "review": "方折，雛菊刺繡保留。"
+  },
+  {
+   "index": 8,
+   "title": "純棉高腰舒適內褲",
+   "file": "creative/product-v1/second/08.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788248732541_154618_236d6fe1-110e-4159-a4e2-ed50e687f914.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/08.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTHd8ldw"
+   ],
+   "canva_generated_media_id": "MAHYTEwJzXo",
+   "color_check_deltaE_vs_main": 0.0,
+   "review": "對折，黑色保留布紋層次。只給主圖（原圖為白色款）。"
+  },
+  {
+   "index": 9,
+   "title": "純棉高腰防漏生理褲",
+   "file": "creative/product-v1/second/09.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/Gemini_Generated_Image_inl91yinl91yinl9_53bda291-dc4e-4c1b-bbc3-112cf171e1e8.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/09.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTBKw1b0"
+   ],
+   "canva_generated_media_id": "MAHYTFnoKb8",
+   "color_check_deltaE_vs_main": 3.5,
+   "review": "方折，灰色防漏底襠保留。只給主圖（原圖為杏色款）。"
+  },
+  {
+   "index": 10,
+   "title": "益生菌私密舒緩凝膠",
+   "file": "creative/product-v1/second/10.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_4ba5441d-cd6f-41b5-a9b6-1e7772c73880.jpg",
+   "method": "ai-empty-scene+cutout",
+   "cutout_from": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/10_a4e7319e-07cc-47f6-9794-f14474d0c899.jpg",
+   "scene": "oak-tray",
+   "canva_scene_media": "MAHYTPkMieU",
+   "composite": "scripts/product-images/scene.py <oak-tray> <cutout> out.jpg stand 640 930 620 0.5 0.04",
+   "review": "MEDION 外盒，包裝字樣為已上架主圖像素（原廠照去背）。"
+  },
+  {
+   "index": 11,
+   "title": "親膚安全私密除毛刀",
+   "file": "creative/product-v1/second/11.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246307754_829041d0-f301-4cd7-8743-bf3ab94a367c.jpg",
+   "method": "ai-empty-scene+cutout",
+   "cutout_from": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/11.jpg",
+   "scene": "linen-flatlay",
+   "canva_scene_media": "MAHYTIT0frg",
+   "composite": "scripts/product-images/scene.py <linen-flatlay> <cutout> out.jpg flat 640 620 780",
+   "review": "除毛刀平放。注意：已上架主圖 11 本身是 AI 重繪，合成沿用其像素。"
+  },
+  {
+   "index": 12,
+   "title": "精緻內著專用清洗護衣袋",
+   "file": "creative/product-v1/second/12.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_165158_0a5f5165-8def-4de2-b893-348470c956b0.jpg",
+   "method": "ai-empty-scene+cutout",
+   "cutout_from": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/12_d6d4b51c-f78c-4f44-a209-f50f56a26f19.jpg",
+   "scene": "linen-flatlay",
+   "canva_scene_media": "MAHYTIT0frg",
+   "composite": "scripts/product-images/scene.py <linen-flatlay> <cutout> out.jpg flat 630 630 880",
+   "review": "護衣袋平放。"
   },
   {
    "index": 13,
@@ -42,7 +274,114 @@
    ],
    "canva_generated_media_id": "MAHYTOqqhZA",
    "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_05_0b06eb06-a2c5-4891-9e22-f1395e2a4e83.jpg",
-   "review": "AI 輸出腰頭為 CHESSOLYMPiAD（小寫 i），已把腰頭拉平、清掉 i、以同字 H 的左豎筆重建大寫襯線 I 再轉回，只替換該字母區域。供應商原圖解析度低，看來是大寫 I。已上架主圖 13 同樣是小寫 i，需對照實品確認。"
+   "review": "AI 輸出腰頭為 CHESSOLYMPiAD（小寫 i），已把腰頭拉平、清掉 i、以同字 H 的左豎筆重建大寫襯線 I 再轉回，只替換該字母區域。供應商原圖解析度低，看來是大寫 I。已上架主圖 13 同樣是小寫 i，需對照實品確認。",
+   "batch": "pilot"
+  },
+  {
+   "index": 15,
+   "title": "隱形中腰無痕女內著",
+   "file": "creative/product-v1/second/15.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_e4a83323-9dee-47e8-8a9d-4174f3bb338a.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/15.jpg",
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_77defcb8-c558-40cb-9a3c-1d0343ec8943.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTC5gD74",
+    "MAHYTCvCkxM"
+   ],
+   "canva_generated_media_id": "MAHYTJOaHwk",
+   "color_check_deltaE_vs_main": 2.6,
+   "review": "對折，無痕切邊保留，原圖 7A 貼紙已排除。"
+  },
+  {
+   "index": 16,
+   "title": "涼感冰絲無痕內褲",
+   "file": "creative/product-v1/second/16.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_880ffa34-59a3-48e4-b5a4-794516d99ab0.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/16.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTCZDjXI"
+   ],
+   "canva_generated_media_id": "MAHYTCUPf7M",
+   "color_check_deltaE_vs_main": 3.1,
+   "review": "方折，波浪切邊與右側壓印圓點保留。只給主圖。"
+  },
+  {
+   "index": 17,
+   "title": "高腰無痕收腹內褲",
+   "file": "creative/product-v1/second/17.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_164636_aeb15439-089d-4396-a8b1-a2a3ad0ba374.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/17.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTN74NCU"
+   ],
+   "canva_generated_media_id": "MAHYTAh7kD0",
+   "color_check_deltaE_vs_main": 3.7,
+   "review": "對折，黑色蕾絲腰頭與側片保留。只給主圖（原圖為香檳色款）。"
+  },
+  {
+   "index": 18,
+   "title": "涼感冰絲無痕內褲",
+   "file": "creative/product-v1/second/18.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_1433051_13860def-7398-4b69-8935-1d3a1a77d875.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/18.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTKio0BU"
+   ],
+   "canva_generated_media_id": "MAHYTDpCbyQ",
+   "color_check_deltaE_vs_main": 5.3,
+   "review": "方折，刻意把後腰內側尺寸標折到看不見（避免 AI 改字）。只給主圖。"
+  },
+  {
+   "index": 19,
+   "title": "乾爽透氣運動內衣",
+   "file": "creative/product-v1/second/19.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_9446da05-f724-4dbc-b7ce-d1286454355a.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/19.jpg",
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_9446da05-f724-4dbc-b7ce-d1286454355a.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTF2WYgA",
+    "MAHYTKnnFhE"
+   ],
+   "canva_generated_media_id": "MAHYTGAnF70",
+   "color_check_deltaE_vs_main": 1.1,
+   "review": "平放，胸墊一對放在旁邊，原圖中文字已排除。"
+  },
+  {
+   "index": 20,
+   "title": "涼感冰絲無痕內褲",
+   "file": "creative/product-v1/second/20.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_4057ca40-928a-47c4-850b-cb30afbb6b64.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/20.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTKTV5wE"
+   ],
+   "canva_generated_media_id": "MAHYTOXbG3E",
+   "color_check_deltaE_vs_main": 3.7,
+   "review": "對折，圓形緹花保留但比主圖淡。只給主圖（原圖有 CHANEL 盒與貼紙）。"
   },
   {
    "index": 21,
@@ -65,7 +404,21 @@
     "review": "字樣 BALANCING / FEMININE FOAMING WASH / Saengak 核對正確，但為生成像素。"
    },
    "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_24c28a84-e7ba-4012-bc2e-5a5788591234.jpg",
-   "review": "淺石材洗手檯、亞麻毛巾、淺霧粉牆。瓶身為原廠照去背像素，未經生成模型。"
+   "review": "淺石材洗手檯、亞麻毛巾、淺霧粉牆。瓶身為原廠照去背像素，未經生成模型。",
+   "batch": "pilot"
+  },
+  {
+   "index": 22,
+   "title": "Saengak 益生菌私密養膚濕巾",
+   "file": "creative/product-v1/second/22.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_3d07bbd2-0735-46c1-8f08-261f24e7a967.jpg",
+   "method": "ai-empty-scene+cutout",
+   "cutout_from": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/22.jpg",
+   "scene": "oak-shelf",
+   "canva_scene_media": "MAHYTN5J4YQ",
+   "composite": "scripts/product-images/scene.py <oak-shelf> <cutout> out.jpg stand 610 978 700 0.5 0.05",
+   "review": "三盒濕巾直立堆疊。注意：主圖 22 是 AI 重繪，包裝字樣沿用主圖（上一輪已列為需逐字核對）。"
   },
   {
    "index": 23,
@@ -88,7 +441,60 @@
     "review": "字樣 BALANCING / FEMININE CALMING MIST / INNER Saengak 核對正確，但為生成像素。"
    },
    "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e7742379-2812-46ac-9cb2-de9072a99053.jpg",
-   "review": "淡橡木托盤、淺霧粉收納包、象牙亞麻布。瓶身為原廠照去背像素，未經生成模型。"
+   "review": "淡橡木托盤、淺霧粉收納包、象牙亞麻布。瓶身為原廠照去背像素，未經生成模型。",
+   "batch": "pilot"
+  },
+  {
+   "index": 24,
+   "title": "Saengak 益生菌私密舒緩凝膠",
+   "file": "creative/product-v1/second/24.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_01_hero_ad375310-b3bf-4e4d-82a9-023c6a38c5d9.jpg",
+   "method": "ai-empty-scene+cutout",
+   "cutout_from": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/24.jpg",
+   "scene": "stone-counter",
+   "canva_scene_media": "MAHYTMexWX4",
+   "composite": "scripts/product-images/scene.py <stone-counter> <cutout> out.jpg stand 720 884 640 0.5 0.05",
+   "review": "凝膠外盒。"
+  },
+  {
+   "index": 25,
+   "title": "Saengak 益生菌舒緩養膚組",
+   "file": "creative/product-v1/second/25.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/bundle_01_gel_wipes.jpg",
+   "method": "ai-empty-scene+cutout",
+   "cutout_from": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/25.jpg",
+   "scene": "oak-shelf",
+   "canva_scene_media": "MAHYTN5J4YQ",
+   "composite": "scripts/product-images/scene.py <oak-shelf> <cutout> out.jpg stand 640 978 560 0.5 0.05",
+   "review": "外盒＋濕巾單片（單片來自 AI 重繪的 22）。"
+  },
+  {
+   "index": 26,
+   "title": "Saengak 潔淨調理舒緩組",
+   "file": "creative/product-v1/second/26.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/bundle_02_mousse_gel.jpg",
+   "method": "ai-empty-scene+cutout",
+   "cutout_from": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/26.jpg",
+   "scene": "stone-counter",
+   "canva_scene_media": "MAHYTMexWX4",
+   "composite": "scripts/product-images/scene.py <stone-counter> <cutout> out.jpg stand 730 884 600 0.5 0.05",
+   "review": "慕斯瓶＋外盒。"
+  },
+  {
+   "index": 27,
+   "title": "Saengak 全效微生態修護組",
+   "file": "creative/product-v1/second/27.jpg",
+   "batch": "rollout-2026-10-18",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/bundle_03_all_trio.jpg",
+   "method": "ai-empty-scene+cutout",
+   "cutout_from": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/27.jpg",
+   "scene": "stone-ledge",
+   "canva_scene_media": "MAHYTM4PD9w",
+   "composite": "scripts/product-images/scene.py <stone-ledge> <cutout> out.jpg stand 700 992 620 0.5 0.06",
+   "review": "慕斯瓶＋外盒＋濕巾單片（單片來自 AI 重繪的 22）。"
   }
  ]
 }
