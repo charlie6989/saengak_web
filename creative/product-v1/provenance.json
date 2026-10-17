@@ -290,7 +290,8 @@
    "canva_generated_media_id": "MAHYSoN_B0c",
    "ai_model": "Canva generate-image（以原圖為參考的影像編輯）",
    "review": "AI 重繪：三盒完整堆疊，包裝字樣需逐字核對 Balancing / Feminine Cleansing Wipes / Saengak。",
-   "shopify": "2026-10-18 已上傳並設為第一張（22.jpg），原圖保留在後面；Storefront 回讀確認。 網站預設規格：單片獨立包裝 (1片入)。"
+   "shopify": "2026-10-18 已上傳並設為第一張（22.jpg），原圖保留在後面；Storefront 回讀確認。 網站預設規格：單片獨立包裝 (1片入)。",
+   "issue_2026_10_18": "商品唯一規格是「單片獨立包裝 (1片入)」NT$20，但已上架主圖是三盒堆疊（原 Shopify 主圖也是盒裝），會讓人以為買到三盒。已備好單片包裝版 creative/product-v1/main/22-single.jpg（AI 重繪的單片包裝去背合成），尚未替換 Shopify。"
   },
   {
    "index": 23,

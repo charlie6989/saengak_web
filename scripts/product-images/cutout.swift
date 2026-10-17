@@ -11,7 +11,16 @@ guard args.count >= 3 else { print("usage: cutout in out [all|largest|indices]")
 let url = URL(fileURLWithPath: args[1])
 let mode = args.count > 3 ? args[3] : "all"
 guard let src = CGImageSourceCreateWithURL(url as CFURL, nil),
-      let cg = CGImageSourceCreateImageAtIndex(src, 0, nil) else { print("cannot read"); exit(1) }
+      let raw = CGImageSourceCreateImageAtIndex(src, 0, nil) else { print("cannot read"); exit(1) }
+// Bake any EXIF orientation into the pixels so Vision and the output PNG both see the upright image.
+let props = CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [CFString: Any]
+let exif = (props?[kCGImagePropertyOrientation] as? NSNumber)?.int32Value ?? 1
+var cg = raw
+if exif != 1 {
+  let upright = CIImage(cgImage: raw).oriented(forExifOrientation: exif)
+  guard let baked = CIContext().createCGImage(upright, from: upright.extent) else { print("cannot orient"); exit(1) }
+  cg = baked
+}
 let req = VNGenerateForegroundInstanceMaskRequest()
 let handler = VNImageRequestHandler(cgImage: cg, options: [:])
 try handler.perform([req])

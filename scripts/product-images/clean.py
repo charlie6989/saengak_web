@@ -21,18 +21,28 @@ for pts in polys:
     ImageDraw.Draw(pm).polygon([(pts[k]*w, pts[k+1]*h) for k in range(0, len(pts), 2)], fill=255)
     im[np.array(pm) > 0, 3] = 0
 # patch: fill a small sticker/badge by diffusing the surrounding fabric colour inward (no texture invention)
-yy, xx = np.mgrid[0:h, 0:w]
 for cx, cy, r in patches:
+    # work only in a padded box around the patch
+    R = r*w*1.6 + 4
+    x0, x1 = max(0, int(cx*w - R)), min(w, int(cx*w + R) + 1)
+    y0, y1 = max(0, int(cy*h - R)), min(h, int(cy*h + R) + 1)
+    reg = im[y0:y1, x0:x1]
+    yy, xx = np.mgrid[y0:y1, x0:x1]
     d = np.hypot(xx - cx*w, yy - cy*h)
     hole = d <= r*w
-    rgb = im[..., :3].copy()
-    ring = (d > r*w) & (d <= r*w*1.5)
+    opaque = reg[..., 3] > 40
+    ring = (d > r*w) & (d <= r*w*1.5) & opaque   # sample fabric only, never transparent cutout pixels
+    if not ring.any():
+        print('skip patch', (cx, cy, r), ': no opaque fabric around it'); continue
+    rgb = reg[..., :3].copy()
     rgb[hole] = np.median(rgb[ring], axis=0)
+    wgt = (opaque | hole).astype(float)[..., None]
+    den = ndimage.uniform_filter(wgt, size=(3, 3, 1))
     for _ in range(400):
-        sm = ndimage.uniform_filter(rgb, size=(3, 3, 1))
-        rgb[hole] = sm[hole]
+        num = ndimage.uniform_filter(rgb * wgt, size=(3, 3, 1))
+        rgb[hole] = (num / np.maximum(den, 1e-6))[hole]
     feather = np.clip((r*w*1.08 - d) / (r*w*0.08), 0, 1)[..., None]
-    im[..., :3] = im[..., :3] * (1 - feather) + rgb * feather
+    reg[..., :3] = reg[..., :3] * (1 - feather) + rgb * feather
 m = im[..., 3] > 40
 lab, n = ndimage.label(m)
 if n:

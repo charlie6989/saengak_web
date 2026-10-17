@@ -26,10 +26,14 @@ def trim(im):
     return im.crop(a.getbbox())
 
 def shadow_flat(alpha, n):
-    # soft lifted shadow for flat-lay garments: offset toward lower-right
+    # soft lifted shadow for flat-lay garments, offset toward lower-right.
+    # Pad before blurring so the shadow can spread past the cutout's bounding box.
     blur = max(4, int(n * 0.018))
-    sh = alpha.filter(ImageFilter.GaussianBlur(blur))
-    return sh.point(lambda v: int(v * 0.20)), (int(n * 0.006), int(n * 0.012))
+    pad = blur * 3
+    padded = Image.new('L', (alpha.width + 2 * pad, alpha.height + 2 * pad), 0)
+    padded.paste(alpha, (pad, pad))
+    sh = padded.filter(ImageFilter.GaussianBlur(blur))
+    return sh.point(lambda v: int(v * 0.20)), (int(n * 0.006) - pad, int(n * 0.012) - pad)
 
 def shadow_stand(alpha, n):
     # contact shadow ellipse at base + faint cast for standing products
@@ -57,9 +61,10 @@ def main():
     for im, sc in items:
         k = (ref_h * sc) / im.height if len(items) > 1 else 1
         scaled.append(im.resize((max(1, int(im.width * k)), max(1, int(im.height * k))), Image.LANCZOS))
-    gw = sum(i.width for i in scaled) + gap * (len(scaled) - 1)
+    gaps = gap * (len(scaled) - 1)
     gh = max(i.height for i in scaled)
-    f = min(box_w / gw, box_h / gh)
+    # gaps stay a fixed size, so fit the images into the width left after them
+    f = min((box_w - gaps) / sum(i.width for i in scaled), box_h / gh)
     scaled = [i.resize((int(i.width * f), int(i.height * f)), Image.LANCZOS) for i in scaled]
     gw = sum(i.width for i in scaled) + gap * (len(scaled) - 1)
     gh = max(i.height for i in scaled)
@@ -70,7 +75,7 @@ def main():
         a = im.split()[-1]
         if mode == 'flat':
             sh, (dx, dy) = shadow_flat(a, n)
-            layer = Image.new('RGBA', im.size, (72, 48, 56, 0)); layer.putalpha(sh)
+            layer = Image.new('RGBA', sh.size, (72, 48, 56, 0)); layer.putalpha(sh)
             canvas.alpha_composite(layer, (int(x) + dx, top + dy))
         else:
             ell, _ = shadow_stand(a, n)
