@@ -1,7 +1,7 @@
 
 import { useEffect, useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { titleForPath } from "../../lib/pageTitle";
+import { robotsForPath, titleForPath } from "../../lib/pageTitle";
 
 export default function ScrollToTop() {
   const { pathname, search, hash } = useLocation();
@@ -9,6 +9,7 @@ export default function ScrollToTop() {
   // 換頁時先設定固定標題（layout effect 先於頁面的 effect 執行，動態頁可再覆寫）
   useLayoutEffect(() => {
     document.title = titleForPath(pathname);
+    document.querySelector('meta[name="robots"]')?.setAttribute("content", robotsForPath(pathname));
   }, [pathname]);
 
   useEffect(() => {
