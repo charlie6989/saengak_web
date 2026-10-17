@@ -11,7 +11,7 @@
 - 第二次在 TapPay 沙盒付款頁完成付款並回到 Shopify 感謝頁（確認碼 M6NL0EZXQ）：訂單 **#1009** 已付款 NT$20，運費 NT$146 由代碼折抵為免運。
 - 訂單 webhook 寫入 CARE `orders`（`paid`、`discount_codes` 含代碼、已綁會員），6 秒後 `partner_member_perks` 由 `issued` 變為 **`used`**。
 - 收尾：使用者同意後於 Shopify 取消 #1009，退款 NT$20 至 TapPay（沙盒）、補回庫存、封存，未寄顧客通知。CARE `orders` 同步為 `cancelled`／`refunded`；該單的電子發票工作（`private.amego_invoice_jobs`，operation `issue`）在 0 次嘗試時轉為 `cancelled`，未開立發票。代碼維持 `used`（依設計，取消訂單不退回首單權益）。
-- 未確認：ShipAny 為 #1009 建立的出貨單（ShipAny Order ID `456668fc…`）在 ShipAny 端是否已取消，需使用者於 ShipAny 後台確認。
+- ShipAny：為 #1009 建立的出貨單（ShipAny Order ID `456668fc…`）於 2026-10-18 在 ShipAny 後台「全部訂單」確認為「訂單取消」，不會出貨。
 - 觀察：CARE `orders.shipping_amount` 記錄折扣前運費 146（實付總額 20 正確），之後做運費報表需扣除折扣。
 - 尚未驗證：「首單未使用代碼 → 停用折扣並標記 `expired`」的分支（需第二個符合資格的測試會員）。
 
