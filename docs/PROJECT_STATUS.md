@@ -1,6 +1,15 @@
 # 項目狀態
 
-更新日期：2026-10-17（Asia/Taipei）。最新工作為配送文案比照 LUCISSI；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-17（Asia/Taipei）。最新工作為分享圖與主畫面圖示；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## 分享圖與主畫面圖示（2026-10-17，分支 `claude/share-icons`）
+
+補齊 Logo 規範網站導入步驟 3–4（暫用字標版本）：
+
+- 以 sharp 從暫用字標 SVG 產生 `public/apple-touch-icon.png`（180px）、`public/favicon-32x32.png`，以及 `public/images/brand/og-image.png`（1200×630，`ivory` #F8F5F1 底、Primary 字標 560px 寬、`plum`，依規範置中）。
+- `index.html` 加入 32px PNG icon、`apple-touch-icon`、Open Graph（type、site_name、locale、title、description、image 與尺寸、alt；不設固定 `og:url`，因所有路由共用 `index.html`，固定值會讓各頁分享被併成首頁）及 `twitter:card=summary_large_image`。各頁仍共用首頁的分享資訊；個別商品頁的分享標題與圖片尚未處理。
+- 已驗證：本機 dev server 四個圖檔皆 200 且型別正確、12 個分享標籤存在；目視檢查分享圖與圖示。
+- 未處理：`.ico`（現代瀏覽器用 SVG／PNG 即可）；設計師正式檔到位後需重產這三張圖。
 
 ## 配送文案比照 LUCISSI（2026-10-17，分支 `claude/shipping-copy-home-delivery`）
 
