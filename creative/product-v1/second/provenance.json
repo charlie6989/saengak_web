@@ -1,0 +1,94 @@
+{
+ "created": "2026-10-18",
+ "style": "docs/PRODUCT_IMAGE_STYLE.md（情境圖方向：Daylight Linen）",
+ "status": "試做，等使用者核可；尚未上傳 Shopify",
+ "template": "creative/product-v1/second/PROMPT_TEMPLATE.md",
+ "canvas": "1600x1600 JPEG q90（生成圖 1264px 放大）",
+ "canva_export_design": "DAHYTPORdmA（暫存，僅供全尺寸匯出）",
+ "review_sheets": [
+  "creative/product-v1/second/before-after.jpg",
+  "creative/product-v1/second/qc-sheet.jpg"
+ ],
+ "items": [
+  {
+   "index": 6,
+   "title": "蕾絲邊高腰純棉三角褲",
+   "file": "creative/product-v1/second/06.jpg",
+   "method": "ai-scene",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_0795954c-f363-449f-a734-04bbaa5c2926.jpg",
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16271033_dcafd81a-a235-42fa-a3ec-a2a8e2aba5d4.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTOIuGUs",
+    "MAHYTNX5cZ4"
+   ],
+   "canva_generated_media_id": "MAHYTIaA6I0",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_162710_b7b37f42-6e51-4bfc-952e-e3461c225562.jpg",
+   "review": "對折放在象牙棉麻上，下墊淺霧粉布。蕾絲側片、扇形腰頭、蝴蝶結、褲口蕾絲與主圖一致；顏色維持偏淡紫的白。"
+  },
+  {
+   "index": 13,
+   "title": "舒適純棉透氣內褲（午夜藍）",
+   "file": "creative/product-v1/second/13.jpg",
+   "method": "ai-scene+letter-retouch",
+   "references": {
+    "main": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/13.jpg",
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_5726ddb9-eada-489d-98fd-8c076dfa805c.jpg"
+   },
+   "canva_reference_media": [
+    "MAHYTB9SprU",
+    "MAHYTD0dCFQ"
+   ],
+   "canva_generated_media_id": "MAHYTOqqhZA",
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_05_0b06eb06-a2c5-4891-9e22-f1395e2a4e83.jpg",
+   "review": "AI 輸出腰頭為 CHESSOLYMPiAD（小寫 i），已把腰頭拉平、清掉 i、以同字 H 的左豎筆重建大寫襯線 I 再轉回，只替換該字母區域。供應商原圖解析度低，看來是大寫 I。已上架主圖 13 同樣是小寫 i，需對照實品確認。"
+  },
+  {
+   "index": 21,
+   "title": "Saengak 平衡調理私密潔淨慕斯",
+   "file": "creative/product-v1/second/21.jpg",
+   "method": "ai-empty-scene+cutout",
+   "references": {
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_1b5a2511-b236-48a5-ac02-d246c8cff422.jpg"
+   },
+   "canva_generated_media_id": "MAHYTM4PD9w",
+   "composite": "scripts/product-images/scene.py bg 680 992 700 0.55 0.06",
+   "alternate": {
+    "file": "creative/product-v1/second/21-ai.jpg",
+    "method": "ai-scene",
+    "canva_generated_media_id": "MAHYTJrlGQ4",
+    "canva_reference_media": [
+     "MAHYTBRmw9M",
+     "MAHYTHK8ysM"
+    ],
+    "review": "字樣 BALANCING / FEMININE FOAMING WASH / Saengak 核對正確，但為生成像素。"
+   },
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_24c28a84-e7ba-4012-bc2e-5a5788591234.jpg",
+   "review": "淺石材洗手檯、亞麻毛巾、淺霧粉牆。瓶身為原廠照去背像素，未經生成模型。"
+  },
+  {
+   "index": 23,
+   "title": "Saengak 私密雙層修護精華噴霧",
+   "file": "creative/product-v1/second/23.jpg",
+   "method": "ai-empty-scene+cutout",
+   "references": {
+    "source": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e7742379-2812-46ac-9cb2-de9072a99053.jpg"
+   },
+   "canva_generated_media_id": "MAHYTPkMieU",
+   "composite": "scripts/product-images/scene.py bg 640 930 640 0.5 0.04",
+   "alternate": {
+    "file": "creative/product-v1/second/23-ai.jpg",
+    "method": "ai-scene",
+    "canva_generated_media_id": "MAHYTE890aw",
+    "canva_reference_media": [
+     "MAHYTHACScc",
+     "MAHYTA1Pses"
+    ],
+    "review": "字樣 BALANCING / FEMININE CALMING MIST / INNER Saengak 核對正確，但為生成像素。"
+   },
+   "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e7742379-2812-46ac-9cb2-de9072a99053.jpg",
+   "review": "淡橡木托盤、淺霧粉收納包、象牙亞麻布。瓶身為原廠照去背像素，未經生成模型。"
+  }
+ ]
+}
