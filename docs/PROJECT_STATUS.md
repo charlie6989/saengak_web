@@ -42,7 +42,19 @@
 - 收尾：使用者同意後於 Shopify 取消 #1009，退款 NT$20 至 TapPay（沙盒）、補回庫存、封存，未寄顧客通知。CARE `orders` 同步為 `cancelled`／`refunded`；該單的電子發票工作（`private.amego_invoice_jobs`，operation `issue`）在 0 次嘗試時轉為 `cancelled`，未開立發票。代碼維持 `used`（依設計，取消訂單不退回首單權益）。
 - ShipAny：為 #1009 建立的出貨單（ShipAny Order ID `456668fc…`）於 2026-10-18 在 ShipAny 後台「全部訂單」確認為「訂單取消」，不會出貨。
 - 觀察：CARE `orders.shipping_amount` 記錄折扣前運費 146（實付總額 20 正確），之後做運費報表需扣除折扣。
-- 尚未驗證：「首單未使用代碼 → 停用折扣並標記 `expired`」的分支（需第二個符合資格的測試會員）。
+- 「首單未使用代碼 → 停用折扣並標記 `expired`」的分支：已於 2026-10-18 另行驗證，見下節。
+
+## 會員首單免運：首單未用代碼 → 代碼作廢（2026-10-18，分支 `claude/perk-expiry-test-results`）
+
+**「首單沒用代碼就作廢」分支已在正式站驗證通過**：
+
+- 使用者同意以主帳號 `charlie.liu6989@gmail.com` 測試（接受其首單免運權益因此作廢）。主帳號以 Google 登入 CARE（Google 登入於同日修復，見 PR #55），在 `/promotion` 領取代碼 `LCVED46LF4DJ`，Shopify 建立綁定該顧客的免運折扣 `gid://shopify/DiscountCodeNode/1494065315907`。
+- 結帳不輸入代碼，於 TapPay 沙盒付款，回到 Shopify 感謝頁（確認碼 59LM0DEFJ）：訂單 **#1010** 已付款 NT$166（商品 NT$20＋運費 NT$146，未折抵）。
+- 訂單 webhook 寫入 CARE `orders`（`paid`、`discount_codes` 空），5 秒後 `partner_member_perks` 由 `issued` 變為 **`expired`**。
+- Shopify 後台該折扣狀態為「已到期」、已使用 0 次；時間軸顯示 SAENGAK Order Sync 停用此折扣兩次（推測訂單建立與付款兩個 webhook 各觸發一次，第二次無實質影響）。
+- 收尾：使用者同意後於 Shopify 取消 #1010，退款 NT$166 至 TapPay（沙盒）、補回庫存，未寄顧客通知。CARE `orders` 同步為 `cancelled`／`refunded`；電子發票工作（operation `issue`）在 0 次嘗試時轉為 `cancelled`，未開立發票。代碼維持 `expired`（取消訂單不退回首單權益）。
+- 尚未確認：#1010 的 ShipAny 出貨單（ShipAny Order ID `974c3fef…`）是否為「訂單取消」；ShipAny 後台需使用者登入，由使用者自行確認。
+- 觀察：Shopify 結帳頁的瀏覽器分頁標題仍顯示「Checkout - My Store 7」（頁首已是 LUCISSI CARE、感謝頁標題亦為 LUCISSI CARE），可能為快取，待觀察。
 
 **Migration 版本對齊（2026-10-18）**：`partner_member_perks` 檔名由 `20261017120000` 改為正式站實際記錄的 `20261016205350`（母站 repo 另改為 `20261016205402`），避免日後 `supabase db push` 以為尚未套用。另發現 `20261016111000_grant_coupon_service_access.sql` 不在正式站 migration 紀錄，但正式站 `service_role` 已具 `promotions`／`user_coupons` 的 select／insert／update／delete 權限，內容等同已生效；是否補記錄需使用者同意，未變更正式站。ShipAny 端 #1009 已確認為「訂單取消」。
 
