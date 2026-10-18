@@ -9,13 +9,19 @@
 - 正式 outbox 的 #1006、#1007 已由正確 Shopify 商店 API 確認為 test=true。已將兩筆發票工作由 pending 改為 manual_review，標記 SHOPIFY_TEST_ORDER，回讀 attempts=0／未開票；排除自動派送，未變更 Shopify 訂單或退款。
 - Vercel 發票 release gate 必須與 Edge Function 一致，只有字串 `true` 才可派送；缺值／其他值不得默認啟用。b26667a 已部署正式並回讀 alias，CI 通過；本輪回讀訪客開關仍為 false。
 
+## 會員登入（2026-10-18）
+
+- Google 登入使用 Supabase 轉址流程（`GoogleLoginButton` → `signInWithOAuth` → `/auth/confirm` → `/welcome`），OAuth client `293650056136-joulemc5ltdtfqlb9pb65c7n0rg7v1bg`（Google Cloud 專案 `lucissi-care-auth`）。2026-10-18 05:05（台灣時間）使用者實測正式站登入成功；先前失敗原因是 Supabase 儲存的 client secret 與 client 不一致。
+- Google 同意畫面仍顯示 `tmqzkagkrzhioftvwbqo.supabase.co`，品牌化尚未處理。
+- `src/lib/googleAuth.ts`（GIS 按鈕）目前未被引用；若重新啟用，必須使用同一個 client。顧客看到的登入錯誤不得包含後台設定或金鑰說明。
+
 ## 品牌與網域
 
 - 商店品牌為 **LUCISSI CARE**；SAENGAK 仍是商品品牌，不能把商品品牌歸屬一律替換成商店名稱。`src/lib/brandOwnership.ts` 負責品牌歸屬判斷，`src/content/site.ts` 保存商店公開資料。
 - 主要網域設定為 `lucissicare.com`，repository 名稱仍為 `saengak_web`。
 - `vercel.json` 將 `saengak.com.tw` 與 `www.saengak.com.tw` 一般頁面永久轉址至新網域；排除 `/api`、`/auth/confirm`、`/reset-password`，以保留服務回呼。修改時須一起檢查相關測試、CSP、Origin 白名單、sitemap 與 robots。
 
-- **子品牌定位（2026-10-17 使用者確認，同日收斂）**：LUCISSI CARE 是「LUCISSI 的日常照護系列」，主張「貼近身體的日常照護」。導覽為私密保養、舒適內搭兩個核心面向，加跨分類的「生理期照護」；身體保養商品併入私密保養，運動內衣併入舒適內搭，肌膚保養與輕盈運動不做分類（理由：沒有或只有 1 件商品、母站 lucissi.com 已有對應分類、台灣臉部保養與女性運動服市場擁擠、PIF 自 2026-07-01 全面實施）。設定集中在 `src/content/carePillars.ts`。不承接情趣與性健康品類。重新加回面向的條件：至少 6–8 件非母站同款商品、能用貼身照護說清楚的角度、化粧品已完成 PIF。會員互通第 1 階段：CARE 端已於 2026-10-18 上線並以實單驗證（兩站 migration、Vercel 環境變數、Shopify 權限完成；測試單 #1009 免運生效後代碼結算為 `used`，已取消退款；CARE 前台領取卡片已開，詳見 `docs/PROJECT_STATUS.md`）；母站權益 `CARE_MEMBER_PERK_ENABLED` 仍關閉，「首單未用代碼 → `expired`」分支尚未驗證（#1009 在 ShipAny 端已確認取消）。Calm Care 色票已於 2026-10-18 套用（`blush`／`ivory` 名稱保留、值為 `stone`／`porcelain`，信任色 `eucalyptus`，粉色只留 `rose-tint`；規範見設計系統「色彩重新定位」）。現有 v5 攝影已於 2026-10-18 以 `scripts/regrade-brand-photos.mjs` 重新調色為暖灰米（新增照片也應以同一腳本處理或直接拍中性背景）。母站品類分工已於 2026-10-17 同意（見下方母站段落）。
+- **子品牌定位（2026-10-17 使用者確認，同日收斂）**：LUCISSI CARE 是「LUCISSI 的日常照護系列」，主張「貼近身體的日常照護」。導覽為私密保養、舒適內搭兩個核心面向，加跨分類的「生理期照護」；身體保養商品併入私密保養，運動內衣併入舒適內搭，肌膚保養與輕盈運動不做分類（理由：沒有或只有 1 件商品、母站 lucissi.com 已有對應分類、台灣臉部保養與女性運動服市場擁擠、PIF 自 2026-07-01 全面實施）。設定集中在 `src/content/carePillars.ts`。不承接情趣與性健康品類。重新加回面向的條件：至少 6–8 件非母站同款商品、能用貼身照護說清楚的角度、化粧品已完成 PIF。會員互通第 1 階段：CARE 端已於 2026-10-18 上線並以實單驗證（兩站 migration、Vercel 環境變數、Shopify 權限完成；測試單 #1009 免運生效後代碼結算為 `used`，已取消退款；CARE 前台領取卡片已開，詳見 `docs/PROJECT_STATUS.md`）；母站權益 `CARE_MEMBER_PERK_ENABLED` 已於 2026-10-18 開啟；「首單未用代碼 → `expired`」分支已於 2026-10-18 以主帳號測試單 #1010 驗證（折扣已停用、已取消退款；#1010 的 ShipAny 端待使用者確認，#1009 在 ShipAny 端已確認取消）。Calm Care 色票已於 2026-10-18 套用（`blush`／`ivory` 名稱保留、值為 `stone`／`porcelain`，信任色 `eucalyptus`，粉色只留 `rose-tint`；規範見設計系統「色彩重新定位」）。現有 v5 攝影已於 2026-10-18 以 `scripts/regrade-brand-photos.mjs` 重新調色為暖灰米（新增照片也應以同一腳本處理或直接拍中性背景）。母站品類分工已於 2026-10-17 同意（見下方母站段落）。
 - **Logo（2026-10-17）**：已選定方向 A「家族字標」（LUCISSI 沿用母站 Cormorant Garamond 400、字距 0.32em，下方細線夾 CARE，單色 plum #5B3D48）。規格與設計師需求在設計系統 artifact（https://claude.ai/artifact/LuJEPWJzPNbHwEe5UgDaKp）；設計師 SVG 交付前，網站改用依規格以 OFL 字型（Cormorant Garamond 400、Noto Sans TC 500）轉外框的暫用字標：`src/components/base/brandLogoPaths.ts`（small／primary／horizontal）、`public/images/brand/lucissi-care-*.svg`、`public/favicon.svg`、`favicon-32x32.png`、`apple-touch-icon.png`（180px）與 Open Graph 分享圖 `public/images/brand/og-image.png`（1200×630，ivory 底、Primary 置中，`index.html` 已設 og／twitter 標籤）；舊 PNG 已移除。正式 SVG 到位後只需替換路徑資料。
 
 - **母站 lucissi.com（2026-10-17 唯讀檢視 `~/Documents/GitHub/LUCISSI_website`）**：與本站完全分開——Shopify `j97kr5-7b`、Supabase `dhktmpcvtoxcicqkwgpn`、Vercel `lucissi-website`；會員以 Supabase Auth 為準（程式中保留已關閉的 Shopify 客戶帳號登入，正式站實際使用哪一套未驗證）；點數／等級已寫好但未啟用，且綁 LUCISSI 的 Shopify 客戶編號；免運滿 NT$1,500、運費 NT$146。母站程式與測試刻意拒絕使用本站的商店與資料庫。兩站同屬拜悠衣品有限公司。使用者已同意品類分工（照護化粧品只在 CARE；機能貼身衣物可兩站並列、CARE 為主；性感款只在母站；CARE 品名不用「性感」），並決定需要會員互通、互認對象只限 lucissi.com 官網會員（蝦皮買家不含）。建議分階段（Email 權益互認 → 以 LUCISSI 帳號登入 → 共用點數），不合併資料庫或商店；第 1 階段權益已決定為雙向首單免運（CARE 端見 `docs/LUCISSI_MEMBER_PARTNER_API.md`），母站「女性護理私密凝膠」改為連到 CARE。細節見設計系統「母站分工與會員互通」。

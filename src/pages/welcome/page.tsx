@@ -76,7 +76,7 @@ export default function WelcomePage() {
               歡迎加入 LUCISSI CARE！
             </h1>
             <p className="text-xl text-gray-600 mb-2">
-              嗨 {user?.name || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email}，您的電子郵件會員已完成登入
+              嗨 {user?.name || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email}，您已完成登入
             </p>
             <p className="text-gray-500">
               讓我們花幾分鐘時間了解我們的服務

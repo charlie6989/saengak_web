@@ -1,6 +1,6 @@
 # 項目狀態
 
-更新日期：2026-10-18（Asia/Taipei）。最新工作為商品第二張圖（Daylight Linen）上線；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-18（Asia/Taipei）。最新工作為商品第二張圖（Daylight Linen）上線，以及 Google 登入驗證與登入流程文案整理；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
 
 ## 商品第二張圖 Daylight Linen 上線（2026-10-18，分支 `claude/reverent-franklin-38f2d5`）
 
@@ -13,6 +13,16 @@
 - Shopify（經 Chrome 已登入後台，使用者授權，2026-10-18 完成）：26 件各上傳一張 `second-XX.jpg` 並排到第二張，原有圖片全部保留在後。每件儲存前確認多媒體恰好新增一張且位於第二格。第 22 件上傳時主圖已是單片版 `22-single`，原三盒主圖 `22.jpg` 因此移到第三張。
 - 已驗證：店面 `products/<handle>.json` 逐件回讀 26/26 通過（第二張為 `second-XX`、每件只有一張）；`npm run verify:content`、`npm run typecheck` 通過。本 PR 不含網站程式變更。
 - 未處理：主圖 13 的腰頭字母；Canva 暫存匯出設計 `DAHYTPORdmA` 存在使用者 Canva 帳號。
+
+## Google 登入驗證與登入流程整理（2026-10-18，分支 `claude/funny-gauss-04be10`）
+
+- 正式站 Google 登入：2026-10-18 05:05（台灣時間）由使用者實測成功，走 Supabase 轉址流程（`signInWithOAuth` → `/auth/confirm` → `/welcome`）。原因為 client secret 不一致，已在 OAuth client 新增 secret 並存入 Supabase（該設定由另一個工作階段完成，本分支未變更 Supabase、Google Cloud 或 Vercel）。使用中的 OAuth client：`293650056136-joulemc5ltdtfqlb9pb65c7n0rg7v1bg`，Google Cloud 專案 `lucissi-care-auth`。
+- 尚待處理：Google 同意畫面仍顯示 `tmqzkagkrzhioftvwbqo.supabase.co`，未顯示品牌名稱或網域（需品牌驗證或 Supabase 自訂網域，屬後台設定）。
+- 程式修正：`/welcome`、`/auth/confirm` 原本分頁標題為「找不到頁面」，改為「歡迎加入」「登入驗證」，並由 `robotsForPath` 將兩頁的 robots meta 設為 `noindex, nofollow`（僅前端設定，未加 `X-Robots-Tag` 標頭）。
+- OAuth 回呼失敗時改顯示中性文案「登入暫時無法完成，請稍後再試或改用電子郵件登入。」並提供「返回登入頁」；技術細節只寫入 console。歡迎頁「您的電子郵件會員已完成登入」改為「您已完成登入」。
+- `src/lib/googleAuth.ts` 的 `GOOGLE_CLIENT_ID` 預設值改為現行 client；該模組（GIS 按鈕）目前沒有被引用，登入不經過它。
+- 已驗證：`npm run typecheck`、`npm test`（49 檔／483 項）、`npm run verify:content`（120 檔）通過；未在瀏覽器實測修改後畫面、未部署。
+- 尚未處理：`/auth/confirm` 標題仍寫「電子郵件認證」，成功訊息寫「3秒後自動跳轉到首頁」但實際 1.5 秒後前往 `/welcome`。
 
 ## 商品主圖視覺規範與第一批重製（2026-10-18，分支 `claude/website-product-visual-style-07e360`）
 
@@ -54,7 +64,19 @@
 - 收尾：使用者同意後於 Shopify 取消 #1009，退款 NT$20 至 TapPay（沙盒）、補回庫存、封存，未寄顧客通知。CARE `orders` 同步為 `cancelled`／`refunded`；該單的電子發票工作（`private.amego_invoice_jobs`，operation `issue`）在 0 次嘗試時轉為 `cancelled`，未開立發票。代碼維持 `used`（依設計，取消訂單不退回首單權益）。
 - ShipAny：為 #1009 建立的出貨單（ShipAny Order ID `456668fc…`）於 2026-10-18 在 ShipAny 後台「全部訂單」確認為「訂單取消」，不會出貨。
 - 觀察：CARE `orders.shipping_amount` 記錄折扣前運費 146（實付總額 20 正確），之後做運費報表需扣除折扣。
-- 尚未驗證：「首單未使用代碼 → 停用折扣並標記 `expired`」的分支（需第二個符合資格的測試會員）。
+- 「首單未使用代碼 → 停用折扣並標記 `expired`」的分支：已於 2026-10-18 另行驗證，見下節。
+
+## 會員首單免運：首單未用代碼 → 代碼作廢（2026-10-18，分支 `claude/perk-expiry-test-results`）
+
+**「首單沒用代碼就作廢」分支已在正式站驗證通過**：
+
+- 使用者同意以主帳號 `charlie.liu6989@gmail.com` 測試（接受其首單免運權益因此作廢）。主帳號以 Google 登入 CARE（Google 登入於同日修復，見 PR #55），在 `/promotion` 領取代碼 `LCVED46LF4DJ`，Shopify 建立綁定該顧客的免運折扣 `gid://shopify/DiscountCodeNode/1494065315907`。
+- 結帳不輸入代碼，於 TapPay 沙盒付款，回到 Shopify 感謝頁（確認碼 59LM0DEFJ）：訂單 **#1010** 已付款 NT$166（商品 NT$20＋運費 NT$146，未折抵）。
+- 訂單 webhook 寫入 CARE `orders`（`paid`、`discount_codes` 空），5 秒後 `partner_member_perks` 由 `issued` 變為 **`expired`**。
+- Shopify 後台該折扣狀態為「已到期」、已使用 0 次；時間軸顯示 SAENGAK Order Sync 停用此折扣兩次（推測訂單建立與付款兩個 webhook 各觸發一次，第二次無實質影響）。
+- 收尾：使用者同意後於 Shopify 取消 #1010，退款 NT$166 至 TapPay（沙盒）、補回庫存，未寄顧客通知。CARE `orders` 同步為 `cancelled`／`refunded`；電子發票工作（operation `issue`）在 0 次嘗試時轉為 `cancelled`，未開立發票。代碼維持 `expired`（取消訂單不退回首單權益）。
+- 尚未確認：#1010 的 ShipAny 出貨單（ShipAny Order ID `974c3fef…`）是否為「訂單取消」；ShipAny 後台需使用者登入，由使用者自行確認。
+- 觀察：Shopify 結帳頁的瀏覽器分頁標題仍顯示「Checkout - My Store 7」（頁首已是 LUCISSI CARE、感謝頁標題亦為 LUCISSI CARE），可能為快取，待觀察。
 
 **Migration 版本對齊（2026-10-18）**：`partner_member_perks` 檔名由 `20261017120000` 改為正式站實際記錄的 `20261016205350`（母站 repo 另改為 `20261016205402`），避免日後 `supabase db push` 以為尚未套用。另發現 `20261016111000_grant_coupon_service_access.sql` 不在正式站 migration 紀錄，但正式站 `service_role` 已具 `promotions`／`user_coupons` 的 select／insert／update／delete 權限，內容等同已生效；是否補記錄需使用者同意，未變更正式站。ShipAny 端 #1009 已確認為「訂單取消」。
 
