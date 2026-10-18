@@ -1,7 +1,7 @@
 {
  "created": "2026-10-18",
  "style": "docs/PRODUCT_IMAGE_STYLE.md（情境圖方向：Daylight Linen）",
- "status": "26 件全部完成（試做 4 件已核可＋其餘 22 件），等使用者看過；尚未上傳 Shopify",
+ "status": "26 件已上傳 Shopify 並設為第二張（2026-10-18），原有圖片保留在後面；店面 products/<handle>.json 回讀 26/26 通過",
  "template": "creative/product-v1/second/PROMPT_TEMPLATE.md",
  "canvas": "1600x1600 JPEG q90（生成圖 1264px 放大）",
  "canva_export_design": "DAHYTPORdmA（暫存，僅供全尺寸匯出）",
@@ -67,7 +67,14 @@
    ],
    "canva_generated_media_id": "MAHYTONgvR4",
    "color_check_deltaE_vs_main": 1.3,
-   "review": "對折，腰頭蝴蝶結與緹花針織保留。只給主圖（原圖為白色款）。"
+   "review": "對折，腰頭蝴蝶結與緹花針織保留。只給主圖（原圖為白色款）。",
+   "shopify": {
+    "uploaded_as": "second-01_5eb613ad-05a3-4218-a7c4-f9797259b0d7.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "01_e54798dd-4fc7-4c5d-9ed4-9f75680cf138.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 2,
@@ -86,7 +93,14 @@
    ],
    "canva_generated_media_id": "MAHYTAH4kXE",
    "color_check_deltaE_vs_main": 3.7,
-   "review": "方折，雙細帶側邊保留。原圖為多色並排，提示只留淡紫。"
+   "review": "方折，雙細帶側邊保留。原圖為多色並排，提示只留淡紫。",
+   "shopify": {
+    "uploaded_as": "second-02.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "02_45f7b315-6c9a-4ab9-917d-0f54f37230b2.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 3,
@@ -105,7 +119,14 @@
    ],
    "canva_generated_media_id": "MAHYTDhAqu8",
    "color_check_deltaE_vs_main": 0.8,
-   "review": "對折，側邊銀環與後腰小白標保留（無字）。"
+   "review": "對折，側邊銀環與後腰小白標保留（無字）。",
+   "shopify": {
+    "uploaded_as": "second-03.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "03_4f3d215b-89a8-46a8-9d14-e53b63389e16.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 4,
@@ -128,6 +149,13 @@
    "rejected_first_attempt": {
     "canva_generated_media_id": "MAHYTNuJeac",
     "reason": "版型變成較高腰方形"
+   },
+   "shopify": {
+    "uploaded_as": "second-04.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "04_95213490-d285-4eb6-b70f-1bd246fb0f85.jpg",
+    "storefront_check": "pass"
    }
   },
   {
@@ -147,7 +175,14 @@
    ],
    "canva_generated_media_id": "MAHYTLI9Qus",
    "color_check_deltaE_vs_main": 4.0,
-   "review": "對折，灰色蕾絲腰頭、蝴蝶結、褲口蕾絲保留。"
+   "review": "對折，灰色蕾絲腰頭、蝴蝶結、褲口蕾絲保留。",
+   "shopify": {
+    "uploaded_as": "second-05.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "05_51bd0a6e-4aa0-4f0e-8d14-ef6897443691.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 6,
@@ -165,7 +200,14 @@
    "canva_generated_media_id": "MAHYTIaA6I0",
    "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_162710_b7b37f42-6e51-4bfc-952e-e3461c225562.jpg",
    "review": "對折放在象牙棉麻上，下墊淺霧粉布。蕾絲側片、扇形腰頭、蝴蝶結、褲口蕾絲與主圖一致；顏色維持偏淡紫的白。",
-   "batch": "pilot"
+   "batch": "pilot",
+   "shopify": {
+    "uploaded_as": "second-06.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "06_0795954c-f363-449f-a734-04bbaa5c2926.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 7,
@@ -184,7 +226,14 @@
    ],
    "canva_generated_media_id": "MAHYTDNXBYQ",
    "color_check_deltaE_vs_main": 3.2,
-   "review": "方折，雛菊刺繡保留。"
+   "review": "方折，雛菊刺繡保留。",
+   "shopify": {
+    "uploaded_as": "second-07.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "07_3d574a5d-e705-473a-ae1c-34c01a4a5698.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 8,
@@ -201,7 +250,14 @@
    ],
    "canva_generated_media_id": "MAHYTEwJzXo",
    "color_check_deltaE_vs_main": 0.0,
-   "review": "對折，黑色保留布紋層次。只給主圖（原圖為白色款）。"
+   "review": "對折，黑色保留布紋層次。只給主圖（原圖為白色款）。",
+   "shopify": {
+    "uploaded_as": "second-08.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "08.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 9,
@@ -218,7 +274,14 @@
    ],
    "canva_generated_media_id": "MAHYTFnoKb8",
    "color_check_deltaE_vs_main": 3.5,
-   "review": "方折，灰色防漏底襠保留。只給主圖（原圖為杏色款）。"
+   "review": "方折，灰色防漏底襠保留。只給主圖（原圖為杏色款）。",
+   "shopify": {
+    "uploaded_as": "second-09.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "09.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 10,
@@ -231,7 +294,14 @@
    "scene": "oak-tray",
    "canva_scene_media": "MAHYTPkMieU",
    "composite": "scripts/product-images/scene.py <oak-tray> <cutout> out.jpg stand 640 930 620 0.5 0.04",
-   "review": "MEDION 外盒，包裝字樣為已上架主圖像素（原廠照去背）。"
+   "review": "MEDION 外盒，包裝字樣為已上架主圖像素（原廠照去背）。",
+   "shopify": {
+    "uploaded_as": "second-10.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "10_a4e7319e-07cc-47f6-9794-f14474d0c899.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 11,
@@ -244,7 +314,14 @@
    "scene": "linen-flatlay",
    "canva_scene_media": "MAHYTIT0frg",
    "composite": "scripts/product-images/scene.py <linen-flatlay> <cutout> out.jpg flat 640 620 780",
-   "review": "除毛刀平放。注意：已上架主圖 11 本身是 AI 重繪，合成沿用其像素。"
+   "review": "除毛刀平放。注意：已上架主圖 11 本身是 AI 重繪，合成沿用其像素。",
+   "shopify": {
+    "uploaded_as": "second-11.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "11.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 12,
@@ -257,7 +334,14 @@
    "scene": "linen-flatlay",
    "canva_scene_media": "MAHYTIT0frg",
    "composite": "scripts/product-images/scene.py <linen-flatlay> <cutout> out.jpg flat 630 630 880",
-   "review": "護衣袋平放。"
+   "review": "護衣袋平放。",
+   "shopify": {
+    "uploaded_as": "second-12.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "12_d6d4b51c-f78c-4f44-a209-f50f56a26f19.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 13,
@@ -275,7 +359,14 @@
    "canva_generated_media_id": "MAHYTOqqhZA",
    "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_05_0b06eb06-a2c5-4891-9e22-f1395e2a4e83.jpg",
    "review": "AI 輸出腰頭為 CHESSOLYMPiAD（小寫 i），已把腰頭拉平、清掉 i、以同字 H 的左豎筆重建大寫襯線 I 再轉回，只替換該字母區域。供應商原圖解析度低，看來是大寫 I。已上架主圖 13 同樣是小寫 i，需對照實品確認。",
-   "batch": "pilot"
+   "batch": "pilot",
+   "shopify": {
+    "uploaded_as": "second-13.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "13.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 15,
@@ -294,7 +385,14 @@
    ],
    "canva_generated_media_id": "MAHYTJOaHwk",
    "color_check_deltaE_vs_main": 2.6,
-   "review": "對折，無痕切邊保留，原圖 7A 貼紙已排除。"
+   "review": "對折，無痕切邊保留，原圖 7A 貼紙已排除。",
+   "shopify": {
+    "uploaded_as": "second-15.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "15.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 16,
@@ -311,7 +409,14 @@
    ],
    "canva_generated_media_id": "MAHYTCUPf7M",
    "color_check_deltaE_vs_main": 3.1,
-   "review": "方折，波浪切邊與右側壓印圓點保留。只給主圖。"
+   "review": "方折，波浪切邊與右側壓印圓點保留。只給主圖。",
+   "shopify": {
+    "uploaded_as": "second-16.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "16.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 17,
@@ -328,7 +433,14 @@
    ],
    "canva_generated_media_id": "MAHYTAh7kD0",
    "color_check_deltaE_vs_main": 3.7,
-   "review": "對折，黑色蕾絲腰頭與側片保留。只給主圖（原圖為香檳色款）。"
+   "review": "對折，黑色蕾絲腰頭與側片保留。只給主圖（原圖為香檳色款）。",
+   "shopify": {
+    "uploaded_as": "second-17.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "17.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 18,
@@ -345,7 +457,14 @@
    ],
    "canva_generated_media_id": "MAHYTDpCbyQ",
    "color_check_deltaE_vs_main": 5.3,
-   "review": "方折，刻意把後腰內側尺寸標折到看不見（避免 AI 改字）。只給主圖。"
+   "review": "方折，刻意把後腰內側尺寸標折到看不見（避免 AI 改字）。只給主圖。",
+   "shopify": {
+    "uploaded_as": "second-18.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "18.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 19,
@@ -364,7 +483,14 @@
    ],
    "canva_generated_media_id": "MAHYTGAnF70",
    "color_check_deltaE_vs_main": 1.1,
-   "review": "平放，胸墊一對放在旁邊，原圖中文字已排除。"
+   "review": "平放，胸墊一對放在旁邊，原圖中文字已排除。",
+   "shopify": {
+    "uploaded_as": "second-19.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "19.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 20,
@@ -381,7 +507,14 @@
    ],
    "canva_generated_media_id": "MAHYTOXbG3E",
    "color_check_deltaE_vs_main": 3.7,
-   "review": "對折，圓形緹花保留但比主圖淡。只給主圖（原圖有 CHANEL 盒與貼紙）。"
+   "review": "對折，圓形緹花保留但比主圖淡。只給主圖（原圖有 CHANEL 盒與貼紙）。",
+   "shopify": {
+    "uploaded_as": "second-20.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "20.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 21,
@@ -405,7 +538,14 @@
    },
    "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_24c28a84-e7ba-4012-bc2e-5a5788591234.jpg",
    "review": "淺石材洗手檯、亞麻毛巾、淺霧粉牆。瓶身為原廠照去背像素，未經生成模型。",
-   "batch": "pilot"
+   "batch": "pilot",
+   "shopify": {
+    "uploaded_as": "second-21.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "21.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 22,
@@ -418,7 +558,15 @@
    "scene": "oak-shelf",
    "canva_scene_media": "MAHYTN5J4YQ",
    "composite": "scripts/product-images/scene.py <oak-shelf> <cutout> out.jpg stand 610 978 700 0.5 0.05",
-   "review": "三盒濕巾直立堆疊。注意：主圖 22 是 AI 重繪，包裝字樣沿用主圖（上一輪已列為需逐字核對）。"
+   "review": "三盒濕巾直立堆疊。注意：主圖 22 是 AI 重繪，包裝字樣沿用主圖（上一輪已列為需逐字核對）。",
+   "shopify": {
+    "uploaded_as": "second-22.jpg",
+    "position": 2,
+    "total_images": 8,
+    "first_image": "22-single.jpg",
+    "storefront_check": "pass",
+    "note": "上傳時主圖已被其他工作階段換成 22-single（單片），原三盒主圖 22.jpg 移到第 3 張。"
+   }
   },
   {
    "index": 23,
@@ -442,7 +590,14 @@
    },
    "current_second_image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e7742379-2812-46ac-9cb2-de9072a99053.jpg",
    "review": "淡橡木托盤、淺霧粉收納包、象牙亞麻布。瓶身為原廠照去背像素，未經生成模型。",
-   "batch": "pilot"
+   "batch": "pilot",
+   "shopify": {
+    "uploaded_as": "second-23.jpg",
+    "position": 2,
+    "total_images": 7,
+    "first_image": "23.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 24,
@@ -455,7 +610,14 @@
    "scene": "stone-counter",
    "canva_scene_media": "MAHYTMexWX4",
    "composite": "scripts/product-images/scene.py <stone-counter> <cutout> out.jpg stand 720 884 640 0.5 0.05",
-   "review": "凝膠外盒。"
+   "review": "凝膠外盒。",
+   "shopify": {
+    "uploaded_as": "second-24.jpg",
+    "position": 2,
+    "total_images": 8,
+    "first_image": "24.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 25,
@@ -468,7 +630,14 @@
    "scene": "oak-shelf",
    "canva_scene_media": "MAHYTN5J4YQ",
    "composite": "scripts/product-images/scene.py <oak-shelf> <cutout> out.jpg stand 640 978 560 0.5 0.05",
-   "review": "外盒＋濕巾單片（單片來自 AI 重繪的 22）。"
+   "review": "外盒＋濕巾單片（單片來自 AI 重繪的 22）。",
+   "shopify": {
+    "uploaded_as": "second-25.jpg",
+    "position": 2,
+    "total_images": 6,
+    "first_image": "25.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 26,
@@ -481,7 +650,14 @@
    "scene": "stone-counter",
    "canva_scene_media": "MAHYTMexWX4",
    "composite": "scripts/product-images/scene.py <stone-counter> <cutout> out.jpg stand 730 884 600 0.5 0.05",
-   "review": "慕斯瓶＋外盒。"
+   "review": "慕斯瓶＋外盒。",
+   "shopify": {
+    "uploaded_as": "second-26.jpg",
+    "position": 2,
+    "total_images": 6,
+    "first_image": "26.jpg",
+    "storefront_check": "pass"
+   }
   },
   {
    "index": 27,
@@ -494,7 +670,20 @@
    "scene": "stone-ledge",
    "canva_scene_media": "MAHYTM4PD9w",
    "composite": "scripts/product-images/scene.py <stone-ledge> <cutout> out.jpg stand 700 992 620 0.5 0.06",
-   "review": "慕斯瓶＋外盒＋濕巾單片（單片來自 AI 重繪的 22）。"
+   "review": "慕斯瓶＋外盒＋濕巾單片（單片來自 AI 重繪的 22）。",
+   "shopify": {
+    "uploaded_as": "second-27.jpg",
+    "position": 2,
+    "total_images": 6,
+    "first_image": "27.jpg",
+    "storefront_check": "pass"
+   }
   }
- ]
+ ],
+ "shopify": {
+  "date": "2026-10-18",
+  "method": "Chrome 已登入後台（使用者授權）：代理 file input → 媒體 dropzone（單一不冒泡 change 事件）→ pointer 拖曳到第 2 格 → 確認新增恰好 1 張且位於第 2 格後才儲存",
+  "storefront_check": "gh2xgs-zf.myshopify.com/products/<handle>.json：26/26 第二張為 second-XX、每件只有一張 second-",
+  "skipped": "14（草稿）"
+ }
 }
