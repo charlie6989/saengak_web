@@ -9,6 +9,20 @@
 - 歡迎頁 `/welcome`：新增 `src/lib/memberWelcome.ts` 判斷是否第一次登入（最後登入時間與帳號建立或 Email 驗證時間相差 10 分鐘內），新會員維持「歡迎加入 LUCISSI CARE！」，老會員顯示「歡迎回來」與可略過介紹的說明；分頁標題由「歡迎加入」改為中性的「歡迎」。
 - 已驗證：Vitest 496 項、`npm run typecheck`（0 錯誤，與 main 相同）、`verify:content`、build 通過；以正式 Storefront 實際呼叫分享函式，濕巾（7819900551235）回傳商品名稱、說明與 1600px 主圖。Vercel preview `dpl_HKUfR9AqTwGkvKjBjXrHjsepGUiJ` 以 curl 實測同一商品頁：`facebookexternalhit/1.1;line-poker/1.0` 與一般 facebookexternalhit 取得商品名稱與主圖（`og:type=product`）；LINE 內建瀏覽器 UA 與 Googlebot 取得網站本體；不存在的商品 ID 回站台預設預覽。正式站待合併後再以 LINE 實際分享確認（LINE 會快取舊預覽，舊連結可能要過一段時間才更新）。
 
+## 商品頁與商品卡修正（2026-10-18，分支 `claude/product-details-review-645cd2`）
+
+- 依 26 件商品頁檢視（報告 https://claude.ai/artifact/XkydPRfGaS1sukLYFsU6mG）先修程式部分：
+  - `ProductCard`：移除依品名套用的固定標語（「專利植萃」「淨化異味」「深層導入」等）與 12 字截名（MEDION 凝膠曾只顯示「MEDION」）；描述改取 Shopify 描述第一句，沒有就不顯示；圖片失效改為留底色，不再換成 Unsplash 圖庫照。三句標語已加入 `verify-public-content`。
+  - 內容區圖片：`custom.lifestyle_showcase`／`craft_details` 有 96 張圖指向已刪除的 Shopify 檔案（404）。`ShopifyDescriptionViewer` 改為載入失敗時依序改用相簿圖（不重複），都沒有時隱藏圖片欄；描述圖失效時隱藏。
+  - 新增 `src/lib/shopifyImage.ts`，Shopify 圖片加 `width` 參數（縮圖 200、卡片 600、內容 900／1200、主圖 1200、放大 2000）。
+  - 評價：0 則時不顯示「0.0」評分卡，改為邀請分享的空狀態。
+  - 價格下方顯示運費與「加入後還差 NT$X 免運」（`computeFreeShippingGap`，門檻讀 `site_settings`）。
+  - 尺寸選項旁加「尺寸指南」彈窗；尺碼表抽成 `SizeChartTable`，內衣改用下胸圍／罩杯／支撐感欄位，移除不實的「平放手工量測」並修正「襠深」。
+  - `formatShopifyProduct` 無圖時不再補圖庫照。
+- 已驗證：Vitest 50 檔 488 項、`verify:content`、typecheck、build 通過；本機 dev server 檢查桌機與 375px 手機商品頁（失效圖改顯示相簿圖、尺寸指南彈窗、內衣欄位、免運差額、評價空狀態）與全部商品列表。worktree 的 `node_modules` 原本缺 Tailwind 4，已重新 `npm ci`。
+- PR #59 CI 全數通過；Vercel preview（saengak-web-d2ux）回讀：商品頁 17 張圖全部載入、無破圖，整頁圖片約 1.1 MB；`/api/shopify/discounts` 200，免運差額與尺寸指南正常；全部商品列表顯示「MEDION 私密淨化凝膠」完整品名，頁面無「專利植萃」「淨化異味」「深層導入」。主控台只有 Vercel 預覽工具列被 CSP 擋下（僅 preview）。
+- 未處理（Shopify 後台資料）：metafield 失效圖網址本身、同名商品與副標、尺碼表內容、過期認證與外來評價描述圖、組合主圖件數、售完商品、超賣規格。尚未合併、尚未部署正式站。
+
 ## 商品第二張圖 Daylight Linen 上線（2026-10-18，分支 `claude/reverent-franklin-38f2d5`）
 
 - 依 `docs/PRODUCT_IMAGE_STYLE.md` 的情境圖方向，為 26 件公開商品（第 14 件為草稿，略過）製作第二張圖（商品卡滑過、商品頁第二張）：象牙棉麻、淺霧粉 `#E7D6D4`、左上柔光，無文字、貼紙與他牌道具。成果在 `creative/product-v1/second/{index}.jpg`（1600×1600），對照圖 `before-after-{1,2,3}.jpg`、整體預覽 `grid-second.jpg`、字樣核對 `qc-sheet.jpg`，來源與參數在 `provenance.json`，提示詞與流程在 `PROMPT_TEMPLATE.md`。

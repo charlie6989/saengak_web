@@ -7,6 +7,8 @@ import type {
   CraftDetailItem,
 } from '../../lib/shopify';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
+import { shopifyImageUrl } from '../../lib/shopifyImage';
+import SizeChartTable from './SizeChartTable';
 
 export interface ContentSection {
   title: string;
@@ -52,7 +54,16 @@ export default function ShopifyDescriptionViewer({
 }: ShopifyDescriptionViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoomImageSrc, setZoomImageSrc] = useState<string | null>(null);
-  const [sizeUnit, setSizeUnit] = useState<'cm' | 'inch'>('cm');
+  // 載入失敗的圖片網址（例如 metafield 指向已刪除的 Shopify 檔案），改用相簿圖遞補
+  const [failedImages, setFailedImages] = useState<Set<string>>(() => new Set());
+  const markImageFailed = (url: string) => {
+    setFailedImages((prev) => {
+      if (prev.has(url)) return prev;
+      const next = new Set(prev);
+      next.add(url);
+      return next;
+    });
+  };
 
   // 判斷是否為服飾／內著類商品（若為是，才展示版型與尺寸對照）
   const isApparel = (() => {
@@ -232,7 +243,7 @@ export default function ShopifyDescriptionViewer({
 
   // 生活情境圖文與工藝細節只呈現 Shopify 實際填寫的內容；沒有資料時整區不顯示，
   // 不再依品類補上檢驗、認證等無法查證的預設宣稱或圖庫照片。
-  const displaySections: ContentSection[] = (() => {
+  const sectionDrafts: ContentSection[] = (() => {
     if (contentSections && contentSections.length > 0) return contentSections;
     if (lifestyleShowcase && lifestyleShowcase.length > 0) {
       return lifestyleShowcase.map((item, idx) => ({
@@ -245,23 +256,29 @@ export default function ShopifyDescriptionViewer({
     return [];
   })();
 
-  const displayCrafts = (craftDetails ?? []).map((c, idx) => ({
+  const craftDrafts = (craftDetails ?? []).map((c, idx) => ({
     category: c.category,
     title: c.title,
     description: c.description,
     image: c.image || contentImagesPool[3 + idx] || '',
   }));
 
-  // 尺寸換算輔助函式
-  const formatSizeValue = (val: string, unit: 'cm' | 'inch') => {
-    if (!val || val === '-') return '-';
-    if (unit === 'cm') return val;
-    return val.replace(/\b(\d+(?:\.\d+)?)\b/g, (match) => {
-      const num = parseFloat(match);
-      if (isNaN(num)) return match;
-      return (num * 0.3937).toFixed(1);
-    });
-  };
+  // 指定圖片載入失敗時，依序改用相簿圖池中尚未失敗、也尚未被其他區塊使用的圖片；都沒有時隱藏圖片欄
+  const { displaySections, displayCrafts } = (() => {
+    const used = new Set<string>();
+    const resolve = (preferred: string, poolIndex: number) => {
+      const candidates = [preferred, contentImagesPool[poolIndex], ...contentImagesPool];
+      const pick = candidates.find((url) => url && !failedImages.has(url) && !used.has(url)) ?? '';
+      if (pick) used.add(pick);
+      return pick;
+    };
+    return {
+      displaySections: sectionDrafts.map((sec, idx) => ({ ...sec, image: resolve(sec.image, idx) })),
+      displayCrafts: craftDrafts.map((craft, idx) => ({ ...craft, image: resolve(craft.image, 3 + idx) })),
+    };
+  })();
+
+  const visibleDescriptionImages = extractedDescriptionImages.filter((img) => !failedImages.has(img.src));
 
   // 尺碼表資料來源
   // 尺碼表與版型指標只在 Shopify 有實際資料時顯示，不再套用預設數值
@@ -340,8 +357,9 @@ export default function ShopifyDescriptionViewer({
             {sec.image && (
             <div className="w-full md:w-1/2 aspect-4/3 rounded-xl overflow-hidden relative group bg-gray-100">
               <img
-                src={sec.image}
+                src={shopifyImageUrl(sec.image, 900)}
                 alt={sec.title}
+                onError={() => markImageFailed(sec.image)}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
               />
@@ -382,8 +400,9 @@ export default function ShopifyDescriptionViewer({
               {craft.image && (
               <div className="aspect-4/3 sm:aspect-16/11 overflow-hidden bg-stone-50">
                 <img
-                  src={craft.image}
+                  src={shopifyImageUrl(craft.image, 900)}
                   alt={craft.title}
+                  onError={() => markImageFailed(craft.image)}
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
                 />
@@ -505,60 +524,13 @@ export default function ShopifyDescriptionViewer({
           )}
 
           {hasSizeChart && (
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                  實測尺碼對照指南 (Size Guide)
-                </h3>
-                <p className="text-xs text-gray-500">所有尺碼皆為平放手工量測，誤差值 ±1~2cm 為正常範圍</p>
-              </div>
-
-              <div className="flex items-center bg-gray-100 p-1 rounded-xl w-fit">
-                <button
-                  type="button"
-                  onClick={() => setSizeUnit('cm')}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${sizeUnit === 'cm' ? 'bg-white text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
-                >
-                  公分 (cm)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSizeUnit('inch')}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${sizeUnit === 'inch' ? 'bg-white text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
-                >
-                  英吋 (inch)
-                </button>
-              </div>
+          <div id="size-guide" className="scroll-mt-32 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 space-y-6">
+            <div className="border-b border-gray-100 pb-4">
+              <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+                尺寸指南
+              </h3>
             </div>
-
-            <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-              <table className="w-full text-left text-sm text-gray-700">
-                <thead className="bg-gray-100/80 text-xs font-bold text-gray-700 uppercase">
-                  <tr>
-                    <th className="px-5 py-3.5">尺碼 (Size)</th>
-                    <th className="px-5 py-3.5">腰圍 ({sizeUnit})</th>
-                    <th className="px-5 py-3.5">臀圍 ({sizeUnit})</th>
-                    <th className="px-5 py-3.5">檔深 ({sizeUnit})</th>
-                    <th className="px-5 py-3.5">建議體重 (Weight)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {activeSizeChart.map((row, idx) => (
-                    <tr
-                      key={row.size || idx}
-                      className={`hover:bg-blush/30 transition-colors ${idx % 2 === 1 ? 'bg-gray-50/40' : ''}`}
-                    >
-                      <td className="px-5 py-4 font-bold text-brand">{row.size}</td>
-                      <td className="px-5 py-4">{formatSizeValue(row.waist, sizeUnit)}</td>
-                      <td className="px-5 py-4">{formatSizeValue(row.hips, sizeUnit)}</td>
-                      <td className="px-5 py-4">{formatSizeValue(row.crotch, sizeUnit)}</td>
-                      <td className="px-5 py-4 text-xs text-gray-600 font-medium">{row.weight}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <SizeChartTable rows={activeSizeChart} />
           </div>
           )}
         </>
@@ -680,7 +652,7 @@ export default function ShopifyDescriptionViewer({
       </div>
 
       {/* 6.5 描述圖片展示專區 (依規範精準置於「基本商品資訊與使用方式」區塊正下方) */}
-      {extractedDescriptionImages.length > 0 && (
+      {visibleDescriptionImages.length > 0 && (
         <div className="space-y-6 animate-fadeIn" data-testid="product-description-images-section">
           <div className="flex items-center gap-2.5 pb-2 border-b border-gray-100">
             <span className="w-1.5 h-5 rounded-full bg-brand"></span>
@@ -691,15 +663,16 @@ export default function ShopifyDescriptionViewer({
 
           {/* 無縫拼接圖片容器：整組統一外層卡片邊框與圓角，內部圖片完全零間隙緊密相連 */}
           <div className="overflow-hidden rounded-2xl bg-white border border-gray-200/70 flex flex-col gap-0 leading-none">
-            {extractedDescriptionImages.map((img, idx) => (
+            {visibleDescriptionImages.map((img, idx) => (
               <div
                 key={idx}
                 className="w-full overflow-hidden text-center m-0 p-0 leading-none"
               >
                 <img
-                  src={img.src}
+                  src={shopifyImageUrl(img.src, 1200)}
                   alt={img.alt || `${productName} 描述圖 ${idx + 1}`}
                   loading="lazy"
+                  onError={() => markImageFailed(img.src)}
                   onClick={() => setZoomImageSrc(img.src)}
                   className="w-full h-auto block cursor-zoom-in transition-opacity hover:opacity-95 mx-auto m-0 p-0 align-bottom"
                 />
@@ -750,7 +723,7 @@ export default function ShopifyDescriptionViewer({
             <i className="ri-close-line"></i>
           </button>
           <img
-            src={zoomImageSrc}
+            src={shopifyImageUrl(zoomImageSrc, 2000)}
             alt="放大預覽"
             className="max-h-[90vh] max-w-[90vw] object-contain rounded-xl shadow-2xl transition-transform"
           />

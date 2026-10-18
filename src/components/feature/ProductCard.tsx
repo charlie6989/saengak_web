@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { resolveDisplayVendor } from '../../lib/brandOwnership';
 import { isProductSoldOut } from '../../domain/algorithms';
+import { shopifyImageUrl } from '../../lib/shopifyImage';
 
 interface Product {
   id: string | number;
@@ -29,94 +30,44 @@ interface ProductCardProps {
   product: Product;
 }
 
-const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800';
-
 /**
- * 清洗商品標題：
- * 1. 剃除 SAENGAK｜、LUCISSI｜ 等重複性品牌前綴與表情符號
- * 2. 嚴格遵守標題 12 字以內規範
+ * 清洗商品標題：只移除表情符號、商店名前綴與「現貨」等拍賣字樣。
+ * 品名以 Shopify 為準，不改寫、不截字；過長時由卡片 line-clamp-2 換行省略。
+ * （2026-10-18 起移除依關鍵字改寫品名與 12 字截斷：「MEDION 私密淨化凝膠」曾被切成「MEDION」。）
  */
 export function sanitizeProductTitle(rawName: string): string {
   if (!rawName) return '';
-  let cleaned = rawName
+  return rawName
     .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
-    .replace(/^(\s*✨|\s*🌸|\s*🌹|\s*🎀|\s*💫|\s*🌬️)+/g, '')
+    .replace(/️/g, '')
+    .replace(/^\s*SAENGAK\s*[｜|_\-–—]\s*/i, 'Saengak ')
+    .replace(/^\s*LUCISSI\s*[｜|_\-–—]\s*/i, '')
+    .replace(/\s*(現貨|_images|_URL|\.jpg|\.png).*$/gi, '')
     .trim();
-
-  cleaned = cleaned
-    .replace(/^(\s*SAENGAK\s*[｜|_\-–—]\s*)+/gi, '')
-    .replace(/^(\s*LUCISSI\s*[｜|_\-–—]\s*)+/gi, '')
-    .replace(/^(?:SAENGAK|LUCISSI)[｜|_\-–—\s]+/gi, '')
-    .replace(/\s*(現貨|現貨\s*\d*|_images|_URL|\.jpg|\.png).*$/gi, '')
-    .trim();
-
-  // 5 大核心產品保留 Saengak 原品牌名稱
-  if (cleaned.includes('慕斯') || cleaned.includes('潔淨慕斯')) return 'Saengak 平衡調理私密潔淨慕斯';
-  if (cleaned.includes('養膚濕巾') || cleaned.includes('私密濕巾') || (cleaned.includes('益生菌') && cleaned.includes('濕巾'))) return 'Saengak 益生菌私密養膚濕巾';
-  if (cleaned.includes('精華噴霧') || cleaned.includes('修護噴霧') || cleaned.includes('雙層修護')) return 'Saengak 私密雙層修護精華噴霧';
-  if (cleaned.includes('清潔露') || cleaned.includes('深層修護')) return 'Saengak 深層修護私密清潔露';
-  if (cleaned.includes('舒緩凝膠') || (cleaned.includes('益生菌') && cleaned.includes('凝膠'))) return 'Saengak 益生菌私密舒緩凝膠';
-
-  // 核心產品若以 SAENGAK 開頭則標準化
-  if (/^saengak\s*/i.test(rawName)) {
-    return 'Saengak ' + cleaned.slice(0, 12);
-  }
-
-  // 若仍超過 12 字，精簡至 12 字
-  if (cleaned.length > 12) {
-    const parts = cleaned.split(/[\s_]+/);
-    if (parts[0] && parts[0].length <= 12 && parts[0].length >= 4) {
-      return parts[0];
-    }
-    return cleaned.slice(0, 12);
-  }
-  return cleaned;
 }
 
 /**
- * 抽取商品單句核心描述（規則：短語一句話、無標點符號、無省略號 ...）
+ * 卡片上的一句描述：取 Shopify 商品描述的第一句，移除標點。
+ * 只使用 Shopify 實際填寫的文字，不依品名套用預設標語；沒有描述時回傳空字串、卡片不顯示這一行。
  */
 export function extractSingleSentenceDescription(product: Product): string {
-  const name = (product.name || '').toLowerCase();
-  if (name.includes('慕斯') || name.includes('潔淨慕斯')) {
-    return '微米綿密弱酸泡泡 溫和淨化異味';
-  }
-  if (name.includes('濕巾') || name.includes('養膚濕巾')) {
-    return '如水般親膚溫和植萃 隨身潔淨清新';
-  }
-  if (name.includes('噴霧') || name.includes('雙層')) {
-    return '雙層水油黃金配比 隨手安撫舒緩';
-  }
-  if (name.includes('清潔露') || name.includes('深層修護')) {
-    return '專利植萃溫和淨膚 深層舒緩修護';
-  }
-  if (name.includes('凝膠') || name.includes('舒緩凝膠')) {
-    return '益生菌精華深層導入 密集舒緩修護';
-  }
+  const rawDesc = (product.description || '').replace(/<[^>]+>/g, '').trim();
+  if (!rawDesc) return '';
 
-  const rawDesc = (product.description || '').trim();
-  if (!rawDesc) return '溫和植萃成分 柔嫩呵護私密肌膚';
-
-  // 移除所有標點符號與省略號
-  let cleaned = rawDesc
-    .replace(/<[^>]+>/g, '')
-    .replace(/[，。！？!?；;：:、\-_—–~～()（）「」『』\n\r\t]+/g, ' ')
-    .replace(/\.{2,}/g, '')
-    .replace(/…/g, '')
+  const firstSentence = rawDesc.split(/[。！？!?\n\r]/)[0] ?? '';
+  return firstSentence
+    .replace(/[，；;：:、\-_—–~～()（）「」『』\t]+/g, ' ')
+    .replace(/\.{2,}|…/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
-
-  // 限制長度在 16 字以內，不產生截斷 ...
-  if (cleaned.length > 16) {
-    cleaned = cleaned.slice(0, 16).trim();
-  }
-  return cleaned || '溫和植萃成分 柔嫩呵護私密肌膚';
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate();
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [imageSrc, setImageSrc] = useState(product.image || FALLBACK_PRODUCT_IMAGE);
-  const [hoverSrc, setHoverSrc] = useState(product.hoverImage || product.image || FALLBACK_PRODUCT_IMAGE);
+  // 圖片載入失敗時不再換成圖庫照片，改為隱藏圖片、只留底色
+  const [imageSrc, setImageSrc] = useState(shopifyImageUrl(product.image, 600));
+  const [hoverSrc, setHoverSrc] = useState(shopifyImageUrl(product.hoverImage || product.image, 600));
   const isSoldOut = isProductSoldOut(product);
   const discountPercentage = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -151,17 +102,19 @@ export default function ProductCard({ product }: ProductCardProps) {
     <div className="group cursor-pointer flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-100/80 hover:shadow-md transition-shadow" onClick={handleCardClick}>
       {/* Product Image - Standardized square (1:1) ratio */}
       <div className="aspect-square bg-gray-50 overflow-hidden mb-3 relative flex items-center justify-center">
-        <img
-          src={imageSrc}
-          alt={product.name}
-          onError={() => setImageSrc(FALLBACK_PRODUCT_IMAGE)}
-          className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300 ${isSoldOut ? 'opacity-75 grayscale-30' : ''}`}
-        />
+        {imageSrc && (
+          <img
+            src={imageSrc}
+            alt={product.name}
+            onError={() => setImageSrc('')}
+            className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300 ${isSoldOut ? 'opacity-75 grayscale-30' : ''}`}
+          />
+        )}
         {hoverSrc && (
           <img
             src={hoverSrc}
             alt={product.name}
-            onError={() => setHoverSrc(FALLBACK_PRODUCT_IMAGE)}
+            onError={() => setHoverSrc('')}
             className={`w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSoldOut ? 'grayscale-30' : ''}`}
           />
         )}
@@ -221,9 +174,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
 
             {/* Description - 搜尋頁／列表頁須為一句話 */}
-            <p className="text-xs sm:text-sm sm:leading-5 line-clamp-1 leading-relaxed text-gray-500" title={singleSentenceDesc} style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-              {singleSentenceDesc}
-            </p>
+            {singleSentenceDesc && (
+              <p className="text-xs sm:text-sm sm:leading-5 line-clamp-1 leading-relaxed text-gray-500" title={singleSentenceDesc} style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                {singleSentenceDesc}
+              </p>
+            )}
 
             {/* Price Block - 移到內容區塊內，享受留白效果 */}
             <div className="space-y-1 pt-2">

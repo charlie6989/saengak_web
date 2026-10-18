@@ -11,79 +11,44 @@ import ProductCard, {
 import FacebookLoginButton from '../src/components/feature/FacebookLoginButton';
 
 describe('LUCISSI CARE 官網修改檢查清單單元測試', () => {
-  describe('一、商品標題規範 (核心產品保留 Saengak 品牌 & 清洗前綴)', () => {
-    it('核心產品應保留 Saengak 品牌名稱並標準化', () => {
-      const title1 = sanitizeProductTitle('SAENGAK｜平衡調理私密潔淨慕斯');
-      expect(title1).toBe('Saengak 平衡調理私密潔淨慕斯');
-
-      const title2 = sanitizeProductTitle('SAENGAK｜深層修護私密清潔露');
-      expect(title2).toBe('Saengak 深層修護私密清潔露');
-
-      const title3 = sanitizeProductTitle('SAENGAK｜私密雙層修護精華噴霧');
-      expect(title3).toBe('Saengak 私密雙層修護精華噴霧');
-
-      const title4 = sanitizeProductTitle('SAENGAK｜益生菌私密養膚濕巾');
-      expect(title4).toBe('Saengak 益生菌私密養膚濕巾');
+  describe('一、商品標題規範（保留 Shopify 品名，只清除前綴與拍賣字樣）', () => {
+    it('SAENGAK｜前綴標準化為 Saengak 品牌名，品名其餘部分不改寫', () => {
+      expect(sanitizeProductTitle('SAENGAK｜平衡調理私密潔淨慕斯')).toBe('Saengak 平衡調理私密潔淨慕斯');
+      expect(sanitizeProductTitle('Saengak 益生菌私密養膚濕巾')).toBe('Saengak 益生菌私密養膚濕巾');
     });
 
-    it('應將拍賣長標題（如 26 字除毛刀）收斂為精煉標題', () => {
+    it('不依關鍵字改寫或截斷品名（MEDION 凝膠不可被切成「MEDION」）', () => {
+      expect(sanitizeProductTitle('MEDION 私密淨化凝膠')).toBe('MEDION 私密淨化凝膠');
       const longTitle = '女性私密美體修整除毛刀 溫和安全防刮傷親膚款 個人專用';
-      const clean = sanitizeProductTitle(longTitle);
-      expect(clean.length).toBeLessThanOrEqual(12);
+      expect(sanitizeProductTitle(longTitle)).toBe(longTitle);
     });
 
-    it('應過濾 LUCISSI 前綴、表情符號及現貨等字眼，且長度 ≤ 12 字', () => {
-      const raw = '✨ LUCISSI｜性感蕾絲女三角內褲 女內衣褲 無痕透氣 現貨';
-      const clean = sanitizeProductTitle(raw);
-      expect(clean.length).toBeLessThanOrEqual(12);
-      expect(clean).not.toContain('✨');
-      expect(clean).not.toContain('LUCISSI');
-      expect(clean).not.toContain('現貨');
-    });
-
-    it('任意超長字串亦保證截斷至 12 字以內', () => {
-      const ultraLong = '這是一個長度超級長的商品名稱測試範例超過了十二個中文字元限制';
-      const clean = sanitizeProductTitle(ultraLong);
-      expect(clean.length).toBeLessThanOrEqual(12);
+    it('應過濾 LUCISSI 前綴、表情符號及現貨等字眼', () => {
+      const clean = sanitizeProductTitle('✨ LUCISSI｜蕾絲邊高腰純棉三角褲 現貨');
+      expect(clean).toBe('蕾絲邊高腰純棉三角褲');
     });
   });
 
-  describe('二、搜尋頁產品敘述精煉呈現 (無標點符號、無省略號、短一句話解決)', () => {
-    it('應將核心產品描述精簡為無標點、無省略號之短句', () => {
+  describe('二、搜尋頁產品敘述（取 Shopify 描述第一句，不套預設標語）', () => {
+    it('依品名套用的固定標語已移除，改用商品描述第一句', () => {
       const product = {
         id: 'test-1',
-        name: 'Saengak 私密雙層修護精華噴霧',
-        price: 980,
+        name: 'MEDION 私密淨化凝膠',
+        price: 99,
         image: 'https://example.com/test.jpg',
-        description:
-          '結合精華油與草本植萃的雙層水油黃金配比，隨手一噴即時安撫私密部位乾燥與異味困擾。德國專利燕麥活性成分 Symcalmin® 深度舒緩修護……',
+        description: 'Saengak 私密保養凝膠以益生菌發酵成分搭配玻尿酸鈉，為私密部位外部肌膚補充水分。無香料。',
       };
 
       const sentence = extractSingleSentenceDescription(product);
-      // 驗證無任何句點或逗號
+      expect(sentence).toBe('Saengak 私密保養凝膠以益生菌發酵成分搭配玻尿酸鈉 為私密部位外部肌膚補充水分');
+      expect(sentence).not.toContain('深層導入');
       expect(sentence).not.toMatch(/[，。！？!?,;；、]/);
-      // 驗證無省略號
-      expect(sentence).not.toContain('...');
-      expect(sentence).not.toContain('…');
-      expect(sentence).toBe('雙層水油黃金配比 隨手安撫舒緩');
     });
 
-    it('遇一般多句商品描述時應能自動切取並移除標點符號與省略號', () => {
-      const product = {
-        id: 'test-2',
-        name: '日常純棉貼身著物',
-        price: 390,
-        image: 'https://example.com/test.jpg',
-        description: '採用 100% 精梳有機純棉面料，觸感親膚透氣。立體剪裁服貼不緊繃……',
-      };
-
-      const sentence = extractSingleSentenceDescription(product);
-      expect(sentence).not.toMatch(/[，。！？!?,;；、]/);
-      expect(sentence).not.toContain('...');
-      expect(sentence).not.toContain('…');
-      expect(sentence.length).toBeLessThanOrEqual(16);
+    it('沒有描述時回傳空字串，不補「溫和植萃」等預設文案', () => {
+      const product = { id: 'test-2', name: '親膚安全私密除毛刀', price: 61, image: '', description: '' };
+      expect(extractSingleSentenceDescription(product)).toBe('');
     });
-
 
     it('ProductCard 渲染輸出時標題與描述皆具備 line-clamp-1 單行排版規範', () => {
       const product = {

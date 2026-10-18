@@ -106,7 +106,7 @@ describe('Shopify Storefront SDK Client', () => {
       expect(product.images).toEqual([]);
       expect(product.tags).toEqual([]);
       expect(product.variants).toEqual([]);
-      expect(product.image).toContain('images.unsplash.com');
+      expect(product.image).toBe('');
     });
 
     it('should correctly parse metafield highlights, subtitle, and promotionBadge', () => {
