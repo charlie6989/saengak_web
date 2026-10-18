@@ -9,6 +9,16 @@
 - 歡迎頁 `/welcome`：新增 `src/lib/memberWelcome.ts` 判斷是否第一次登入（最後登入時間與帳號建立或 Email 驗證時間相差 10 分鐘內），新會員維持「歡迎加入 LUCISSI CARE！」，老會員顯示「歡迎回來」與可略過介紹的說明；分頁標題由「歡迎加入」改為中性的「歡迎」。
 - 已驗證：Vitest 496 項、`npm run typecheck`（0 錯誤，與 main 相同）、`verify:content`、build 通過；以正式 Storefront 實際呼叫分享函式，濕巾（7819900551235）回傳商品名稱、說明與 1600px 主圖。Vercel preview `dpl_HKUfR9AqTwGkvKjBjXrHjsepGUiJ` 以 curl 實測同一商品頁：`facebookexternalhit/1.1;line-poker/1.0` 與一般 facebookexternalhit 取得商品名稱與主圖（`og:type=product`）；LINE 內建瀏覽器 UA 與 Googlebot 取得網站本體；不存在的商品 ID 回站台預設預覽。正式站待合併後再以 LINE 實際分享確認（LINE 會快取舊預覽，舊連結可能要過一段時間才更新）。
 
+## Shopify 商品資料修正：失效圖、同名商品與副標（2026-10-18）
+
+- 經 Chrome 已登入的 Shopify 後台（使用者授權）逐件修改 25 件商品並儲存：
+  - 內容區圖片：22 件的 `custom.lifestyle_showcase`／`custom.craft_details` 共 96 張失效圖改指向同商品相簿或描述中仍存在的圖。依圖片內容挑選，不用檔名比對；略過私處／臀部特寫、文字字卡、「7A 抗菌」貼紙與 CHANEL 道具。#15 隱形中腰、#20 網紗冰絲只有主圖與第二張可用，依使用者決定重複使用；其餘原本可載入的 19 張未改。
+  - 改名 9 件（原同名）：#01 雲朵純棉中腰三角褲、#05 法式蕾絲滾邊純棉三角褲、#02 側邊細帶純棉三角褲、#03 雙細帶高衩純棉三角褲、#04 螺紋低腰純棉比基尼褲、#07 冰絲無痕中腰三角褲、#16 冰絲無痕波浪邊三角褲、#18 冰絲無痕平口安全褲、#20 網紗冰絲中腰三角褲。網址 handle 未改。
+  - 副標 20 件改寫為「腰高｜版型／構造｜尺寸或重點」，移除「性感」「暖腹」與純棉款誤植的「無痕冰絲」；組合 #25–27 副標改為內容物清單。「純棉雙層底襠」與腰高依供應商資料與圖片，內著仍無吊牌或檢測可佐證材質。
+- 過程：#11 除毛刀情境圖文第三段曾因手動轉寫誤存為「瀕水孔」，回讀比對發現後改回「瀝水孔」；之後每筆寫入前在頁面比對雜湊。
+- 已驗證：Storefront API 回讀 25/25 件的品名、副標與兩個 JSON 欄位與預期完全一致；全部 115 個內容區圖片網址皆回 200；公開商品已無同名，副標不含「性感／暖腹」；正式站全部商品列表顯示新品名。
+- 未處理：#16 標籤與 SEO 仍寫丁字褲、#17 品名含「收腹」、#13 SEO 寫莫代爾、Shopify 類別（#01 為「丁字褲」）；尺碼表數值、過期純素認證與外來評價描述圖、組合主圖件數、售完與超賣規格。
+
 ## 商品頁與商品卡修正（2026-10-18，分支 `claude/product-details-review-645cd2`）
 
 - 依 26 件商品頁檢視（報告 https://claude.ai/artifact/XkydPRfGaS1sukLYFsU6mG）先修程式部分：
@@ -21,7 +31,8 @@
   - `formatShopifyProduct` 無圖時不再補圖庫照。
 - 已驗證：Vitest 50 檔 488 項、`verify:content`、typecheck、build 通過；本機 dev server 檢查桌機與 375px 手機商品頁（失效圖改顯示相簿圖、尺寸指南彈窗、內衣欄位、免運差額、評價空狀態）與全部商品列表。worktree 的 `node_modules` 原本缺 Tailwind 4，已重新 `npm ci`。
 - PR #59 CI 全數通過；Vercel preview（saengak-web-d2ux）回讀：商品頁 17 張圖全部載入、無破圖，整頁圖片約 1.1 MB；`/api/shopify/discounts` 200，免運差額與尺寸指南正常；全部商品列表顯示「MEDION 私密淨化凝膠」完整品名，頁面無「專利植萃」「淨化異味」「深層導入」。主控台只有 Vercel 預覽工具列被 CSP 擋下（僅 preview）。
-- 未處理（Shopify 後台資料）：metafield 失效圖網址本身、同名商品與副標、尺碼表內容、過期認證與外來評價描述圖、組合主圖件數、售完商品、超賣規格。尚未合併、尚未部署正式站。
+- 已合併並上線：PR #59 合併為 `5c393c9`，Vercel 正式部署 `dpl_Ht6ZzD1iu6ViUHusc9L8PTR1tCVW` READY 並綁定 lucissicare.com；正式站商品頁回讀 17 張圖全部載入、免運差額與尺寸指南正常。
+- 未處理（Shopify 後台資料）：尺碼表內容、過期認證與外來評價描述圖、組合主圖件數、售完商品、超賣規格（失效圖、同名商品與副標已於下一節處理）。
 
 ## 商品第二張圖 Daylight Linen 上線（2026-10-18，分支 `claude/reverent-franklin-38f2d5`）
 
