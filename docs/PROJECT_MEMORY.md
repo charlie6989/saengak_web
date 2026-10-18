@@ -81,6 +81,7 @@
 - 來源紀錄中的歷史本機路徑只是製作出處；對應原始工作檔可能未包含在 Git，不能保證所有圖片可僅憑 repository 完整重製。
 - 商品圖應保留真實包裝、標籤、比例，公開網站不可使用 Sandbox 浮水印輸出；具體歷史規格見素材紀錄。
 - 商品主圖規範（2026-10-18）：`docs/PRODUCT_IMAGE_STYLE.md`（Ivory Studio：象牙 #F8F5F1 背景、左上柔光、1:1、商品約 70%、無文字貼紙道具）。工具在 `scripts/product-images/`（macOS Vision 去背 + Python 合成）；AI 重繪圖也要再去背合成到同一背景。第一批 27 張在 `creative/product-v1/`，2026-10-18 已上傳 Shopify 並設為第一張（第 14 件因與第 20 件重複改為草稿，第 10 件改為 MEDION 私密淨化凝膠）。主圖顏色以網站預設規格（第一個有庫存的規格）為準；沒有該色實拍照時，改調整規格順序而不是 AI 改色。本機 `.env.local` 的 GEMINI／PHOTOROOM 金鑰目前為空，2026-10-18 改用 Canva generate-image（以原圖為參考）。
+- 商品第二張圖（Daylight Linen，2026-10-18）：26 件已上傳 Shopify 並排第二張（原圖保留在後，第 14 件草稿略過），檔案、來源與參數在 `creative/product-v1/second/`，流程與提示詞在 `creative/product-v1/second/PROMPT_TEMPLATE.md`。使用者決定：內著用 AI 整張重繪（主圖為參考，原廠照只在同色時才給），瓶罐、組合與小物用實品去背合成到 AI 空景（`scripts/product-images/scene.py`），讓包裝字樣維持原廠像素。AI 會改腰頭與包裝小字（13 的 CHESSOLYMPIAD 被寫成小寫 i，主圖 13 同樣問題待對照實品），每張都要逐字核；剪裁特殊的款式（04 低腰比基尼）要平放並明寫版型。Canva generate-image 只回 200px 縮圖，全尺寸要放進自己的暫存設計再 export。
 
 ## Git 與交接
 
