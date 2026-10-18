@@ -7,7 +7,7 @@
 - 商品分享預覽：社群爬蟲不執行 JavaScript，各商品頁原本分享出去都是首頁標題與分享圖。`middleware.js` 對 `/product/<數字 ID>` 檢查 User-Agent，只有連結預覽爬蟲（facebookexternalhit／LINE 的 line-poker、Twitterbot、Slackbot、Discordbot、TelegramBot、WhatsApp、LinkedInBot、Pinterest 等）改寫到新的 `api/share/product.ts`；一般訪客、LINE／Facebook 內建瀏覽器與搜尋引擎爬蟲照常拿到網站本體。函式以 Storefront API 讀商品名稱、說明（壓成 120 字）與主圖，回傳只含 og／twitter 標籤、canonical 與連結的精簡 HTML（`og:type=product`、`og:url` 為該商品網址、`X-Robots-Tag: noindex`、CDN 快取 1 小時）；查不到商品或 Shopify 失敗時回站台預設預覽。
 - 登入驗證頁 `/auth/confirm`：標題改為「登入驗證／正在確認您的會員登入」（同頁也處理 Google 與 Email 驗證信）；成功文案「登入成功／您已成功登入會員」，倒數文字與「立即前往」按鈕改用同一個目的地（一般到「會員歡迎頁」、結帳流程回「首頁」），不再寫錯誤的「3 秒後到首頁」。Supabase 交換失敗或例外時改顯示中性訊息，技術細節只留 console。
 - 歡迎頁 `/welcome`：新增 `src/lib/memberWelcome.ts` 判斷是否第一次登入（最後登入時間與帳號建立或 Email 驗證時間相差 10 分鐘內），新會員維持「歡迎加入 LUCISSI CARE！」，老會員顯示「歡迎回來」與可略過介紹的說明；分頁標題由「歡迎加入」改為中性的「歡迎」。
-- 已驗證：Vitest 496 項、`npm run typecheck`（0 錯誤，與 main 相同）、`verify:content`、build 通過；以正式 Storefront 實際呼叫分享函式，濕巾（7819900551235）回傳商品名稱、說明與 1600px 主圖。`has` 條件不在本機 `vite preview` 執行，正式爬蟲 UA 行為待 Vercel preview／上線後以 curl 驗證。
+- 已驗證：Vitest 496 項、`npm run typecheck`（0 錯誤，與 main 相同）、`verify:content`、build 通過；以正式 Storefront 實際呼叫分享函式，濕巾（7819900551235）回傳商品名稱、說明與 1600px 主圖。Vercel preview `dpl_HKUfR9AqTwGkvKjBjXrHjsepGUiJ` 以 curl 實測同一商品頁：`facebookexternalhit/1.1;line-poker/1.0` 與一般 facebookexternalhit 取得商品名稱與主圖（`og:type=product`）；LINE 內建瀏覽器 UA 與 Googlebot 取得網站本體；不存在的商品 ID 回站台預設預覽。正式站待合併後再以 LINE 實際分享確認（LINE 會快取舊預覽，舊連結可能要過一段時間才更新）。
 
 ## 商品第二張圖 Daylight Linen 上線（2026-10-18，分支 `claude/reverent-franklin-38f2d5`）
 
