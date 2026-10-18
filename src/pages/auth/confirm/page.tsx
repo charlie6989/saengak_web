@@ -9,6 +9,10 @@ export default function AuthConfirmPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  // 從結帳流程來的回首頁，其餘到歡迎頁；倒數文字與「立即前往」按鈕共用同一個目的地
+  const fromCheckout = searchParams.get('from') === 'checkout';
+  const destination = fromCheckout ? '/' : '/welcome';
+  const destinationLabel = fromCheckout ? '首頁' : '會員歡迎頁';
 
   useEffect(() => {
     let redirectTimer: number | undefined;
@@ -37,7 +41,7 @@ export default function AuthConfirmPage() {
         
         if (error) {
           console.error('Auth confirmation error:', error);
-          setMessage(`驗證失敗: ${error.message || '請重新嘗試'}`);
+          setMessage('驗證連結無效或已過期，請重新登入');
           setLoading(false);
           return;
         }
@@ -111,11 +115,9 @@ export default function AuthConfirmPage() {
 
           setIsSuccess(true);
           setLoading(false);
-          setMessage('會員登入驗證成功！正在跳轉...');
-          const fromCheckout = searchParams.get('from') === 'checkout';
+          setMessage('您已成功登入會員。');
           redirectTimer = window.setTimeout(() => {
-            // 驗證成功後跳轉
-            navigate(fromCheckout ? '/' : '/welcome');
+            navigate(destination);
           }, 1500);
         } else {
           setMessage('驗證連結無效或已過期，請重新登入');
@@ -123,7 +125,7 @@ export default function AuthConfirmPage() {
         }
       } catch (error: any) {
         console.error('Confirmation error:', error);
-        setMessage(error?.message || '發生錯誤，請稍後再試');
+        setMessage('登入暫時無法完成，請稍後再試');
         setLoading(false);
       }
     };
@@ -133,17 +135,17 @@ export default function AuthConfirmPage() {
     return () => {
       if (redirectTimer) window.clearTimeout(redirectTimer);
     };
-  }, [navigate, searchParams]);
+  }, [navigate, searchParams, destination]);
 
   return (
     <div className="min-h-screen bg-linear-to-br/srgb from-gray-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            電子郵件認證
+            登入驗證
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            正在驗證您的電子郵件地址
+            正在確認您的會員登入
           </p>
         </div>
 
@@ -158,7 +160,7 @@ export default function AuthConfirmPage() {
                   正在驗證中...
                 </h3>
                 <p className="text-sm text-gray-600">
-                  請稍候，我們正在確認您的電子郵件地址
+                  請稍候，我們正在確認您的帳號
                 </p>
               </div>
             ) : (
@@ -175,7 +177,7 @@ export default function AuthConfirmPage() {
                 <h3 className={`text-lg font-medium mb-2 ${
                   isSuccess ? 'text-green-900' : 'text-red-900'
                 }`}>
-                  {isSuccess ? '認證成功！' : '認證失敗'}
+                  {isSuccess ? '登入成功' : '登入未完成'}
                 </h3>
                 <p className={`text-sm mb-6 ${
                   isSuccess ? 'text-green-600' : 'text-red-600'
@@ -187,13 +189,13 @@ export default function AuthConfirmPage() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
-                      <span>3秒後自動跳轉到首頁...</span>
+                      <span>即將前往{destinationLabel}…</span>
                     </div>
                     <button
-                      onClick={() => navigate('/')}
+                      onClick={() => navigate(destination)}
                       className="w-full py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap"
                     >
-                      立即前往首頁
+                      立即前往{destinationLabel}
                     </button>
                   </div>
                 ) : (
