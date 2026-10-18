@@ -37,6 +37,8 @@
 
 象牙白棉麻、淺霧粉 `#E7D6D4`、淡木或石材檯面；同樣左上方柔光，畫面安靜，商品仍是主角。內著用折疊布料或局部質感特寫；保養品用洗手檯、毛巾或收納包的日常情境。沿用 `creative/lucissi-v5` 提示詞的共用約束。
 
+實際做法、提示詞範本、空景庫與檢查清單在 `creative/product-v1/second/PROMPT_TEMPLATE.md`：內著以 AI 整張重繪（主圖為參考），瓶罐、組合與小物用實品去背合成到 AI 空景（`scripts/product-images/scene.py`）。2026-10-18 已有 26 件上線，來源記在 `creative/product-v1/second/provenance.json`。
+
 ## 製作方式與優先順序
 
 1. **原圖去背合成（優先）**：有乾淨單件照片時，以 macOS Vision 前景遮罩去背，清除道具與貼紙，再合成到標準背景與陰影。商品像素不經生成模型，最忠實。工具在 `scripts/product-images/`。
