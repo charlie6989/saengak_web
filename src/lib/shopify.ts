@@ -316,7 +316,8 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     values: Array.isArray(opt.values) ? opt.values : [],
   }));
 
-  const fallbackImage = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800';
+  // 沒有商品圖時留空，由各元件顯示底色，不放與商品無關的圖庫照片
+  const fallbackImage = '';
 
   // 建立 metafield lookup map，相容單一欄位 query 與批次 identifiers query
   const metafieldMap = new Map<string, any>();

@@ -23,6 +23,10 @@ import { captureExceptionSafe } from '../../lib/sentry';
 import { formatTwd, pickInitialVariant } from '../../domain/algorithms';
 import { formatPageTitle } from '../../lib/pageTitle';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
+import { shopifyImageUrl } from '../../lib/shopifyImage';
+import { fetchShippingSettings } from '../../lib/promotions';
+import { computeFreeShippingGap, DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
+import SizeChartTable from '../../components/feature/SizeChartTable';
 
 interface Product {
   id: string;
@@ -54,7 +58,15 @@ interface Product {
   craftDetails?: CraftDetailItem[];
 }
 
-const FALLBACK_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=900&h=1200';
+// 圖片載入失敗時隱藏該圖（保留底色），不再換成與商品無關的圖庫照片
+const hideBrokenImage = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.visibility = 'hidden';
+};
+
+// 尺寸類選項：名稱含尺寸／尺碼，或選項值像 M、XL、40-50kg（顏色與尺寸合併在「規格」時也適用）
+const isSizeOption = (option: { name: string; values: string[] }) =>
+  /尺寸|尺碼|size/i.test(option.name) ||
+  option.values.some((v) => /(^|[\s,，(（])(XS|S|M|L|X{1,3}L|\dXL)(?=$|[\s,，)）(（])|\d\s*kg/i.test(v));
 
 export default function ProductPage() {
   const params = useParams<{ id?: string; '*'?: string }>();
@@ -104,7 +116,33 @@ export default function ProductPage() {
   const [relatedWishlist, setRelatedWishlist] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const thumbnailListRef = useRef<HTMLUListElement>(null);
-  const { addToCart, setIsCartOpen, getTotalItems } = useCart();
+  const { addToCart, setIsCartOpen, getTotalItems, getTotalPrice } = useCart();
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [shippingSettings, setShippingSettings] = useState({
+    freeShippingThreshold: DEFAULT_FREE_SHIPPING_THRESHOLD,
+    defaultShippingFee: DEFAULT_SHIPPING_FEE,
+  });
+
+  // 免運門檻與運費以 Supabase site_settings 為準，讀取失敗時沿用程式預設值
+  useEffect(() => {
+    let cancelled = false;
+    fetchShippingSettings().then((settings) => {
+      if (!cancelled) setShippingSettings(settings);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // 尺寸指南彈窗：Esc 關閉
+  useEffect(() => {
+    if (!isSizeGuideOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsSizeGuideOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isSizeGuideOpen]);
 
   // 商品評價與問答狀態 (Supabase 串接)
   const [publishedReviews, setPublishedReviews] = useState<ProductReview[]>([]);
@@ -442,7 +480,14 @@ export default function ProductPage() {
       ),
     )
     : [];
-  const activeImage = productImages[selectedImage] ?? product?.image ?? FALLBACK_PRODUCT_IMAGE;
+  const activeImage = productImages[selectedImage] ?? product?.image ?? '';
+
+  const freeShippingGap = computeFreeShippingGap(
+    getTotalPrice(),
+    isAvailableForSale ? currentPrice * quantity : 0,
+    shippingSettings.freeShippingThreshold,
+  );
+  const hasSizeChart = (product?.sizeChart?.length ?? 0) > 0;
 
   const discountPercentage = currentCompareAtPrice && currentCompareAtPrice > currentPrice
     ? Math.round(((currentCompareAtPrice - currentPrice) / currentCompareAtPrice) * 100)
@@ -991,11 +1036,9 @@ export default function ProductPage() {
                               }`}
                           >
                             <img
-                              src={url}
+                              src={shopifyImageUrl(url, 200)}
                               alt={`${product.name}-縮圖${idx + 1}`}
-                              onError={(e) => {
-                                e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
-                              }}
+                              onError={hideBrokenImage}
                               draggable={false}
                               className={`block w-full h-full object-cover object-center pointer-events-none ${isAllSoldOut ? 'grayscale-30' : ''}`}
                               loading="lazy"
@@ -1074,11 +1117,9 @@ export default function ProductPage() {
                   }}
                 >
                   <img
-                    src={activeImage}
+                    src={shopifyImageUrl(activeImage, 1200)}
                     alt={product.name}
-                    onError={(e) => {
-                      e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
-                    }}
+                    onError={hideBrokenImage}
                     data-testid="product-main-image"
                     draggable={false}
                     className={`block w-full h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl ${isAllSoldOut ? 'opacity-75 grayscale-30' : ''}`}
@@ -1169,6 +1210,23 @@ export default function ProductPage() {
                   <span>{product.promotionBadge}</span>
                 </div>
               )}
+
+              {/* 運費與免運差額：運費比多數單件商品高，放在價格旁讓顧客決定是否湊單 */}
+              <div className="pt-2 flex items-start gap-1.5 text-xs sm:text-sm text-gray-600" data-testid="free-shipping-gap">
+                <i className="ri-truck-line text-eucalyptus mt-0.5" aria-hidden="true"></i>
+                <span>
+                  {freeShippingGap.status === 'already-free' ? (
+                    <>購物車已達 {formatTwd(shippingSettings.freeShippingThreshold)}，這筆訂單免運</>
+                  ) : freeShippingGap.status === 'free-after-add' ? (
+                    <>加入後即達 {formatTwd(shippingSettings.freeShippingThreshold)} 免運</>
+                  ) : (
+                    <>
+                      運費 {formatTwd(shippingSettings.defaultShippingFee)}，滿 {formatTwd(shippingSettings.freeShippingThreshold)} 免運；加入後還差{' '}
+                      <strong className="font-semibold text-brand">{formatTwd(freeShippingGap.remaining)}</strong>
+                    </>
+                  )}
+                </span>
+              </div>
             </div>
 
             {/* 4. 產品變體選擇 (膠囊風格) */}
@@ -1178,9 +1236,22 @@ export default function ProductPage() {
                   const selectedVal = selectedOptions[option.name];
                   return (
                     <div key={option.name} className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center justify-between gap-3 text-sm">
                         <span className="font-medium text-gray-800">{option.name}：</span>
-                        <span className="text-brand font-semibold text-xs">{selectedVal || '請選擇規格'}</span>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="text-brand font-semibold text-xs truncate">{selectedVal || '請選擇規格'}</span>
+                          {hasSizeChart && isSizeOption(option) && (
+                            <button
+                              type="button"
+                              onClick={() => setIsSizeGuideOpen(true)}
+                              data-testid="size-guide-button"
+                              className="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-gray-700 underline underline-offset-2 hover:text-brand cursor-pointer"
+                            >
+                              <i className="ri-ruler-line" aria-hidden="true"></i>
+                              尺寸指南
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {option.values.map((val) => {
@@ -1390,7 +1461,8 @@ export default function ProductPage() {
                 ------------------------------------------------------------- */}
             {selectedTab === 'reviews' && (
               <div className="space-y-8 animate-fadeIn" data-testid="product-reviews-tab">
-                {/* 評論總覽評分卡 */}
+                {/* 評論總覽評分卡：0 則評價時不顯示，避免「0.0」與空星看起來像低分 */}
+                {totalReviews > 0 && (
                 <div
                   className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6"
                   data-testid="reviews-summary"
@@ -1426,6 +1498,7 @@ export default function ProductPage() {
                     所有評價皆來自完成訂單之會員真實反饋，並通過 LUCISSI CARE 內容審查機制。
                   </div>
                 </div>
+                )}
 
                 {/* 評價列表 / 空狀態 */}
                 {publishedReviews.length === 0 ? (
@@ -1437,10 +1510,10 @@ export default function ProductPage() {
                       <i className="ri-chat-smile-2-line"></i>
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                      尚無顧客評價
+                      成為第一位分享心得的人
                     </h3>
                     <p className="leading-6 text-gray-500 text-sm max-w-md mx-auto">
-                      此商品目前尚無顧客評價，歡迎購買後於會員中心分享您的使用心得！
+                      這件商品還沒有評價。完成訂單的會員可以在會員中心留下使用心得，審核後會顯示在這裡。
                     </p>
                   </div>
                 ) : (
@@ -1606,8 +1679,9 @@ export default function ProductPage() {
                           <div className="relative aspect-3/4 overflow-hidden bg-[#F7F6F3]">
                             <Link to={`/product/${cleanId}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                               <img
-                                src={item.image || FALLBACK_PRODUCT_IMAGE}
+                                src={shopifyImageUrl(item.image, 600)}
                                 alt={item.name}
+                                onError={hideBrokenImage}
                                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                                 loading="lazy"
                               />
@@ -1909,6 +1983,40 @@ export default function ProductPage() {
         </div>
       </div>
 
+      {/* 尺寸指南彈窗：從尺寸選項旁開啟，不必切換到下方頁籤 */}
+      {isSizeGuideOpen && hasSizeChart && (
+        <div
+          onClick={() => setIsSizeGuideOpen(false)}
+          className="fixed inset-0 z-60 flex items-end sm:items-center justify-center bg-black/50 sm:p-4"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="size-guide-title"
+            data-testid="size-guide-dialog"
+            onClick={(e) => e.stopPropagation()}
+            className="w-full sm:max-w-2xl max-h-[85vh] overflow-y-auto bg-white p-5 sm:p-7 space-y-4"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)' }}
+          >
+            <div className="flex items-center justify-between gap-4">
+              <h2 id="size-guide-title" className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+                尺寸指南
+              </h2>
+              <button
+                type="button"
+                onClick={() => setIsSizeGuideOpen(false)}
+                aria-label="關閉尺寸指南"
+                autoFocus
+                className="w-9 h-9 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 cursor-pointer"
+              >
+                <i className="ri-close-line text-xl" aria-hidden="true"></i>
+              </button>
+            </div>
+            <SizeChartTable rows={product.sizeChart ?? []} />
+          </div>
+        </div>
+      )}
+
       {/* 圖片放大檢視 Modal */}
       {isZoomModalOpen && (
         <div
@@ -1923,11 +2031,9 @@ export default function ProductPage() {
               <i className="ri-close-line text-xl"></i>
             </button>
             <img
-              src={activeImage}
+              src={shopifyImageUrl(activeImage, 2000)}
               alt={product.name}
-              onError={(e) => {
-                e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
-              }}
+              onError={hideBrokenImage}
               className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
             />
           </div>

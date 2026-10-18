@@ -55,6 +55,10 @@ const forbiddenContent = [
   ['unverified salon-grade claim', '韓國沙龍級'],
   ['unverified premium-material claim', '頂級親膚純棉'],
   ['unverified popularity claim', '探索我們最受歡迎的'],
+  // 2026-10-18 商品頁檢視：商品卡曾依品名套用的固定標語（無專利文件；「深層導入」與凝膠「不可置入」矛盾）
+  ['hardcoded product card tagline', '專利植萃溫和淨膚'],
+  ['hardcoded product card tagline', '溫和淨化異味'],
+  ['hardcoded product card tagline', '益生菌精華深層導入'],
   // 2026-10-17 物流比照 LUCISSI：只提供黑貓宅急便常溫宅配，超商取貨開通前不得宣稱
   ['unsupported convenience-store pickup claim', '超商 / 宅配'],
   ['unsupported convenience-store pickup claim', '超商與宅配'],
