@@ -1,6 +1,13 @@
 # 項目狀態
 
-更新日期：2026-10-18（Asia/Taipei）。最新工作為商品第二張圖（Daylight Linen）上線，以及 Google 登入驗證與登入流程文案整理；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-18（Asia/Taipei）。最新工作為登入流程文案與商品分享預覽、商品第二張圖（Daylight Linen）上線，以及 Google 登入驗證；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## 登入流程文案與商品分享預覽（2026-10-18，分支 `claude/auth-copy-product-share`）
+
+- 商品分享預覽：社群爬蟲不執行 JavaScript，各商品頁原本分享出去都是首頁標題與分享圖。`middleware.js` 對 `/product/<數字 ID>` 檢查 User-Agent，只有連結預覽爬蟲（facebookexternalhit／LINE 的 line-poker、Twitterbot、Slackbot、Discordbot、TelegramBot、WhatsApp、LinkedInBot、Pinterest 等）改寫到新的 `api/share/product.ts`；一般訪客、LINE／Facebook 內建瀏覽器與搜尋引擎爬蟲照常拿到網站本體。函式以 Storefront API 讀商品名稱、說明（壓成 120 字）與主圖，回傳只含 og／twitter 標籤、canonical 與連結的精簡 HTML（`og:type=product`、`og:url` 為該商品網址、`X-Robots-Tag: noindex`、CDN 快取 1 小時）；查不到商品或 Shopify 失敗時回站台預設預覽。
+- 登入驗證頁 `/auth/confirm`：標題改為「登入驗證／正在確認您的會員登入」（同頁也處理 Google 與 Email 驗證信）；成功文案「登入成功／您已成功登入會員」，倒數文字與「立即前往」按鈕改用同一個目的地（一般到「會員歡迎頁」、結帳流程回「首頁」），不再寫錯誤的「3 秒後到首頁」。Supabase 交換失敗或例外時改顯示中性訊息，技術細節只留 console。
+- 歡迎頁 `/welcome`：新增 `src/lib/memberWelcome.ts` 判斷是否第一次登入（最後登入時間與帳號建立或 Email 驗證時間相差 10 分鐘內），新會員維持「歡迎加入 LUCISSI CARE！」，老會員顯示「歡迎回來」與可略過介紹的說明；分頁標題由「歡迎加入」改為中性的「歡迎」。
+- 已驗證：Vitest 496 項、`npm run typecheck`（0 錯誤，與 main 相同）、`verify:content`、build 通過；以正式 Storefront 實際呼叫分享函式，濕巾（7819900551235）回傳商品名稱、說明與 1600px 主圖。`has` 條件不在本機 `vite preview` 執行，正式爬蟲 UA 行為待 Vercel preview／上線後以 curl 驗證。
 
 ## 商品第二張圖 Daylight Linen 上線（2026-10-18，分支 `claude/reverent-franklin-38f2d5`）
 
@@ -22,7 +29,7 @@
 - OAuth 回呼失敗時改顯示中性文案「登入暫時無法完成，請稍後再試或改用電子郵件登入。」並提供「返回登入頁」；技術細節只寫入 console。歡迎頁「您的電子郵件會員已完成登入」改為「您已完成登入」。
 - `src/lib/googleAuth.ts` 的 `GOOGLE_CLIENT_ID` 預設值改為現行 client；該模組（GIS 按鈕）目前沒有被引用，登入不經過它。
 - 已驗證：`npm run typecheck`、`npm test`（49 檔／483 項）、`npm run verify:content`（120 檔）通過；未在瀏覽器實測修改後畫面、未部署。
-- 尚未處理：`/auth/confirm` 標題仍寫「電子郵件認證」，成功訊息寫「3秒後自動跳轉到首頁」但實際 1.5 秒後前往 `/welcome`。
+- `/auth/confirm` 標題與跳轉文案：已於分支 `claude/auth-copy-product-share` 處理（見上節）。
 
 ## 商品主圖視覺規範與第一批重製（2026-10-18，分支 `claude/website-product-visual-style-07e360`）
 
@@ -89,7 +96,7 @@
 補齊 Logo 規範網站導入步驟 3–4（暫用字標版本）：
 
 - 以 sharp 從暫用字標 SVG 產生 `public/apple-touch-icon.png`（180px）、`public/favicon-32x32.png`，以及 `public/images/brand/og-image.png`（1200×630，`ivory` #F8F5F1 底、Primary 字標 560px 寬、`plum`，依規範置中）。
-- `index.html` 加入 32px PNG icon、`apple-touch-icon`、Open Graph（type、site_name、locale、title、description、image 與尺寸、alt；不設固定 `og:url`，因所有路由共用 `index.html`，固定值會讓各頁分享被併成首頁）及 `twitter:card=summary_large_image`。各頁仍共用首頁的分享資訊；個別商品頁的分享標題與圖片尚未處理。
+- `index.html` 加入 32px PNG icon、`apple-touch-icon`、Open Graph（type、site_name、locale、title、description、image 與尺寸、alt；不設固定 `og:url`，因所有路由共用 `index.html`，固定值會讓各頁分享被併成首頁）及 `twitter:card=summary_large_image`。各頁仍共用首頁的分享資訊；商品頁的分享標題與圖片已於 2026-10-18 由 `api/share/product.ts` 處理（見最新一節）。
 - 已驗證：本機 dev server 四個圖檔皆 200 且型別正確、12 個分享標籤存在；目視檢查分享圖與圖示。
 - 未處理：`.ico`（現代瀏覽器用 SVG／PNG 即可）；設計師正式檔到位後需重產這三張圖。
 

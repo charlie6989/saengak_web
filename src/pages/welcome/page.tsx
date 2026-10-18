@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { isFirstSignIn } from '../../lib/memberWelcome';
 import { mockAuthState } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
@@ -41,6 +42,8 @@ export default function WelcomePage() {
     getUser();
   }, [navigate, useMockData]);
 
+  const firstSignIn = isFirstSignIn(user);
+
   const handleContinue = () => {
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
@@ -73,13 +76,13 @@ export default function WelcomePage() {
               <i className="ri-user-smile-line text-3xl text-brand"></i>
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              歡迎加入 LUCISSI CARE！
+              {firstSignIn ? '歡迎加入 LUCISSI CARE！' : '歡迎回來'}
             </h1>
             <p className="text-xl text-gray-600 mb-2">
               嗨 {user?.name || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email}，您已完成登入
             </p>
             <p className="text-gray-500">
-              讓我們花幾分鐘時間了解我們的服務
+              {firstSignIn ? '讓我們花幾分鐘時間了解我們的服務' : '想再看一次服務介紹可以繼續，或直接略過回到首頁'}
               {useMockData && <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-sm">假數據模式</span>}
             </p>
           </div>

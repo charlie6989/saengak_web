@@ -21,7 +21,7 @@ const ROUTE_TITLES: Array<[RegExp, string]> = [
   [/^\/register$/, '加入會員'],
   [/^\/(forgot-password|reset-password)$/, '重設密碼'],
   [/^\/profile$/, '會員中心'],
-  [/^\/welcome$/, '歡迎加入'],
+  [/^\/welcome$/, '歡迎'],
   [/^\/auth\/confirm$/, '登入驗證'],
   [/^\/admin(\/|$)/, '管理後台'],
 ];
