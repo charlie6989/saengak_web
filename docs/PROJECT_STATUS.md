@@ -13,7 +13,8 @@
   - 尺寸選項旁加「尺寸指南」彈窗；尺碼表抽成 `SizeChartTable`，內衣改用下胸圍／罩杯／支撐感欄位，移除不實的「平放手工量測」並修正「襠深」。
   - `formatShopifyProduct` 無圖時不再補圖庫照。
 - 已驗證：Vitest 50 檔 488 項、`verify:content`、typecheck、build 通過；本機 dev server 檢查桌機與 375px 手機商品頁（失效圖改顯示相簿圖、尺寸指南彈窗、內衣欄位、免運差額、評價空狀態）與全部商品列表。worktree 的 `node_modules` 原本缺 Tailwind 4，已重新 `npm ci`。
-- 未處理（Shopify 後台資料）：metafield 失效圖網址本身、同名商品與副標、尺碼表內容、過期認證與外來評價描述圖、組合主圖件數、售完商品、超賣規格。尚未部署、尚未推送。
+- PR #59 CI 全數通過；Vercel preview（saengak-web-d2ux）回讀：商品頁 17 張圖全部載入、無破圖，整頁圖片約 1.1 MB；`/api/shopify/discounts` 200，免運差額與尺寸指南正常；全部商品列表顯示「MEDION 私密淨化凝膠」完整品名，頁面無「專利植萃」「淨化異味」「深層導入」。主控台只有 Vercel 預覽工具列被 CSP 擋下（僅 preview）。
+- 未處理（Shopify 後台資料）：metafield 失效圖網址本身、同名商品與副標、尺碼表內容、過期認證與外來評價描述圖、組合主圖件數、售完商品、超賣規格。尚未合併、尚未部署正式站。
 
 ## 商品第二張圖 Daylight Linen 上線（2026-10-18，分支 `claude/reverent-franklin-38f2d5`）
 
