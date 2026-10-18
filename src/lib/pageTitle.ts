@@ -21,8 +21,19 @@ const ROUTE_TITLES: Array<[RegExp, string]> = [
   [/^\/register$/, '加入會員'],
   [/^\/(forgot-password|reset-password)$/, '重設密碼'],
   [/^\/profile$/, '會員中心'],
+  [/^\/welcome$/, '歡迎加入'],
+  [/^\/auth\/confirm$/, '登入驗證'],
   [/^\/admin(\/|$)/, '管理後台'],
 ];
+
+// 登入流程中的過渡頁不應被搜尋引擎收錄
+const NOINDEX_PATHS: RegExp[] = [/^\/welcome$/, /^\/auth\/confirm$/];
+export const DEFAULT_ROBOTS = 'index, follow';
+export const NOINDEX_ROBOTS = 'noindex, nofollow';
+
+export function robotsForPath(pathname: string): string {
+  return NOINDEX_PATHS.some((pattern) => pattern.test(pathname)) ? NOINDEX_ROBOTS : DEFAULT_ROBOTS;
+}
 
 export function formatPageTitle(title?: string): string {
   return title ? `${title}｜LUCISSI CARE` : SITE_TITLE;

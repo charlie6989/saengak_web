@@ -22,11 +22,8 @@ export default function AuthConfirmPage() {
 
         if (errorMsg || errorDesc) {
           console.error('Auth confirmation redirect error:', errorMsg, errorDesc);
-          if (errorDesc?.includes('Unable to exchange external code') || errorDesc?.includes('invalid_client')) {
-            setMessage('Google 登入驗證失敗：Supabase 後台尚未儲存有效的 Google Client Secret，請由專案擁有者 (Owner) 登入後台儲存金鑰。');
-          } else {
-            setMessage(`驗證失敗: ${errorDesc || errorMsg}`);
-          }
+          // 技術細節只留在 console；顧客看到的是中性說明
+          setMessage('登入暫時無法完成，請稍後再試或改用電子郵件登入。');
           setLoading(false);
           return;
         }
@@ -202,10 +199,10 @@ export default function AuthConfirmPage() {
                 ) : (
                   <div className="space-y-3">
                     <button
-                      onClick={() => navigate('/')}
+                      onClick={() => navigate('/login')}
                       className="w-full py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap"
                     >
-                      返回首頁
+                      返回登入頁
                     </button>
                     <p className="text-xs text-gray-500">
                       如果問題持續發生，請聯繫客服支援

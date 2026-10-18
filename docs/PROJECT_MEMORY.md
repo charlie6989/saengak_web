@@ -9,6 +9,12 @@
 - 正式 outbox 的 #1006、#1007 已由正確 Shopify 商店 API 確認為 test=true。已將兩筆發票工作由 pending 改為 manual_review，標記 SHOPIFY_TEST_ORDER，回讀 attempts=0／未開票；排除自動派送，未變更 Shopify 訂單或退款。
 - Vercel 發票 release gate 必須與 Edge Function 一致，只有字串 `true` 才可派送；缺值／其他值不得默認啟用。b26667a 已部署正式並回讀 alias，CI 通過；本輪回讀訪客開關仍為 false。
 
+## 會員登入（2026-10-18）
+
+- Google 登入使用 Supabase 轉址流程（`GoogleLoginButton` → `signInWithOAuth` → `/auth/confirm` → `/welcome`），OAuth client `293650056136-joulemc5ltdtfqlb9pb65c7n0rg7v1bg`（Google Cloud 專案 `lucissi-care-auth`）。2026-10-18 05:05（台灣時間）使用者實測正式站登入成功；先前失敗原因是 Supabase 儲存的 client secret 與 client 不一致。
+- Google 同意畫面仍顯示 `tmqzkagkrzhioftvwbqo.supabase.co`，品牌化尚未處理。
+- `src/lib/googleAuth.ts`（GIS 按鈕）目前未被引用；若重新啟用，必須使用同一個 client。顧客看到的登入錯誤不得包含後台設定或金鑰說明。
+
 ## 品牌與網域
 
 - 商店品牌為 **LUCISSI CARE**；SAENGAK 仍是商品品牌，不能把商品品牌歸屬一律替換成商店名稱。`src/lib/brandOwnership.ts` 負責品牌歸屬判斷，`src/content/site.ts` 保存商店公開資料。
