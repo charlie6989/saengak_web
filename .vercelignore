@@ -222,3 +222,4 @@ scripts/query_last_product.mjs
 .playwright-cli/
 .claude/
 creative/
+scripts/product-images/
