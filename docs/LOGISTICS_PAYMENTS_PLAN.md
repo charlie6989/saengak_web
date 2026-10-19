@@ -59,6 +59,7 @@
    - [Easy! Payment Control](https://apps.shopify.com/payment-control)：免費版 1 條規則，可依運送方式隱藏貨到付款，支援繁中；但 0 則評價。
    - 其他可依運送方式隱藏的：[HidePay](https://apps.shopify.com/hidepay)、[Kip](https://apps.shopify.com/kip-customize-payment-methods)、[ETP](https://apps.shopify.com/etp-hide-sort-payments)。
    規則只需一條：運送方式名稱不含「全家」時隱藏「貨到付款（Cash on Delivery）」。
+   **2026-10-20 更新：可能不需要限制。** ShipAny 2025-09-04 公告〈ShipAny 台灣正式支援「貨到付款」服務〉寫明 COD 支援順豐速運、黑貓宅急便與全家店到店三家，服務費為代收金額 0.7%（最低 NT$30），在「設定 → 物流服務設定」啟用。若屬實，宅配（黑貓）也能代收，就不必只限全家，也不用裝 Payfy。開通 COD 時要在後台確認黑貓確實可選 COD；若只有全家可選，再回到上面的限制做法。（2026-10-16 客服回信只談全家，是因為我們當時只問全家。）
 7. **發票偏好（已完成）**：保留 COD 訂單的發票偏好。PR #70 讓訂單成立但未付款時把偏好保存到下單後 120 天，付款建立發票工作後刪除，取消時（含 `orders/updated` 帶 `cancelled_at`）刪除，並加 11 項資料庫測試。2026-10-20 經使用者同意套用到正式 Supabase（版本 `20261019215834`，PR #71 同步檔名）。
 8. **Claude（經同意，在 1–7 完成後）**：在 Shopify 新增手動付款方式「貨到付款（Cash on Delivery）」。
 9. **確認發票時點**：發票目前在訂單付款後開立；COD 訂單要等人工標記已付款才會觸發，需確認這個時點符合營運與稅務要求。
