@@ -11,6 +11,7 @@ const testFiles = [
   'supabase/tests/database/enqueue_amego_invoice_job.test.sql',
   'supabase/tests/database/guest_checkout.test.sql',
   'supabase/tests/database/partner_member_perks.test.sql',
+  'supabase/tests/database/cod_invoice_preference.test.sql',
 ];
 const sql = testFiles.map((testFile) => readFileSync(testFile, 'utf8')).join('\n');
 const result = spawnSync(
@@ -71,6 +72,9 @@ if (!/ok 43 - only checkout links expired past the grace period and never conver
 if (!/ok 12 - a member cannot issue a perk to themselves/i.test(output)) {
   errors.push('pgTAP did not complete all 12 partner member perk assertions');
 }
+if (!/ok 11 - a card order paid at once keeps its carrier and its preference is then deleted/i.test(output)) {
+  errors.push('pgTAP did not complete all 11 COD invoice preference assertions');
+}
 const rollbackCount = output.match(/^ROLLBACK\r?$/gm)?.length ?? 0;
 if (rollbackCount !== testFiles.length) {
   errors.push(`expected ${testFiles.length} database test rollbacks, received ${rollbackCount}`);
@@ -83,7 +87,7 @@ if (errors.length) {
 
 console.log(JSON.stringify({
   ok: true,
-  assertions: 225,
+  assertions: 236,
   testFiles,
   database: 'local Supabase PostgreSQL',
 }, null, 2));
