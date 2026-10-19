@@ -2,6 +2,13 @@
 
 更新日期：2026-10-19（Asia/Taipei）。最新工作為 MEDION 凝膠內容改寫、商品 SEO 標題與說明（網站改讀 SEO 欄位）、Shopify 商品類別補齊、組合商品主圖改為單支凝膠與 #19 尺寸更正、商品尺寸表改用原廠尺寸圖數值、零庫存停止下單與商品標籤／類別修正；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
 
+## COD 訂單保留發票偏好（2026-10-20，分支 `claude/cod-invoice-preference`）
+
+- 原因：貨到付款訂單要等送達、結算後人工標記已付款才開發票；結帳時的發票偏好（載具、捐贈碼、統編）原本只保存 30 天，超過就退回一般個人發票。這是開啟 COD 前的阻擋條件之一（PR #69 審查意見）。
+- 新增 migration `20261020120000_keep_invoice_preference_until_paid.sql`，只重新定義 `sync_shopify_order_webhook`（參數與其他邏輯不變）：訂單成立但未付款、未取消時，偏好保存到下單後 120 天；付款並建立發票工作後刪除偏好（內容已寫入工作）；訂單取消時刪除偏好。
+- 新增 `supabase/tests/database/cod_invoice_preference.test.sql`（10 項）並加入 `npm run test:db`；本機 Supabase 套用後全部 235 項資料庫測試、`verify:supabase`、Vitest 520 項、typecheck 通過。
+- **正式資料庫尚未套用**，需經使用者同意後再執行。
+
 ## MEDION 凝膠內容改寫（2026-10-19，分支 `claude/medion-content`）
 
 - 問題：MEDION 私密淨化凝膠的說明、標籤、成分與內容欄位原本沿用 SAENGAK 凝膠資料（SAENGAK 標籤、蛇床子萃取、盒裝 7 支）。
