@@ -119,6 +119,9 @@ export interface ShopifyProduct {
   careInstructions?: string[];
   lifestyleShowcase?: LifestyleShowcaseItem[];
   craftDetails?: CraftDetailItem[];
+  /** Shopify「搜尋引擎清單」的 SEO 標題／說明；未填時為 undefined */
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export interface ShopifyCollection {
@@ -386,6 +389,8 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
     careInstructions,
     lifestyleShowcase,
     craftDetails,
+    seoTitle: (node.seo?.title || '').trim() || undefined,
+    seoDescription: (node.seo?.description || '').trim() || undefined,
   };
 }
 
@@ -430,6 +435,10 @@ const PRODUCT_FRAGMENT = `
   title
   description
   descriptionHtml
+  seo {
+    title
+    description
+  }
   handle
   availableForSale
   totalInventory

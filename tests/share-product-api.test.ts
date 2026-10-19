@@ -20,6 +20,23 @@ describe('product share preview', () => {
     expect(meta.image).toEqual({ url: 'https://cdn.shopify.com/wipes.jpg', width: 1200, height: 1500, alt: product.title });
   });
 
+  it('prefers the Shopify SEO title and description when they are filled in', () => {
+    const meta = productShareMeta('7819900551235', {
+      ...product,
+      seo: { title: 'Saengak 益生菌私密養膚濕巾 單片獨立包裝', description: '韓國製私密濕巾，單片獨立包裝。' },
+    });
+
+    expect(meta.title).toBe('Saengak 益生菌私密養膚濕巾 單片獨立包裝｜LUCISSI CARE');
+    expect(meta.description).toBe('韓國製私密濕巾，單片獨立包裝。');
+  });
+
+  it('falls back to the product title and description when the SEO fields are blank', () => {
+    const meta = productShareMeta('7819900551235', { ...product, seo: { title: ' ', description: null } });
+
+    expect(meta.title).toBe('Saengak 益生菌私密養膚濕巾｜LUCISSI CARE');
+    expect(meta.description).toBe('單片獨立包裝， 外出 隨身使用。');
+  });
+
   it('falls back to the site preview when the product is missing', () => {
     const meta = productShareMeta('1', null);
 

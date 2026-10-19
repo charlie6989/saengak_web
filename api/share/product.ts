@@ -25,6 +25,7 @@ export interface ShareMeta {
 interface StorefrontProduct {
   title?: string;
   description?: string;
+  seo?: { title?: string | null; description?: string | null } | null;
   featuredImage?: { url?: string; width?: number; height?: number; altText?: string | null } | null;
 }
 
@@ -51,9 +52,11 @@ export function productShareMeta(id: string, product: StorefrontProduct | null |
         alt: product.featuredImage.altText || product.title,
       }
     : SITE_IMAGE;
+  // 優先使用 Shopify 的 SEO 標題／說明，與商品頁一致；沒填時退回商品名稱與說明摘要
+  const title = product.seo?.title?.trim() || product.title;
   return {
-    title: `${product.title}｜${SITE_NAME}`,
-    description: summarize(product.description) || SITE_DESCRIPTION,
+    title: `${title}｜${SITE_NAME}`,
+    description: summarize(product.seo?.description?.trim() || product.description) || SITE_DESCRIPTION,
     url,
     type: 'product',
     image,
@@ -87,7 +90,7 @@ async function fetchProduct(id: string): Promise<StorefrontProduct | null> {
       'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_PUBLIC_TOKEN,
     },
     body: JSON.stringify({
-      query: 'query ShareProduct($id: ID!) { product(id: $id) { title description featuredImage { url width height altText } } }',
+      query: 'query ShareProduct($id: ID!) { product(id: $id) { title description seo { title description } featuredImage { url width height altText } } }',
       variables: { id: `gid://shopify/Product/${id}` },
     }),
   });

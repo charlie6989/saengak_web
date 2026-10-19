@@ -1,6 +1,12 @@
 # 項目狀態
 
-更新日期：2026-10-19（Asia/Taipei）。最新工作為 Shopify 商品類別補齊、組合商品主圖改為單支凝膠與 #19 尺寸更正、商品尺寸表改用原廠尺寸圖數值、零庫存停止下單與商品標籤／類別修正；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-19（Asia/Taipei）。最新工作為商品 SEO 標題與說明（網站改讀 SEO 欄位）、Shopify 商品類別補齊、組合商品主圖改為單支凝膠與 #19 尺寸更正、商品尺寸表改用原廠尺寸圖數值、零庫存停止下單與商品標籤／類別修正；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+
+## 商品 SEO 標題與說明（2026-10-19，分支 `claude/product-seo-fields`）
+
+- 程式：網站原本完全沒讀 Shopify 的 SEO 欄位，商品頁標題用品名，也沒有逐商品的 meta 說明。現在 `src/lib/shopify.ts` 會讀 `seo { title description }`；新增的 `src/lib/productMeta.ts` 讓商品頁的分頁標題、`meta[name=description]` 與 `og:description` 優先使用 SEO 欄位，沒填時退回品名與說明摘要（120 字），離開商品頁時還原成網站預設。`api/share/product.ts` 的社群分享預覽也改成優先使用 SEO 欄位。
+- 已驗證：Vitest 518 項（新增 `tests/product-meta.test.ts`、分享預覽 SEO 案例）、typecheck、verify:content、build 通過。本機 dev server 開冰絲無痕中腰三角褲，分頁標題與兩個 description 都是新的 SEO 內容，回首頁後恢復預設。本機 `/api/shopify/discounts` 回 500，是因為 dev server 沒有執行 serverless API，與本次修改無關。
+- Shopify 資料（經 Chrome 已登入後台，使用者核可清單後套用）：17 件原本沒有 SEO 的公開商品都已寫入 SEO 標題與說明。內容只用副標、說明與規格裡已有的事實，尺碼照實際規格。每筆寫入前在頁面比對雜湊，Storefront API 回讀 17/17 一致；公開商品已沒有缺 SEO 的（隱藏的金流驗收測試除外）。清單與雜湊在本機工作檔，不在 Git。
 
 ## Shopify 商品類別補齊（2026-10-19）
 
