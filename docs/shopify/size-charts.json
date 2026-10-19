@@ -1,0 +1,745 @@
+{
+ "metafield": "custom.size_chart",
+ "format": "{ columns:[{label,unit?}], rows:[{size,values[]}], note? }（src/domain/sizeChart.ts）",
+ "writtenToShopify": "2026-10-19，經 Chrome 已登入後台，存檔後以後台 metafields JSON 回讀一致",
+ "nasShare": "Synology NAS（唯讀）。路徑相對 File Station 根目錄",
+ "products": [
+  {
+   "productId": "7810527723587",
+   "no": "#01",
+   "title": "雲朵純棉中腰三角褲",
+   "sku": "F-HP-954",
+   "nasSource": "/新品設計圖-eva/F-HP-954/02-產品尺寸圖&細節圖&體驗圖/N9233.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "腰圍",
+      "unit": "cm"
+     },
+     {
+      "label": "臀圍",
+      "unit": "cm"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "58-64",
+       "82-88",
+       "40-50"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "64-70",
+       "88-94",
+       "50-60"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "70-76",
+       "95-100",
+       "60-70"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖，為身體尺寸參考範圍；介於兩個尺碼之間時，請以建議體重為準。"
+   }
+  },
+  {
+   "productId": "7811017441347",
+   "no": "#02",
+   "title": "側邊細帶純棉三角褲",
+   "sku": "F-G-744",
+   "nasSource": "/新品設計圖-eva/F-G-744/02-產品尺寸圖&細節圖&體驗圖/741_產品尺寸圖.jpg",
+   "transcriptionNote": "腰圍以台尺標示",
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "腰圍",
+      "unit": "台尺"
+     },
+     {
+      "label": "平鋪寬度",
+      "unit": "cm"
+     },
+     {
+      "label": "襠深",
+      "unit": "cm"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "1.7-2.1",
+       "31",
+       "20",
+       "40-55"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "2.1-2.3",
+       "33",
+       "21",
+       "55-65"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖；腰圍以台尺標示（1 尺約 33.3 cm），平鋪寬度為衣物平放測量。"
+   }
+  },
+  {
+   "productId": "7811020030019",
+   "no": "#03",
+   "title": "雙細帶高衩純棉三角褲",
+   "sku": "F-CHP-751",
+   "nasSource": "/新品設計圖-eva/F-CHP-751/02-產品尺寸圖&細節圖&體驗圖/L079_產品尺寸圖.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "腰圍",
+      "unit": "cm"
+     },
+     {
+      "label": "臀圍",
+      "unit": "cm"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "S",
+      "values": [
+       "56-60",
+       "79-83",
+       "48-52"
+      ]
+     },
+     {
+      "size": "M",
+      "values": [
+       "61-65",
+       "84-88",
+       "52-57"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "66-70",
+       "89-93",
+       "57-62"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "71-75",
+       "94-98",
+       "62-67"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖，為身體尺寸參考範圍；介於兩個尺碼之間時，請以建議體重為準。"
+   }
+  },
+  {
+   "productId": "7811021570115",
+   "no": "#04",
+   "title": "螺紋低腰純棉比基尼褲",
+   "sku": "F-HP-1082",
+   "nasSource": "/新品設計圖-eva/F-HP-1082/02-產品尺寸圖&細節圖&體驗圖/F-HP-1082_產品尺寸圖.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "L",
+      "values": [
+       "47.5-57.5"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "57.5-67.5"
+      ]
+     }
+    ],
+    "note": "原廠尺寸圖僅提供建議體重；介於兩個尺碼之間時建議選大一號。"
+   }
+  },
+  {
+   "productId": "7811040182339",
+   "no": "#05",
+   "title": "法式蕾絲滾邊純棉三角褲",
+   "sku": "F-HP-1048",
+   "nasSource": "/新品設計圖-eva/F-HP-1048/02-產品尺寸圖&細節圖&體驗圖/F-HP-1048_產品尺寸圖.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "腰圍（平量）",
+      "unit": "cm"
+     },
+     {
+      "label": "臀圍（平量）",
+      "unit": "cm"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "28",
+       "31",
+       "40-50"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "30",
+       "33",
+       "50-60"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "32",
+       "35",
+       "60-70"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖；標示「平量」者為衣物平放測量，約為圍度的一半。"
+   }
+  },
+  {
+   "productId": "7811041820739",
+   "no": "#06",
+   "title": "蕾絲邊高腰純棉三角褲",
+   "sku": "F-HWP-860",
+   "nasSource": "/新品設計圖-eva/F-HWP-860/02-產品尺寸圖&細節圖&體驗圖/8033#提花_產品尺寸圖.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "40-50"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "50-60"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "60-70"
+      ]
+     }
+    ],
+    "note": "原廠尺寸圖僅提供建議體重；介於兩個尺碼之間時建議選大一號。"
+   }
+  },
+  {
+   "productId": "7811043393603",
+   "no": "#07",
+   "title": "冰絲無痕中腰三角褲",
+   "sku": "F-HP-762",
+   "nasSource": "/新品設計圖-eva/F-HP-762/02-產品尺寸圖&細節圖&體驗圖/WH-0046_產品尺寸圖.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "腰圍",
+      "unit": "cm"
+     },
+     {
+      "label": "腰圍",
+      "unit": "台尺"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "60-68",
+       "1.6-1.9",
+       "40-52.5"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "70-78",
+       "1.9-2.2",
+       "52.5-62.5"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "80-90",
+       "2.2-2.7",
+       "62.5-77.5"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖，為身體尺寸參考範圍；介於兩個尺碼之間時，請以建議體重為準。"
+   }
+  },
+  {
+   "productId": "7811049881667",
+   "no": "#08",
+   "title": "純棉高腰舒適內褲",
+   "sku": "F-HWP-859",
+   "nasSource": "/新品設計圖-eva/F-HWP-859/02-產品尺寸圖&細節圖&體驗圖/t—663.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "40-50"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "50-60"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "60-70"
+      ]
+     }
+    ],
+    "note": "原廠尺寸圖僅提供建議體重；介於兩個尺碼之間時建議選大一號。"
+   }
+  },
+  {
+   "productId": "7811057942595",
+   "no": "#09",
+   "title": "純棉高腰防漏生理褲",
+   "sku": "F-HWP-767",
+   "nasSource": "/新品設計圖-eva/F-HWP-767/02-產品尺寸圖&細節圖&體驗圖/1538_產品尺寸圖.jpg",
+   "transcriptionNote": "原圖 2XL 即商店的 XXL",
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "腰圍（平量）",
+      "unit": "cm"
+     },
+     {
+      "label": "臀圍（平量）",
+      "unit": "cm"
+     },
+     {
+      "label": "腿圍（平量）",
+      "unit": "cm"
+     },
+     {
+      "label": "中長",
+      "unit": "cm"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "L",
+      "values": [
+       "28",
+       "36",
+       "21",
+       "28",
+       "45-55"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "30",
+       "38",
+       "22.5",
+       "30",
+       "55-62.5"
+      ]
+     },
+     {
+      "size": "XXL",
+      "values": [
+       "32",
+       "40",
+       "24",
+       "32",
+       "62.5-70"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖；標示「平量」者為衣物平放測量，約為圍度的一半。"
+   }
+  },
+  {
+   "productId": "7811155198019",
+   "no": "#13",
+   "title": "舒適純棉透氣內褲",
+   "sku": "F-U-257",
+   "nasSource": "/01.buyyui設計/01.台灣蝦皮-Lucissi/01.台灣蝦皮-Lucissi情趣内衣/F-U-257/selected/02-產品尺寸圖&細節圖&體驗圖/F-U-257_產品尺寸圖.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "40-55"
+      ]
+     }
+    ],
+    "note": "原廠尺寸圖僅提供建議體重；本款為單一尺寸。"
+   }
+  },
+  {
+   "productId": "7811204743235",
+   "no": "#15",
+   "title": "隱形中腰無痕女內著",
+   "sku": "F-U-340",
+   "nasSource": "/01.buyyui設計/01.台灣蝦皮-Lucissi/01.台灣蝦皮-Lucissi情趣内衣/F-U-340/02-產品尺寸圖&細節圖&體驗圖/F-U-340_產品尺寸圖.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "腰圍",
+      "unit": "cm"
+     },
+     {
+      "label": "臀圍",
+      "unit": "cm"
+     },
+     {
+      "label": "腿圍",
+      "unit": "cm"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "65-78",
+       "70-88",
+       "45-58",
+       "40-49"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "70-83",
+       "80-98",
+       "55-68",
+       "50-60"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "75-88",
+       "90-108",
+       "65-78",
+       "56-70"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖，為身體尺寸參考範圍；介於兩個尺碼之間時，請以建議體重為準。"
+   }
+  },
+  {
+   "productId": "7811216998467",
+   "no": "#16",
+   "title": "冰絲無痕波浪邊三角褲",
+   "sku": "F-HP-503",
+   "nasSource": "/01.buyyui設計/06.台灣Momo/F-HP-503_MOMO/02-產品尺寸圖&細節圖&體驗圖/6-100.jpg",
+   "transcriptionNote": "均碼",
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "寬度（平量）",
+      "unit": "cm"
+     },
+     {
+      "label": "褲長",
+      "unit": "cm"
+     },
+     {
+      "label": "重量",
+      "unit": "g"
+     }
+    ],
+    "rows": [
+     {
+      "size": "均碼",
+      "values": [
+       "15",
+       "18",
+       "13"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖；本款為單一尺寸，布料彈性高。"
+   }
+  },
+  {
+   "productId": "7811229483075",
+   "no": "#17",
+   "title": "高腰蕾絲無痕內褲",
+   "sku": "F-HWP-861",
+   "nasSource": "/新品設計圖-eva/F-HWP-861/02-產品尺寸圖&細節圖&體驗圖/3803_產品尺寸圖.jpg",
+   "transcriptionNote": "原圖標示 28×2 cm，即平量 28 cm、圍度約 56 cm",
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "腰圍（未拉伸）",
+      "unit": "cm"
+     },
+     {
+      "label": "中長",
+      "unit": "cm"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "56",
+       "24",
+       "40-50"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "60",
+       "25",
+       "50-60"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "64",
+       "26",
+       "60-70"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖；腰圍為未拉伸時的圍度（平量 × 2）。"
+   }
+  },
+  {
+   "productId": "7811245015107",
+   "no": "#18",
+   "title": "冰絲無痕平口安全褲",
+   "sku": "F-BS-876",
+   "nasSource": "/新品設計圖-eva/F-BS-876/02-產品尺寸圖&細節圖&體驗圖/820#_產品尺寸圖.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "40-50"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "50-60"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "60-70"
+      ]
+     }
+    ],
+    "note": "原廠尺寸圖僅提供建議體重；介於兩個尺碼之間時建議選大一號。"
+   }
+  },
+  {
+   "productId": "7811931373635",
+   "no": "#19",
+   "title": "乾爽透氣運動內衣",
+   "sku": "D-TSB-486",
+   "nasSource": "/01.buyyui設計/01.台灣蝦皮-Lucissi/01.台灣蝦皮-Lucissi情趣内衣/D-TSB-486/02-產品尺寸圖&細節圖&體驗圖/D-TSB-486_產品尺寸圖.jpg",
+   "transcriptionNote": "原圖 2XL 即商店的 XXL；XL 列原圖與供應商尺码建议表皆寫 80C，依其他尺碼 B／C 同下圍的規律更正為 85C，2026-10-19 使用者核可",
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "適合罩杯"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "70D / 75B / 75C",
+       "45 以下"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "75D / 80B / 80C",
+       "45-52.5"
+      ]
+     },
+     {
+      "size": "XL",
+      "values": [
+       "80D / 85B / 85C",
+       "52.5-60"
+      ]
+     },
+     {
+      "size": "XXL",
+      "values": [
+       "85D / 90B / 90C",
+       "60-70"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖；原廠標示適合下圍 60–100 cm、體重 45–70 kg。"
+   },
+   "correction": "XL 列原廠與供應商（1688）尺码建议表皆寫 80D／85B／80C；依 B、C 同下圍規律於 2026-10-19 經使用者核可更正為 85C。供應商原表在同 SKU 的 Links/ 資料夾。"
+  },
+  {
+   "productId": "7812559405123",
+   "no": "#20",
+   "title": "網紗冰絲中腰三角褲",
+   "sku": "F-HWP-1049",
+   "nasSource": "/新品設計圖-eva/F-HWP-1049/02-產品尺寸圖&細節圖&體驗圖/F-HWP-1049_產品尺寸圖.jpg",
+   "transcriptionNote": null,
+   "sizeChart": {
+    "columns": [
+     {
+      "label": "側腰寬",
+      "unit": "cm"
+     },
+     {
+      "label": "腰圍（平量）",
+      "unit": "cm"
+     },
+     {
+      "label": "臀圍",
+      "unit": "cm"
+     },
+     {
+      "label": "建議體重",
+      "unit": "kg"
+     }
+    ],
+    "rows": [
+     {
+      "size": "M",
+      "values": [
+       "10",
+       "28",
+       "80-90",
+       "40-50"
+      ]
+     },
+     {
+      "size": "L",
+      "values": [
+       "11",
+       "30",
+       "90-100",
+       "50-65"
+      ]
+     }
+    ],
+    "note": "數值取自 LUCISSI 原廠尺寸圖；標示「平量」者為衣物平放測量，約為圍度的一半。"
+   }
+  }
+ ]
+}

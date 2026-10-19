@@ -1,0 +1,4271 @@
+{
+ "generatedAt": "2026-10-19T05:09:12.174Z",
+ "store": "gh2xgs-zf.myshopify.com",
+ "apiVersion": "2025-01",
+ "count": 27,
+ "products": [
+  {
+   "id": "7808428376131",
+   "handle": "金流驗收測試-請勿購買",
+   "title": "金流驗收測試－請勿購買",
+   "productType": "未分類",
+   "vendor": "My Store 7",
+   "tags": [],
+   "category": {
+    "id": "na",
+    "name": "Uncategorized"
+   },
+   "seo": {
+    "title": null,
+    "description": null
+   },
+   "availableForSale": true,
+   "totalInventory": 0,
+   "metafields": {
+    "subtitle": "SAENGAK 精選 | 官方直營 | 貼心呵護",
+    "highlights": [
+     "官方直營 100% 正品品質保證",
+     "精選親膚舒適材質，細膩呵護日常",
+     "通過多項嚴格品質與安全檢驗"
+    ]
+   },
+   "images": [],
+   "variants": [
+    {
+     "title": "Default Title",
+     "availableForSale": true,
+     "price": "1.0",
+     "compareAtPrice": null
+    }
+   ]
+  },
+  {
+   "id": "7810527723587",
+   "handle": "雲朵純棉-透氣抗菌-女款中腰三角內褲-舒適貼合日常款-1",
+   "title": "雲朵純棉中腰三角褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "中腰內褲",
+    "包臀內褲",
+    "女三角褲",
+    "女性內著",
+    "抗菌內褲",
+    "棉質內著",
+    "純棉內褲",
+    "舒適穿著",
+    "舒適貼身",
+    "透氣親膚"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "雲朵純棉中腰三角褲 蝴蝶結腰頭 純棉雙層底襠",
+    "description": "中腰純棉女三角褲，蝴蝶結腰頭、純棉雙層底襠，親膚透氣，M–XL 尺碼。"
+   },
+   "availableForSale": true,
+   "totalInventory": 43,
+   "metafields": {
+    "subtitle": "中腰｜純棉雙層底襠｜蝴蝶結腰頭",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "高彈力貼合彈性腰帶：彈力持久不易鬆弛，溫柔貼合身型不勒腰",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "腰圍",
+       "unit": "cm"
+      },
+      {
+       "label": "臀圍",
+       "unit": "cm"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "58-64",
+        "82-88",
+        "40-50"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "64-70",
+        "88-94",
+        "50-60"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "70-76",
+        "95-100",
+        "60-70"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖，為身體尺寸參考範圍；介於兩個尺碼之間時，請以建議體重為準。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "適中 (Medium)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02___221727_2b1b00df-f594-445e-ac82-06fd407f8c5c.jpg?v=1788773833"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_04___22172715_ea32e28d-2912-43eb-b923-fd7d21199068.jpg?v=1788773833"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_22172716_a684aa80-581f-408f-8992-317a4b8fdd4d.jpg?v=1788773834"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_22172717_472b5e85-c4a3-4c98-abab-f35a00094d13.jpg?v=1788773834"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/07_22172718_366c350a-5965-46e8-bee1-1b8651558a32.jpg?v=1788773834"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e54798dd-4fc7-4c5d-9ed4-9f75680cf138.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-01_5eb613ad-05a3-4218-a7c4-f9797259b0d7.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02___221727_2b1b00df-f594-445e-ac82-06fd407f8c5c.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_04___22172715_ea32e28d-2912-43eb-b923-fd7d21199068.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_22172716_a684aa80-581f-408f-8992-317a4b8fdd4d.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_22172717_472b5e85-c4a3-4c98-abab-f35a00094d13.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/07_22172718_366c350a-5965-46e8-bee1-1b8651558a32.jpg"
+   ],
+   "variants": [
+    {
+     "title": "霧光藍 / M",
+     "availableForSale": false,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "霧光藍 / L",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "霧光藍 / XL",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "燕麥灰 / M",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "燕麥灰 / L",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "燕麥灰 / XL",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "經典黑 / M",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "經典黑 / L",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "經典黑 / XL",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "柔粉色 / M",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "柔粉色 / L",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "柔粉色 / XL",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "裸膚色 / M",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "裸膚色 / L",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "裸膚色 / XL",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    }
+   ]
+  },
+  {
+   "id": "7811017441347",
+   "handle": "細帶簡約純棉女款內褲-輕盈親膚雙層棉質底襠性感半包臀日常三角褲",
+   "title": "側邊細帶純棉三角褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "半包臀",
+    "女性內著",
+    "性感內褲",
+    "抗菌內褲",
+    "棉質內褲",
+    "純棉內褲",
+    "細帶內褲",
+    "舒適穿著",
+    "舒適貼身",
+    "透氣親膚"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "側邊細帶純棉三角褲 低腰半包臀",
+    "description": "低腰半包臀女三角褲，側邊細帶設計、純棉雙層底襠，貼身透氣，M–L 尺碼。"
+   },
+   "availableForSale": true,
+   "totalInventory": 47,
+   "metafields": {
+    "subtitle": "低腰半包臀｜側邊細帶｜純棉雙層底襠",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "高彈力貼合彈性腰帶：彈力持久不易鬆弛，溫柔貼合身型不勒腰",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "腰圍",
+       "unit": "台尺"
+      },
+      {
+       "label": "平鋪寬度",
+       "unit": "cm"
+      },
+      {
+       "label": "襠深",
+       "unit": "cm"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "1.7-2.1",
+        "31",
+        "20",
+        "40-55"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "2.1-2.3",
+        "33",
+        "21",
+        "55-65"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖；腰圍以台尺標示（1 尺約 33.3 cm），平鋪寬度為衣物平放測量。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "適中 (Medium)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_154935.jpg?v=1788773858"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_15493517.jpg?v=1788773858"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_15493519.jpg?v=1788773858"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-02.jpg?v=1792270936"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_45f7b315-6c9a-4ab9-917d-0f54f37230b2.jpg?v=1792266373"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_45f7b315-6c9a-4ab9-917d-0f54f37230b2.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-02.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_154935.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_15493517.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_15493518_161828.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_15493519.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_155319.jpg"
+   ],
+   "variants": [
+    {
+     "title": "魅惑紫 / M (40-55kg)",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "魅惑紫 / L (55-65kg)",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "夜幕黑 / M (40-55kg)",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "夜幕黑 / L (55-65kg)",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "蜜桃粉 / M (40-55kg)",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "蜜桃粉 / L (55-65kg)",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "玫瑰豆沙 / M (40-55kg)",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "玫瑰豆沙 / L (55-65kg)",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "雲霧灰 / M (40-55kg)",
+     "availableForSale": true,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    },
+    {
+     "title": "雲霧灰 / L (55-65kg)",
+     "availableForSale": false,
+     "price": "109.0",
+     "compareAtPrice": "109.0"
+    }
+   ]
+  },
+  {
+   "id": "7811020030019",
+   "handle": "雙細帶簡約純棉女款內褲-輕盈親膚高衩半包臀性感美型三角褲",
+   "title": "雙細帶高衩純棉三角褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "半包臀",
+    "女性內著",
+    "性感內褲",
+    "抗菌內褲",
+    "純棉內褲",
+    "舒適穿著",
+    "透氣親膚",
+    "雙細帶內褲",
+    "高衩內褲"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "雙細帶高衩純棉三角褲 高衩半包臀",
+    "description": "高衩半包臀女三角褲，雙細帶側腰、純棉雙層底襠，S–XL 尺碼。"
+   },
+   "availableForSale": true,
+   "totalInventory": 32,
+   "metafields": {
+    "subtitle": "高衩半包臀｜雙細帶側腰｜純棉雙層底襠",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "高彈力貼合彈性腰帶：彈力持久不易鬆弛，溫柔貼合身型不勒腰",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "腰圍",
+       "unit": "cm"
+      },
+      {
+       "label": "臀圍",
+       "unit": "cm"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "S",
+       "values": [
+        "56-60",
+        "79-83",
+        "48-52"
+       ]
+      },
+      {
+       "size": "M",
+       "values": [
+        "61-65",
+        "84-88",
+        "52-57"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "66-70",
+        "89-93",
+        "57-62"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "71-75",
+        "94-98",
+        "62-67"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖，為身體尺寸參考範圍；介於兩個尺碼之間時，請以建議體重為準。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "適中 (Medium)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246828267_162408_e8e4ba44-ec77-4415-8911-93ba331d4e22.jpg?v=1788773880"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246831949_f86773ea-4a74-4c90-9889-b4056a59e654.jpg?v=1788773880"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_15101919.jpg?v=1788256694"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_151019_1358f6a1-dc3b-4a78-af2b-fbbf6ee4192a.jpg?v=1788773880"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_15101917_88b4aa4c-ab88-4067-a952-c9d635fe0c94.jpg?v=1788773880"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_4f3d215b-89a8-46a8-9d14-e53b63389e16.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-03.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246828267_162408_e8e4ba44-ec77-4415-8911-93ba331d4e22.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246831949_f86773ea-4a74-4c90-9889-b4056a59e654.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_151019_1358f6a1-dc3b-4a78-af2b-fbbf6ee4192a.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_15101917_88b4aa4c-ab88-4067-a952-c9d635fe0c94.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_15101918_04c06941-6820-4e1a-aeeb-7c2b64d57f0c.jpg"
+   ],
+   "variants": [
+    {
+     "title": "斑駁灰 / S (48-52kg)",
+     "availableForSale": false,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "斑駁灰 / M (52-57kg)",
+     "availableForSale": false,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "斑駁灰 / L (57-62kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "斑駁灰 / XL (62-67kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "極致黑 / S (48-52kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "極致黑 / M (52-57kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "極致黑 / L (57-62kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "極致黑 / XL (62-67kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "雲霧白 / S (48-52kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "雲霧白 / M (52-57kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "雲霧白 / L (57-62kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "雲霧白 / XL (62-67kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "柔藕粉 / S (48-52kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "柔藕粉 / M (52-57kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "柔藕粉 / L (57-62kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "柔藕粉 / XL (62-67kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "薰衣紫 / S (48-52kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "薰衣紫 / M (52-57kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "薰衣紫 / L (57-62kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "薰衣紫 / XL (62-67kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "霧鞍藍 / S (48-52kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "霧鞍藍 / M (52-57kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "霧鞍藍 / L (57-62kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    },
+    {
+     "title": "霧鞍藍 / XL (62-67kg)",
+     "availableForSale": true,
+     "price": "85.0",
+     "compareAtPrice": "122.0"
+    }
+   ]
+  },
+  {
+   "id": "7811021570115",
+   "handle": "細帶螺紋純棉女款內褲-輕盈親膚低腰半包臀性感美型三角褲",
+   "title": "螺紋低腰純棉比基尼褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "低腰內褲",
+    "半包臀",
+    "女性內著",
+    "性感內褲",
+    "抗菌內褲",
+    "純棉內褲",
+    "細帶內褲",
+    "舒適穿著",
+    "螺紋內褲",
+    "透氣親膚"
+   ],
+   "category": {
+    "id": "aa-1-6-11-1",
+    "name": "Bikinis"
+   },
+   "seo": {
+    "title": "螺紋低腰純棉比基尼褲 純棉雙層底襠",
+    "description": "低腰比基尼女內褲，螺紋布面柔軟有彈性，純棉雙層底襠，L–XL 尺碼。"
+   },
+   "availableForSale": true,
+   "totalInventory": 24,
+   "metafields": {
+    "subtitle": "低腰比基尼｜螺紋布面｜純棉雙層底襠",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "高彈力貼合彈性腰帶：彈力持久不易鬆弛，溫柔貼合身型不勒腰",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "L",
+       "values": [
+        "47.5-57.5"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "57.5-67.5"
+       ]
+      }
+     ],
+     "note": "原廠尺寸圖僅提供建議體重；介於兩個尺碼之間時建議選大一號。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "適中 (Medium)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_57927a59-c0af-45b9-bab7-7f4f9a85927c.jpg?v=1788773909"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_486d0058-702e-465e-8444-f3cca652a2e4.jpg?v=1788773909"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_a62456bb-85fe-4a1f-a387-0b479e2c6245.jpg?v=1788773911"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_7510c392-7756-4177-9535-4f1347539d38.jpg?v=1788773915"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_e51b1135-c14b-432e-aa94-f83aed507654.jpg?v=1788773919"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_95213490-d285-4eb6-b70f-1bd246fb0f85.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-04.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_12___230316_bc4a018a-feb5-4fa1-aa2a-22b16fa8f3f0.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_2_88fc8395-1ca9-4368-b936-2ac4446bd023.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_9d1f3b7a-4829-445b-9232-0e49813b61fc.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_57927a59-c0af-45b9-bab7-7f4f9a85927c.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_486d0058-702e-465e-8444-f3cca652a2e4.jpg"
+   ],
+   "variants": [
+    {
+     "title": "杏奶膚 / L (47.5-57.5kg)",
+     "availableForSale": true,
+     "price": "76.0",
+     "compareAtPrice": "119.0"
+    },
+    {
+     "title": "杏奶膚 / XL (57.5-67.5kg)",
+     "availableForSale": true,
+     "price": "76.0",
+     "compareAtPrice": "119.0"
+    },
+    {
+     "title": "霧灰色 / L (47.5-57.5kg)",
+     "availableForSale": true,
+     "price": "76.0",
+     "compareAtPrice": "119.0"
+    },
+    {
+     "title": "霧灰色 / XL (57.5-67.5kg)",
+     "availableForSale": true,
+     "price": "76.0",
+     "compareAtPrice": "119.0"
+    },
+    {
+     "title": "極雅黑 / L (47.5-57.5kg)",
+     "availableForSale": true,
+     "price": "76.0",
+     "compareAtPrice": "119.0"
+    },
+    {
+     "title": "極雅黑 / XL (57.5-67.5kg)",
+     "availableForSale": true,
+     "price": "76.0",
+     "compareAtPrice": "119.0"
+    },
+    {
+     "title": "極海藍 / L (47.5-57.5kg)",
+     "availableForSale": true,
+     "price": "76.0",
+     "compareAtPrice": "119.0"
+    },
+    {
+     "title": "極海藍 / XL (57.5-67.5kg)",
+     "availableForSale": true,
+     "price": "76.0",
+     "compareAtPrice": "119.0"
+    }
+   ]
+  },
+  {
+   "id": "7811040182339",
+   "handle": "法式無痕純棉女款內褲-輕盈透氣雙層棉質底襠舒適抗菌三角褲",
+   "title": "法式蕾絲滾邊純棉三角褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "三角褲",
+    "女性內著",
+    "抗菌內褲",
+    "法式內褲",
+    "無痕內褲",
+    "純棉內褲",
+    "舒適穿著",
+    "透氣親膚"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "法式蕾絲滾邊純棉三角褲 純棉雙層底襠",
+    "description": "腰頭與褲口蕾絲滾邊的女三角褲，純棉雙層底襠，M–XL 尺碼。"
+   },
+   "availableForSale": true,
+   "totalInventory": 90,
+   "metafields": {
+    "subtitle": "蕾絲滾邊腰頭與褲口｜純棉雙層底襠｜M–XL",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "超薄無痕熱壓收邊：穿著緊身瑜珈褲或洋裝依然平整隱形，杜絕尷尬夾臀",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "腰圍（平量）",
+       "unit": "cm"
+      },
+      {
+       "label": "臀圍（平量）",
+       "unit": "cm"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "28",
+        "31",
+        "40-50"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "30",
+        "33",
+        "50-60"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "32",
+        "35",
+        "60-70"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖；標示「平量」者為衣物平放測量，約為圍度的一半。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "偏薄 (Thin)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_577d84bc-2d76-4497-93ea-7d4ed99ca60b.jpg?v=1788773954"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_b76dbc36-0cab-40c7-bc3b-6bdfae5ee5e3.jpg?v=1788773953"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_bbbf9f9a-d3eb-46ca-bbcf-aef350a0cd62.jpg?v=1788773953"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_d375208e-7297-40f8-8bcb-148d3c3c7b53.jpg?v=1788773953"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_53b55801-c69a-4aae-be83-51a2d1726e83.jpg?v=1788773954"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_51bd0a6e-4aa0-4f0e-8d14-ef6897443691.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-05.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_577d84bc-2d76-4497-93ea-7d4ed99ca60b.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_b76dbc36-0cab-40c7-bc3b-6bdfae5ee5e3.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_bbbf9f9a-d3eb-46ca-bbcf-aef350a0cd62.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_d375208e-7297-40f8-8bcb-148d3c3c7b53.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_53b55801-c69a-4aae-be83-51a2d1726e83.jpg"
+   ],
+   "variants": [
+    {
+     "title": "櫻花粉 / M (40-50kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "櫻花粉 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "櫻花粉 / XL (60-70kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "裸米色 / M (40-50kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "裸米色 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "裸米色 / XL (60-70kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "皮膚色 / M (40-50kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "皮膚色 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "皮膚色 / XL (60-70kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "麻花灰 / M (40-50kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "麻花灰 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    },
+    {
+     "title": "麻花灰 / XL (60-70kg)",
+     "availableForSale": true,
+     "price": "62.0",
+     "compareAtPrice": "97.0"
+    }
+   ]
+  },
+  {
+   "id": "7811041820739",
+   "handle": "蕾絲邊純棉女款高腰內褲-輕盈親膚雙層棉質底襠優雅包臀三角褲",
+   "title": "蕾絲邊高腰純棉三角褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "三角褲",
+    "女性內著",
+    "抗菌內褲",
+    "純棉內褲",
+    "舒適穿著",
+    "蕾絲內褲",
+    "透氣親膚",
+    "高腰內褲"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "蕾絲邊高腰純棉三角褲 純棉雙層底襠",
+    "description": "高腰女三角褲，側邊蕾絲點綴、純棉雙層底襠，包覆完整，M–XL 尺碼。"
+   },
+   "availableForSale": true,
+   "totalInventory": 23,
+   "metafields": {
+    "subtitle": "高腰｜蕾絲邊｜純棉雙層底襠",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "高彈力貼合彈性腰帶：彈力持久不易鬆弛，溫柔貼合身型不勒腰",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "40-50"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "50-60"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "60-70"
+       ]
+      }
+     ],
+     "note": "原廠尺寸圖僅提供建議體重；介於兩個尺碼之間時建議選大一號。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "適中 (Medium)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16271033.jpg?v=1788256814"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_162710_b7b37f42-6e51-4bfc-952e-e3461c225562.jpg?v=1788773982"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16271033_dcafd81a-a235-42fa-a3ec-a2a8e2aba5d4.jpg?v=1788773982"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_16271034_787bf4e5-ccab-4814-83c4-8c477807c24d.jpg?v=1788773982"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_16271035_efa9ecbc-73d6-416d-af6e-aab5c26d3e13.jpg?v=1788773982"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_0795954c-f363-449f-a734-04bbaa5c2926.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-06.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_162710_b7b37f42-6e51-4bfc-952e-e3461c225562.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16271033_dcafd81a-a235-42fa-a3ec-a2a8e2aba5d4.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_16271034_787bf4e5-ccab-4814-83c4-8c477807c24d.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_16271035_efa9ecbc-73d6-416d-af6e-aab5c26d3e13.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_162710_47d69a18-8c7d-433e-aa9e-708b9bb9b9aa.jpg"
+   ],
+   "variants": [
+    {
+     "title": "淺灰色 / M (40-50kg)",
+     "availableForSale": true,
+     "price": "67.0",
+     "compareAtPrice": "88.0"
+    },
+    {
+     "title": "淺灰色 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "67.0",
+     "compareAtPrice": "88.0"
+    },
+    {
+     "title": "淺灰色 / XL (60-70kg)",
+     "availableForSale": true,
+     "price": "67.0",
+     "compareAtPrice": "88.0"
+    },
+    {
+     "title": "暗灰色 / M (40-50kg)",
+     "availableForSale": false,
+     "price": "67.0",
+     "compareAtPrice": "88.0"
+    },
+    {
+     "title": "暗灰色 / L (50-60kg)",
+     "availableForSale": false,
+     "price": "67.0",
+     "compareAtPrice": "88.0"
+    },
+    {
+     "title": "暗灰色 / XL (60-70kg)",
+     "availableForSale": false,
+     "price": "67.0",
+     "compareAtPrice": "88.0"
+    },
+    {
+     "title": "粉棕色 / M (40-50kg)",
+     "availableForSale": true,
+     "price": "67.0",
+     "compareAtPrice": "88.0"
+    },
+    {
+     "title": "粉棕色 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "67.0",
+     "compareAtPrice": "88.0"
+    },
+    {
+     "title": "粉棕色 / XL (60-70kg)",
+     "availableForSale": true,
+     "price": "67.0",
+     "compareAtPrice": "88.0"
+    }
+   ]
+  },
+  {
+   "id": "7811043393603",
+   "handle": "冰絲無痕中腰三角褲-純棉檔底透氣親膚女內褲-含大尺碼",
+   "title": "冰絲無痕中腰三角褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "中腰三角褲",
+    "冰絲內褲",
+    "女生內褲",
+    "無痕內褲",
+    "純棉檔",
+    "舒適穿著"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "冰絲無痕中腰三角褲 無痕切邊 涼感",
+    "description": "中腰冰絲女三角褲，無痕切邊貼身不留痕，觸感涼爽，M–XL（至 77.5 kg）。"
+   },
+   "availableForSale": true,
+   "totalInventory": 37,
+   "metafields": {
+    "subtitle": "中腰｜冰絲無痕切邊｜M–XL（至 77.5 kg）",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "超薄無痕熱壓收邊：穿著緊身瑜珈褲或洋裝依然平整隱形，杜絕尷尬夾臀",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "腰圍",
+       "unit": "cm"
+      },
+      {
+       "label": "腰圍",
+       "unit": "台尺"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "60-68",
+        "1.6-1.9",
+        "40-52.5"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "70-78",
+        "1.9-2.2",
+        "52.5-62.5"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "80-90",
+        "2.2-2.7",
+        "62.5-77.5"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖，為身體尺寸參考範圍；介於兩個尺碼之間時，請以建議體重為準。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "偏薄 (Thin)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_1bd715a0-cc28-422b-a663-9bcbcc7bf1d2.jpg?v=1788773999"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_6a21c35b-3d8c-4bf6-ad1a-e5b64d3bcce7.jpg?v=1788773998"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_e8fafaaf-bfa3-47a1-9e94-937dd7c6ed78.jpg?v=1788773999"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_0f32e7c3-854d-468e-82c0-436b8d8b493d.jpg?v=1788773999"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_e5badd19-60f0-455b-b9e2-8017147ec5c3.jpg?v=1788773999"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/07_3d574a5d-e705-473a-ae1c-34c01a4a5698.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-07.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_1bd715a0-cc28-422b-a663-9bcbcc7bf1d2.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_6a21c35b-3d8c-4bf6-ad1a-e5b64d3bcce7.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_e8fafaaf-bfa3-47a1-9e94-937dd7c6ed78.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_0f32e7c3-854d-468e-82c0-436b8d8b493d.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_e5badd19-60f0-455b-b9e2-8017147ec5c3.jpg"
+   ],
+   "variants": [
+    {
+     "title": "亮橘色 / M (40-52.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "亮橘色 / L (52.5-62.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "亮橘色 / XL (62.5-77.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "自然杏 / M (40-52.5kg)",
+     "availableForSale": false,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "自然杏 / L (52.5-62.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "自然杏 / XL (62.5-77.5kg)",
+     "availableForSale": false,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "薄荷綠 / M (40-52.5kg)",
+     "availableForSale": true,
+     "price": "75.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "薄荷綠 / L (52.5-62.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "薄荷綠 / XL (62.5-77.5kg)",
+     "availableForSale": false,
+     "price": "75.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "柔豆沙 / M (40-52.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "柔豆沙 / L (52.5-62.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "柔豆沙 / XL (62.5-77.5kg)",
+     "availableForSale": false,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "雪霧藍 / M (40-52.5kg)",
+     "availableForSale": true,
+     "price": "75.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "雪霧藍 / L (52.5-62.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "雪霧藍 / XL (62.5-77.5kg)",
+     "availableForSale": false,
+     "price": "75.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "嫩粉色 / M (40-52.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "嫩粉色 / L (52.5-62.5kg)",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    },
+    {
+     "title": "嫩粉色 / XL (62.5-77.5kg)",
+     "availableForSale": false,
+     "price": "54.0",
+     "compareAtPrice": "100.0"
+    }
+   ]
+  },
+  {
+   "id": "7811049881667",
+   "handle": "純棉高腰無縫印花女內褲-透氣親膚包臀三角褲-含大尺碼",
+   "title": "純棉高腰舒適內褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "印花內褲",
+    "女內褲",
+    "女生內褲",
+    "無縫內褲",
+    "純棉內褲",
+    "舒適穿著",
+    "高腰內褲"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "純棉高腰舒適內褲 無縫 素色與印花",
+    "description": "高腰純棉女內褲，無縫剪裁包覆舒適，素色與印花多款，M–XL 尺碼。"
+   },
+   "availableForSale": true,
+   "totalInventory": 36,
+   "metafields": {
+    "subtitle": "高腰｜純棉無縫｜素色與印花",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "高彈力貼合彈性腰帶：彈力持久不易鬆弛，溫柔貼合身型不勒腰",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "40-50"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "50-60"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "60-70"
+       ]
+      }
+     ],
+     "note": "原廠尺寸圖僅提供建議體重；介於兩個尺碼之間時建議選大一號。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "適中 (Medium)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_7afd969a-62c2-4c7f-9f8f-c84ba92641f0.jpg?v=1788774010"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_e87999f2-a99f-4bcd-9d8f-4dc9131168f2.jpg?v=1788774010"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_65db80e5-4382-4e9f-8091-c29bfa38e6a2.jpg?v=1788774010"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_15392715.jpg?v=1788774012"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_15392715.jpg?v=1788256735"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/08.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-08.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788248732541_154618_236d6fe1-110e-4159-a4e2-ed50e687f914.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_15392714_161932_44c5db8b-f099-4232-ab3a-83a5ad10914a.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_7afd969a-62c2-4c7f-9f8f-c84ba92641f0.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_e87999f2-a99f-4bcd-9d8f-4dc9131168f2.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_65db80e5-4382-4e9f-8091-c29bfa38e6a2.jpg"
+   ],
+   "variants": [
+    {
+     "title": "極雅黑 / M (40-50kg)",
+     "availableForSale": false,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "極雅黑 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "極雅黑 / XL (60-70kg)",
+     "availableForSale": false,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "雪紗白 / M (40-50kg)",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "雪紗白 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "86.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "雪紗白 / XL (60-70kg)",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "藍白花 / M (40-50kg)",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "藍白花 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "藍白花 / XL (60-70kg)",
+     "availableForSale": true,
+     "price": "86.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "白粉花 / M (40-50kg)",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "白粉花 / L (50-60kg)",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "白粉花 / XL (60-70kg)",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": "120.0"
+    }
+   ]
+  },
+  {
+   "id": "7811057942595",
+   "handle": "純棉高腰防漏生理內褲-加長加寬衛生褲-暖宮安全褲-含大尺碼",
+   "title": "純棉高腰防漏生理褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "安全褲",
+    "生理內褲",
+    "純棉內褲",
+    "舒適穿著",
+    "衛生褲",
+    "防漏內褲",
+    "高腰內褲"
+   ],
+   "category": {
+    "id": "aa-1-6-11-5",
+    "name": "Period Underwear"
+   },
+   "seo": {
+    "title": "純棉高腰防漏生理褲 前後加長防漏層",
+    "description": "高腰純棉生理褲，前後加長防漏層，經期與夜間穿著，L–XXL 尺碼。"
+   },
+   "availableForSale": true,
+   "totalInventory": 40,
+   "metafields": {
+    "subtitle": "高腰｜前後加長防漏層｜L–XXL",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "高彈力貼合彈性腰帶：彈力持久不易鬆弛，溫柔貼合身型不勒腰",
+     "加長加寬防漏防護層：前進後延加大吸收防護區，安心翻滾不怕外漏",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "腰圍（平量）",
+       "unit": "cm"
+      },
+      {
+       "label": "臀圍（平量）",
+       "unit": "cm"
+      },
+      {
+       "label": "腿圍（平量）",
+       "unit": "cm"
+      },
+      {
+       "label": "中長",
+       "unit": "cm"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "L",
+       "values": [
+        "28",
+        "36",
+        "21",
+        "28",
+        "45-55"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "30",
+        "38",
+        "22.5",
+        "30",
+        "55-62.5"
+       ]
+      },
+      {
+       "size": "XXL",
+       "values": [
+        "32",
+        "40",
+        "24",
+        "32",
+        "62.5-70"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖；標示「平量」者為衣物平放測量，約為圍度的一半。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "適中 (Medium)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_abc55505-bcba-479a-bfcc-d194dc303c86.jpg?v=1788774042"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_7b0252c7-a8a8-47f8-b5ce-298558515e31.jpg?v=1788774041"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_152118.jpg?v=1788256713"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_cd81a67f-8332-4909-8aa3-1bd51a93d397.jpg?v=1788774044"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_10b9288c-bcf3-47ae-8ff7-b82c9214a85f.jpg?v=1788774047"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/09.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-09.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/Gemini_Generated_Image_inl91yinl91yinl9_53bda291-dc4e-4c1b-bbc3-112cf171e1e8.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/Gemini_Generated_Image_k2vi5zk2vi5zk2vi_0103fd25-27a8-47ce-a7da-df26f1a42fa9.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_abc55505-bcba-479a-bfcc-d194dc303c86.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_7b0252c7-a8a8-47f8-b5ce-298558515e31.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_1521175_c93501ab-a17c-45f3-9904-06acbdd47361.jpg"
+   ],
+   "variants": [
+    {
+     "title": "灰藍 / L (45-55kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "灰藍 / XL (55-62.5kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "灰藍 / XXL (62.5-70kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "混灰花 / L (45-55kg)",
+     "availableForSale": false,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "混灰花 / XL (55-62.5kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "混灰花 / XXL (62.5-70kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "極雅黑 / L (45-55kg)",
+     "availableForSale": true,
+     "price": "73.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "極雅黑 / XL (55-62.5kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "極雅黑 / XXL (62.5-70kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "煙粉 / L (45-55kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "煙粉 / XL (55-62.5kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    },
+    {
+     "title": "煙粉 / XXL (62.5-70kg)",
+     "availableForSale": true,
+     "price": "69.0",
+     "compareAtPrice": "120.0"
+    }
+   ]
+  },
+  {
+   "id": "7811130785859",
+   "handle": "rouxu-7811130785859",
+   "title": "MEDION 私密淨化凝膠",
+   "productType": "女性護理",
+   "vendor": "MEDION",
+   "tags": [
+    "SAENGAK",
+    "女性護理",
+    "弱酸平衡",
+    "益生菌凝膠",
+    "私密保養",
+    "舒緩保濕"
+   ],
+   "category": {
+    "id": "hb-3-8-8",
+    "name": "Feminine Moisturizers & Oils"
+   },
+   "seo": {
+    "title": "益生菌女性私密舒緩修護凝膠 弱酸平衡保濕",
+    "description": "益生菌私密舒緩保濕凝膠，弱酸溫和配方維持私密微生態平衡，單支獨立密封乾淨衛生。"
+   },
+   "availableForSale": true,
+   "totalInventory": 2040,
+   "metafields": {
+    "subtitle": "韓國製造｜益生菌發酵成分｜無香料・無色凝膠",
+    "highlights": [
+     "益生菌發酵成分：含乳酸桿菌、乳酸乳球菌、雙歧桿菌發酵溶胞產物",
+     "保濕成分：玻尿酸鈉、大豆胜肽與寡胜肽-191，舒緩私密部位外部乾燥",
+     "無香料、無色的凝膠精華質地，好推開、清爽不黏膩",
+     "單支獨立包裝推管，外出攜帶方便衛生"
+    ],
+    "fit_guide": {
+     "fit": "私密護理凝膠 (Intimate Care)",
+     "thickness": "水潤凝膠 (Hydro-Gel)",
+     "elasticity": "溫和無刺激 (Mild & Safe)",
+     "breathability": "清爽保濕 (Hydrating)"
+    },
+    "care_specs": {
+     "volume": "單支 1.8 g（原廠盒裝 7 支）",
+     "texture": "無香料、無色凝膠精華",
+     "application": "女性私密部位外部肌膚（不可置入陰道內）",
+     "origin": "韓國",
+     "ingredients": "水、丁二醇、1,2-己二醇、蛇床子萃取、甲基丙二醇、羥乙基纖維素、丙二醇、玉米糖膠、甘油、羥苯乙酮、玻尿酸鈉、檸檬酸、檸檬酸鈉、腺苷、乳酸桿菌發酵溶胞產物、乳酸乳球菌發酵溶胞產物、雙歧桿菌發酵溶胞產物、寡胜肽-191、甘草酸二鉀、大豆胜肽"
+    },
+    "care_instructions": [
+     "使用前請先洗淨雙手，建議於沐浴後使用。",
+     "撕開包裝，握住推管尾端取出，小心取下前端保護蓋。",
+     "將凝膠塗於私密部位外部肌膚，使用後輕拭多餘凝膠。",
+     "本品不可置入陰道內；如有紅腫或不適，請停止使用並諮詢醫師。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "益生菌發酵成分・溫和日常保養",
+      "description": "含乳酸桿菌、乳酸乳球菌與雙歧桿菌三種發酵溶胞產物，搭配甘草酸二鉀，為私密部位外部肌膚提供溫和的日常保養。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_4ba5441d-cd6f-41b5-a9b6-1e7772c73880.jpg?v=1788773686"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "玻尿酸鈉保濕・清爽不黏膩",
+      "description": "以玻尿酸鈉、大豆胜肽與寡胜肽-191 補充水分，無香料、無色的凝膠質地好推開，觸感清爽。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_539705bb-1175-43a9-88e1-1f0f4108ad56.jpg?v=1788773686"
+     },
+     {
+      "badge": "PACK 03",
+      "title": "單支獨立包裝・隨開即用",
+      "description": "每支獨立包裝，一次一支用完即丟，出差旅行放進包包也方便。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_098f498f-fb8a-4bcf-8a84-b55cac57aeb5.jpg?v=1788773686"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "包裝設計",
+      "title": "圓弧推管前端・附保護蓋",
+      "description": "推管前端圓滑，出廠附保護蓋，取下即可使用。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_d38fdfd3-e6c0-413b-b566-4467d99c4ec4.jpg?v=1788773686"
+     },
+     {
+      "category": "配方設計",
+      "title": "蛇床子萃取與甘草酸二鉀・無香料配方",
+      "description": "原廠配方含蛇床子萃取與甘草酸二鉀，不添加香料與色素。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_f8fea395-ff82-46e1-9733-28faee5121ec.jpg?v=1788773686"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/10_a4e7319e-07cc-47f6-9794-f14474d0c899.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-10.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_4ba5441d-cd6f-41b5-a9b6-1e7772c73880.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_539705bb-1175-43a9-88e1-1f0f4108ad56.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_098f498f-fb8a-4bcf-8a84-b55cac57aeb5.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_d38fdfd3-e6c0-413b-b566-4467d99c4ec4.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_f8fea395-ff82-46e1-9733-28faee5121ec.jpg"
+   ],
+   "variants": [
+    {
+     "title": "MEDION 私密淨化凝膠 1支",
+     "availableForSale": true,
+     "price": "99.0",
+     "compareAtPrice": "127.0"
+    }
+   ]
+  },
+  {
+   "id": "7811151855683",
+   "handle": "rouxu-7811151855683",
+   "title": "親膚安全私密除毛刀",
+   "productType": "每日清潔",
+   "vendor": "My Store 7",
+   "tags": [
+    "個人護理",
+    "每日清潔",
+    "溫和親膚",
+    "私密除毛",
+    "美體除毛刀",
+    "舒適穿著"
+   ],
+   "category": {
+    "id": "hb-3-14-8",
+    "name": "Razors & Razor Blades"
+   },
+   "seo": {
+    "title": "女性私密美體修整除毛刀 溫和安全防刮傷款",
+    "description": "女性專用私密美體除毛刀，微距安全刀網防刮傷，人體工學防滑手柄，敏感肌溫和修整首選。"
+   },
+   "availableForSale": true,
+   "totalInventory": 23,
+   "metafields": {
+    "subtitle": "比基尼線修整｜安全護網刀頭｜附保護蓋",
+    "highlights": [
+     "微距安全保護網：特殊安全網刃設計，貼合肌膚不傷表皮，避免刮傷泛紅",
+     "極致人體工學握柄：流線型防滑手柄，沐浴時濕手握持依然穩定順手",
+     "比基尼線小巧刀頭：精緻窄面刀頭，能靈巧穿梭修整各個細緻死角",
+     "透氣衛生保護套：附贈通風刀蓋，外出隨身攜帶乾淨衛生防誤觸"
+    ],
+    "fit_guide": {
+     "fit": "美體修整專用 (Body Trimmer)",
+     "thickness": "輕巧便攜 (Pocket Size)",
+     "elasticity": "人體工學防滑 (Ergonomic Grip)",
+     "breathability": "防水易清洗 (Washable)"
+    },
+    "care_specs": {
+     "volume": "單支裝 (附防護收納蓋)",
+     "texture": "不鏽鋼微距安全刀片 / ABS 親膚防滑握柄",
+     "application": "女性比基尼線、腋下及全身細部毛髮修整",
+     "origin": "韓國原裝品質監製",
+     "ingredients": "優質不鏽鋼刀刃、親膚潤滑條、環保 ABS 樹脂",
+     "shelf_life": "正常使用下建議每 2~3 個月定期更換以維持最佳衛生"
+    },
+    "care_instructions": [
+     "使用前建議先以溫水或沐浴慕斯軟化毛髮，順著毛髮生長方向輕柔修刮。",
+     "使用完畢後以清水沖淨刀片殘留毛屑，甩乾水分後扣上保護蓋。",
+     "請置於通風乾燥處晾乾，切勿用毛巾用力擦拭刀口以免損壞保護網。",
+     "皮膚有傷口、濕疹或發炎時請暫停使用。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "SAFETY 01",
+      "title": "微距安全防護刃・告別刮傷刺痛感",
+      "description": "細密保護網阻隔刀刃與肌膚直接摩擦，即使新手使用也能安心順暢剃除。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246307754_829041d0-f301-4cd7-8743-bf3ab94a367c.jpg?v=1788774079"
+     },
+     {
+      "badge": "ERGONOMIC 02",
+      "title": "小巧窄頭剪裁・靈活修整細部輪廓",
+      "description": "專為女性私密生理曲線設計的小刀頭，輕鬆處理邊緣與死角毛髮。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246307754.jpg?v=1788256676"
+     },
+     {
+      "badge": "HYGIENE 03",
+      "title": "通風透氣保護套・外出隨行乾淨衛生",
+      "description": "瀝水孔刀蓋設計防止水氣積聚滋生細菌，差旅旅行化妝包中必備良伴。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246312451.jpg?v=1788256676"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "刀頭工藝",
+      "title": "微距防刮不鏽鋼網刃・極致溫和親膚",
+      "description": "精密沖壓防護鋼網，兼顧極致鋒利與肌膚安全，剃後肌膚平整光滑。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246316576.jpg?v=1788256676"
+     },
+     {
+      "category": "手柄工藝",
+      "title": "親膚磨砂防滑握持・濕水不滑脫",
+      "description": "符合拇指施力點的立體凹槽設計，操作輕柔穩定，力道掌控隨心所欲。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/candidate_13_clean_1024.jpg?v=1788782799"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/11.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-11.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246307754_829041d0-f301-4cd7-8743-bf3ab94a367c.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246312451_5f99c394-91b3-4d34-a0c7-7b83d8979f3f.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246316576_bb3404ab-593c-4485-ae67-add1075b530e.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246324155_73e62813-4be5-401e-93aa-18faaea7ad5a.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/candidate_13_clean_1024.jpg"
+   ],
+   "variants": [
+    {
+     "title": "粉色除毛刀",
+     "availableForSale": true,
+     "price": "61.0",
+     "compareAtPrice": null
+    }
+   ]
+  },
+  {
+   "id": "7811152674883",
+   "handle": "rouxu-7811152674883",
+   "title": "精緻內著專用清洗護衣袋",
+   "productType": "每日清潔",
+   "vendor": "My Store 7",
+   "tags": [
+    "內衣清洗袋",
+    "居家清潔",
+    "每日清潔",
+    "洗衣護衣袋",
+    "舒適穿著",
+    "防變形"
+   ],
+   "category": {
+    "id": "hg-10-9-18-1",
+    "name": "Laundry Wash Bags"
+   },
+   "seo": {
+    "title": "精緻內著專用清洗護衣袋 立體防變形保護網",
+    "description": "內衣專用立體洗衣袋，加厚細密網布防變形防勾紗，隱藏拉鍊保護衣物與洗衣機。"
+   },
+   "availableForSale": true,
+   "totalInventory": 4,
+   "metafields": {
+    "subtitle": "立體防變形支架 | 加厚加密蜂巢網布 | 隱藏自鎖防勾拉鍊",
+    "highlights": [
+     "立體雙層防擠壓骨架：頂部與底部支撐結構，機洗時防止罩杯凹陷變形",
+     "三層加厚蜂巢微孔網：透水性極佳且能阻絕棉絮，保護細緻蕾絲面料",
+     "隱藏式彈性拉鍊套：拉鍊頭可完美收納隱藏，防止機洗時勾破其他衣物",
+     "大容量寬口取放設計：一次可收納 1~2 件內著，居家洗衣與旅行收納皆宜"
+    ],
+    "fit_guide": {
+     "fit": "立體內著專用 (Intimate Laundry Bag)",
+     "thickness": "加厚三維立體 (Padded Mesh)",
+     "elasticity": "高回彈支架 (Flexible Frame)",
+     "breathability": "極佳水流循環 (High Permeability)"
+    },
+    "care_specs": {
+     "volume": "標準單個裝 (約 16cm x 18cm)",
+     "texture": "加厚聚酯纖維蜂巢網布 / 彈性防護骨架",
+     "application": "精緻蕾絲內衣、無痕內衣、細肩帶睡衣機洗保護",
+     "origin": "優質嚴選監製",
+     "ingredients": "高密度聚酯纖維、環保 PP 支撐環、尼龍耐磨拉鍊",
+     "shelf_life": "定期清洗晾乾，建議每 6~12 個月視磨損情況更換"
+    },
+    "care_instructions": [
+     "將內衣依罩杯形狀放入洗衣袋內，扣好排扣避免刮傷。",
+     "拉上拉鍊並將拉鍊頭完全推進彈性保護套中。",
+     "建議每袋放入 1~2 件內衣，配合洗衣機弱洗或柔洗模式。",
+     "洗滌完畢後取出內衣，將洗衣袋懸掛於陰涼處通風晾乾。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "立體骨架保護罩杯・告別鋼圈扭曲凹陷",
+      "description": "專為內衣胸型打造的支撐結構，承受滾筒擠壓依然維持挺拔立體輪廓。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_165158_0a5f5165-8def-4de2-b893-348470c956b0.jpg?v=1788774094"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "加厚多層蜂巢網布・水流穿透去污力佳",
+      "description": "細密微孔讓水流與洗劑順暢對流，徹底洗淨同時防止蕾絲起毛勾紗。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_16515844.jpg?v=1788256956"
+     },
+     {
+      "badge": "DETAIL 03",
+      "title": "自鎖安全隱藏拉鍊・絕不勾傷昂貴衣物",
+      "description": "精緻橡膠彈力護套完整包覆金屬拉鍊頭，洗衣槽旋轉運轉安心無虞。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_16515842_cc71f089-1a23-46db-9c0b-2a0cbaa237ae.jpg?v=1788774094"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "網布工藝",
+      "title": "高耐磨三層立體織造・耐扯耐機洗",
+      "description": "高拉力聚酯纖維編織，洗後不易鬆弛脆化，長期守護昂貴奢華內著。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_16515843_689d84bf-c08b-4876-818a-3ceec014bb15.jpg?v=1788774094"
+     },
+     {
+      "category": "拉鍊工藝",
+      "title": "隱藏式自鎖拉頭・洗滌時不易脫開",
+      "description": "隱藏式拉鍊咬合緊密，洗滌時不易脫開，防止衣物甩出洗衣袋。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_165158.jpg?v=1788256956"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/12_d6d4b51c-f78c-4f44-a209-f50f56a26f19.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-12.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_165158_0a5f5165-8def-4de2-b893-348470c956b0.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_16515842_cc71f089-1a23-46db-9c0b-2a0cbaa237ae.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_16515843_689d84bf-c08b-4876-818a-3ceec014bb15.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_c7e55d3c-460d-4160-83a4-0d50e654cebc.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_16515844_3ace9d85-344b-4e78-ba68-b00b51b54a38.jpg"
+   ],
+   "variants": [
+    {
+     "title": "夢幻藍誘（藍邊）",
+     "availableForSale": false,
+     "price": "33.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "灰姬妖嬈（灰邊）",
+     "availableForSale": true,
+     "price": "33.0",
+     "compareAtPrice": null
+    }
+   ]
+  },
+  {
+   "id": "7811155198019",
+   "handle": "rouxu-7811155198019",
+   "title": "舒適純棉透氣內褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "半露臀",
+    "女性內著",
+    "提臀美型",
+    "純棉底襠",
+    "舒適穿著"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "字母寬腰頭女內褲 純棉雙層底襠",
+    "description": "字母寬腰頭女內褲，純棉雙層底襠，單一尺寸 M（40–55 kg）。"
+   },
+   "availableForSale": false,
+   "totalInventory": 0,
+   "metafields": {
+    "subtitle": "字母寬腰頭｜純棉雙層底襠｜單一尺寸 M（40–55 kg）",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "高彈力貼合彈性腰帶：彈力持久不易鬆弛，溫柔貼合身型不勒腰",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "40-55"
+       ]
+      }
+     ],
+     "note": "原廠尺寸圖僅提供建議體重；本款為單一尺寸。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "適中 (Medium)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_05_0b06eb06-a2c5-4891-9e22-f1395e2a4e83.jpg?v=1788774117"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_5726ddb9-eada-489d-98fd-8c076dfa805c.jpg?v=1788774116"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_b8715399-dc6b-423a-afd5-add08ce5d3db.jpg?v=1788774117"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_c8471f50-a554-46ab-925c-f12ee4d6a779.jpg?v=1788774117"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_bde72b2d-58df-433a-af03-67ced1179bda.jpg?v=1788774117"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/13.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-13.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_05_0b06eb06-a2c5-4891-9e22-f1395e2a4e83.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_5726ddb9-eada-489d-98fd-8c076dfa805c.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_b8715399-dc6b-423a-afd5-add08ce5d3db.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_c8471f50-a554-46ab-925c-f12ee4d6a779.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_bde72b2d-58df-433a-af03-67ced1179bda.jpg"
+   ],
+   "variants": [
+    {
+     "title": "午夜藍,M (40~55kg)",
+     "availableForSale": false,
+     "price": "124.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "淺天藍,M (40~55kg)",
+     "availableForSale": false,
+     "price": "124.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "橘色,M (40~55kg)",
+     "availableForSale": false,
+     "price": "124.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "翠綠幽夢,M (40~55kg)",
+     "availableForSale": false,
+     "price": "124.0",
+     "compareAtPrice": null
+    }
+   ]
+  },
+  {
+   "id": "7811204743235",
+   "handle": "rouxu-7811204743235",
+   "title": "隱形中腰無痕女內著",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "中腰內褲",
+    "女性內著",
+    "日常必備",
+    "無痕包臀",
+    "舒適穿著",
+    "貼身透氣"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "隱形中腰無痕女內著 親膚透氣雙層底襠包臀款",
+    "description": "隱形中腰無痕女內褲，純棉雙層透氣底襠，立體包臀無勒痕，日常舒適穿著推薦。"
+   },
+   "availableForSale": true,
+   "totalInventory": 58,
+   "metafields": {
+    "subtitle": "中腰｜無痕熱壓切邊｜雙層底襠",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "超薄無痕熱壓收邊：穿著緊身瑜珈褲或洋裝依然平整隱形，杜絕尷尬夾臀",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "腰圍",
+       "unit": "cm"
+      },
+      {
+       "label": "臀圍",
+       "unit": "cm"
+      },
+      {
+       "label": "腿圍",
+       "unit": "cm"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "65-78",
+        "70-88",
+        "45-58",
+        "40-49"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "70-83",
+        "80-98",
+        "55-68",
+        "50-60"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "75-88",
+        "90-108",
+        "65-78",
+        "56-70"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖，為身體尺寸參考範圍；介於兩個尺碼之間時，請以建議體重為準。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "偏薄 (Thin)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-15.jpg?v=1792306170"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/15.jpg?v=1792267377"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-15.jpg?v=1792306170"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/15.jpg?v=1792267377"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-15.jpg?v=1792306170"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/15.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-15.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_e4a83323-9dee-47e8-8a9d-4174f3bb338a.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_17322653_ada6afcd-54fa-4d8e-80a8-1a642b990144.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_173226_4bbd2237-1a0b-4652-b6a5-ab7769af0925.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_77defcb8-c558-40cb-9a3c-1d0343ec8943.jpg"
+   ],
+   "variants": [
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-翠綠幽夢,M（40-49kg）",
+     "availableForSale": false,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-翠綠幽夢,L（50-60kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-翠綠幽夢,XL（56-70kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-絲膚魅影,XL（56-70kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-咖啡色,XL（56-70kg）",
+     "availableForSale": false,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-橘色,M（40-49kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-橘色,XL（56-70kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-黑羽優雅,M（40-49kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-黑羽優雅,L（50-60kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-黑羽優雅,XL（56-70kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-純白嬌媚,M（40-49kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-純白嬌媚,L（50-60kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-純白嬌媚,XL（56-70kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-絲膚魅影,M（40-49kg）",
+     "availableForSale": false,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-絲膚魅影,L（50-60kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-咖啡色,M（40-49kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-咖啡色,L（50-60kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "[款式一] 隱形中腰無痕內褲-橘色,L（50-60kg）",
+     "availableForSale": true,
+     "price": "54.0",
+     "compareAtPrice": null
+    }
+   ]
+  },
+  {
+   "id": "7811216998467",
+   "handle": "rouxu-7811216998467",
+   "title": "冰絲無痕波浪邊三角褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "三角褲",
+    "冰絲無痕",
+    "女性內著",
+    "舒適穿著",
+    "貼身透氣",
+    "運動瑜伽"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "冰絲無痕波浪邊三角褲 單一尺寸 貼身透氣",
+    "description": "冰絲無痕波浪切邊三角褲，單一尺寸，貼身不留痕，適合緊身褲裝與日常穿搭。"
+   },
+   "availableForSale": true,
+   "totalInventory": 27,
+   "metafields": {
+    "subtitle": "冰絲無痕｜波浪切邊｜單一尺寸",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "超薄無痕熱壓收邊：穿著緊身瑜珈褲或洋裝依然平整隱形，杜絕尷尬夾臀",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "寬度（平量）",
+       "unit": "cm"
+      },
+      {
+       "label": "褲長",
+       "unit": "cm"
+      },
+      {
+       "label": "重量",
+       "unit": "g"
+      }
+     ],
+     "rows": [
+      {
+       "size": "均碼",
+       "values": [
+        "15",
+        "18",
+        "13"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖；本款為單一尺寸，布料彈性高。"
+    },
+    "fit_guide": {
+     "fit": "緊身 (Slim)",
+     "thickness": "偏薄 (Thin)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_880ffa34-59a3-48e4-b5a4-794516d99ab0.jpg?v=1788774793"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_77116c69-cedd-4c11-a7fa-13d7d0c47632.jpg?v=1788774793"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03.jpg?v=1788774793"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_7c26b834-41fc-45cf-8783-506a97042d81.jpg?v=1788774793"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_cb56699e-4ec8-44bd-b404-df09050939b3.jpg?v=1788774793"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/16.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-16.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_880ffa34-59a3-48e4-b5a4-794516d99ab0.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_77116c69-cedd-4c11-a7fa-13d7d0c47632.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_7c26b834-41fc-45cf-8783-506a97042d81.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_cb56699e-4ec8-44bd-b404-df09050939b3.jpg"
+   ],
+   "variants": [
+    {
+     "title": "杏仁白",
+     "availableForSale": false,
+     "price": "38.0",
+     "compareAtPrice": "76.0"
+    },
+    {
+     "title": "黑曜石",
+     "availableForSale": false,
+     "price": "38.0",
+     "compareAtPrice": "76.0"
+    },
+    {
+     "title": "飄雪白",
+     "availableForSale": true,
+     "price": "38.0",
+     "compareAtPrice": "76.0"
+    },
+    {
+     "title": "亮灰色",
+     "availableForSale": true,
+     "price": "38.0",
+     "compareAtPrice": "76.0"
+    },
+    {
+     "title": "粉紅色",
+     "availableForSale": true,
+     "price": "38.0",
+     "compareAtPrice": "76.0"
+    },
+    {
+     "title": "天藍色",
+     "availableForSale": true,
+     "price": "38.0",
+     "compareAtPrice": "76.0"
+    }
+   ]
+  },
+  {
+   "id": "7811229483075",
+   "handle": "rouxu-7811229483075",
+   "title": "高腰蕾絲無痕內褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "女性內著",
+    "無痕包臀",
+    "舒適穿著",
+    "蕾絲內褲",
+    "高腰內著"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "高腰蕾絲無痕內褲 立體包臀款",
+    "description": "高腰蕾絲邊無痕女內褲，雙層底襠，包臀不勒肉，貼身穿著不留痕跡。"
+   },
+   "availableForSale": true,
+   "totalInventory": 41,
+   "metafields": {
+    "subtitle": "高腰｜蕾絲邊｜雙層底襠",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "超薄無痕熱壓收邊：穿著緊身瑜珈褲或洋裝依然平整隱形，杜絕尷尬夾臀",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "腰圍（未拉伸）",
+       "unit": "cm"
+      },
+      {
+       "label": "中長",
+       "unit": "cm"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "56",
+        "24",
+        "40-50"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "60",
+        "25",
+        "50-60"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "64",
+        "26",
+        "60-70"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖；腰圍為未拉伸時的圍度（平量 × 2）。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "偏薄 (Thin)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16463638.jpg?v=1788256897"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_164636_aeb15439-089d-4396-a8b1-a2a3ad0ba374.jpg?v=1788774833"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_16463640.jpg?v=1788256897"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_16463641.jpg?v=1788256897"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16463638_6a7ec47e-05c8-4b70-9938-d415fb23ea65.jpg?v=1788774833"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/17.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-17.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_164636_aeb15439-089d-4396-a8b1-a2a3ad0ba374.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16463638_6a7ec47e-05c8-4b70-9938-d415fb23ea65.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_16463639_bc1618b9-5277-45f0-8e85-70960dfba6d0.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_16463640_a6c69760-68da-47e6-93ca-35001258ae53.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_16463641_fef864cf-47a8-466b-afff-38feb3e29048.jpg"
+   ],
+   "variants": [
+    {
+     "title": "極雅黑,M（40-50kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "極雅黑,L（50-60kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "極雅黑,XL（60-70kg）",
+     "availableForSale": false,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "霧灰色,M（40-50kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "霧灰色,L（50-60kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "霧灰色,XL（60-70kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "櫻花粉,M（40-50kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "櫻花粉,L（50-60kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "櫻花粉,XL（60-70kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "裸膚色,M（40-50kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "裸膚色,L（50-60kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "裸膚色,XL（60-70kg）",
+     "availableForSale": true,
+     "price": "66.0",
+     "compareAtPrice": null
+    }
+   ]
+  },
+  {
+   "id": "7811245015107",
+   "handle": "rouxu-7811245015107",
+   "title": "冰絲無痕平口安全褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "內搭安全褲",
+    "冰絲內褲",
+    "女性內著",
+    "平口內著",
+    "涼感防磨",
+    "舒適穿著"
+   ],
+   "category": {
+    "id": "aa-1-6-11-2",
+    "name": "Boyshorts"
+   },
+   "seo": {
+    "title": "無痕冰絲平口女內著 絲滑涼感防磨與日常安全內搭",
+    "description": "超細冰絲涼感平口內著，純棉雙層底襠透氣防磨，無痕貼身不捲邊，居家打底與裙裝防走光首選。"
+   },
+   "availableForSale": true,
+   "totalInventory": 24,
+   "metafields": {
+    "subtitle": "平口安全褲｜冰絲無痕｜裙裝內搭",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "超薄無痕熱壓收邊：穿著緊身瑜珈褲或洋裝依然平整隱形，杜絕尷尬夾臀",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "40-50"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "50-60"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "60-70"
+       ]
+      }
+     ],
+     "note": "原廠尺寸圖僅提供建議體重；介於兩個尺碼之間時建議選大一號。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "偏薄 (Thin)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_1433051_13860def-7398-4b69-8935-1d3a1a77d875.jpg?v=1788774855"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_1433051_1693af68-8468-43b8-bc08-eb6c654d8e99.jpg?v=1788774855"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_143306_19c13393-3923-4ecb-b7d9-a380cc49dbbf.jpg?v=1788774855"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_1433062_04545dc5-0fe7-408f-8992-17fc5ad9b835.jpg?v=1788774855"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_1433064.jpg?v=1788256649"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/18.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-18.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_1433051_13860def-7398-4b69-8935-1d3a1a77d875.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_1433051_1693af68-8468-43b8-bc08-eb6c654d8e99.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_143306_19c13393-3923-4ecb-b7d9-a380cc49dbbf.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_1433062_04545dc5-0fe7-408f-8992-17fc5ad9b835.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_1433063_843ca83e-28d1-4f0d-bd2d-6a0fd68ffff2.jpg"
+   ],
+   "variants": [
+    {
+     "title": "雪紗白,M（40-50kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "雪紗白,L（50-60kg）",
+     "availableForSale": false,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "雪紗白,XL（60-70kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "甜心粉,M（40-50kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "極雅黑,M（40-50kg）",
+     "availableForSale": false,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "極雅黑,L（50-60kg）",
+     "availableForSale": false,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "極雅黑,XL（60-70kg）",
+     "availableForSale": false,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "杏奶膚,M（40-50kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "杏奶膚,L（50-60kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "杏奶膚,XL（60-70kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "霧灰色,M（40-50kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "霧灰色,L（50-60kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "霧灰色,XL（60-70kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "香芋紫,M（40-50kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "香芋紫,L（50-60kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "香芋紫,XL（60-70kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "甜心粉,L（50-60kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    },
+    {
+     "title": "甜心粉,XL（60-70kg）",
+     "availableForSale": true,
+     "price": "57.0",
+     "compareAtPrice": "69.0"
+    }
+   ]
+  },
+  {
+   "id": "7811931373635",
+   "handle": "寬肩帶無痕運動女款內衣-乾爽透氣全方位包覆副乳-多色可選",
+   "title": "乾爽透氣運動內衣",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "乾爽透氣",
+    "全罩杯包覆",
+    "女款內衣",
+    "寬肩帶",
+    "無痕內衣",
+    "舒適穿著",
+    "運動內衣"
+   ],
+   "category": {
+    "id": "aa-1-1-6",
+    "name": "Sports Bras"
+   },
+   "seo": {
+    "title": "乾爽透氣運動內衣 無鋼圈 寬肩帶 可拆胸墊",
+    "description": "無鋼圈女運動內衣，寬肩帶與可拆式胸墊，適合通勤、輕度運動與居家，M–XXL。"
+   },
+   "availableForSale": true,
+   "totalInventory": 65,
+   "metafields": {
+    "subtitle": "無鋼圈｜寬肩帶｜可拆式胸墊",
+    "highlights": [
+     "人體工學無鋼圈剪裁：擺脫鋼圈壓迫束縛，給予胸部最自然舒適的溫柔承托",
+     "加寬高彈減壓肩帶：分散肩頸壓力，不下滑、不勒肩，久穿依然輕鬆自在",
+     "側邊加高包覆副乳：立體雙層側翼剪裁，有效收攏副乳，打造平整背部線條",
+     "高透氣輕薄洞洞杯墊：無數微米透氣孔循環排汗，告別胸下悶熱與黏膩感"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "適合罩杯"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "70D / 75B / 75C",
+        "45 以下"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "75D / 80B / 80C",
+        "45-52.5"
+       ]
+      },
+      {
+       "size": "XL",
+       "values": [
+        "80D / 85B / 85C",
+        "52.5-60"
+       ]
+      },
+      {
+       "size": "XXL",
+       "values": [
+        "85D / 90B / 90C",
+        "60-70"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖；原廠標示適合下圍 60–100 cm、體重 45–70 kg。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "適中 (Medium)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗，或放入專用內衣洗衣袋慢速機洗。",
+     "請置於陰涼通風處懸掛晾乾，避免陽光直射高溫烘乾以維持罩杯彈性。",
+     "請使用中性洗衣精，切勿使用含漂白劑或強酸鹼洗劑。",
+     "深色與淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "COMFORT 01",
+      "title": "無鋼圈點膠支撐・輕盈提托零束縛感",
+      "description": "創新軟支撐膠條技術取代傳統硬鋼圈，溫和聚攏胸型，穿著宛如未穿般自在。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_9446da05-f724-4dbc-b7ce-d1286454355a.jpg?v=1788775147"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "高透氣蜂巢微孔杯・全日乾爽不悶熱",
+      "description": "杯墊密佈微米呼吸孔，迅速排出體表熱氣與汗水，炎夏穿著依然透氣清爽。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_7be539ae-fd06-4df8-a32a-645e9558ba4b.jpg?v=1788775147"
+     },
+     {
+      "badge": "SILHOUETTE 03",
+      "title": "立體收攏副乳・塑造流暢優美美背線條",
+      "description": "側翼加高加寬撫平背部贅肉，穿著貼身衣物時不顯勒痕，展現優雅姿態。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_e9be31a4-def0-4a80-83ae-2d1f8871acf5.jpg?v=1788775147"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "無痕貼合熱壓收邊・親膚平滑無摩擦",
+      "description": "採用無縫點膠熱壓工藝取代車縫線，減少紅印與摩擦感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_21d13fbb-be93-4f0b-b32f-6b6fb3e8b76a.jpg?v=1788775147"
+     },
+     {
+      "category": "面料工藝",
+      "title": "高彈力絲滑面料・回彈性佳不易變形",
+      "description": "高比例彈性纖維混紡，耐拉伸洗滌不易變形，全天候緊密貼合女性曲線。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_ef79afd8-d771-4b2d-928e-0a3b87ccbe53.jpg?v=1788775147"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/19.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-19.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_9446da05-f724-4dbc-b7ce-d1286454355a.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_7be539ae-fd06-4df8-a32a-645e9558ba4b.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_e9be31a4-def0-4a80-83ae-2d1f8871acf5.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_21d13fbb-be93-4f0b-b32f-6b6fb3e8b76a.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_ef79afd8-d771-4b2d-928e-0a3b87ccbe53.jpg"
+   ],
+   "variants": [
+    {
+     "title": "暗海綠 / M",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "暗海綠 / L",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "暗海綠 / XL",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "暗海綠 / XXL",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "黑羽優雅 / M",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "黑羽優雅 / L",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "黑羽優雅 / XL",
+     "availableForSale": false,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "黑羽優雅 / XXL",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "絲膚魅影 / M",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "絲膚魅影 / L",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "絲膚魅影 / XL",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "絲膚魅影 / XXL",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "粉嫩秘境 / M",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "粉嫩秘境 / L",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "粉嫩秘境 / XL",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "粉嫩秘境 / XXL",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "日曬色 / M",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "日曬色 / L",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "日曬色 / XL",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    },
+    {
+     "title": "日曬色 / XXL",
+     "availableForSale": true,
+     "price": "199.0",
+     "compareAtPrice": "399.0"
+    }
+   ]
+  },
+  {
+   "id": "7812559405123",
+   "handle": "無痕冰絲網紗中腰女內著-輕透涼感包臀款-多色多尺寸可選",
+   "title": "網紗冰絲中腰三角褲",
+   "productType": "舒適穿著",
+   "vendor": "My Store 7",
+   "tags": [
+    "中腰內褲",
+    "冰絲網紗",
+    "女性內著",
+    "涼感親膚",
+    "無痕透氣",
+    "舒適穿著"
+   ],
+   "category": {
+    "id": "aa-1-6-11-3",
+    "name": "Briefs"
+   },
+   "seo": {
+    "title": "網紗冰絲中腰三角褲 波浪切邊 涼感透氣",
+    "description": "中腰冰絲女三角褲，網紗拼接與波浪切邊，涼感透氣，M–L 尺碼。"
+   },
+   "availableForSale": true,
+   "totalInventory": 10,
+   "metafields": {
+    "subtitle": "中腰｜網紗冰絲｜波浪切邊",
+    "highlights": [
+     "雙層純棉底襠：天然棉料，透氣吸濕，日常穿著乾爽舒適",
+     "超薄無痕熱壓收邊：穿著緊身瑜珈褲或洋裝依然平整隱形，杜絕尷尬夾臀",
+     "人體工學立體包臀剪裁：自然托提臀部線條，告別卡檔與摩擦不適感",
+     "柔軟親膚面料：觸感細緻，日常貼身穿著舒適"
+    ],
+    "size_chart": {
+     "columns": [
+      {
+       "label": "側腰寬",
+       "unit": "cm"
+      },
+      {
+       "label": "腰圍（平量）",
+       "unit": "cm"
+      },
+      {
+       "label": "臀圍",
+       "unit": "cm"
+      },
+      {
+       "label": "建議體重",
+       "unit": "kg"
+      }
+     ],
+     "rows": [
+      {
+       "size": "M",
+       "values": [
+        "10",
+        "28",
+        "80-90",
+        "40-50"
+       ]
+      },
+      {
+       "size": "L",
+       "values": [
+        "11",
+        "30",
+        "90-100",
+        "50-65"
+       ]
+      }
+     ],
+     "note": "數值取自 LUCISSI 原廠尺寸圖；標示「平量」者為衣物平放測量，約為圍度的一半。"
+    },
+    "fit_guide": {
+     "fit": "合身 (Regular)",
+     "thickness": "偏薄 (Thin)",
+     "elasticity": "高彈力 (High)",
+     "breathability": "極佳 (Breathable)"
+    },
+    "care_instructions": [
+     "建議使用 30°C 以下冷水手洗或放入細網洗衣袋機洗，保護彈性面料。",
+     "請置於陰涼通風處懸掛晾乾，避免長時間烈日曝曬與高溫烘乾。",
+     "請使用中性冷洗精，切勿使用含漂白劑或強效去漬劑。",
+     "深淺色衣物請分開洗滌，避免互相染色。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "雙層純棉底襠・細心呵護私密處",
+      "description": "襠部採用純棉材質，透氣吸濕，日常穿著乾爽舒適。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-20.jpg?v=1792306412"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "透氣親膚立體面料・宛如第二層肌膚",
+      "description": "柔軟觸感與高延展彈力，無論日常行走、運動或睡眠皆能享受無拘束的親膚著感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/20.jpg?v=1792267884"
+     },
+     {
+      "badge": "SAFETY 03",
+      "title": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+      "description": "彈性面料搭配無痕收邊，貼身穿著平整服貼。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-20.jpg?v=1792306412"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "剪裁工藝",
+      "title": "人體工學立體剪裁・服貼包臀不夾襠",
+      "description": "依據亞洲女性身型輪廓打造，包臀剪裁自然托提曲線，全日動作靈活不位移。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/20.jpg?v=1792267884"
+     },
+     {
+      "category": "衛生工藝",
+      "title": "精緻平整車縫收邊・減少肌膚摩擦感",
+      "description": "細密平縫工藝，腰頭與褲腳平滑服貼，減少摩擦與勒痕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-20.jpg?v=1792306412"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/20.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-20.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_4057ca40-928a-47c4-850b-cb30afbb6b64.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_b2ae4d76-f75f-478c-bca5-9ff2d823ba25.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_f6192b8f-6ca3-49b6-923f-b46d5028c7f2.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_f2bc8485-3cfa-4b61-b8ec-c9b5ccf29ac5.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_54b547fd-2315-4138-abdf-e6eea4caa283.jpg"
+   ],
+   "variants": [
+    {
+     "title": "雪紗白 / M (適合體重 40-50kg)",
+     "availableForSale": false,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    },
+    {
+     "title": "杏奶膚 / L (適合體重 50-65kg)",
+     "availableForSale": false,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    },
+    {
+     "title": "雪紗白 / L (適合體重 50-65kg)",
+     "availableForSale": true,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    },
+    {
+     "title": "粉紅色 / M (適合體重 40-50kg)",
+     "availableForSale": false,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    },
+    {
+     "title": "粉紅色 / L (適合體重 50-65kg)",
+     "availableForSale": true,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    },
+    {
+     "title": "極雅黑 / M (適合體重 40-50kg)",
+     "availableForSale": true,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    },
+    {
+     "title": "極雅黑 / L (適合體重 50-65kg)",
+     "availableForSale": true,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    },
+    {
+     "title": "杏奶膚 / M (適合體重 40-50kg)",
+     "availableForSale": true,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    },
+    {
+     "title": "極海藍 / M (適合體重 40-50kg)",
+     "availableForSale": true,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    },
+    {
+     "title": "極海藍 / L (適合體重 50-65kg)",
+     "availableForSale": false,
+     "price": "111.0",
+     "compareAtPrice": "174.0"
+    }
+   ]
+  },
+  {
+   "id": "7819899994179",
+   "handle": "saengak-平衡調理私密潔淨慕斯",
+   "title": "Saengak 平衡調理私密潔淨慕斯",
+   "productType": "每日清潔",
+   "vendor": "SAENGAK",
+   "tags": [
+    "SAENGAK",
+    "弱酸配方",
+    "微米泡沫",
+    "每日清潔",
+    "潔淨慕斯",
+    "私密清潔"
+   ],
+   "category": {
+    "id": "hb-3-8-7",
+    "name": "Feminine Intimate Wash"
+   },
+   "seo": {
+    "title": "Saengak 私密潔淨慕斯 弱酸性 pH 5.5 無香料",
+    "description": "韓國製 Saengak 私密潔淨慕斯，弱酸性 pH 5.5、無香料泡沫，清潔私密部位外部，160 ml／30 ml。"
+   },
+   "availableForSale": false,
+   "totalInventory": 0,
+   "metafields": {
+    "subtitle": "韓國製造｜弱酸性 pH 5.5｜無香料泡沫潔淨",
+    "highlights": [
+     "細緻綿密泡沫：低刺激配方，溫和清潔私密部位外部",
+     "弱酸性 pH 5.5，洗後舒適不乾澀",
+     "含乳酸桿菌、雙歧桿菌發酵產物萃取與甘草酸二鉀",
+     "無香料配方，早晚沐浴皆可使用"
+    ],
+    "fit_guide": {
+     "fit": "私密潔淨慕斯 (Intimate Mousse)",
+     "thickness": "綿密微米泡沫 (Micro Foam)",
+     "elasticity": "弱酸親膚 (pH 4.5)",
+     "breathability": "溫和淨味 (Purifying)"
+    },
+    "care_specs": {
+     "volume": "160 ml／30 ml",
+     "texture": "泡沫潔淨露（弱酸性 pH 5.5，無香料）",
+     "application": "女性私密部位外部日常清潔",
+     "origin": "韓國",
+     "ingredients": "水、丁二醇、甘油、1,2-己二醇、椰油基甜菜鹼、椰油醯蘋果胺基酸鈉、氯化鈉、二丙二醇、己二醇、蛇床子萃取、羥苯乙酮、檸檬酸、辛甘醇、乳酸桿菌發酵產物萃取、谷氨酸二乙酸四鈉、雙歧桿菌發酵產物萃取、甘草酸二鉀、苯甲酸鈉"
+    },
+    "care_instructions": [
+     "使用前請充分搖勻。",
+     "按壓適量泡沫，輕柔按摩清潔私密部位外部後，以清水徹底沖淨。",
+     "僅供外部清潔使用，請勿灌洗陰道內部。",
+     "如有紅腫或不適，請停止使用並諮詢醫師；請置於陰涼處，避免陽光直射。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CLEAN 01",
+      "title": "細緻泡沫・溫柔洗淨",
+      "description": "按壓即出綿密泡沫，輕柔清潔私密部位外部，減少搓揉摩擦。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_24c28a84-e7ba-4012-bc2e-5a5788591234.jpg?v=1788773588"
+     },
+     {
+      "badge": "BALANCE 02",
+      "title": "弱酸性 pH 5.5・洗後不乾澀",
+      "description": "弱酸性配方搭配甘油等保濕成分，洗後觸感舒適不緊繃。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_5481c8ab-d251-4408-aa7f-57a0c3026bb1.jpg?v=1788773588"
+     },
+     {
+      "badge": "GENTLE 03",
+      "title": "無香料配方・早晚日常使用",
+      "description": "不添加香料，含乳酸桿菌與雙歧桿菌發酵產物萃取，適合每天早晚沐浴時使用。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_1b5a2511-b236-48a5-ac02-d246c8cff422.jpg?v=1788773588"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "瓶器設計",
+      "title": "按壓式泡沫瓶・一按即出泡沫",
+      "description": "按壓即出細緻泡沫，不需另外搓揉起泡。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_ef9a931c-83a3-4c94-bba1-e885efaea94b.jpg?v=1788773588"
+     },
+     {
+      "category": "配方設計",
+      "title": "蛇床子萃取與甘草酸二鉀・溫和潔淨",
+      "description": "以胺基酸系與甜菜鹼系溫和界面活性劑潔淨，搭配蛇床子萃取與甘草酸二鉀。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e95335cf-c9c4-4d79-947b-674e60a91ae0.jpg?v=1788773588"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/21.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-21.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_24c28a84-e7ba-4012-bc2e-5a5788591234.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_5481c8ab-d251-4408-aa7f-57a0c3026bb1.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_1b5a2511-b236-48a5-ac02-d246c8cff422.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_ef9a931c-83a3-4c94-bba1-e885efaea94b.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e95335cf-c9c4-4d79-947b-674e60a91ae0.jpg"
+   ],
+   "variants": [
+    {
+     "title": "標準瓶裝 (160ml)",
+     "availableForSale": false,
+     "price": "645.0",
+     "compareAtPrice": null
+    },
+    {
+     "title": "平衡調理私密潔淨慕斯 (30 ml)",
+     "availableForSale": false,
+     "price": "321.0",
+     "compareAtPrice": null
+    }
+   ]
+  },
+  {
+   "id": "7819900551235",
+   "handle": "saengak-益生菌私密養膚濕巾",
+   "title": "Saengak 益生菌私密養膚濕巾",
+   "productType": "每日清潔",
+   "vendor": "SAENGAK",
+   "tags": [
+    "SAENGAK",
+    "每日清潔",
+    "濕巾",
+    "益生菌",
+    "私密清潔",
+    "隨身包"
+   ],
+   "category": {
+    "id": "hb-3-8-9",
+    "name": "Feminine Wipes"
+   },
+   "seo": {
+    "title": "Saengak 益生菌私密養膚濕巾 單片獨立包裝",
+    "description": "韓國製 Saengak 私密濕巾，弱酸性 pH 5.5、可沖散材質，單片獨立包裝，經期與外出隨身用。"
+   },
+   "availableForSale": true,
+   "totalInventory": 557,
+   "metafields": {
+    "subtitle": "韓國製造｜弱酸性 pH 5.5｜可沖散濕巾",
+    "highlights": [
+     "弱酸性 pH 5.5，溫和擦拭私密部位外部",
+     "含乳酸桿菌、雙歧桿菌發酵產物萃取與蛇床子萃取",
+     "單片獨立包裝，外出、經期、運動後隨時使用",
+     "可沖散材質：使用後可直接丟入馬桶"
+    ],
+    "fit_guide": {
+     "fit": "私密養膚濕巾 (Intimate Wipes)",
+     "thickness": "加厚珍珠紋 (Thickened Texture)",
+     "elasticity": "柔軟親膚 (Ultra Soft)",
+     "breathability": "水潤清爽 (Refreshing)"
+    },
+    "care_specs": {
+     "volume": "1 片（單片獨立包裝）",
+     "texture": "可沖散不織布濕巾（弱酸性 pH 5.5）",
+     "application": "女性私密部位外部擦拭清潔",
+     "origin": "韓國",
+     "ingredients": "水、丁二醇、1,2-己二醇、甘油、二丙二醇、羥苯乙酮、蛇床子萃取、檸檬酸、辛甘醇、椰油基甜菜鹼、乳酸桿菌發酵產物萃取、雙歧桿菌發酵產物萃取、氯化鈉、甘草酸二鉀、苯甲酸鈉"
+    },
+    "care_instructions": [
+     "撕開包裝取出濕巾，依需要展開成方便使用的大小。",
+     "由前往後輕柔擦拭私密部位外部。",
+     "使用後可直接丟入馬桶沖掉，每次請丟一片。",
+     "僅供外部清潔使用；如有傷口、紅腫或不適，請停止使用並諮詢醫師。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "益生菌發酵成分・溫和擦拭",
+      "description": "含乳酸桿菌與雙歧桿菌發酵產物萃取，擦拭清潔的同時帶來保濕感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_00d17e59-e019-405d-bd0b-5041ff0e0eb4.jpg?v=1788773643"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "可沖散材質・用完直接沖掉",
+      "description": "柔軟的可沖散不織布，使用後可直接丟入馬桶。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_c3f3ce3d-1932-4d25-a30b-3676806eb44d.jpg?v=1788773643"
+     },
+     {
+      "badge": "PACK 03",
+      "title": "弱酸性 pH 5.5・單片獨立包裝",
+      "description": "弱酸性配方，單片獨立包裝方便放入包包，經期與外出都好用。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e240cc3d-2e21-45c0-adb5-bd709a381e72.jpg?v=1788773643"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "面料設計",
+      "title": "柔軟可沖散不織布・擦拭不拉扯",
+      "description": "柔軟、遇水可分散的不織布材質，擦拭時不拉扯肌膚。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_8987cd3e-01a4-412e-837b-3221a7477ec4.jpg?v=1788773643"
+     },
+     {
+      "category": "包裝設計",
+      "title": "單片獨立包裝・方便攜帶",
+      "description": "每片獨立包裝，隨身攜帶不佔空間，隨時取用。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/22-single.jpg?v=1792269506"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/22-single.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_8987cd3e-01a4-412e-837b-3221a7477ec4.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_00d17e59-e019-405d-bd0b-5041ff0e0eb4.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_c3f3ce3d-1932-4d25-a30b-3676806eb44d.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e240cc3d-2e21-45c0-adb5-bd709a381e72.jpg"
+   ],
+   "variants": [
+    {
+     "title": "單片獨立包裝 (1片入)",
+     "availableForSale": true,
+     "price": "20.0",
+     "compareAtPrice": null
+    }
+   ]
+  },
+  {
+   "id": "7819995545667",
+   "handle": "私密雙層修護精華噴霧-ph平衡保濕-30ml",
+   "title": "Saengak 私密雙層修護精華噴霧",
+   "productType": "女性護理",
+   "vendor": "SAENGAK",
+   "tags": [
+    "30ml",
+    "SAENGAK",
+    "Symcalmin",
+    "女性護理",
+    "私密保養",
+    "精華噴霧",
+    "雙層修護"
+   ],
+   "category": {
+    "id": "hb-3-8-8",
+    "name": "Feminine Moisturizers & Oils"
+   },
+   "seo": {
+    "title": "Saengak 私密雙層修護精華噴霧 30 ml",
+    "description": "韓國製 Saengak 水油雙層噴霧，含荷荷芭籽油與玻尿酸鈉，不添加合成香料，30 ml 隨身補充保濕。"
+   },
+   "availableForSale": false,
+   "totalInventory": 0,
+   "metafields": {
+    "subtitle": "韓國製造｜水油雙層｜不添加合成香料",
+    "highlights": [
+     "水油雙層配方：使用前搖勻，油相與水相混合後使用",
+     "含聖羅勒葉萃取與木糖醇，噴後清新、帶清涼感",
+     "含 Symcalmin®（羥苯基丙醯胺苯甲酸）、荷荷芭籽油與玻尿酸鈉",
+     "30 ml 隨身瓶，可噴於內褲底襠或私密部位外部"
+    ],
+    "fit_guide": {
+     "fit": "修護精華噴霧 (Mist Spray 30ml)",
+     "thickness": "微米細霧 (Micro Mist)",
+     "elasticity": "雙層微乳 (Biphasic Emulsion)",
+     "breathability": "透氣保濕 (Breathable Shield)"
+    },
+    "care_specs": {
+     "volume": "30 ml",
+     "texture": "水油雙層噴霧（使用前搖勻）",
+     "application": "私密部位外部肌膚或內褲底襠",
+     "origin": "韓國",
+     "ingredients": "水、辛酸／癸酸三酸甘油酯、木糖醇、二丙二醇、1,2-己二醇、乳酸薄荷酯、丁二醇、尿囊素、甘油、蛇床子萃取、戊二醇、雙歧桿菌發酵產物萃取、乳酸桿菌發酵產物萃取、聖羅勒葉萃取、羥苯基丙醯胺苯甲酸、辣木籽油、蘆薈花萃取、玻尿酸鈉、荷荷芭籽油、寡胜肽-191 等（完整成分請以包裝中文標籤為準）"
+    },
+    "care_instructions": [
+     "使用前請充分搖勻，讓水層與油層混合。",
+     "視需要噴 1～2 下於內褲底襠或私密部位外部。",
+     "使用後請蓋緊瓶蓋；僅供外部使用，避免噴到眼睛或陰道內部。",
+     "如有紅腫或不適，請停止使用並諮詢醫師；請置於陰涼處保存。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "水油雙層・搖勻即用",
+      "description": "保濕油相與水相雙層配方，使用前搖勻，輕噴即可補充保濕。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e7742379-2812-46ac-9cb2-de9072a99053.jpg?v=1788327263"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "細緻噴霧・清爽不黏膩",
+      "description": "細霧均勻附著，可噴於內褲底襠或私密部位外部，觸感清爽。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_6e536597-5069-4606-b90d-a169c2b27691.jpg?v=1788327263"
+     },
+     {
+      "badge": "FRESH 03",
+      "title": "聖羅勒葉萃取・清新淡雅",
+      "description": "不添加合成香料，以聖羅勒葉萃取與木糖醇帶來清新、微涼的使用感。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_c1583ff0-2b41-4b6f-8ea1-ef005e76aa80.jpg?v=1788770407"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "瓶器設計",
+      "title": "隨身噴霧瓶・輕巧好攜帶",
+      "description": "30 ml 輕巧瓶身，放進包包隨時使用。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_86c1bb87-1875-4b19-a280-d622d3fe8fd9.jpg?v=1788770407"
+     },
+     {
+      "category": "配方設計",
+      "title": "水油雙相配方・使用前搖勻",
+      "description": "油相與水相分層保存，使用前搖勻即可混合。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/10_a99d31c8-7881-404f-859e-e88d42a477b9.png?v=1788768534"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/23.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-23.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e7742379-2812-46ac-9cb2-de9072a99053.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_6e536597-5069-4606-b90d-a169c2b27691.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_c1583ff0-2b41-4b6f-8ea1-ef005e76aa80.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_86c1bb87-1875-4b19-a280-d622d3fe8fd9.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/10_a99d31c8-7881-404f-859e-e88d42a477b9.png"
+   ],
+   "variants": [
+    {
+     "title": "隨身精華噴霧 (30ml)",
+     "availableForSale": false,
+     "price": "689.0",
+     "compareAtPrice": null
+    }
+   ]
+  },
+  {
+   "id": "7828435107907",
+   "handle": "saengak-益生菌私密舒緩凝膠",
+   "title": "Saengak 益生菌私密舒緩凝膠",
+   "productType": "女性護理",
+   "vendor": "SAENGAK",
+   "tags": [
+    "1.8g",
+    "featured",
+    "SAENGAK",
+    "女性護理",
+    "弱酸平衡",
+    "益生菌凝膠",
+    "私密保養",
+    "精選商品",
+    "舒緩保濕",
+    "韓國原裝"
+   ],
+   "category": {
+    "id": "hb-3-8-8",
+    "name": "Feminine Moisturizers & Oils"
+   },
+   "seo": {
+    "title": "Saengak 益生菌女性私密舒緩修護凝膠 溫和弱酸保濕護理 1.8g",
+    "description": "韓國原裝 Saengak 益生菌私密舒緩保濕凝膠，單支 1.8g 獨立密封，維持私密弱酸平衡與長效水潤。"
+   },
+   "availableForSale": false,
+   "totalInventory": 0,
+   "metafields": {
+    "subtitle": "韓國製造｜益生菌發酵成分｜無香料・無色凝膠",
+    "highlights": [
+     "益生菌發酵成分：含乳酸桿菌、乳酸乳球菌、雙歧桿菌發酵溶胞產物",
+     "保濕成分：玻尿酸鈉、大豆胜肽與寡胜肽-191，舒緩私密部位外部乾燥",
+     "無香料、無色的凝膠精華質地，好推開、清爽不黏膩",
+     "單支獨立包裝推管，外出攜帶方便衛生"
+    ],
+    "fit_guide": {
+     "fit": "私密護理凝膠 (Intimate Care)",
+     "thickness": "水潤凝膠 (Hydro-Gel)",
+     "elasticity": "溫和無刺激 (Mild & Safe)",
+     "breathability": "清爽保濕 (Hydrating)"
+    },
+    "care_specs": {
+     "volume": "單支 1.8 g（原廠盒裝 7 支）",
+     "texture": "無香料、無色凝膠精華",
+     "application": "女性私密部位外部肌膚（不可置入陰道內）",
+     "origin": "韓國",
+     "ingredients": "水、丁二醇、1,2-己二醇、蛇床子萃取、甲基丙二醇、羥乙基纖維素、丙二醇、玉米糖膠、甘油、羥苯乙酮、玻尿酸鈉、檸檬酸、檸檬酸鈉、腺苷、乳酸桿菌發酵溶胞產物、乳酸乳球菌發酵溶胞產物、雙歧桿菌發酵溶胞產物、寡胜肽-191、甘草酸二鉀、大豆胜肽"
+    },
+    "care_instructions": [
+     "使用前請先洗淨雙手，建議於沐浴後使用。",
+     "撕開包裝，握住推管尾端取出，小心取下前端保護蓋。",
+     "將凝膠塗於私密部位外部肌膚，使用後輕拭多餘凝膠。",
+     "本品不可置入陰道內；如有紅腫或不適，請停止使用並諮詢醫師。"
+    ],
+    "lifestyle_showcase": [
+     {
+      "badge": "CARE 01",
+      "title": "益生菌發酵成分・溫和日常保養",
+      "description": "含乳酸桿菌、乳酸乳球菌與雙歧桿菌三種發酵溶胞產物，搭配甘草酸二鉀，為私密部位外部肌膚提供溫和的日常保養。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_01_hero.jpg?v=1788856971"
+     },
+     {
+      "badge": "TEXTURE 02",
+      "title": "玻尿酸鈉保濕・清爽不黏膩",
+      "description": "以玻尿酸鈉、大豆胜肽與寡胜肽-191 補充水分，無香料、無色的凝膠質地好推開，觸感清爽。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_04_texture.jpg?v=1788856982"
+     },
+     {
+      "badge": "PACK 03",
+      "title": "單支獨立包裝・隨開即用",
+      "description": "每支獨立包裝，一次一支用完即丟，出差旅行放進包包也方便。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_05_sachet.jpg?v=1788856986"
+     }
+    ],
+    "craft_details": [
+     {
+      "category": "包裝設計",
+      "title": "圓弧推管前端・附保護蓋",
+      "description": "推管前端圓滑，出廠附保護蓋，取下即可使用。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_02_applicator_cap.jpg?v=1788856974"
+     },
+     {
+      "category": "配方設計",
+      "title": "蛇床子萃取與甘草酸二鉀・無香料配方",
+      "description": "原廠配方含蛇床子萃取與甘草酸二鉀，不添加香料與色素。",
+      "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_06_botanical.jpg?v=1788856990"
+     }
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/unit-24.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/unit-second-24.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_01_hero_ad375310-b3bf-4e4d-82a9-023c6a38c5d9.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_04_texture_5aff662f-1190-4c7f-99bb-a4a6e223c95c.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_05_sachet_e9971a89-b081-49d1-b1f5-c89297fd351f.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_02_applicator_cap_9cb467c9-dd8d-4dec-afab-34512e398ad7.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_06_botanical_d00f1a55-8c6b-4cde-8210-701295780c48.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_1x1_03_unboxing_ce1bad10-aad6-4804-9438-49b767c1cd5f.jpg"
+   ],
+   "variants": [
+    {
+     "title": "單支裝 (1.8g)",
+     "availableForSale": false,
+     "price": "89.0",
+     "compareAtPrice": "109.0"
+    }
+   ]
+  },
+  {
+   "id": "7829163966531",
+   "handle": "saengak-益生菌舒緩養膚雙入組",
+   "title": "Saengak 益生菌舒緩養膚組",
+   "productType": "女性護理",
+   "vendor": "SAENGAK",
+   "tags": [
+    "SAENGAK",
+    "Shopify Bundles",
+    "促銷",
+    "女性護理",
+    "組合包",
+    "超值組合"
+   ],
+   "category": {
+    "id": "hb-3-8",
+    "name": "Feminine Sanitary Supplies"
+   },
+   "seo": {
+    "title": "Saengak 益生菌舒緩養膚組 凝膠×1＋濕巾×2",
+    "description": "Saengak 組合：私密舒緩凝膠 1.8 g ×1、私密養膚濕巾 ×2，清潔與保濕一次備齊。"
+   },
+   "availableForSale": false,
+   "totalInventory": 0,
+   "metafields": {
+    "subtitle": "舒緩凝膠 1.8 g ×1＋養膚濕巾 ×2",
+    "highlights": [
+     "益生菌微生態雙效守護：凝膠深層修護＋濕巾隨身潔淨",
+     "單支無菌密封推管＋單片獨立包裝，乾淨衛生好攜帶",
+     "天然弱酸親膚配方，溫柔安撫嬌嫩肌膚乾澀不適",
+     "通過多重皮膚耐受測試，敏弱肌日常安心使用"
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/unit-25.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/unit-second-25.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/bundle_01_gel_wipes.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/saengak_gel_showcase_01_box_0153059a-2fac-41fa-a650-608460f34290.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_f4d3016f-9336-41ab-87d4-bfc4ce727149.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_a4afb0ca-15c6-450b-a410-0811dd7c944a.jpg"
+   ],
+   "variants": [
+    {
+     "title": "Default Title",
+     "availableForSale": false,
+     "price": "109.0",
+     "compareAtPrice": "129.0"
+    }
+   ]
+  },
+  {
+   "id": "7829164752963",
+   "handle": "saengak-潔淨調理舒緩組",
+   "title": "Saengak 潔淨調理舒緩組",
+   "productType": "女性護理",
+   "vendor": "SAENGAK",
+   "tags": [
+    "SAENGAK",
+    "Shopify Bundles",
+    "促銷",
+    "女性護理",
+    "組合包",
+    "超值組合"
+   ],
+   "category": {
+    "id": "hb-3-8",
+    "name": "Feminine Sanitary Supplies"
+   },
+   "seo": {
+    "title": "Saengak 潔淨調理舒緩組 慕斯＋凝膠×1",
+    "description": "Saengak 組合：私密潔淨慕斯 160 ml ×1、私密舒緩凝膠 1.8 g ×1，沐浴清潔後接續保濕。"
+   },
+   "availableForSale": false,
+   "totalInventory": 0,
+   "metafields": {
+    "subtitle": "潔淨慕斯 160 ml ×1＋舒緩凝膠 1.8 g ×1",
+    "highlights": [
+     "微米綿密細緻泡沫：溫和深層淨化異味與分泌物困擾",
+     "高滲透益生菌水感凝露：一觸即化長效保濕鎖水",
+     "清潔與修護雙重步驟，打造健康弱酸平衡微生態",
+     "原裝正品官方直營，全系列無添加刺激性香精"
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/unit-26.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/unit-second-26.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/bundle_02_mousse_gel.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_ce86c211-f019-4de9-b14c-c24795343f67.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_b1baf329-f37d-409f-93c0-cb3cf1e45f0f.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_6d4a7797-6e63-40d4-acbb-c996672ac6e0.jpg"
+   ],
+   "variants": [
+    {
+     "title": "Default Title",
+     "availableForSale": false,
+     "price": "650.0",
+     "compareAtPrice": "734.0"
+    }
+   ]
+  },
+  {
+   "id": "7829164785731",
+   "handle": "saengak-全效微生態修護組",
+   "title": "Saengak 全效微生態修護組",
+   "productType": "女性護理",
+   "vendor": "SAENGAK",
+   "tags": [
+    "SAENGAK",
+    "Shopify Bundles",
+    "促銷",
+    "女性護理",
+    "組合包",
+    "超值組合"
+   ],
+   "category": {
+    "id": "hb-3-8",
+    "name": "Feminine Sanitary Supplies"
+   },
+   "seo": {
+    "title": "Saengak 全效微生態修護組 慕斯＋凝膠×2＋濕巾×3",
+    "description": "Saengak 組合：潔淨慕斯 160 ml ×1、舒緩凝膠 1.8 g ×2、養膚濕巾 ×3，居家與外出照護一次備齊。"
+   },
+   "availableForSale": false,
+   "totalInventory": 0,
+   "metafields": {
+    "subtitle": "潔淨慕斯 160 ml ×1＋舒緩凝膠 1.8 g ×2＋養膚濕巾 ×3",
+    "highlights": [
+     "日常清潔＋夜間修護＋外出隨身，一套備齊完整護理",
+     "慕斯細緻洗淨、凝膠深度滋養、濕巾即時安撫",
+     "全品項添加高活性益生菌精粹與天然草本舒緩配方",
+     "送禮自用兩相宜，享受頂級私密微生態奢寵饗宴"
+    ]
+   },
+   "images": [
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/unit-27.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/unit-second-27.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/bundle_03_all_trio.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_6ac2ceef-84af-4d28-a404-8c113fd2051e.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_dbe363c3-901c-403c-8c0f-8854c5da1fe6.jpg",
+    "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_855ba780-a5d8-4f9d-b39e-91115d6cdeb0.jpg"
+   ],
+   "variants": [
+    {
+     "title": "Default Title",
+     "availableForSale": false,
+     "price": "769.0",
+     "compareAtPrice": "883.0"
+    }
+   ]
+  }
+ ]
+}

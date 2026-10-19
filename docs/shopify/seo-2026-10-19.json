@@ -1,0 +1,94 @@
+{
+ "date": "2026-10-19",
+ "method": "使用者核可清單後經 Chrome 已登入後台寫入；Storefront API 回讀 17/17 一致",
+ "rule": "標題「品名＋1～2 個重點」；說明只用副標、說明、規格裡已有的事實，尺碼照實際規格，不寫療效或檢測宣稱",
+ "usedBy": "src/lib/productMeta.ts（商品頁標題、meta／og description）與 api/share/product.ts（分享預覽），沒填時退回品名與說明摘要",
+ "earlier": "#13、#16、#17 的 SEO 已於 2026-10-19 標籤修正時改寫；MEDION 凝膠、除毛刀、清洗袋、隱形中腰、平口安全褲、舒緩凝膠原本就有 SEO，未改",
+ "items": [
+  {
+   "productId": "7810527723587",
+   "seoTitle": "雲朵純棉中腰三角褲 蝴蝶結腰頭 純棉雙層底襠",
+   "seoDescription": "中腰純棉女三角褲，蝴蝶結腰頭、純棉雙層底襠，親膚透氣，M–XL 尺碼。"
+  },
+  {
+   "productId": "7811017441347",
+   "seoTitle": "側邊細帶純棉三角褲 低腰半包臀",
+   "seoDescription": "低腰半包臀女三角褲，側邊細帶設計、純棉雙層底襠，貼身透氣，M–L 尺碼。"
+  },
+  {
+   "productId": "7811020030019",
+   "seoTitle": "雙細帶高衩純棉三角褲 高衩半包臀",
+   "seoDescription": "高衩半包臀女三角褲，雙細帶側腰、純棉雙層底襠，S–XL 尺碼。"
+  },
+  {
+   "productId": "7811021570115",
+   "seoTitle": "螺紋低腰純棉比基尼褲 純棉雙層底襠",
+   "seoDescription": "低腰比基尼女內褲，螺紋布面柔軟有彈性，純棉雙層底襠，L–XL 尺碼。"
+  },
+  {
+   "productId": "7811040182339",
+   "seoTitle": "法式蕾絲滾邊純棉三角褲 純棉雙層底襠",
+   "seoDescription": "腰頭與褲口蕾絲滾邊的女三角褲，純棉雙層底襠，M–XL 尺碼。"
+  },
+  {
+   "productId": "7811041820739",
+   "seoTitle": "蕾絲邊高腰純棉三角褲 純棉雙層底襠",
+   "seoDescription": "高腰女三角褲，側邊蕾絲點綴、純棉雙層底襠，包覆完整，M–XL 尺碼。"
+  },
+  {
+   "productId": "7811043393603",
+   "seoTitle": "冰絲無痕中腰三角褲 無痕切邊 涼感",
+   "seoDescription": "中腰冰絲女三角褲，無痕切邊貼身不留痕，觸感涼爽，M–XL（至 77.5 kg）。"
+  },
+  {
+   "productId": "7811049881667",
+   "seoTitle": "純棉高腰舒適內褲 無縫 素色與印花",
+   "seoDescription": "高腰純棉女內褲，無縫剪裁包覆舒適，素色與印花多款，M–XL 尺碼。"
+  },
+  {
+   "productId": "7811057942595",
+   "seoTitle": "純棉高腰防漏生理褲 前後加長防漏層",
+   "seoDescription": "高腰純棉生理褲，前後加長防漏層，經期與夜間穿著，L–XXL 尺碼。"
+  },
+  {
+   "productId": "7811931373635",
+   "seoTitle": "乾爽透氣運動內衣 無鋼圈 寬肩帶 可拆胸墊",
+   "seoDescription": "無鋼圈女運動內衣，寬肩帶與可拆式胸墊，適合通勤、輕度運動與居家，M–XXL。"
+  },
+  {
+   "productId": "7812559405123",
+   "seoTitle": "網紗冰絲中腰三角褲 波浪切邊 涼感透氣",
+   "seoDescription": "中腰冰絲女三角褲，網紗拼接與波浪切邊，涼感透氣，M–L 尺碼。"
+  },
+  {
+   "productId": "7819899994179",
+   "seoTitle": "Saengak 私密潔淨慕斯 弱酸性 pH 5.5 無香料",
+   "seoDescription": "韓國製 Saengak 私密潔淨慕斯，弱酸性 pH 5.5、無香料泡沫，清潔私密部位外部，160 ml／30 ml。"
+  },
+  {
+   "productId": "7819900551235",
+   "seoTitle": "Saengak 益生菌私密養膚濕巾 單片獨立包裝",
+   "seoDescription": "韓國製 Saengak 私密濕巾，弱酸性 pH 5.5、可沖散材質，單片獨立包裝，經期與外出隨身用。"
+  },
+  {
+   "productId": "7819995545667",
+   "seoTitle": "Saengak 私密雙層修護精華噴霧 30 ml",
+   "seoDescription": "韓國製 Saengak 水油雙層噴霧，含荷荷芭籽油與玻尿酸鈉，不添加合成香料，30 ml 隨身補充保濕。"
+  },
+  {
+   "productId": "7829163966531",
+   "seoTitle": "Saengak 益生菌舒緩養膚組 凝膠×1＋濕巾×2",
+   "seoDescription": "Saengak 組合：私密舒緩凝膠 1.8 g ×1、私密養膚濕巾 ×2，清潔與保濕一次備齊。"
+  },
+  {
+   "productId": "7829164752963",
+   "seoTitle": "Saengak 潔淨調理舒緩組 慕斯＋凝膠×1",
+   "seoDescription": "Saengak 組合：私密潔淨慕斯 160 ml ×1、私密舒緩凝膠 1.8 g ×1，沐浴清潔後接續保濕。"
+  },
+  {
+   "productId": "7829164785731",
+   "seoTitle": "Saengak 全效微生態修護組 慕斯＋凝膠×2＋濕巾×3",
+   "seoDescription": "Saengak 組合：潔淨慕斯 160 ml ×1、舒緩凝膠 1.8 g ×2、養膚濕巾 ×3，居家與外出照護一次備齊。"
+  }
+ ]
+}

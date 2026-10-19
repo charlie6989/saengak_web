@@ -95,6 +95,13 @@
 - 商品命名與副標（2026-10-18）：同類商品以「腰高＋版型＋材質」區分品名，不可多件同名；副標格式「腰高｜版型／構造｜尺寸或重點」，不用「性感」「暖腹／暖宮」「抗菌」，材質只寫有依據的部分。商品內容 metafield（`lifestyle_showcase`／`craft_details`）的圖片網址要指向仍存在的 Shopify 檔案，重整相簿或刪檔後須一併檢查（2026-10-18 曾有 96 張 404）。
 - 商品第二張圖（Daylight Linen，2026-10-18）：26 件已上傳 Shopify 並排第二張（原圖保留在後，第 14 件草稿略過），檔案、來源與參數在 `creative/product-v1/second/`，流程與提示詞在 `creative/product-v1/second/PROMPT_TEMPLATE.md`。使用者決定：內著用 AI 整張重繪（主圖為參考，原廠照只在同色時才給），瓶罐、組合與小物用實品去背合成到 AI 空景（`scripts/product-images/scene.py`），讓包裝字樣維持原廠像素。AI 會改腰頭與包裝小字（13 的 CHESSOLYMPIAD 被寫成小寫 i，主圖 13 同樣問題待對照實品），每張都要逐字核；剪裁特殊的款式（04 低腰比基尼）要平放並明寫版型。Canva generate-image 只回 200px 縮圖，全尺寸要放進自己的暫存設計再 export。
 
+## 商品資料與後台維護（2026-10-19）
+
+- 商品資料在 Shopify，不在程式碼。歷次後台修改的內容與來源記錄在 `docs/shopify/`；修改後執行 `node scripts/shopify-product-snapshot.mjs` 更新 `docs/shopify/products-snapshot.json` 並提交，讓 Git 能比對後台的變動。
+- 後台自動化做法（雜湊防錯、shadow DOM、儲存確認、SEO／類別／圖片／JSON 欄位）見 `docs/SHOPIFY_ADMIN_RUNBOOK.md`。寫入前先給使用者看清單，寫入後回讀。
+- NAS 原廠資料用 `scripts/nas-readonly.mjs` 唯讀存取；本 repo 是公開的，不要提交 NAS 主機位址、帳號、Keychain 名稱或下載的原廠檔。
+- 商品頁檢視報告：`docs/audits/2026-10-18-product-detail-audit.html`；各項處理狀態見 `docs/shopify/README.md`。
+
 ## Git 與交接
 
 - 遠端：`https://github.com/charlie6989/saengak_web.git`；主分支：`main`。

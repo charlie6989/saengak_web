@@ -1,0 +1,167 @@
+{
+ "date": "2026-10-19",
+ "taxonomy": "Shopify Standard Product Taxonomy（gid://shopify/TaxonomyCategory/<id>）",
+ "method": "Chrome 已登入後台類別欄位；Storefront API（2025-01）回讀 26/26 一致；隱藏的金流驗收測試維持未分類",
+ "decisions": [
+  "#19 運動內衣依品名選 Sports Bras；說明偏日常無鋼圈，Lingerie > Bras 也可",
+  "#25–27 組合內容物跨多個子類，用上層 Feminine Sanitary Supplies"
+ ],
+ "items": [
+  {
+   "productId": "7810527723587",
+   "title": "雲朵純棉中腰三角褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811017441347",
+   "title": "側邊細帶純棉三角褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811020030019",
+   "title": "雙細帶高衩純棉三角褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811021570115",
+   "title": "螺紋低腰純棉比基尼褲",
+   "categoryId": "aa-1-6-11-1",
+   "category": "Bikinis 比基尼"
+  },
+  {
+   "productId": "7811040182339",
+   "title": "法式蕾絲滾邊純棉三角褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811041820739",
+   "title": "蕾絲邊高腰純棉三角褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811043393603",
+   "title": "冰絲無痕中腰三角褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811049881667",
+   "title": "純棉高腰舒適內褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811057942595",
+   "title": "純棉高腰防漏生理褲",
+   "categoryId": "aa-1-6-11-5",
+   "category": "Period Underwear 生理褲"
+  },
+  {
+   "productId": "7811130785859",
+   "title": "MEDION 私密淨化凝膠",
+   "categoryId": "hb-3-8-8",
+   "category": "Feminine Moisturizers & Oils 女性保濕及油品"
+  },
+  {
+   "productId": "7811151855683",
+   "title": "親膚安全私密除毛刀",
+   "categoryId": "hb-3-14-8",
+   "category": "Razors & Razor Blades 手動刮鬍刀和刀片"
+  },
+  {
+   "productId": "7811152674883",
+   "title": "精緻內著專用清洗護衣袋",
+   "categoryId": "hg-10-9-18-1",
+   "category": "Laundry Wash Bags 洗衣袋"
+  },
+  {
+   "productId": "7811155198019",
+   "title": "舒適純棉透氣內褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811204743235",
+   "title": "隱形中腰無痕女內著",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811216998467",
+   "title": "冰絲無痕波浪邊三角褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811229483075",
+   "title": "高腰蕾絲無痕內褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7811245015107",
+   "title": "冰絲無痕平口安全褲",
+   "categoryId": "aa-1-6-11-2",
+   "category": "Boyshorts 女性四角褲"
+  },
+  {
+   "productId": "7811931373635",
+   "title": "乾爽透氣運動內衣",
+   "categoryId": "aa-1-1-6",
+   "category": "Sports Bras 運動內衣"
+  },
+  {
+   "productId": "7812559405123",
+   "title": "網紗冰絲中腰三角褲",
+   "categoryId": "aa-1-6-11-3",
+   "category": "Briefs 三角褲"
+  },
+  {
+   "productId": "7819899994179",
+   "title": "Saengak 平衡調理私密潔淨慕斯",
+   "categoryId": "hb-3-8-7",
+   "category": "Feminine Intimate Wash 女性私密處洗潔劑"
+  },
+  {
+   "productId": "7819900551235",
+   "title": "Saengak 益生菌私密養膚濕巾",
+   "categoryId": "hb-3-8-9",
+   "category": "Feminine Wipes 女性私密擦巾"
+  },
+  {
+   "productId": "7819995545667",
+   "title": "Saengak 私密雙層修護精華噴霧",
+   "categoryId": "hb-3-8-8",
+   "category": "Feminine Moisturizers & Oils 女性保濕及油品"
+  },
+  {
+   "productId": "7828435107907",
+   "title": "Saengak 益生菌私密舒緩凝膠",
+   "categoryId": "hb-3-8-8",
+   "category": "Feminine Moisturizers & Oils 女性保濕及油品"
+  },
+  {
+   "productId": "7829163966531",
+   "title": "Saengak 益生菌舒緩養膚組",
+   "categoryId": "hb-3-8",
+   "category": "Feminine Sanitary Supplies 女性衛生用品"
+  },
+  {
+   "productId": "7829164752963",
+   "title": "Saengak 潔淨調理舒緩組",
+   "categoryId": "hb-3-8",
+   "category": "Feminine Sanitary Supplies 女性衛生用品"
+  },
+  {
+   "productId": "7829164785731",
+   "title": "Saengak 全效微生態修護組",
+   "categoryId": "hb-3-8",
+   "category": "Feminine Sanitary Supplies 女性衛生用品"
+  }
+ ]
+}
