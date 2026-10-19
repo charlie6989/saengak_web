@@ -36,6 +36,7 @@
 1. **使用者**：在 TapPay Portal 確認正式商家審核通過，取得正式金鑰，於 Shopify TapPay 付款設定切換為正式模式並填入。
 2. **使用者**：確認光貿（電子發票）正式 seller／key 與 Vercel 的發票 release 設定；目前只驗證過官方公開沙盒（見 `GUEST_CHECKOUT_LAUNCH_CHECKLIST.md`）。
 3. **Claude（經同意）**：切換後以一筆真實小額訂單驗證：付款、Shopify 訂單、CARE `orders` 同步、發票開立；再依使用者決定取消並退款。
+   - 取消退款不會自動處理發票：已開立的發票在訂單取消後進入 `void_review`，退款可能另建 `allowance_review` 工作，都要經核准 RPC（`approve_amego_invoice_void`、`approve_amego_allowance_issue`）、由 worker 派送，再回讀光貿 provider 狀態確認已作廢或折讓；做法比照 #1008（`GUEST_CHECKOUT_LAUNCH_CHECKLIST.md`）。沒做完會留下一張正式發票在已退款的測試訂單上。
 4. **使用者決定**：PayPal 要完成設定或移除；LINE Pay、街口、TapPay ATM 是否開放。
 
 ### B. 全家店到店取貨付款（COD）
@@ -44,9 +45,12 @@
 2. **使用者**：訂閱「物流服務點列表」，取得門市列表／選店 API 文件與金鑰；金鑰由使用者放進 Vercel 環境變數。
 3. **使用者決定**：全家店到店運費、是否適用滿額免運、COD 是否另收手續費或有金額上限。
 4. **Claude**：依 ShipAny 文件實作前台全家選店，並以 Shopify Cart API 寫入門市代碼（欄位依 ShipAny 規格）；在 Shopify 新增「全家店到店」運費；把 FAQ、商品頁配送標籤、隱私權政策（ShipAny 資料項目）改回包含超商取貨，同步調整 `verify-public-content.mjs` 的防回歸字樣。
-5. **Claude（經同意，在 1–4 完成後）**：在 Shopify 新增手動付款方式「貨到付款（Cash on Delivery）」。
-6. **確認發票時點**：發票目前在訂單付款後開立；COD 訂單要等人工標記已付款才會觸發，需確認這個時點符合營運與稅務要求。
-7. **驗收（真實訂單，會產生運費與派件）**：建立一筆 COD 訂單 → 在 Shopify 修改品項或金額，確認 ShipAny 代收金額同步 → 印單出貨 → 送達並結算後，在 ShipAny「貨到付款紀錄」核對，再到 Shopify 標記已付款。
+5. **使用者（阻擋條件）**：在 ShipAny 確認 CARE 的同步條件是「銷售訂單已支付」並預設黑貓常溫；若是「訂單建立即同步」，未付款的信用卡與 COD 訂單都會被自動匯入，必須先改好才能開 COD。
+6. **Claude（阻擋條件）**：限制貨到付款只能搭配全家店到店。Shopify 啟用的手動付款方式對所有運送方式都會出現，需用 Payment Customization（Shopify Function）在未選全家店到店、或沒有有效門市代碼時隱藏貨到付款，並實測宅配時看不到 COD。
+7. **Claude（阻擋條件）**：保留 COD 訂單的發票偏好。目前結帳時的載具／捐贈碼／統編偏好只保存 30 天（`checkout_invoice_preferences.expires_at`），過期會在 webhook 處理前刪除；COD 要到人工標記已付款才開發票，若超過 30 天會退回一般個人發票。要在 COD 訂單建立時把偏好寫入訂單快照，或延長保存期涵蓋完整 COD 週期，並加測試。
+8. **Claude（經同意，在 1–7 完成後）**：在 Shopify 新增手動付款方式「貨到付款（Cash on Delivery）」。
+9. **確認發票時點**：發票目前在訂單付款後開立；COD 訂單要等人工標記已付款才會觸發，需確認這個時點符合營運與稅務要求。
+10. **驗收（真實訂單，會產生運費與派件）**：建立一筆選全家店到店的 COD 訂單 → 在 Shopify 手動選取並匯入 ShipAny（未付款訂單不會自動同步）→ 在 Shopify 修改品項或金額，確認 ShipAny 代收金額跟著更新 → 印單出貨 → 送達並結算後，在 ShipAny「貨到付款紀錄」核對，再到 Shopify 標記已付款，確認發票依結帳時的偏好開立。
 
 ### C. 日常作業（COD 上線後）
 
@@ -56,5 +60,5 @@
 
 ## 仍需使用者確認
 
-- ShipAny 中 CARE 商店的同步條件是否為「銷售訂單已支付」、預設物流是否為黑貓常溫（只有登入 ShipAny 後台才能看到）。
+- ShipAny 中 CARE 商店的同步條件與預設物流（只有登入 ShipAny 後台才能看到；開 COD 前的阻擋條件，見 B-5）。
 - 測試訂單 #1010 的 ShipAny 出貨單是否已顯示「訂單取消」。
