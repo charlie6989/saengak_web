@@ -32,7 +32,19 @@
 - 要先點 shadow root 裡 `s-internal-quick-activator` 內的按鈕打開對話框，用原生 setter 填 textarea，再點 `slot="primary-action"` 的按鈕確認，最後存檔。
 
 ### 標籤
-- 用標籤挑選器移除（⊕ → 搜尋 → 取消勾選）。滑鼠移上去出現的 × 曾移除到錯誤的標籤。
+- 用「編輯標籤」按鈕打開挑選器：搜尋後取消勾選來移除；搜尋不到時點「新增「X」」建立新標籤，挑選器會自動關閉，要再開一次才能加下一個。滑鼠移上去出現的 × 曾移除到錯誤的標籤。
+
+### 說明（descriptionHtml）
+- 編輯器工具列的「顯示 HTML」切到 HTML 模式後是 CodeMirror：`deep(document, '.cm-content')[0].cmView.view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: html } })` 可整段替換；切換按鈕在 HTML 模式下的 aria-label 會改變，要用截圖位置點回一般模式再存檔。
+
+### 清單型欄位（list.single_line_text_field，例如重點、使用方式）
+- 元件是 `s-internal-quick-list`，每條是一個 `s-internal-quick-text-field` 內的 input，可直接用原生 setter 填。要增加條數時點 shadow root 裡 `accessibilitylabel="新增"` 的按鈕；一次只會多一條空白，填好後才能再加，按鈕也會重新產生，每次都要重新抓。
+
+### 規格（選項）名稱
+- 在「子類」區塊點選項列打開編輯器，選項值是一般 input，改完按「完成」再存檔；variant ID、SKU、價格與庫存不變。
+
+### 大量內容的寫入
+- 內容較多時，把 JSON 檔放進頁面上的代理 `<input type=file>`（Chrome 檔案上傳工具），在頁面內 `await file.text()` 讀取，免去手動貼上；讀入後先比對每個值的雜湊。
 
 ### SEO（搜尋引擎產品資訊）
 - 卡片在頁面最底部，要捲到底才會渲染；標題文字在 shadow DOM 裡，`querySelectorAll` 找不到。
@@ -65,4 +77,3 @@
 ## 尚需使用者處理（2026-10-19）
 
 - TapPay 在 Shopify 付款設定仍是測試模式，刷卡不會實際收款；PayPal 設定未完成。
-- MEDION 私密淨化凝膠的說明、標籤與內容欄位仍是 SAENGAK 凝膠內容，需要 MEDION 原廠資料才能改寫。

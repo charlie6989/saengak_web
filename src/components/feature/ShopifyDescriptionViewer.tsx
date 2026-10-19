@@ -116,6 +116,10 @@ export default function ShopifyDescriptionViewer({
   // 「主要成分」「韓國原裝進口」等預設文案（此為 BRAND-2 修復後續發現的內容模板缺口）。
   const isGenericAccessory = !isApparel && isNonOwnBrand;
 
+  // SAENGAK 品牌故事只放在品牌確實是 SAENGAK（或未填 vendor）的保養品；
+  // 同為保養品類但來自其他品牌的商品（例如 MEDION）不掛 SAENGAK 品牌敘事
+  const showSaengakStory = !isNonOwnBrand && (!legitVendor || legitVendor.toUpperCase() === 'SAENGAK');
+
   // 攔截 HTML 內部圖片點擊以支援點擊放大燈箱
   useEffect(() => {
     if (!containerRef.current) return;
@@ -329,7 +333,7 @@ export default function ShopifyDescriptionViewer({
       ) : null}
 
       {/* 2. 品牌美學故事專區：只放在 SAENGAK 商品，避免其他品牌商品掛上 SAENGAK 品牌敘事 */}
-      {!isNonOwnBrand && (
+      {showSaengakStory && (
       <div className="rounded-2xl border border-gray-200/70 bg-linear-to-br/srgb from-stone-50 via-white to-blush/20 p-6 sm:p-10 space-y-4 text-left">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand">
           <i className="ri-leaf-line text-sm"></i>
