@@ -49,8 +49,8 @@ export default function SizeChartTable({ chart }: SizeChartTableProps) {
           <thead className="bg-gray-100/80 text-xs font-bold text-gray-700">
             <tr>
               <th className="px-5 py-3.5 whitespace-nowrap">尺碼</th>
-              {chart.columns.map((column) => (
-                <th key={column.label} className="px-5 py-3.5 whitespace-nowrap">
+              {chart.columns.map((column, colIdx) => (
+                <th key={`${column.label}-${colIdx}`} className="px-5 py-3.5 whitespace-nowrap">
                   {`${column.label}${unitLabel(column.unit)}`}
                 </th>
               ))}
@@ -63,7 +63,7 @@ export default function SizeChartTable({ chart }: SizeChartTableProps) {
                 {chart.columns.map((column, colIdx) => {
                   const value = row.values[colIdx] || '-';
                   return (
-                    <td key={column.label} className="px-5 py-4 whitespace-nowrap">
+                    <td key={`${column.label}-${colIdx}`} className="px-5 py-4 whitespace-nowrap">
                       {column.unit === 'cm' && sizeUnit === 'inch' ? toInches(value) : value}
                     </td>
                   );
