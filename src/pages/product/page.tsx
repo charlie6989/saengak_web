@@ -11,7 +11,6 @@ import {
   type ShopifyProductVariant,
   type ShopifyProductOption,
   type MusinsaFitGuide,
-  type SizeChartItem,
   type CareSpecs,
   type LifestyleShowcaseItem,
   type CraftDetailItem,
@@ -27,6 +26,7 @@ import { shopifyImageUrl } from '../../lib/shopifyImage';
 import { fetchShippingSettings } from '../../lib/promotions';
 import { computeFreeShippingGap, DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
 import SizeChartTable from '../../components/feature/SizeChartTable';
+import type { SizeChart } from '../../domain/sizeChart';
 
 interface Product {
   id: string;
@@ -51,7 +51,7 @@ interface Product {
   subtitle?: string;
   promotionBadge?: string;
   fitGuide?: MusinsaFitGuide;
-  sizeChart?: SizeChartItem[];
+  sizeChart?: SizeChart;
   careSpecs?: CareSpecs;
   careInstructions?: string[];
   lifestyleShowcase?: LifestyleShowcaseItem[];
@@ -487,7 +487,7 @@ export default function ProductPage() {
     isAvailableForSale ? currentPrice * quantity : 0,
     shippingSettings.freeShippingThreshold,
   );
-  const hasSizeChart = (product?.sizeChart?.length ?? 0) > 0;
+  const hasSizeChart = (product?.sizeChart?.rows.length ?? 0) > 0;
 
   const discountPercentage = currentCompareAtPrice && currentCompareAtPrice > currentPrice
     ? Math.round(((currentCompareAtPrice - currentPrice) / currentCompareAtPrice) * 100)
@@ -1984,7 +1984,7 @@ export default function ProductPage() {
       </div>
 
       {/* 尺寸指南彈窗：從尺寸選項旁開啟，不必切換到下方頁籤 */}
-      {isSizeGuideOpen && hasSizeChart && (
+      {isSizeGuideOpen && hasSizeChart && product.sizeChart && (
         <div
           onClick={() => setIsSizeGuideOpen(false)}
           className="fixed inset-0 z-60 flex items-end sm:items-center justify-center bg-black/50 sm:p-4"
@@ -2012,7 +2012,7 @@ export default function ProductPage() {
                 <i className="ri-close-line text-xl" aria-hidden="true"></i>
               </button>
             </div>
-            <SizeChartTable rows={product.sizeChart ?? []} />
+            <SizeChartTable chart={product.sizeChart} />
           </div>
         </div>
       )}

@@ -2,6 +2,7 @@ import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import ShopifyDescriptionViewer from '../src/components/feature/ShopifyDescriptionViewer';
+import { normalizeSizeChart } from '../src/domain/sizeChart';
 
 /**
  * 回歸測試：ShopifyDescriptionViewer 只能呈現 Shopify 實際填寫的商品資料。
@@ -161,9 +162,9 @@ describe('ShopifyDescriptionViewer 跨品類自適應卡（萬用通用商品模
           elasticity: '微彈',
           breathability: '良好',
         }}
-        sizeChart={[
+        sizeChart={normalizeSizeChart([
           { size: '2XL (110)', waist: '84 - 90', hips: '106 - 112', crotch: '25.5', weight: '75 ~ 85 kg' },
-        ]}
+        ])}
       />
     );
 

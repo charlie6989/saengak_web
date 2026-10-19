@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import type {
   MusinsaFitGuide,
-  SizeChartItem,
   CareSpecs,
   LifestyleShowcaseItem,
   CraftDetailItem,
@@ -9,6 +8,7 @@ import type {
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
 import { shopifyImageUrl } from '../../lib/shopifyImage';
 import SizeChartTable from './SizeChartTable';
+import type { SizeChart } from '../../domain/sizeChart';
 
 export interface ContentSection {
   title: string;
@@ -28,7 +28,7 @@ export interface ShopifyDescriptionViewerProps {
   vendor?: string;
   contentSections?: ContentSection[];
   fitGuide?: MusinsaFitGuide;
-  sizeChart?: SizeChartItem[];
+  sizeChart?: SizeChart;
   careSpecs?: CareSpecs;
   careInstructions?: string[];
   lifestyleShowcase?: LifestyleShowcaseItem[];
@@ -282,8 +282,7 @@ export default function ShopifyDescriptionViewer({
 
   // 尺碼表資料來源
   // 尺碼表與版型指標只在 Shopify 有實際資料時顯示，不再套用預設數值
-  const activeSizeChart = sizeChart ?? [];
-  const hasSizeChart = activeSizeChart.length > 0;
+  const hasSizeChart = (sizeChart?.rows.length ?? 0) > 0;
   const hasFitGuide = Boolean(fitGuide?.fit || fitGuide?.thickness || fitGuide?.elasticity || fitGuide?.breathability);
 
   // 版型亮燈數值
@@ -523,14 +522,14 @@ export default function ShopifyDescriptionViewer({
           </div>
           )}
 
-          {hasSizeChart && (
+          {hasSizeChart && sizeChart && (
           <div id="size-guide" className="scroll-mt-32 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 space-y-6">
             <div className="border-b border-gray-100 pb-4">
               <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
                 尺寸指南
               </h3>
             </div>
-            <SizeChartTable rows={activeSizeChart} />
+            <SizeChartTable chart={sizeChart} />
           </div>
           )}
         </>
