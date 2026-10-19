@@ -20,7 +20,7 @@ import { fetchPublishedReviews, fetchProductQA, submitProductQuestion } from '..
 import type { ProductReview, ProductQuestion } from '../../types/reviews-qa';
 import { captureExceptionSafe } from '../../lib/sentry';
 import { formatTwd, pickInitialVariant } from '../../domain/algorithms';
-import { formatPageTitle } from '../../lib/pageTitle';
+import { applyMetaDescription, productMetaDescription, productPageTitle } from '../../lib/productMeta';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
 import { shopifyImageUrl } from '../../lib/shopifyImage';
 import { fetchShippingSettings } from '../../lib/promotions';
@@ -56,6 +56,8 @@ interface Product {
   careInstructions?: string[];
   lifestyleShowcase?: LifestyleShowcaseItem[];
   craftDetails?: CraftDetailItem[];
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 // 圖片載入失敗時隱藏該圖（保留底色），不再換成與商品無關的圖庫照片
@@ -102,10 +104,12 @@ export default function ProductPage() {
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
 
-  // 分頁標題顯示商品名稱，方便多分頁比較與分享
+  // 分頁標題與 meta description：優先使用 Shopify 的 SEO 標題／說明，沒填時退回商品名稱與說明摘要；離開商品頁時還原
   useEffect(() => {
-    if (product?.name) document.title = formatPageTitle(product.name);
-  }, [product?.name]);
+    if (!product?.name) return;
+    document.title = productPageTitle(product);
+    return applyMetaDescription(productMetaDescription(product));
+  }, [product]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [catalogPool, setCatalogPool] = useState<Product[]>([]);
@@ -220,6 +224,8 @@ export default function ProductPage() {
             careInstructions: shopifyProduct.careInstructions,
             lifestyleShowcase: shopifyProduct.lifestyleShowcase,
             craftDetails: shopifyProduct.craftDetails,
+            seoTitle: shopifyProduct.seoTitle,
+            seoDescription: shopifyProduct.seoDescription,
           });
 
           // 取得全店真實商品池供智慧推薦引擎運作 (最多 50 件，依暢銷排序)
