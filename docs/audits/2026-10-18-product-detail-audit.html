@@ -1,0 +1,389 @@
+<title>LUCISSI CARE 商品頁檢視</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600&display=swap">
+<style>
+/* Layout: single reading column (~46rem) with wide tables in their own scroll boxes; Calm Care palette from the store itself */
+:root{
+  --bg:#F7F6F3; --surface:#FFFFFF; --stone:#ECE8E2; --line:#DDD6CE;
+  --ink:#2A2725; --muted:#5C5552; --plum:#5B3D48; --plum-tint:#F1E9EC;
+  --euc:#3F6B5C; --euc-tint:#E6EFEB;
+  --hi:#A13B2E; --hi-tint:#F7E4E0; --mid:#8A5A12; --mid-tint:#F6EBD7; --lo:#4E5A66; --lo-tint:#E8ECEF;
+  --display:"Noto Serif TC","Songti TC",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1D1A19; --surface:#262220; --stone:#2F2A28; --line:#433C38;
+  --ink:#EEE9E4; --muted:#B5ACA6; --plum:#D7B3C1; --plum-tint:#3A2C31;
+  --euc:#8FC2AE; --euc-tint:#24332D;
+  --hi:#F0A193; --hi-tint:#40261F; --mid:#E5BE7A; --mid-tint:#3A2F1C; --lo:#AFC0CE; --lo-tint:#2A3138;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1D1A19; --surface:#262220; --stone:#2F2A28; --line:#433C38;
+  --ink:#EEE9E4; --muted:#B5ACA6; --plum:#D7B3C1; --plum-tint:#3A2C31;
+  --euc:#8FC2AE; --euc-tint:#24332D;
+  --hi:#F0A193; --hi-tint:#40261F; --mid:#E5BE7A; --mid-tint:#3A2F1C; --lo:#AFC0CE; --lo-tint:#2A3138;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75;padding-inline:20px;padding-block:40px 80px}
+.wrap{max-width:46rem;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);font-weight:600;text-wrap:balance;margin:0;line-height:1.35}
+h1{font-size:2rem;color:var(--plum)}
+h2{font-size:1.45rem;padding-bottom:10px;border-bottom:1px solid var(--line)}
+h3{font-size:1.1rem}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:18px}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.lede{color:var(--muted)}
+.meta{font-size:.85rem;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:4px}
+.stat b{font-size:1.9rem;font-family:var(--display);color:var(--plum);font-variant-numeric:tabular-nums;line-height:1.1}
+.stat span{font-size:.85rem;color:var(--muted);line-height:1.5}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+ol.priority{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px;counter-reset:p}
+ol.priority li{counter-increment:p;display:grid;grid-template-columns:2rem minmax(0,1fr);gap:10px;background:var(--surface);border:1px solid var(--line);padding:14px 16px}
+ol.priority li::before{content:counter(p);font-family:var(--display);font-size:1.3rem;color:var(--plum)}
+ol.priority strong{display:block}
+.issue{display:flex;flex-direction:column;gap:8px;padding:16px 0;border-top:1px solid var(--line)}
+.issue:first-of-type{border-top:0;padding-top:0}
+.issue h3{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.chip{font-family:var(--body);font-size:.72rem;font-weight:700;padding:1px 8px;letter-spacing:.06em;white-space:nowrap}
+.chip.hi{background:var(--hi-tint);color:var(--hi)}
+.chip.mid{background:var(--mid-tint);color:var(--mid)}
+.chip.lo{background:var(--lo-tint);color:var(--lo)}
+.fix{background:var(--euc-tint);color:var(--ink);padding:10px 14px;font-size:.95rem}
+.fix::before{content:"修改：";font-weight:700;color:var(--euc)}
+ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+code{font-size:.85em;background:var(--stone);padding:1px 5px;word-break:break-all}
+figure{margin:0;display:flex;flex-direction:column;gap:6px}
+figure img{border:1px solid var(--line);display:block;width:100%;height:auto}
+figcaption{font-size:.85rem;color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;line-height:1.6}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{background:var(--stone);font-weight:700;white-space:nowrap}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+td.name{white-space:nowrap;font-weight:500}
+tr:last-child td{border-bottom:0}
+.phase{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);padding:18px}
+.phase h3{color:var(--plum)}
+.who{font-size:.8rem;color:var(--muted)}
+.note{border-left:3px solid var(--line);padding-left:14px;color:var(--muted);font-size:.92rem}
+a{color:var(--plum)}
+a:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
+</style>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <div class="eyebrow">消費者體驗與轉換檢視 · 2026-10-18</div>
+  <h1>LUCISSI CARE 商品頁檢視</h1>
+  <p class="lede">逐件檢查 26 件公開商品的商品頁：Shopify 實際資料、正式站 lucissicare.com 畫面，以及商品頁與商品卡程式碼。目標是找出讓顧客看不懂、不相信、或不敢下單的地方，並排出修改順序。</p>
+  <p class="meta">資料來源：Storefront API 即時讀取（含 metafield 與庫存）、正式站桌機與手機畫面、<code>src/pages/product/page.tsx</code>、<code>ShopifyDescriptionViewer.tsx</code>、<code>ProductCard.tsx</code>。本次未改動任何程式或 Shopify 資料。</p>
+</header>
+
+<section>
+  <div class="stats">
+    <div class="stat"><b>96</b><span>張內容區圖片 404 失效，影響 22 件商品</span></div>
+    <div class="stat"><b>6 / 7</b><span>件 SAENGAK 保養品與組合目前售完</span></div>
+    <div class="stat"><b>16 / 16</b><span>件內褲共用同一張尺碼表，與實際尺寸不符</span></div>
+    <div class="stat"><b>4</b><span>件不同商品都叫「涼感冰絲無痕內褲」</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>先修這五件</h2>
+  <ol class="priority">
+    <li><div><strong>把 96 張失效圖片換掉</strong>每件內著的「Lifestyle & Feature」「工藝細節」區塊都是灰色空框或破圖。這是「很多沒有圖」的主因，而且只要改 Shopify metafield 就能修好。</div></li>
+    <li><div><strong>處理售完的核心保養品</strong>私密保養只剩 NT$20 單片濕巾和 MEDION 凝膠可買。補貨、標示到貨時間，或先把三個組合下架，避免顧客一路點進售完頁。</div></li>
+    <li><div><strong>重做尺碼資訊</strong>尺碼表與選項的尺寸、體重範圍互相矛盾，運動內衣的表格欄位錯位。內著買錯尺寸就是退貨，顧客也會因為不確定而不下單。</div></li>
+    <li><div><strong>拿掉無法佐證的宣稱與誤導圖片</strong>程式寫死的「專利植萃」「淨化異味」「深層導入」、過期的純素認證圖、別處來的五星評價截圖、主圖是整盒但實際只賣 1 支。</div></li>
+    <li><div><strong>改名與改副標</strong>同名商品無法比較；副標寫「低腰性感貼合」用在中腰、高腰款，也違反 CARE 品名不用「性感」的決定。</div></li>
+  </ol>
+</section>
+
+<section>
+  <h2>一、圖片：缺圖、誤導與風格不一</h2>
+
+  <div class="issue">
+    <h3>內容區 96 張圖片 404 <span class="chip hi">高</span></h3>
+    <p>商品頁「產品內容」頁籤的情境圖與工藝細節圖，來自 metafield <code>custom.lifestyle_showcase</code> 與 <code>custom.craft_details</code> 裡的圖片網址。這些網址指向的 Shopify 檔案已不存在，22 件商品共 96 張全部回傳 404（相簿圖與描述圖都正常）。推測是重整相簿時舊檔被刪除，但 metafield 沒有跟著更新；後台刪除紀錄未查證。</p>
+    <p>程式在 metafield 有網址時就直接使用，沒有失效後備，所以畫面上是 4:3 的灰色空框，或破圖圖示加替代文字：</p>
+    <figure>
+      <img src="data:image/jpeg;base64,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/q5vPswiJkVWYDleo6Vtv8Pr/XZZb3xHq7NcJHt077KDGLXB4bHcnAyP16EAGD4IsrW0+IGmPa6XdaZ51hKZLa5csQ4JBwT2+tey15R4Kt/EN343tbnW7W5LafaS20t3LCUWQhiF2k/e4PWvV6ACiiigAooooAKii/1kv++P/QRUtRRf6yX/AHx/6CKAHt0NQVO3Q1BSYyzTG/1q/Q/0p9Mb/Wr9D/SmIfRRRQBFcf6pqo1euP8AVNVGpY0FFFFAwooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKVfvD60lKv3h9aANKiiiqJCm7adURuYQcNKinOMFgKAH7ec0Y7GoxcwHbiVDvJVfmHzEDOB68An8Kessbbtrq204ODnB6/y5oAXb/KgrxjOKN1N81N+zcN4AJXPIHrigB23g8mjFM+0Q43CRNu7ZncMbs4x9c8UC5gbGJUOc4+Yc46/l3oAkxSYPrUf2mA/wDLaP8A76FO82PKjeuWBKjPUDrigB2Pwowc0bqQSozMqspZfvAHkfWgB2KQAgdaa08SttaRVbjgkA8nA/M0vmx7tpYBsZwTzj1oAdikx702KeKZd0Tq46ZU574/nT80AJjmgCm+fDuZfNTKjLDcMgeppyurqGUgqRkEHINAC4pMUiSJIgeNgytyGByDQJELlNw3gZK55x64/OgB9FMMsauqM6h2BKqTyQMZP6ihJUkXcjBlJxkHIoAXBo28Yo3Uw3EQLZkX5GCtyPlJ6A/mPzFADwuKNvFMe5hSQRvLGrkZClgCaaLu3IYiaMhcZIYYGfWgCULg0bcelNWaNmVVdSWGVAI5Hc/rT80AJt4o206igBMUYNLRQA3bTqKKAEx+FJg+vFOooAbtPHNG05p1FADcGnUUUAN206iigAooooAKKKKACoov9ZL/AL4/9BFS1FF/rJf98f8AoIoAe3Q1BU7dDUFJjLNMb/Wr9D/Sn0xv9av0P9KYh9FFFAEVx/qmqjV64/1TVRqWNBRRRQMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAClX7w+tJSr94fWgDSooo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UUUUAFFFFABRRRQAUUUUAFFFFABRRRQAVFF/rJf98f8AoIqWoov9ZL/vj/0EUAPb7pqCrDfdP0qvSY0WaY3+tX6H+lPpjf61fof6UxD6KKKAIrj/AFTVRq9cf6pqo1LGgooooGFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABSr94fWkpV+8PrQBpUUUVRIUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABUUX+sl/3x/6CKlqKL/WS/74/wDQRQBI33T9K4CW8uR8QBAJ5PK3quzd8uNmeld+33T9K85m/wCSjD/rqv8A6LFSxo9Hpjf61fof6U+mN/rV+h/pVCH0UUUARXH+qaqNXrj/AFTVRqWNBRRRQMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAClX7w+tJSr94fWgDSoooqiQooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACoov9ZL/AL4/9BFS1FF/rJf98f8AoIoAkb7p+leczf8AJRh/11X/ANFivRm+6fpXnM3/ACUYf9dV/wDRYqWNHo9Mb/Wr9D/Sn0xv9av0P9KoQ+iiigCK4/1TVRq9cf6pqo1LGgooooGFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABSr94fWkpV+8PrQBpUUUVRIUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABUUX+sl/wB8f+gipaii/wBZL/vj/wBBFAEjfdP0rzmb/kow/wCuq/8AosV6M33T9K85m/5KMP8Arqv/AKLFSxo9Hpjf61fof6U+mN/rV+h/pVCH0UUUAMlQuhUYyfWq32V/Vfzq5RSsBT+yv6r+dH2V/Vfzq5RRYdyn9lf1X86Psr+q/nVyiiwXKf2V/Vfzo+yv6r+dXKKLBcp/ZX9V/Oj7K/qv51coosFyn9lf1X86Psr+q/nVyiiwXKf2V/Vfzo+yv6r+dXKKLBcp/ZX9V/Oj7K/qv51coosFyn9lf1X86Psr+q/nVyiiwXKf2V/Vfzo+yv6r+dXKKLBcp/ZX9V/Oj7K/qv51coosFyn9lf1X86Psr+q/nVyiiwXKf2V/Vfzo+yv6r+dXKKLBcp/ZX9V/Oj7K/qv51coosFyn9lf1X86Psr+q/nVyiiwXKf2V/Vfzo+yv6r+dXKKLBcp/ZX9V/Oj7K/qv51coosFyn9lf1X86Psr+q/nVyiiwXKf2V/Vfzo+yv6r+dXKKLBcp/ZX9V/Oj7K/qv51coosFyn9lf1X86Psr+q/nVyiiwXKf2V/VfzpRauDnK/nVuiiwXCiiimIKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAqKL/WS/wC+P/QRUtRRf6yX/fH/AKCKAJG+6fpXnM3/ACUYf9dV/wDRYr0Zvun6V5zN/wAlGH/XVf8A0WKljR6PTG/1q/Q/0p9RucOrEHHPQZqhElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJRUfmr6P/3waPNX0f8A74NAElFR+avo/wD3waPNX0f/AL4NAElFR+avo/8A3waPNX0f/vg0ASUVH5q+j/8AfBo81fR/++DQBJUUX+sl/wB8f+gil81fR/8Avg0kJy0h5wW7j2AoAkb7p+leczf8lGH/AF1X/wBFivRm+6fpXnM3/JRQcceapz/wAUmNHo9JilopiExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUYpaKAExRilooATFGKWigBMUUtFACN901SNtAZ/tBgj8/GPN2/N0x161cboagpMZZoopM0xC0UUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQA1uhqCp26GoKTGWa5zxf4mHhlLNzaG5+1TeXgSbNvv0Oa6LtXnfxh/wCPfRf+vz+gphFXZ6LSZ5xS1i+INJv9TMH2DWrjTPL3bvJjV/MzjGd3pg/nQI2c0hdQu4kAeteZeG7LxJrF9rNvJ4vvI10+8NuhS3Ql8DOTWV8Zp7i0WxsftVwS9oBNK8rok208/KCFLE9eD1HTFAHsXmLkDIyRnHt60u4Zr54n1Zl1jR5JI7lQlqgDNfzBpA7BSyEMdvc4z0HfFdR4z124tvE2gx2M6f2db24kt7t5vMAyQrSydScLkDJ5JzmkB6+Dmk3DIHrXzxrOrBdRvt2u6ik4kvCY0uZNqyK+IwO2MZ9qseOL7UItT0qWbUpkki0uCe2dJTGyAriQFupZip6H2oA9/wBwyRnkdR6Uu4V87RTas93PrCy6o8Ub25u5Ybwofs7ovlqWB3FsHrzXS/Euby/E/wBlnuCbc6UTClxcyAI+GG5QOCxHXPXFAHsm4UhdQQCeT0968J0y+uTqfhy1lubhbiHUIoXRr53JjUr0XG3YQec89q29SPiE/Ea3lmnjt7WSW5jtftD7SkOEDlewJBG33zQB635i5KggkdQOopdwrw7TZryy8Zo99e6rCmoSRxJJ/aMDM23r5hAwV546Vg+Mp71fGWqwLeFS9zKYz9pACjOQPvYHTGDzzQB9HbxnHf0pQQeleXSapef8LRvP7CutKcS2kCStcy8EA8hMHlq5O98U6jo/j7UL2YP5rXjRT20dyFWSNQFRfu8dc5z2PSmB77uGeh/Kk3rnbkbu4zzXiHheaa+13TUg1a5M327z5o5tSZhFCGIWEhj87Ejt7U+XxJr8HirxLGLjTIb0WoWUxs+cRqxHlZONwzzn0oA9tLAUteV+BtU01tWsnnXxFda7cWqGSS5Vyio2MsB0Eeehxjn1r1SgAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAGt0NQVO3Q1BSYyx2rzv4w/wDHvov/AF+f0Feidq87+MP/AB76L/1+f0FMIfEei1g65e+Ibe5RNF0m2vISmWeW68shvToa3qwdZ8S2uk6lBZTKSZUyXLBVTrtyT2OGGfagRyuhW3jTRrvVbgaHYzHULk3BU3uNntwOaofEvS9e1iDTWXRFmuGjzIkJZxCwz1fIXHzccA9eeldlD4rhNlHc3drJbh7iOFVOXyWAI+6OvPTrnjrU6+I7f7Fc3rxhYok3KnmqZHxxyo6c4HJ474pAeR23hjxRYQskWhyy207K13Gyphsf7OSzDr0Peul1/wAFapqd8Ps2nadCiW8EKs0S7BtjbO0csAG2j1ruNO8R299KY1t5EKozSP50LhAOudshbuOg7iqi+MrCTVBZRRzup2Yk8lxyx4G3bn0oGecXng3xNMl48OiWzKDdogMwDuJHyGAPp2571e1/wj4h1K8t0tNMC+Xo1vaid7vywjqcsMKfm4JGDx3ruLjxnZw3LQmCVpBI0YUcksGCgYGT3PvweK1ZNYtRHbPCwk+0NHtH3SEc4DEHoOCcH0oA80sPCniG8j1XTorK3020uRZrKLgMxAjRf9WwODgrznOav+I/COq6r4veawN9FEyLHPdS3EYi8rAyka7SeozzxXa6h4hs7OWGNWExmieRNjdduTx+R56cVRk8YRx2nnyWEwbzvKCb1PdsnPQYCMfWgRxN58OdQ0zVLVLK4v7rSRcLInkXCJNBKTgyHK4I69MGt/VvBdpc+ONMup7a5vLaSOZrl55GdEYBdgH93qfrXRaF4ki1i6kgjtniZAWBaRTuGcZAB6f/AFvUZ1zPHiRlcMI8h9vJBxnH1xTA8mtfAclp4t0+ybSVubC3unna88oKpiK5VCc8lWFRax4N1q/1m71CLR3MhuZDA73KKdhLduR12/mPSvQI/FltJNbqYGEbnErMcGLnAO0jkE9x6HPQ1UufHEME9wgsnkSGXy2dWJ5zgZwpxk5/L6UhnDaLoGpp/ZBm8KTQTxaws8uoMVLiPeTgj72ORzVjxL4MvL+zur37FqB1S+1OTyo0YbIYywG5x6EID1/u+ldxeeMILVoI5LSTzJbdZvLLYYFs/Lgjrx+oqxF4mge2tp/IkJuFdgAOPlzjLEAdB37HpQI4LQvh7qth4tOLi2EFvFE63P2BdrkN91f7r8ZLfT0pLrwNNaSa9DZ6fJfXEtvAtvdygDdJIXEr5z2D5I9h3rtLHxlDeWMl1Hp9ySJhFHGo3M5Kljx1AG1ucfw8Zq/p3iK1v55I4opwB5hhkeMhZVTbuIJ92xQBjaTpM9j4/eVbeQWMejR26T7PkLKy8Z6ZwK7TNYemeIFv7mCIwInmwtLlZgxQDHDDt1/SsuHxwJpYoxpkwaR9m0tyOVA4299w/WgDsM0ZFctP4wSK6uYBYswtyd7FyowG2kn5cYHBOCeD9cW7jxLFbQl5rO53rbLOyKpIXPbccLx9aAN+is/RtTTVbFLuKKSNX7PjPQHsT61oUwCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAGt0NQVO3Q1BSYyzXDfFDS77U4NJGn2slwYrrc4jGdox1ruaQj3piTsLXMeJPC39uXQleRVCiNFwQCAC2452k5w2AAR+ldPRQBycPg9YrBLQyJJGt0ZvLOQpGTjJHOQD/8AX71ZHhoyWl3bzSIPtFrHF5kZYEOu/J9xls+/eujooA46z8H3NpqEs8d0hj8qRYyWfcWcDg89Bgdzn8KhsvCOpWt3FctPBcMjhx5k8g2ncCRwMMMDgYUDPSu3opWHc5G58ISzG4Ec8EKSyttCoSVQ55HowJz9QDmtBtElD27RiHcZ4pbhy5+URj5VQY6dep7n1reopiOV1Xwgt47mGZVX5iiSFiqkvvIwCBjOfc59sVUm8FTNZfZY5rNB9p87csBUDiT+HJyQXGPYV2tFA7mDoWhS6cbdppY/3ELxJHGCQAxQ5yeeNgwPrWpHZJAtz5AAadzI5J6sQBn8gPyq1RQI4y18LanbTWBSe2Mds7OVVimdygEYCYPOT+PSnal4KN6LtvtKedPceaXeMPxgAjBHHfp7Z5rsaKB3OH1nwPNfyQssloVgUKqshTeAE6lfun5W6D+Kp08JXcdpY26y2hW2jlRj5ePN345xjA4z69q7GigLnD6Z4KuLazW3naxcfaDKcxlwQVkGMEDkeYMfTNak3h+cyu1u0SAWvkr87DexKZY4+7wmOD3rpKKAucnYeHdRtr1JnltyiSblCzSfKu5iVAPHQjrnpUY8JXfmpdm4t/tC3YufKCDb9/dt34z14zj8K7CigLnGaj4UvbjVvtsAs0RnZpEdywcHJAIKEH5iW59fxrQPhzzmdpQI3+zpGhjuJPlKkkgdMKeOn5cCujooC5l6BpjaZp/kOFDmaSQqsrSKNzlgAW5OARzjk5NalFFAgooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigBrdDUFTt0NQUmMs0hYDrS1la3JKhtEileLzJSrFDg42saaFc1Nw/CjNc7dG5gaI295Pcndl081en/jv860bWaOazFy5kiGG3B5CNu0kHv7U2mtwTTNLNGapgRNEJRKxjI3B/NOMeuc9KrteaesYka+jEZYKH+0cZPbOakDUzRmqiLHIoZHdlIyCshIP60vlL/ef/AL+N/jQBazRms03VkrFWvEDA7SDcYIP51NEIZoxJFMXQ/wASzEj8waALmaM1SiMMwZopi6qxVispOGHUHnqKjM9mHdDdKHQEsvnnKgdSeeKANHNGaoQSW1xH5kFx5iZxuSUkfnmhJLZ1iZbjKzf6siY4fjPHPPFAF/NGapP5KMiPMVaQkIDKfmI7Dnk0kLW86loJ/MAJBKTE4wcHv6jFAF7NGareSv8Aek/7+NUUr20Lqk1wI2b7qvMQT9OaAL2aM1npNaO+xLoM/wDdWck/zpFns2jeRbpSiDLMJyQo9znigDRzRmqMphgjaSeYxov3meUgD681J5S/3pP+/jf40AWs0ZrONxZhyn2tN4zlftHIx179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oooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAbb/em/66f+yip6gt/vTf9dP/AGUVPTAhuP8Aln/v/wBDS0lx/wAs/wDf/oaWkAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFMt/vz/8AXQf+grT6Zb/fn/66D/0FaAJm6GoKnboagoYyzUE3+uj+jf0qeoJv9dH9G/pTEOooopAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFADbf703/XT/2UVPUFv96b/rp/7KKnpgQ3H/LP/f8A6GlpLj/ln/v/ANDS0gCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAplv9+f8A66D/ANBWn0y3+/P/ANdB/wCgrQBM3Q1BU7dDUFDGWagm/wBdH9G/pU9QTf66P6N/SmIdRRRSAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAG2/wB6b/rp/wCyip6gt/vTf9dP/ZRU9MCG4/5Z/wC//Q0tJcf8s/8Af/oaWkAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFMt/vz/9dB/6CtPplv8Afn/66D/0FaAJm6GoKnboagoYyzUE3+uj+jf0qeoJv9dH9G/pTEOooopAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFADbf703/AF0/9lFT1Bb/AHpv+un/ALKKnpgQ3H/LP/f/AKGlpLj/AJZ/7/8AQ0tIAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKZb/fn/wCug/8AQVp9Mt/vz/8AXQf+grQBM3Q1BU7dDUFDGWagm/10f0b+lT1BN/ro/o39KYh1FFFIAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAbb/em/66f+yip6gt/vTf8AXT/2UVPTAhuP+Wf+/wD0NLSXH/LP/f8A6GlpAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTLf78/wD10H/oK0+mW/35/wDroP8A0FaAJm6GoKnboagoYyzUE3+uj+jf0qeoJv8AXR/Rv6UxDqKKKQBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQA23+9N/10/wDZRU9QW/3pv+un/soqemBDcf8ALP8A3/6GlpLj/ln/AL/9DS0gCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAplv9+f/roP/QVp9Mt/vz/9dB/6CtAEzdDUFTt0NQUMZZqCb/XR/Rv6VPUE3+uj+jf0piHUUUUgCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigBtv96b/AK6f+yip6gt/vTf9dP8A2UVPTAhuP+Wf+/8A0NLSXH/LP/f/AKGlpAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTLf78/8A10H/AKCtPplv9+f/AK6D/wBBWgCZuhqCp26GoKGMs1BN/ro/o39KnqCb/XR/Rv6UxDqKKKQBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQA23+9N/10/8AZRU9QW/3pv8Arp/7KKnpgQ3H/LP/AH/6GlpLj/ln/v8A9DS0gCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAplv8Afn/66D/0FafTLf78/wD10H/oK0ATN0NQVO3Q1BQxlmoJv9dH9G/pU9QTf66P6N/SmIdRRRSAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAG2/3pv+un/soqeoLf703/XT/wBlFT0wIbj/AJZ/7/8AQ0tJcf8ALP8A3/6GlpAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTLf78//AF0H/oK0+mW/35/+ug/9BWgCZuhqCp26GoKGM//Z" alt="正式站透氣親膚純棉三角褲商品頁，情境圖區塊為灰色空框，工藝細節區塊顯示破圖圖示與替代文字">
+      <figcaption>正式站 /product/7810527723587，往下捲到產品內容。左側灰框與下方兩張破圖都是失效的 metafield 圖片。</figcaption>
+    </figure>
+    <p class="fix">在 Shopify 把這兩個 metafield 的 <code>image</code> 改指向商品相簿中仍存在的圖（或清空，程式會自動從相簿遞補）。程式端加上圖片載入失敗時改用相簿圖或隱藏圖片欄；<code>verify:content</code> 或排程檢查加入「metafield 圖片網址需回傳 200」。</p>
+  </div>
+
+  <div class="issue">
+    <h3>主圖的數量與實際販售數量不符 <span class="chip hi">高</span></h3>
+    <ul>
+      <li>SAENGAK 益生菌私密舒緩凝膠售價 NT$89，規格是「單支 1.8 g」，主圖卻是 7 支裝的整盒。MEDION 凝膠（1 支 NT$99）同樣以整盒當主圖。</li>
+      <li>三個組合的主圖都放整盒凝膠，但內容只有 1 支或 2 支凝膠；全效組寫「濕巾 3 入」，圖上只有 1 片。</li>
+    </ul>
+    <p>顧客以為買到一盒，收到一支，是最典型的客訴與負評來源。</p>
+    <p class="fix">主圖改為實際內容物（單支推管、組合的實際件數），或商品本身改為整盒販售。組合圖下方加一行「內容物：慕斯 160 ml ×1、凝膠 1.8 g ×2、濕巾 ×3」。</p>
+  </div>
+
+  <div class="issue">
+    <h3>選顏色不會換圖，色名對不上圖 <span class="chip mid">中</span></h3>
+    <ul>
+      <li>26 件商品的所有規格都綁同一張主圖，選任何顏色主圖都不變，顧客看不到自己選的顏色。</li>
+      <li>蕾絲邊高腰純棉三角褲的選項是淺灰、暗灰、粉棕，圖片是白、粉、深灰；細帶螺紋低腰款的描述圖出現薄荷綠和粉色，但這兩色沒有販售。</li>
+      <li>除毛刀文案寫「以純白簡約美學呈現」，規格是「粉色除毛刀」，描述圖是綠色。</li>
+    </ul>
+    <p class="fix">每個顏色指定一張規格圖（Shopify variant image），程式已支援選色後跳到該圖。描述圖只保留有販售的顏色，並在圖上或圖下標出色名。</p>
+  </div>
+
+  <div class="issue">
+    <h3>第 3 張起的圖片與 Calm Care 定位衝突 <span class="chip mid">中</span></h3>
+    <p>主圖與第二張已統一成 Ivory Studio／Daylight Linen，但後面仍是供應商原圖，風格落差很大：</p>
+    <ul>
+      <li>細帶系列（#02、#04）、純棉高腰（#08）有私處或臀部特寫、毛毯加玫瑰花瓣的情趣感構圖，與「母站才放性感款」的分工不符。</li>
+      <li>網紗冰絲款（#20）描述圖有 CHANEL 盒子當道具，以及簡體字「7A抗菌面料」等字卡；隱形中腰（#15）有「7A 抗菌」貼紙。</li>
+      <li>生理褲（#09）混用深色衣架棚拍、繁中字卡與 Gemini 生成圖；部分圖片帶浮水印。</li>
+    </ul>
+    <p class="fix">先刪掉他牌道具、簡體字、抗菌貼紙與私處特寫；之後依 <code>docs/PRODUCT_IMAGE_STYLE.md</code> 每件補 2–3 張平拍細節（腰頭、底襠、布料近拍）與一張穿著示意。</p>
+  </div>
+
+  <div class="issue">
+    <h3>圖片太大，手機縮圖會空白 <span class="chip mid">中</span></h3>
+    <p>商品頁直接載入原始檔（部分 4167×4167），一頁光圖片約 3.9 MB，最大單張 1.4 MB。桌機實測縮圖列有數格空白好幾秒。</p>
+    <p class="fix">圖片網址加 Shopify 的 <code>width</code> 參數（縮圖 160、主圖 1000、放大 2000），並用 <code>srcset</code>。</p>
+  </div>
+</section>
+
+<section>
+  <h2>二、說明文字錯誤</h2>
+
+  <div class="issue">
+    <h3>文案是同一套模板，套在不同商品上 <span class="chip hi">高</span></h3>
+    <p>17 件內著的「產品特點」「情境圖文」「工藝細節」「洗滌說明」幾乎一字不差，連引言都是同一段。結果是多處和商品本身矛盾：</p>
+    <div class="tbl"><table>
+      <thead><tr><th>頁面寫的</th><th>實際情況</th><th>出現在</th></tr></thead>
+      <tbody>
+        <tr><td>副標「低腰性感貼合」</td><td>商品是中腰或高腰；另違反 CARE 品名不用「性感」</td><td>#01、#02、#03、#05、#13、#15、#16、#18、#20</td></tr>
+        <tr><td>副標「無痕冰絲」</td><td>品名與網址都是純棉款</td><td>#05 法式無痕純棉、#15、#17</td></tr>
+        <tr><td>「100% 純棉雙層底襠」</td><td>副標寫 100%，特點只寫底襠純棉，布料成分未列</td><td>所有純棉款</td></tr>
+        <tr><td>SEO 與標籤寫「丁字褲」</td><td>圖片是全包覆三角褲</td><td>#16 涼感冰絲（NT$38）</td></tr>
+        <tr><td>尺寸「約 16 × 18 cm」</td><td>描述圖標示 20 × 30 cm</td><td>#12 護衣袋</td></tr>
+        <tr><td>產地「韓國原裝品質監製」</td><td>無文件佐證，SKU 與供應商同其他內著</td><td>#11 除毛刀</td></tr>
+        <tr><td>「Saengak 私密保養凝膠以益生菌…」</td><td>商品是 MEDION，標籤卻含 SAENGAK</td><td>#10 MEDION 凝膠</td></tr>
+        <tr><td>版型卡「弱酸親膚 (pH 4.5)」</td><td>同頁副標、特點、規格卡都是 pH 5.5</td><td>#21 慕斯</td></tr>
+        <tr><td>規格名「夢幻藍誘」「灰姬妖嬈」</td><td>洗衣袋的藍邊、灰邊</td><td>#12 護衣袋</td></tr>
+      </tbody>
+    </table></div>
+    <p class="fix">每件重寫三樣：副標（腰高、材質、最大差異點）、3–4 條特點（只寫這件獨有的）、規格卡加「布料成分」（如棉 95%、氨綸 5%，依吊牌）。洗滌說明可以共用。</p>
+  </div>
+
+  <div class="issue">
+    <h3>同名商品無法分辨 <span class="chip hi">高</span></h3>
+    <p>「涼感冰絲無痕內褲」有 4 件（中腰三角、單一尺寸三角、平口安全褲、網紗中腰），價格 NT$38 到 111；「細帶純棉無痕女內褲」3 件；「透氣親膚純棉三角褲」2 件。在列表上看起來像同一件商品的不同價格，搜尋時也無從比較。</p>
+    <p class="fix">品名用「腰高＋版型＋材質」區分，例如：冰絲無痕中腰三角褲、冰絲無痕平口安全褲、網紗冰絲中腰三角褲、雙細帶高衩純棉三角褲、螺紋低腰純棉比基尼。網址 handle 一併改掉 <code>rouxu-</code> 與「性感」字樣（Shopify 會自動轉址）。</p>
+  </div>
+
+  <div class="issue">
+    <h3>尺碼表錯誤 <span class="chip hi">高</span></h3>
+    <ul>
+      <li>16 件內褲共用同一張 M(90)–XXL(105) 表，但實際尺寸各不相同：有的只有 L/XL，有的有 S，有的是單一尺寸，最多 18 個合併選項。</li>
+      <li>體重範圍互相矛盾：細帶款選項寫「M (40-55kg)」，表格寫 M 40–50 kg；55 kg 的顧客會看到兩種答案。</li>
+      <li>表格標題寫「所有尺碼皆為平放手工量測」，但內容是人體腰臀圍範圍，且所有商品數字相同。</li>
+      <li>運動內衣沿用內褲欄位：「腰圍」欄顯示下胸圍、「臀圍」欄顯示罩杯、「檔深」欄顯示「舒適微聚攏」。「檔深」也應為「襠深」。</li>
+    </ul>
+    <p class="fix">逐款依吊牌或實量建立尺碼表；在拿到數據前，先只顯示選項上的建議體重並拿掉「平放手工量測」。程式端讓內衣使用自己的欄位（下胸圍、罩杯、建議體重）。</p>
+  </div>
+
+  <div class="issue">
+    <h3>凝膠的推管與「不可置入陰道內」 <span class="chip hi">高・需原廠確認</span></h3>
+    <p>SAENGAK 與 MEDION 兩款凝膠的包裝都寫 Inner Care Gel，並附細長推管，但頁面寫「本品不可置入陰道內」。顧客看到推管會不知道怎麼用，也可能照包裝的方式使用。MEDION 的包裝圖只看到韓文標示。</p>
+    <p class="fix">向原廠與法規顧問確認在台灣的用途與標示。若僅限外用，使用說明需搭配圖示說明推管怎麼在外部使用，並放在價格附近；若原本是陰道內使用，就不屬於化粧品宣稱範圍，需要重新評估是否上架。</p>
+  </div>
+</section>
+
+<section>
+  <h2>三、宣稱與法遵風險</h2>
+  <p class="lede">專案已訂下「成分、檢驗、認證、專利只能來自實際資料，程式不得補預設宣稱」的原則，但下列內容仍在線上。</p>
+
+  <div class="issue">
+    <h3>程式寫死在商品卡上的標語 <span class="chip hi">高</span></h3>
+    <p><code>src/components/feature/ProductCard.tsx</code> 的 <code>extractSingleSentenceDescription</code> 只要品名含關鍵字就套固定標語：慕斯「溫和淨化異味」、清潔露「專利植萃溫和淨膚 深層舒緩修護」、凝膠「益生菌精華深層導入 密集舒緩修護」。原廠沒有專利文件；「深層導入」更與「不可置入」矛盾，而且 MEDION 凝膠也被套上。</p>
+    <p>同一檔案的 <code>sanitizeProductTitle</code> 會把超過 12 字的品名切短，「MEDION 私密淨化凝膠」在列表上只剩「MEDION」。</p>
+    <p class="fix">移除這兩個函式的寫死分支，標語改用 Shopify 副標；品名只做長度省略號，不切字。把「專利植萃」「淨化異味」「深層導入」加進 <code>scripts/verify-public-content.mjs</code>。</p>
+  </div>
+
+  <div class="issue">
+    <h3>描述圖與組合文案裡的宣稱 <span class="chip hi">高</span></h3>
+    <ul>
+      <li>慕斯與濕巾的描述圖有「榮獲韓國 VEGAN 機構純素認證」與 Vegan 標章；依原廠文件，純素證書效期到 2026-03-19，已過期。</li>
+      <li>慕斯、濕巾、噴霧的描述圖內有 ★★★★★「使用者真實分享」截圖，不是本站顧客的評價；同一頁的評價頁籤卻顯示「尚無顧客評價」。</li>
+      <li>組合包文案：「通過多重皮膚耐受測試，敏弱肌日常安心使用」「單支無菌密封」「高活性益生菌精粹」「淨化異味與分泌物困擾」「高滲透」「頂級」。原廠 Dermatest 只涵蓋濕巾與泡沫潔淨露，成分是發酵溶胞產物而非活菌。</li>
+      <li>內著標籤「抗菌內褲」、圖片「7A 抗菌」貼紙；內著目前沒有任何檢測報告。生理褲網址含「暖宮」。</li>
+    </ul>
+    <p class="fix">刪除過期認證、外來評價截圖、抗菌與暖宮字樣；組合文案改寫為內容物與使用順序。描述圖若是原廠製作，請原廠提供更新版，或改以文字呈現可佐證的內容。宣稱措辭建議請熟悉化粧品廣告規範的顧問最後把關。</p>
+  </div>
+</section>
+
+<section>
+  <h2>四、版面與購買流程</h2>
+
+  <div class="issue">
+    <h3>「立即購買」和「加入購物車」做一樣的事 <span class="chip mid">中</span></h3>
+    <p>兩顆按鈕都只是加入購物車並打開側欄。顧客按「立即購買」期待直接結帳，結果多一步還要自己找結帳鈕。</p>
+    <p class="fix">「立即購買」直接建立結帳連結；不想做就拿掉，只留一顆主按鈕。</p>
+  </div>
+
+  <div class="issue">
+    <h3>決定購買的資訊藏在頁籤裡 <span class="chip mid">中</span></h3>
+    <ul>
+      <li>尺碼表放在下方「產品內容」頁籤的深處，尺寸按鈕旁邊沒有「尺寸指南」連結。</li>
+      <li>相關推薦是第三個頁籤，有「同類精選／暢銷熱賣／好評榜單／隨機探索」四種模式加「換一批」，但店內只有 26 件，多數顧客根本不會點到。</li>
+      <li>頁籤底色是寫死的淺綠 <code>rgb(235,243,236)</code>，不在 Calm Care 色票內。</li>
+    </ul>
+    <p class="fix">尺寸選項右邊放「尺寸指南」開彈窗。頁籤改成單頁分段（重點、尺寸、材質與洗滌、問答），「你可能也需要」固定放在頁尾，只用同類推薦一種邏輯。</p>
+  </div>
+
+  <div class="issue">
+    <h3>沒有評價時反而顯示負面訊號 <span class="chip mid">中</span></h3>
+    <p>0 則評價時，評價頁籤仍顯示大字「0.0」、五顆空星、「共 0 則已驗證顧客評價」，以及「所有評價皆來自完成訂單之會員」的說明。看起來像評分很差。</p>
+    <p class="fix">0 則時隱藏評分卡，只放「成為第一位分享心得的人」與購買後邀請評價的說明；商品資訊區不顯示星等。</p>
+  </div>
+
+  <div class="issue">
+    <h3>看起來能用但不會保存的功能 <span class="chip lo">低</span></h3>
+    <ul>
+      <li>相關推薦卡片的收藏愛心、問答的「有幫助」只存在畫面上，重新整理就消失。</li>
+      <li>問答區的 LINE 客服連結預設是 <code>line.me/R/ti/p/@saengak</code>；目前客服只用 Email，LINE 尚未決定。</li>
+      <li>主圖常駐「點擊放大 / 拖曳切換」黑色標籤；放大後無法左右切換圖片。</li>
+      <li>載入失敗時改顯示一張 Unsplash 圖庫照片，可能讓顧客看到與商品無關的圖。</li>
+    </ul>
+    <p class="fix">移除收藏與「有幫助」，或接上會員資料；LINE 改為客服 Email；放大燈箱加左右切換；失敗圖改為中性底色加品名。</p>
+  </div>
+
+  <div class="issue">
+    <h3>規格選單難用 <span class="chip mid">中</span></h3>
+    <p>4 件商品把顏色和尺寸塞在同一個「規格」選項，最多 18 顆按鈕，例如「[款式一] 隱形中腰無痕內褲-翠綠幽夢,M（40-49kg）」，順序也是亂的。部分商品同色不同尺寸價格不同（NT$54 / 75、66 / 86），沒有說明，選尺寸時價格突然跳動像是錯誤。</p>
+    <p class="fix">在 Shopify 拆成「顏色」「尺寸」兩個選項並排序；同款統一價格，或在尺寸旁註明加價原因（例如大尺碼 +NT$20）。</p>
+  </div>
+
+  <div class="issue">
+    <h3>價格格式與分享 <span class="chip lo">低</span></h3>
+    <ul>
+      <li>商品頁價格顯示「$109」，列表顯示「NT$109」，與專案「價格顯示 NT$」的決定不一致。</li>
+      <li>商品頁是前端渲染，sitemap 沒有商品網址，每件商品也沒有自己的分享標題與圖片；在 LINE 分享商品連結只會看到首頁的分享卡。</li>
+    </ul>
+    <p class="fix">商品頁改用 NT$ 格式。中期為商品頁產生各自的 meta 與 Open Graph，並把商品加入 sitemap。</p>
+  </div>
+</section>
+
+<section>
+  <h2>五、庫存、運費與客單價</h2>
+
+  <div class="issue">
+    <h3>免運門檻離單價太遠 <span class="chip hi">高</span></h3>
+    <p>內著單價 NT$38–199，濕巾 NT$20，護衣袋 NT$33；運費 NT$146 比大部分單件商品還貴，要買 15 件以上才到 NT$1,500 免運。顧客在結帳看到運費時最容易放棄。商品頁價格附近完全沒有運費資訊，只在頂部公告列寫「全館滿 NT$1,500 免運」。</p>
+    <p class="fix">價格下方加一行「還差 NT$X 免運」（讀購物車金額）；內著推出 3 件、5 件任選價；濕巾改 10 片或 30 片裝；購物車加湊單推薦。</p>
+  </div>
+
+  <div class="issue">
+    <h3>核心保養品售完、庫存設定可超賣 <span class="chip hi">高</span></h3>
+    <ul>
+      <li>售完：平衡調理私密潔淨慕斯、私密雙層修護精華噴霧、益生菌私密舒緩凝膠，以及三個組合；舒適純棉透氣內褲（#13）四色全部庫存 0。</li>
+      <li>售完頁只有灰色遮罩與「此規格已售完」，沒有到貨通知，也沒有導向替代品（同成分的 MEDION 凝膠有 504 支庫存）。</li>
+      <li>三個規格庫存 0 仍可下單：透氣親膚純棉三角褲 霧光藍 M、護衣袋藍邊、舒適純棉透氣內褲 午夜藍。</li>
+      <li>「金流驗收測試－請勿購買」仍是公開商品；網站有過濾，但 Shopify 其他通路可能看得到。</li>
+    </ul>
+    <p class="fix">補貨或暫時下架組合；售完頁加到貨通知與替代商品；三個規格改為「缺貨時停止銷售」；測試商品改為草稿。</p>
+  </div>
+</section>
+
+<section>
+  <h2>逐件清單</h2>
+  <p class="meta"># 為 <code>creative/product-v1</code> 的商品編號（#14 為草稿）。「404」為內容區失效圖片數。</p>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>商品</th><th>售價</th><th>404</th><th>主要問題</th></tr></thead>
+    <tbody>
+      <tr><td class="n">01</td><td class="name">透氣親膚純棉三角褲</td><td class="n">109</td><td class="n">5</td><td>副標寫低腰性感，實為中腰；尺碼表多一個 XXL；與 #05 同名；霧光藍 M 可超賣</td></tr>
+      <tr><td class="n">02</td><td class="name">細帶純棉無痕女內褲</td><td class="n">109</td><td class="n">5</td><td>與 #03、#04 同名；毛毯玫瑰私處特寫；選項 M 40–55 kg、表格 M 40–50 kg；色名「魅惑紫」</td></tr>
+      <tr><td class="n">03</td><td class="name">細帶純棉無痕女內褲</td><td class="n">85</td><td class="n">4</td><td>同名；有 S 但尺碼表沒有 S</td></tr>
+      <tr><td class="n">04</td><td class="name">細帶純棉無痕女內褲</td><td class="n">76</td><td class="n">5</td><td>同名；模特私處與臀部特寫；描述圖有未販售的薄荷綠與粉色，且兩張重複</td></tr>
+      <tr><td class="n">05</td><td class="name">透氣親膚純棉三角褲</td><td class="n">62</td><td class="n">5</td><td>副標「無痕冰絲」但為純棉；與 #01 同名</td></tr>
+      <tr><td class="n">06</td><td class="name">蕾絲邊高腰純棉三角褲</td><td class="n">67</td><td class="n">4</td><td>色名與圖片顏色對不上；暗灰全尺寸缺貨</td></tr>
+      <tr><td class="n">07</td><td class="name">涼感冰絲無痕內褲</td><td class="n">54–75</td><td class="n">5</td><td>4 件同名之一；同色尺寸價差無說明</td></tr>
+      <tr><td class="n">08</td><td class="name">純棉高腰舒適內褲</td><td class="n">66–86</td><td class="n">4</td><td>價差無說明；臀部特寫；副標「暖腹」</td></tr>
+      <tr><td class="n">09</td><td class="name">純棉高腰防漏生理褲</td><td class="n">69–73</td><td class="n">4</td><td>網址含「暖宮」；圖片風格混雜含 AI 生成圖；未寫防漏層材質與適用流量；尺寸 L–XXL 與表不符</td></tr>
+      <tr><td class="n">10</td><td class="name">MEDION 私密淨化凝膠</td><td class="n">99</td><td class="n">5</td><td>文案寫 Saengak、標籤 SAENGAK；主圖整盒賣 1 支；推管與「不可置入」矛盾；列表名稱被切成「MEDION」並套上「深層導入」</td></tr>
+      <tr><td class="n">11</td><td class="name">親膚安全私密除毛刀</td><td class="n">61</td><td class="n">1</td><td>「韓國原裝品質監製」無依據；文案純白、規格粉色、圖片綠色</td></tr>
+      <tr><td class="n">12</td><td class="name">精緻內著專用清洗護衣袋</td><td class="n">33</td><td class="n">3</td><td>尺寸 16×18 cm 與圖 20×30 cm 矛盾；規格名「灰姬妖嬈」；藍邊可超賣</td></tr>
+      <tr><td class="n">13</td><td class="name">舒適純棉透氣內褲</td><td class="n">124</td><td class="n">5</td><td>四色庫存皆 0（一色仍可下單）；只有 M；SEO 寫莫代爾半露臀；顏色尺寸合併選項</td></tr>
+      <tr><td class="n">15</td><td class="name">隱形中腰無痕女內著</td><td class="n">54</td><td class="n">5</td><td>18 個合併選項含「[款式一]」前綴；「7A 抗菌」貼紙；副標低腰性感</td></tr>
+      <tr><td class="n">16</td><td class="name">涼感冰絲無痕內褲</td><td class="n">38</td><td class="n">5</td><td>SEO 與標籤寫丁字褲，圖片為全包款；單一尺寸卻顯示四碼尺碼表</td></tr>
+      <tr><td class="n">17</td><td class="name">高腰無痕收腹內褲</td><td class="n">66</td><td class="n">2</td><td>副標「無痕冰絲」；12 個合併選項；「收腹」需有依據</td></tr>
+      <tr><td class="n">18</td><td class="name">涼感冰絲無痕內褲</td><td class="n">57</td><td class="n">4</td><td>實為平口安全褲卻與三角褲同名；18 個合併選項；鏡子自拍式模特圖</td></tr>
+      <tr><td class="n">19</td><td class="name">乾爽透氣運動內衣</td><td class="n">199</td><td class="n">5</td><td>尺碼表欄位錯位；原價 399 標五折需有實際售價紀錄</td></tr>
+      <tr><td class="n">20</td><td class="name">涼感冰絲無痕內褲</td><td class="n">111</td><td class="n">5</td><td>同名第 4 件；描述圖有 CHANEL 盒與簡體「7A抗菌面料」字卡</td></tr>
+      <tr><td class="n">21</td><td class="name">平衡調理私密潔淨慕斯</td><td class="n">321 / 645</td><td class="n">5</td><td>售完；同頁 pH 5.5 與 4.5；過期純素認證圖；外來評價截圖；「淨化異味」</td></tr>
+      <tr><td class="n">22</td><td class="name">益生菌私密養膚濕巾</td><td class="n">20</td><td class="n">5</td><td>唯一有貨的 SAENGAK 單品但只有單片；外來評價截圖；「可沖散」需原廠文件</td></tr>
+      <tr><td class="n">23</td><td class="name">私密雙層修護精華噴霧</td><td class="n">689</td><td class="n">5</td><td>售完；描述圖「淨化異味」與外來評價</td></tr>
+      <tr><td class="n">24</td><td class="name">益生菌私密舒緩凝膠</td><td class="n">89</td><td class="n">0</td><td>售完；主圖 7 支盒裝賣 1 支；推管用法未說明</td></tr>
+      <tr><td class="n">25</td><td class="name">益生菌舒緩養膚組</td><td class="n">109</td><td class="n">—</td><td>售完；主圖整盒、內容 1 支；耐受測試與無菌宣稱</td></tr>
+      <tr><td class="n">26</td><td class="name">潔淨調理舒緩組</td><td class="n">650</td><td class="n">—</td><td>售完；凝膠只有 1.8 g；「淨化分泌物困擾」「高滲透」</td></tr>
+      <tr><td class="n">27</td><td class="name">全效微生態修護組</td><td class="n">769</td><td class="n">—</td><td>售完；圖片件數與內容不符；「高活性益生菌」「頂級」</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>修改順序</h2>
+
+  <div class="phase">
+    <h3>本週：Shopify 後台資料</h3>
+    <p class="who">不需改程式，改完正式站立即生效。</p>
+    <ul>
+      <li>22 件商品的 <code>lifestyle_showcase</code>、<code>craft_details</code> 圖片改指向相簿現有圖或清空。</li>
+      <li>同名商品改名、副標逐件改寫，移除「性感」「暖宮」「抗菌」，handle 去掉 <code>rouxu-</code>。</li>
+      <li>刪除過期純素認證、外來評價截圖、CHANEL 與簡體字圖、私處特寫。</li>
+      <li>凝膠與組合的主圖改為實際件數；組合寫明內容物；MEDION 文案改正並移除 SAENGAK 標籤。</li>
+      <li>合併選項拆成顏色與尺寸；三個超賣規格改為缺貨停售；測試商品改草稿。</li>
+      <li>決定售完商品：補貨日期、下架組合，或保留並加到貨通知。</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <h3>1–2 週：商品頁與商品卡程式</h3>
+    <p class="who">需開分支、測試、部署。</p>
+    <ul>
+      <li>移除 <code>ProductCard</code> 的寫死標語與品名切字；擴充 <code>verify-public-content</code> 禁用字詞，加入 metafield 圖片網址檢查。</li>
+      <li>內容區圖片失效時改用相簿圖或隱藏；圖片加 <code>width</code> 參數。</li>
+      <li>尺寸指南移到尺寸選項旁；內衣使用自己的尺碼欄位；無實量數據時拿掉「平放手工量測」。</li>
+      <li>價格下方加運費與「還差 NT$X 免運」；「立即購買」直接結帳或移除。</li>
+      <li>0 則評價時隱藏評分卡；移除不會保存的收藏與「有幫助」；LINE 改客服 Email；價格改 NT$ 格式。</li>
+      <li>頁籤改為單頁分段，相關推薦固定在頁尾；售完頁加替代商品。</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <h3>之後：提升客單價與信任</h3>
+    <ul>
+      <li>內著 3 件、5 件任選價；濕巾多片裝。</li>
+      <li>每件內著補拍腰頭、底襠、布料近拍與色卡，統一 Ivory Studio 風格；規格卡加布料成分。</li>
+      <li>建立購買後邀請評價流程。</li>
+      <li>商品頁各自的分享標題與圖片，商品加入 sitemap。</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>本次未確認</h2>
+  <div class="note">
+    <ul>
+      <li>原廠文件（NAS <code>saengak_kr</code>）本次沒有重新讀取；純素證書效期、Dermatest 範圍、無專利文件、慕斯 pH 不符等，引用 2026-10-15 的比對紀錄。</li>
+      <li>沒有登入 Shopify 後台，404 的原因（舊檔被刪）是推測。</li>
+      <li>凝膠是否可置入使用、「可沖散」、「收腹」等宣稱，需要原廠文件；法規判斷請由熟悉台灣化粧品與商品標示規範的人確認。</li>
+      <li>畫面確認以正式站桌機與 375 px 手機各抽查兩件商品；其餘商品依 Storefront API 資料判斷。</li>
+    </ul>
+  </div>
+</section>
+
+</div>

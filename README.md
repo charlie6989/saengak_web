@@ -5,7 +5,9 @@ LUCISSI CARE 電商網站；Git repository 保留歷史名稱 `saengak_web`。�
 ## 接手入口
 
 - [項目記憶](docs/PROJECT_MEMORY.md)：架構、品牌與網域決策、素材紀錄及操作邊界。
-- [目前狀態](docs/PROJECT_STATUS.md)：2026-10-15 同步範圍、驗證結果與待處理事項。
+- [目前狀態](docs/PROJECT_STATUS.md)：各階段進度、驗證結果與待處理事項。
+- [Shopify 商品資料紀錄](docs/shopify/README.md)：後台修改內容、資料來源與商品快照。
+- [Shopify 後台維護手冊](docs/SHOPIFY_ADMIN_RUNBOOK.md)：後台自動化做法、踩過的坑與原廠資料（NAS）位置。
 - [專案指引](AGENTS.md)：後續協作的閱讀入口。
 - [環境變數範本](.env.example)：僅含名稱與範例，不含真實金鑰。
 

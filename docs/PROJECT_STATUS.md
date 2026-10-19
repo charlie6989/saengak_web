@@ -2,6 +2,12 @@
 
 更新日期：2026-10-19（Asia/Taipei）。最新工作為商品 SEO 標題與說明（網站改讀 SEO 欄位）、Shopify 商品類別補齊、組合商品主圖改為單支凝膠與 #19 尺寸更正、商品尺寸表改用原廠尺寸圖數值、零庫存停止下單與商品標籤／類別修正；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
 
+## 工作成果整理進 repo（2026-10-19，分支 `claude/consolidate-product-work`）
+
+- 把只存在本機暫存區的內容整理進 Git：`docs/shopify/`（商品快照、改名／副標／失效圖替換、尺寸表來源、類別、SEO 紀錄與索引）、`docs/SHOPIFY_ADMIN_RUNBOOK.md`（後台操作做法與 NAS 原廠資料位置）、`docs/audits/2026-10-18-product-detail-audit.html`（商品頁檢視報告）。
+- 新增 `scripts/shopify-product-snapshot.mjs`（Storefront 唯讀匯出，已執行產生 27 件快照）與 `scripts/nas-readonly.mjs`（NAS 唯讀 ls／find／stat／get，連線設定從本機 env 與 Keychain 讀取，不含任何帳密或主機位址）。兩者都已實際執行確認可用。
+- README 與 `PROJECT_MEMORY.md` 加上索引。
+
 ## 商品 SEO 標題與說明（2026-10-19，分支 `claude/product-seo-fields`）
 
 - 程式：網站原本完全沒讀 Shopify 的 SEO 欄位，商品頁標題用品名，也沒有逐商品的 meta 說明。現在 `src/lib/shopify.ts` 會讀 `seo { title description }`；新增的 `src/lib/productMeta.ts` 讓商品頁的分頁標題、`meta[name=description]` 與 `og:description` 優先使用 SEO 欄位，沒填時退回品名與說明摘要（120 字），離開商品頁時還原成網站預設。`api/share/product.ts` 的社群分享預覽也改成優先使用 SEO 欄位。

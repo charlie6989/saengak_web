@@ -1,0 +1,1180 @@
+{
+ "date": "2026-10-18",
+ "method": "Chrome 已登入 Shopify 後台（使用者授權），每筆寫入前在頁面比對雜湊；Storefront API 回讀 25/25 一致",
+ "renames": [
+  {
+   "no": 1,
+   "productId": "7810527723587",
+   "from": "透氣親膚純棉三角褲",
+   "to": "雲朵純棉中腰三角褲"
+  },
+  {
+   "no": 2,
+   "productId": "7811017441347",
+   "from": "細帶純棉無痕女內褲",
+   "to": "側邊細帶純棉三角褲"
+  },
+  {
+   "no": 3,
+   "productId": "7811020030019",
+   "from": "細帶純棉無痕女內褲",
+   "to": "雙細帶高衩純棉三角褲"
+  },
+  {
+   "no": 4,
+   "productId": "7811021570115",
+   "from": "細帶純棉無痕女內褲",
+   "to": "螺紋低腰純棉比基尼褲"
+  },
+  {
+   "no": 5,
+   "productId": "7811040182339",
+   "from": "透氣親膚純棉三角褲",
+   "to": "法式蕾絲滾邊純棉三角褲"
+  },
+  {
+   "no": 7,
+   "productId": "7811043393603",
+   "from": "涼感冰絲無痕內褲",
+   "to": "冰絲無痕中腰三角褲"
+  },
+  {
+   "no": 16,
+   "productId": "7811216998467",
+   "from": "涼感冰絲無痕內褲",
+   "to": "冰絲無痕波浪邊三角褲"
+  },
+  {
+   "no": 18,
+   "productId": "7811245015107",
+   "from": "涼感冰絲無痕內褲",
+   "to": "冰絲無痕平口安全褲"
+  },
+  {
+   "no": 20,
+   "productId": "7812559405123",
+   "from": "涼感冰絲無痕內褲",
+   "to": "網紗冰絲中腰三角褲"
+  },
+  {
+   "no": 17,
+   "productId": "7811229483075",
+   "from": "高腰無痕收腹內褲",
+   "to": "高腰蕾絲無痕內褲",
+   "date": "2026-10-19",
+   "reason": "品名不用「收腹」"
+  }
+ ],
+ "subtitles": [
+  {
+   "no": 1,
+   "productId": "7810527723587",
+   "title": "雲朵純棉中腰三角褲",
+   "from": "100% 純棉雙層底襠 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "中腰｜純棉雙層底襠｜蝴蝶結腰頭"
+  },
+  {
+   "no": 2,
+   "productId": "7811017441347",
+   "title": "側邊細帶純棉三角褲",
+   "from": "100% 純棉雙層底襠 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "低腰半包臀｜側邊細帶｜純棉雙層底襠"
+  },
+  {
+   "no": 3,
+   "productId": "7811020030019",
+   "title": "雙細帶高衩純棉三角褲",
+   "from": "100% 純棉雙層底襠 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "高衩半包臀｜雙細帶側腰｜純棉雙層底襠"
+  },
+  {
+   "no": 4,
+   "productId": "7811021570115",
+   "title": "螺紋低腰純棉比基尼褲",
+   "from": "100% 純棉雙層底襠 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "低腰比基尼｜螺紋布面｜純棉雙層底襠"
+  },
+  {
+   "no": 5,
+   "productId": "7811040182339",
+   "title": "法式蕾絲滾邊純棉三角褲",
+   "from": "無痕冰絲 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "蕾絲滾邊腰頭與褲口｜純棉雙層底襠｜M–XL"
+  },
+  {
+   "no": 6,
+   "productId": "7811041820739",
+   "title": "蕾絲邊高腰純棉三角褲",
+   "from": "100% 純棉雙層底襠 | 高腰暖腹提臀 | 柔軟親膚透氣",
+   "to": "高腰｜蕾絲邊｜純棉雙層底襠"
+  },
+  {
+   "no": 7,
+   "productId": "7811043393603",
+   "title": "冰絲無痕中腰三角褲",
+   "from": "無痕冰絲 | 中腰性感貼合 | 柔軟親膚透氣",
+   "to": "中腰｜冰絲無痕切邊｜M–XL（至 77.5 kg）"
+  },
+  {
+   "no": 8,
+   "productId": "7811049881667",
+   "title": "純棉高腰舒適內褲",
+   "from": "100% 純棉雙層底襠 | 高腰暖腹提臀 | 柔軟親膚透氣",
+   "to": "高腰｜純棉無縫｜素色與印花"
+  },
+  {
+   "no": 9,
+   "productId": "7811057942595",
+   "title": "純棉高腰防漏生理褲",
+   "from": "100% 純棉雙層底襠 | 高腰暖腹提臀 | 柔軟親膚透氣",
+   "to": "高腰｜前後加長防漏層｜L–XXL"
+  },
+  {
+   "no": 11,
+   "productId": "7811151855683",
+   "title": "親膚安全私密除毛刀",
+   "from": "人體工學防刮傷刀頭 | 專為私密輪廓設計 | 輕巧便攜防水",
+   "to": "比基尼線修整｜安全護網刀頭｜附保護蓋"
+  },
+  {
+   "no": 13,
+   "productId": "7811155198019",
+   "title": "舒適純棉透氣內褲",
+   "from": "100% 純棉雙層底襠 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "字母寬腰頭｜純棉雙層底襠｜單一尺寸 M（40–55 kg）"
+  },
+  {
+   "no": 15,
+   "productId": "7811204743235",
+   "title": "隱形中腰無痕女內著",
+   "from": "無痕冰絲 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "中腰｜無痕熱壓切邊｜雙層底襠"
+  },
+  {
+   "no": 16,
+   "productId": "7811216998467",
+   "title": "冰絲無痕波浪邊三角褲",
+   "from": "無痕冰絲 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "冰絲無痕｜波浪切邊｜單一尺寸"
+  },
+  {
+   "no": 17,
+   "productId": "7811229483075",
+   "title": "高腰無痕收腹內褲",
+   "from": "無痕冰絲 | 高腰暖腹提臀 | 柔軟親膚透氣",
+   "to": "高腰｜蕾絲邊｜雙層底襠"
+  },
+  {
+   "no": 18,
+   "productId": "7811245015107",
+   "title": "冰絲無痕平口安全褲",
+   "from": "無痕冰絲 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "平口安全褲｜冰絲無痕｜裙裝內搭"
+  },
+  {
+   "no": 19,
+   "productId": "7811931373635",
+   "title": "乾爽透氣運動內衣",
+   "from": "無鋼圈零束縛 | 寬肩帶提托穩定 | 全方位透氣包覆",
+   "to": "無鋼圈｜寬肩帶｜可拆式胸墊"
+  },
+  {
+   "no": 20,
+   "productId": "7812559405123",
+   "title": "網紗冰絲中腰三角褲",
+   "from": "無痕冰絲 | 低腰性感貼合 | 柔軟親膚透氣",
+   "to": "中腰｜網紗冰絲｜波浪切邊"
+  },
+  {
+   "no": 25,
+   "productId": "7829163966531",
+   "title": "Saengak 益生菌舒緩養膚組",
+   "from": "私密凝膠 1 入 + 養膚濕巾 2 入｜微生態雙效舒緩特惠組",
+   "to": "舒緩凝膠 1.8 g ×1＋養膚濕巾 ×2"
+  },
+  {
+   "no": 26,
+   "productId": "7829164752963",
+   "title": "Saengak 潔淨調理舒緩組",
+   "from": "潔淨慕斯 160ml + 舒緩凝膠 1.8g｜溫和清潔與深度滋潤",
+   "to": "潔淨慕斯 160 ml ×1＋舒緩凝膠 1.8 g ×1"
+  },
+  {
+   "no": 27,
+   "productId": "7829164785731",
+   "title": "Saengak 全效微生態修護組",
+   "from": "潔淨慕斯 + 凝膠 2 入 + 濕巾 3 入｜全方位極致奢寵防護",
+   "to": "潔淨慕斯 160 ml ×1＋舒緩凝膠 1.8 g ×2＋養膚濕巾 ×3"
+  }
+ ],
+ "brokenContentImages": {
+  "count": 96,
+  "rule": "依圖片內容挑同商品相簿或描述中仍存在的圖；略過私處／臀部特寫、文字字卡、7A 貼紙、CHANEL 道具；#15、#20 只有主圖與第二張可用，依使用者決定重複使用",
+  "items": [
+   {
+    "productId": "7810527723587",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_22172717.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02___221727_2b1b00df-f594-445e-ac82-06fd407f8c5c.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7810527723587",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/07_22172718.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_04___22172715_ea32e28d-2912-43eb-b923-fd7d21199068.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7810527723587",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02___221727.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_22172716_a684aa80-581f-408f-8992-317a4b8fdd4d.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7810527723587",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_04___22172715.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_22172717_472b5e85-c4a3-4c98-abab-f35a00094d13.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7810527723587",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_40f0db01-d168-4b0f-af09-eca1fbdc714e.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/07_22172718_366c350a-5965-46e8-bee1-1b8651558a32.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811017441347",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_722401d4-609c-4685-ae6f-a29af728d64f.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_154935.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811017441347",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_49971252-4c96-4acf-9cb8-afbf22e3f0d6.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_15493517.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811017441347",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_c6febb1c-466a-4e3e-b882-453f40c0b5a1.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_15493519.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811017441347",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_efa7c3b6-e80c-4638-b7c2-cd7cff7f5882.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-02.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811017441347",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_f160e51d-b312-48eb-878e-57bc6cda73be.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_45f7b315-6c9a-4ab9-917d-0f54f37230b2.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811020030019",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_15101917.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246828267_162408_e8e4ba44-ec77-4415-8911-93ba331d4e22.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811020030019",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_15101918.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246831949_f86773ea-4a74-4c90-9889-b4056a59e654.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811020030019",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246828267_162408.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_151019_1358f6a1-dc3b-4a78-af2b-fbbf6ee4192a.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811020030019",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246831949.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_15101917_88b4aa4c-ab88-4067-a952-c9d635fe0c94.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811021570115",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_b913380c-f8c0-4503-897f-021f01160efd.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_57927a59-c0af-45b9-bab7-7f4f9a85927c.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811021570115",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_21a23643-d641-4435-bdf8-8d87b701bad8.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_486d0058-702e-465e-8444-f3cca652a2e4.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811021570115",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_a80e8b89-2ece-44a8-9da5-1487661e8c5c.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_a62456bb-85fe-4a1f-a387-0b479e2c6245.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811021570115",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_a4352b41-7b59-45b3-a03e-0dc983ff59a2.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_7510c392-7756-4177-9535-4f1347539d38.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811021570115",
+    "productTitleAtTime": "細帶純棉無痕女內褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_605a5af7-ff68-4562-b1f1-ed8570157b09.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_e51b1135-c14b-432e-aa94-f83aed507654.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811040182339",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_7b654b10-cc57-4a00-89a3-7ed0623a350a.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_577d84bc-2d76-4497-93ea-7d4ed99ca60b.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811040182339",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_9ec8ed08-a356-4106-a86c-85fc0b613c74.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_b76dbc36-0cab-40c7-bc3b-6bdfae5ee5e3.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811040182339",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_b5cfa2f4-6243-45e5-878c-2223ac87def1.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_bbbf9f9a-d3eb-46ca-bbcf-aef350a0cd62.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811040182339",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_5b9274da-4b8f-4227-9cda-ac7889256863.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_d375208e-7297-40f8-8bcb-148d3c3c7b53.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811040182339",
+    "productTitleAtTime": "透氣親膚純棉三角褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_04_dc45a793-ad24-4e16-aeff-8f850e280088.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_53b55801-c69a-4aae-be83-51a2d1726e83.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811041820739",
+    "productTitleAtTime": "蕾絲邊高腰純棉三角褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_16271034_3e903289-bc70-422f-b103-bcc8bd66fb71.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_162710_b7b37f42-6e51-4bfc-952e-e3461c225562.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811041820739",
+    "productTitleAtTime": "蕾絲邊高腰純棉三角褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_16271035.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16271033_dcafd81a-a235-42fa-a3ec-a2a8e2aba5d4.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811041820739",
+    "productTitleAtTime": "蕾絲邊高腰純棉三角褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_162710.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_16271034_787bf4e5-ccab-4814-83c4-8c477807c24d.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811041820739",
+    "productTitleAtTime": "蕾絲邊高腰純棉三角褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16271033_2e605ee1-3832-4852-9719-e0065b6e9492.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_16271035_efa9ecbc-73d6-416d-af6e-aab5c26d3e13.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811043393603",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_a2b272aa-f3f0-43d5-9af5-ca9fb268cff7.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_1bd715a0-cc28-422b-a663-9bcbcc7bf1d2.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811043393603",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_05ac8954-77d4-43fb-9d92-1c2589e3a4ce.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_6a21c35b-3d8c-4bf6-ad1a-e5b64d3bcce7.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811043393603",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_78223d5a-412f-4165-9e02-75203aa7666b.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_e8fafaaf-bfa3-47a1-9e94-937dd7c6ed78.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811043393603",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_82fe27fb-1028-4bf7-9f62-2e3e91cbba6a.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_0f32e7c3-854d-468e-82c0-436b8d8b493d.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811043393603",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_03_165953.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_e5badd19-60f0-455b-b9e2-8017147ec5c3.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811049881667",
+    "productTitleAtTime": "純棉高腰舒適內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788248732541_154618.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_7afd969a-62c2-4c7f-9f8f-c84ba92641f0.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811049881667",
+    "productTitleAtTime": "純棉高腰舒適內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_9c80bec7-c82d-4708-8d2e-beae62896642.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_e87999f2-a99f-4bcd-9d8f-4dc9131168f2.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811049881667",
+    "productTitleAtTime": "純棉高腰舒適內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_02e610ac-8224-4ddb-9f29-725da160466a.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_65db80e5-4382-4e9f-8091-c29bfa38e6a2.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811049881667",
+    "productTitleAtTime": "純棉高腰舒適內褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_188761d4-a3a3-4e0f-815e-8c781ff376ce.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_15392715.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811057942595",
+    "productTitleAtTime": "純棉高腰防漏生理褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_34a9c274-6ff4-4a8c-b7df-7df97ba9a145.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_abc55505-bcba-479a-bfcc-d194dc303c86.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811057942595",
+    "productTitleAtTime": "純棉高腰防漏生理褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_1521175.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_7b0252c7-a8a8-47f8-b5ce-298558515e31.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811057942595",
+    "productTitleAtTime": "純棉高腰防漏生理褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/07_947ddc3e-ec36-4e1c-afed-bc2b73071441.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_cd81a67f-8332-4909-8aa3-1bd51a93d397.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811057942595",
+    "productTitleAtTime": "純棉高腰防漏生理褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/Gemini_Generated_Image_inl91yinl91yinl9.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_10b9288c-bcf3-47ae-8ff7-b82c9214a85f.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811130785859",
+    "productTitleAtTime": "MEDION 私密淨化凝膠",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "益生菌發酵成分・溫和日常保養",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_d8508334-ab99-48c4-9280-249378f46420.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_4ba5441d-cd6f-41b5-a9b6-1e7772c73880.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811130785859",
+    "productTitleAtTime": "MEDION 私密淨化凝膠",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "玻尿酸鈉保濕・清爽不黏膩",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_701323de-b65f-4b9b-93a4-2d0854028a23.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_539705bb-1175-43a9-88e1-1f0f4108ad56.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811130785859",
+    "productTitleAtTime": "MEDION 私密淨化凝膠",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "單支獨立包裝・隨開即用",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_44ba6bd9-a5eb-481f-a565-1c4195bc1142.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_098f498f-fb8a-4bcf-8a84-b55cac57aeb5.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811130785859",
+    "productTitleAtTime": "MEDION 私密淨化凝膠",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "圓弧推管前端・附保護蓋",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_423e1dfc-40ea-4f8d-ab7e-30320d0bf756.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_d38fdfd3-e6c0-413b-b566-4467d99c4ec4.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811130785859",
+    "productTitleAtTime": "MEDION 私密淨化凝膠",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "蛇床子萃取與甘草酸二鉀・無香料配方",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_89f213eb-ff6e-4b11-86f0-636aed0fb328.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_f8fea395-ff82-46e1-9733-28faee5121ec.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811151855683",
+    "productTitleAtTime": "親膚安全私密除毛刀",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "微距安全防護刃・告別刮傷刺痛感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_82020204-9dda-4827-b464-c2bc5bded8ee.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/aiease_1788246307754_829041d0-f301-4cd7-8743-bf3ab94a367c.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811152674883",
+    "productTitleAtTime": "精緻內著專用清洗護衣袋",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "立體骨架保護罩杯・告別鋼圈扭曲凹陷",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_b9cbdeba-1428-49fd-b60c-548004d7c539.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_165158_0a5f5165-8def-4de2-b893-348470c956b0.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811152674883",
+    "productTitleAtTime": "精緻內著專用清洗護衣袋",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "自鎖安全隱藏拉鍊・絕不勾傷昂貴衣物",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_b1aa8895-1364-4656-8cbc-95e197824460.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_02_16515842_cc71f089-1a23-46db-9c0b-2a0cbaa237ae.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811152674883",
+    "productTitleAtTime": "精緻內著專用清洗護衣袋",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "高耐磨三層立體織造・耐扯耐機洗",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_6769bd24-ae40-4596-ba08-eedfe7763922.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_16515843_689d84bf-c08b-4876-818a-3ceec014bb15.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811155198019",
+    "productTitleAtTime": "舒適純棉透氣內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_388247ad-61f3-4e9b-81b0-3f2893c1ed33.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_05_0b06eb06-a2c5-4891-9e22-f1395e2a4e83.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811155198019",
+    "productTitleAtTime": "舒適純棉透氣內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_94391e5e-f2b7-4259-a370-4dbcf7c0aad0.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_5726ddb9-eada-489d-98fd-8c076dfa805c.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811155198019",
+    "productTitleAtTime": "舒適純棉透氣內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_60a41892-b33b-47d8-9e0e-774e8f0759d1.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_b8715399-dc6b-423a-afd5-add08ce5d3db.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811155198019",
+    "productTitleAtTime": "舒適純棉透氣內褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_05_5e5c2e64-9869-47c1-9463-7490649c56bd.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_c8471f50-a554-46ab-925c-f12ee4d6a779.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811155198019",
+    "productTitleAtTime": "舒適純棉透氣內褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/SKU_01_239b1efe-b0fe-4785-8fa4-fd4e4fd16d7c.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_bde72b2d-58df-433a-af03-67ced1179bda.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811204743235",
+    "productTitleAtTime": "隱形中腰無痕女內著",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_17322653.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-15.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811204743235",
+    "productTitleAtTime": "隱形中腰無痕女內著",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_f623c913-a20e-4e53-b9b9-5fbff9b9110f.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/15.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811204743235",
+    "productTitleAtTime": "隱形中腰無痕女內著",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_173226.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-15.jpg",
+    "reusedImage": true
+   },
+   {
+    "productId": "7811204743235",
+    "productTitleAtTime": "隱形中腰無痕女內著",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_0d040a59-036c-4f0d-9380-f401d9dcc341.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/15.jpg",
+    "reusedImage": true
+   },
+   {
+    "productId": "7811204743235",
+    "productTitleAtTime": "隱形中腰無痕女內著",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/07_0ebe2551-474c-4d63-93e9-03a978db7aff.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-15.jpg",
+    "reusedImage": true
+   },
+   {
+    "productId": "7811216998467",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_ad96933b-5d13-4195-945f-7fde2b717b66.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_880ffa34-59a3-48e4-b5a4-794516d99ab0.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811216998467",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_8d771be4-bdb7-4975-b9de-b44c3431d6ec.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_77116c69-cedd-4c11-a7fa-13d7d0c47632.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811216998467",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_0e4456f9-1811-44a7-b27d-e3c942911276.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811216998467",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_8201b435-552a-4bb6-8223-dca57efaa7d7.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_7c26b834-41fc-45cf-8783-506a97042d81.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811216998467",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_24ea6fc1-3ba4-4b46-a54c-657197cb8ef1.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_cb56699e-4ec8-44bd-b404-df09050939b3.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811229483075",
+    "productTitleAtTime": "高腰無痕收腹內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_16463639_6fdaa768-7e44-49dd-8b3c-a25309a9e5f6.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_164636_aeb15439-089d-4396-a8b1-a2a3ad0ba374.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811229483075",
+    "productTitleAtTime": "高腰無痕收腹內褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16463638_db68dc06-a27c-44b7-9345-41b2659dcef2.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_16463638_6a7ec47e-05c8-4b70-9938-d415fb23ea65.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811245015107",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_1433051.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_1433051_13860def-7398-4b69-8935-1d3a1a77d875.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811245015107",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_143306.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_1433051_1693af68-8468-43b8-bc08-eb6c654d8e99.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811245015107",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_1433062.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_143306_19c13393-3923-4ecb-b7d9-a380cc49dbbf.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811245015107",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_1433063.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_1433062_04545dc5-0fe7-408f-8992-17fc5ad9b835.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811931373635",
+    "productTitleAtTime": "乾爽透氣運動內衣",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "無鋼圈點膠支撐・輕盈提托零束縛感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_5258076b-74a2-426f-a014-ac86351faee7.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_9446da05-f724-4dbc-b7ce-d1286454355a.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811931373635",
+    "productTitleAtTime": "乾爽透氣運動內衣",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "高透氣蜂巢微孔杯・全日乾爽不悶熱",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_f1f72e2f-9fbe-45cd-a3b9-f116443d222b.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_7be539ae-fd06-4df8-a32a-645e9558ba4b.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811931373635",
+    "productTitleAtTime": "乾爽透氣運動內衣",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "立體收攏副乳・塑造流暢優美美背線條",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_cfcf9fe9-af67-4fca-a768-f2856dc829ee.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_e9be31a4-def0-4a80-83ae-2d1f8871acf5.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811931373635",
+    "productTitleAtTime": "乾爽透氣運動內衣",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "無痕貼合熱壓收邊・親膚平滑無摩擦",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_ad8f4d2a-1855-487a-9a3b-8157f8e5f4c8.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_21d13fbb-be93-4f0b-b32f-6b6fb3e8b76a.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7811931373635",
+    "productTitleAtTime": "乾爽透氣運動內衣",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "高彈力絲滑面料・回彈性佳不易變形",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_3feef2e3-0dac-451d-b691-2888923ae906.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_ef79afd8-d771-4b2d-928e-0a3b87ccbe53.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7812559405123",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "雙層純棉底襠・細心呵護私密處",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_8db3991e-56a4-4e2e-8d64-c7f2c737bc2c.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-20.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7812559405123",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "透氣親膚立體面料・宛如第二層肌膚",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_aae63d31-1536-48ce-93e4-d4080ffcd552.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/20.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7812559405123",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "耐穿耐洗彈力持久・無痕收邊不易勒肉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_84a28db8-9e73-4b77-a397-58f79145097c.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-20.jpg",
+    "reusedImage": true
+   },
+   {
+    "productId": "7812559405123",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "人體工學立體剪裁・服貼包臀不夾襠",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_9eae69a5-0c09-4d0c-af11-802c310cf3d3.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/20.jpg",
+    "reusedImage": true
+   },
+   {
+    "productId": "7812559405123",
+    "productTitleAtTime": "涼感冰絲無痕內褲",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "精緻平整車縫收邊・減少肌膚摩擦感",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_5fd80e31-1d37-44c4-a708-696484ad3177.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/second-20.jpg",
+    "reusedImage": true
+   },
+   {
+    "productId": "7819899994179",
+    "productTitleAtTime": "Saengak 平衡調理私密潔淨慕斯",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "細緻泡沫・溫柔洗淨",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_ef0c1c74-a11c-4c6b-bdc7-b055615301cd.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_24c28a84-e7ba-4012-bc2e-5a5788591234.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819899994179",
+    "productTitleAtTime": "Saengak 平衡調理私密潔淨慕斯",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "弱酸性 pH 5.5・洗後不乾澀",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_c249eeb4-d05a-4822-82c1-f0a105905cde.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_5481c8ab-d251-4408-aa7f-57a0c3026bb1.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819899994179",
+    "productTitleAtTime": "Saengak 平衡調理私密潔淨慕斯",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "無香料配方・早晚日常使用",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_2b616e1d-c48b-4d60-a866-408440011636.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_1b5a2511-b236-48a5-ac02-d246c8cff422.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819899994179",
+    "productTitleAtTime": "Saengak 平衡調理私密潔淨慕斯",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "按壓式泡沫瓶・一按即出泡沫",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_c841681f-88f5-42cd-96f7-d5302fd997e1.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_ef9a931c-83a3-4c94-bba1-e885efaea94b.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819899994179",
+    "productTitleAtTime": "Saengak 平衡調理私密潔淨慕斯",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "蛇床子萃取與甘草酸二鉀・溫和潔淨",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_bbe10588-4082-44bd-924c-2bd895ffbc55.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e95335cf-c9c4-4d79-947b-674e60a91ae0.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819900551235",
+    "productTitleAtTime": "Saengak 益生菌私密養膚濕巾",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "益生菌發酵成分・溫和擦拭",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_a216aa2e-d0f1-4066-9ef6-6e9892b3a499.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_00d17e59-e019-405d-bd0b-5041ff0e0eb4.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819900551235",
+    "productTitleAtTime": "Saengak 益生菌私密養膚濕巾",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "可沖散材質・用完直接沖掉",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_31eb17eb-1195-4f70-bb41-ef4ffc07fee4.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_c3f3ce3d-1932-4d25-a30b-3676806eb44d.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819900551235",
+    "productTitleAtTime": "Saengak 益生菌私密養膚濕巾",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "弱酸性 pH 5.5・單片獨立包裝",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_bcd11410-bd97-491e-bf57-0e5f2cb966e9.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e240cc3d-2e21-45c0-adb5-bd709a381e72.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819900551235",
+    "productTitleAtTime": "Saengak 益生菌私密養膚濕巾",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "柔軟可沖散不織布・擦拭不拉扯",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_1f080a1d-1719-4546-881d-65e5e9c43729.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_8987cd3e-01a4-412e-837b-3221a7477ec4.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819900551235",
+    "productTitleAtTime": "Saengak 益生菌私密養膚濕巾",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "單片獨立包裝・方便攜帶",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/11.png",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/22-single.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819995545667",
+    "productTitleAtTime": "Saengak 私密雙層修護精華噴霧",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 0,
+    "cardTitle": "水油雙層・搖勻即用",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_f0255fc5-77e6-4222-8972-aa385bbfee30.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_e7742379-2812-46ac-9cb2-de9072a99053.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819995545667",
+    "productTitleAtTime": "Saengak 私密雙層修護精華噴霧",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 1,
+    "cardTitle": "細緻噴霧・清爽不黏膩",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_78ab0a68-b3f1-48fd-a69f-f7ee56579326.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_6e536597-5069-4606-b90d-a169c2b27691.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819995545667",
+    "productTitleAtTime": "Saengak 私密雙層修護精華噴霧",
+    "metafield": "custom.lifestyle_showcase",
+    "slot": 2,
+    "cardTitle": "聖羅勒葉萃取・清新淡雅",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_e5bb766d-5773-4602-ab57-7d2cf1c2f344.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_c1583ff0-2b41-4b6f-8ea1-ef005e76aa80.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819995545667",
+    "productTitleAtTime": "Saengak 私密雙層修護精華噴霧",
+    "metafield": "custom.craft_details",
+    "slot": 0,
+    "cardTitle": "隨身噴霧瓶・輕巧好攜帶",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_b29ef5a5-d4e6-4aa5-9ca7-cb03bba62a7c.jpg",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/06_86c1bb87-1875-4b19-a280-d622d3fe8fd9.jpg",
+    "reusedImage": false
+   },
+   {
+    "productId": "7819995545667",
+    "productTitleAtTime": "Saengak 私密雙層修護精華噴霧",
+    "metafield": "custom.craft_details",
+    "slot": 1,
+    "cardTitle": "水油雙相配方・使用前搖勻",
+    "brokenUrl": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/07_e1df2ce9-7428-4f98-9f5d-b4c17654a50d.png",
+    "replacedWith": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/10_a99d31c8-7881-404f-859e-e88d42a477b9.png",
+    "reusedImage": false
+   }
+  ]
+ },
+ "notes": [
+  "#11 除毛刀情境圖文第三段曾誤存為「瀕水孔」，回讀後改回「瀝水孔」",
+  "網址 handle 未改"
+ ]
+}
