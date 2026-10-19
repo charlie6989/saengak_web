@@ -41,8 +41,8 @@
 
 ### B. 全家店到店取貨付款（COD）
 
-1. **使用者**：ShipAny 後台提交銀行資料申請 COD，等審核通過。
-2. **使用者**：訂閱「物流服務點列表」，取得門市列表／選店 API 文件與金鑰；金鑰由使用者放進 Vercel 環境變數。
+1. **使用者**：ShipAny 後台提交銀行資料申請 COD，等審核通過。2026-10-20 唯讀查看：帳號設定與「付款 → 運費及計畫」都沒有 COD 申請或貨到付款紀錄頁面，尚未開通；申請方式依 ShipAny 來信或洽客服。
+2. **使用者**：訂閱「物流服務點列表」，取得門市列表／選店 API 文件與金鑰；金鑰由使用者放進 Vercel 環境變數。2026-10-20「附加功能」頁顯示「沒有可用的附加功能」，與 ShipAny 說約 10/30 開放自助訂閱相符，到時再看。
 3. **使用者決定**：全家店到店運費、是否適用滿額免運、COD 是否另收手續費或有金額上限。
 4. **Claude**：依 ShipAny 文件實作前台全家選店，並以 Shopify Cart API 寫入門市代碼（欄位依 ShipAny 規格）；在 Shopify 新增「全家店到店」運費；把 FAQ、商品頁配送標籤、隱私權政策（ShipAny 資料項目）改回包含超商取貨，同步調整 `verify-public-content.mjs` 的防回歸字樣。
 5. **同步條件（已確認）**：2026-10-20 使用者登入 ShipAny（portal-tw.shipany.io）後，Claude 唯讀查看「電子商務 → Shopify」。帳號連了三間商店：
@@ -54,6 +54,11 @@
      2. 「宅配（黑貓常溫）」：運送到台灣 → 黑貓宅急便常溫，上門取件，寄方付款。
      儲存後重新載入回讀：CARE 為進階模式並指向此設定檔，兩條規則內容如上；母站與 `mfwqtn-uy` 未變。
 6. **使用者決定＋Claude 設定（阻擋條件）**：限制貨到付款只能搭配全家店到店。Shopify 啟用的手動付款方式對所有運送方式都會出現。CARE 是 Basic 方案，Shopify 規定含 Function 的自訂 app 只限 Plus，所以不能自建 Payment Customization，要用 App Store 的付款規則 app（任何方案可用）。候選：Payfy: Hide Payment Rules（Basic US$3.99／月可依運送方式隱藏，Premium US$9.99／月另可檢查購物車屬性中的門市代碼）。由使用者選定並安裝（需同意 app 權限與付費），Claude 再設定規則：未選全家店到店時隱藏貨到付款，並實測宅配時看不到 COD。
+   2026-10-20 App Store 比較（價格與功能以商店頁為準，安裝前再確認相容 Basic）：
+   - [Payfy: Hide Payment Rules](https://apps.shopify.com/payfy-conditional-payments)：Basic US$3.99／月、最多 2 條規則；評分 4.9（156 則）、Built for Shopify。建議選這個。
+   - [Easy! Payment Control](https://apps.shopify.com/payment-control)：免費版 1 條規則，可依運送方式隱藏貨到付款，支援繁中；但 0 則評價。
+   - 其他可依運送方式隱藏的：[HidePay](https://apps.shopify.com/hidepay)、[Kip](https://apps.shopify.com/kip-customize-payment-methods)、[ETP](https://apps.shopify.com/etp-hide-sort-payments)。
+   規則只需一條：運送方式名稱不含「全家」時隱藏「貨到付款（Cash on Delivery）」。
 7. **發票偏好（已完成）**：保留 COD 訂單的發票偏好。PR #70 讓訂單成立但未付款時把偏好保存到下單後 120 天，付款建立發票工作後刪除，取消時（含 `orders/updated` 帶 `cancelled_at`）刪除，並加 11 項資料庫測試。2026-10-20 經使用者同意套用到正式 Supabase（版本 `20261019215834`，PR #71 同步檔名）。
 8. **Claude（經同意，在 1–7 完成後）**：在 Shopify 新增手動付款方式「貨到付款（Cash on Delivery）」。
 9. **確認發票時點**：發票目前在訂單付款後開立；COD 訂單要等人工標記已付款才會觸發，需確認這個時點符合營運與稅務要求。
@@ -69,3 +74,4 @@
 
 - ShipAny 第三間商店 `mfwqtn-uy` 是哪個店、同步策略「銷售訂單已創建」是否要保留。
 - 測試訂單 #1010：2026-10-20 ShipAny「全部訂單」列表顯示為「訂單取消」。
+- ShipAny 帳戶可用額度 NT$0、近 3 個月沒有交易紀錄（2026-10-20）。實際建立運單前，確認運費是預付扣款（需先「增值」）還是月結，避免第一張宅配單無法出單。
