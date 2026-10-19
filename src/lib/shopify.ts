@@ -1,4 +1,5 @@
 import { createStorefrontApiClient, type StorefrontApiClient } from '@shopify/storefront-api-client';
+import { normalizeSizeChart, type SizeChart } from '../domain/sizeChart';
 import { captureExceptionSafe } from './sentry';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from './brandOwnership';
 
@@ -65,14 +66,6 @@ export interface MusinsaFitGuide {
   breathability?: string;
 }
 
-export interface SizeChartItem {
-  size: string;
-  waist: string;
-  hips: string;
-  crotch: string;
-  weight: string;
-}
-
 export interface CareSpecs {
   volume?: string;
   texture?: string;
@@ -121,7 +114,7 @@ export interface ShopifyProduct {
   subtitle?: string;
   promotionBadge?: string;
   fitGuide?: MusinsaFitGuide;
-  sizeChart?: SizeChartItem[];
+  sizeChart?: SizeChart;
   careSpecs?: CareSpecs;
   careInstructions?: string[];
   lifestyleShowcase?: LifestyleShowcaseItem[];
@@ -347,7 +340,7 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
   };
 
   const fitGuide = parseJsonMetafield<MusinsaFitGuide>(getMeta('fit_guide', node.fitGuide));
-  const sizeChart = parseJsonMetafield<SizeChartItem[]>(getMeta('size_chart', node.sizeChart));
+  const sizeChart = normalizeSizeChart(parseJsonMetafield<unknown>(getMeta('size_chart', node.sizeChart)));
   const careSpecs = parseJsonMetafield<CareSpecs>(getMeta('care_specs', node.careSpecs));
   const careInstructions = parseJsonMetafield<string[]>(getMeta('care_instructions', node.careInstructions));
   const lifestyleShowcase = parseJsonMetafield<LifestyleShowcaseItem[]>(getMeta('lifestyle_showcase', node.lifestyleShowcase));
