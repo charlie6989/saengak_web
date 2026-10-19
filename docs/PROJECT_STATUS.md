@@ -2,12 +2,12 @@
 
 更新日期：2026-10-19（Asia/Taipei）。最新工作為 MEDION 凝膠內容改寫、商品 SEO 標題與說明（網站改讀 SEO 欄位）、Shopify 商品類別補齊、組合商品主圖改為單支凝膠與 #19 尺寸更正、商品尺寸表改用原廠尺寸圖數值、零庫存停止下單與商品標籤／類別修正；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
 
-## COD 訂單保留發票偏好（2026-10-20，分支 `claude/cod-invoice-preference`）
+## COD 訂單保留發票偏好（2026-10-20，PR #70 已合併並套用正式資料庫）
 
 - 原因：貨到付款訂單要等送達、結算後人工標記已付款才開發票；結帳時的發票偏好（載具、捐贈碼、統編）原本只保存 30 天，超過就退回一般個人發票。這是開啟 COD 前的阻擋條件之一（PR #69 審查意見）。
-- 新增 migration `20261020120000_keep_invoice_preference_until_paid.sql`，只重新定義 `sync_shopify_order_webhook`（參數與其他邏輯不變）：訂單成立但未付款、未取消時，偏好保存到下單後 120 天；付款並建立發票工作後刪除偏好（內容已寫入工作）；訂單取消時刪除偏好，包含只以 `orders/updated` 帶 `cancelled_at` 送來的取消（webhook 會轉成 status = cancelled，PR #70 審查意見）。
+- 新增 migration `20261019215834_keep_invoice_preference_until_paid.sql`，只重新定義 `sync_shopify_order_webhook`（參數與其他邏輯不變）：訂單成立但未付款、未取消時，偏好保存到下單後 120 天；付款並建立發票工作後刪除偏好（內容已寫入工作）；訂單取消時刪除偏好，包含只以 `orders/updated` 帶 `cancelled_at` 送來的取消（webhook 會轉成 status = cancelled，PR #70 審查意見）。
 - 新增 `supabase/tests/database/cod_invoice_preference.test.sql`（11 項）並加入 `npm run test:db`；本機 Supabase 套用後全部 236 項資料庫測試、`verify:supabase`、Vitest 520 項、typecheck 通過。
-- **正式資料庫尚未套用**，需經使用者同意後再執行。
+- 正式資料庫：使用者同意後，2026-10-20 以 MCP `apply_migration` 套用到正式 Supabase `tmqzkagkrzhioftvwbqo`（正式版本 `20261019215834`，檔名由原本的 `20261020120000` 改為同步）。套用前確認正式函式與 `20261016024415` 版本相同（只差本次三處新增），偏好表 0 筆。套用後回讀：函式內容 md5 與本機測試版本一致（`4ca5a5c3e6db5c74011bc2032887b213`），僅 service_role 可執行，anon／authenticated 不可，函式只有一個版本。
 
 ## MEDION 凝膠內容改寫（2026-10-19，分支 `claude/medion-content`）
 
