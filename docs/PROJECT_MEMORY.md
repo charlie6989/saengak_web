@@ -102,6 +102,10 @@
 - NAS 原廠資料用 `scripts/nas-readonly.mjs` 唯讀存取；本 repo 是公開的，不要提交 NAS 主機位址、帳號、Keychain 名稱或下載的原廠檔。
 - 商品頁檢視報告：`docs/audits/2026-10-18-product-detail-audit.html`；各項處理狀態見 `docs/shopify/README.md`。
 
+## 物流與金流（2026-10-20）
+
+- 兩站共用 ShipAny 帳號。全家店到店 COD 依 `docs/LOGISTICS_PAYMENTS_PLAN.md` 推進：Shopify 的「貨到付款」付款方式等 ShipAny COD 審核通過、前台全家選店完成後才新增；COD 收款不會自動回寫 Shopify 已付款，要人工對帳。銀行資料、金鑰與付費訂閱由使用者操作。
+
 ## Git 與交接
 
 - 遠端：`https://github.com/charlie6989/saengak_web.git`；主分支：`main`。
