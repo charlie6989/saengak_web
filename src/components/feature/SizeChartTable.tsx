@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { toInches, type SizeChart } from '../../domain/sizeChart';
+import { hasWeightColumn, toInches, type SizeChart } from '../../domain/sizeChart';
 
 interface SizeChartTableProps {
   chart: SizeChart;
@@ -20,7 +20,9 @@ export default function SizeChartTable({ chart }: SizeChartTableProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <p className="text-xs text-gray-500">
           {chart.note ||
-            '尺寸為參考範圍，實際貼合度依身形與布料彈性而異；介於兩個尺碼之間時，請以選項上標示的建議體重為準。'}
+            (hasWeightColumn(chart)
+              ? '尺寸為參考範圍，實際貼合度依身形與布料彈性而異；介於兩個尺碼之間時，請以表中建議體重為準。'
+              : '尺寸為參考範圍，實際貼合度依身形與布料彈性而異；介於兩個尺碼之間時，建議選大一號。')}
         </p>
         {hasCm && (
           <div className="flex items-center bg-gray-100 p-1 rounded-xl w-fit shrink-0">

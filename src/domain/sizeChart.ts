@@ -57,15 +57,17 @@ export function normalizeSizeChart(raw: unknown): SizeChart | undefined {
   const value = raw as Record<string, unknown>;
   if (!Array.isArray(value.columns) || !Array.isArray(value.rows)) return undefined;
 
-  const columns = value.columns
-    .map((column): SizeChartColumn | null => {
+  // 保留每個有效欄位的原始位置，略過無效欄位時數值才不會錯位到其他欄名下
+  const validColumns = value.columns
+    .map((column, index): { column: SizeChartColumn; index: number } | null => {
       if (!column || typeof column !== 'object') return null;
       const label = text((column as Record<string, unknown>).label);
       const unit = text((column as Record<string, unknown>).unit);
-      return label ? { label, ...(unit ? { unit } : {}) } : null;
+      return label ? { column: { label, ...(unit ? { unit } : {}) }, index } : null;
     })
-    .filter((column): column is SizeChartColumn => column !== null);
-  if (columns.length === 0) return undefined;
+    .filter((entry): entry is { column: SizeChartColumn; index: number } => entry !== null);
+  if (validColumns.length === 0) return undefined;
+  const columns = validColumns.map((entry) => entry.column);
 
   const rows = value.rows
     .map((row): SizeChartRow | null => {
@@ -74,7 +76,7 @@ export function normalizeSizeChart(raw: unknown): SizeChart | undefined {
       const size = text(record.size);
       const values = Array.isArray(record.values) ? record.values.map(text) : [];
       if (!size) return null;
-      return { size, values: columns.map((_, idx) => values[idx] ?? '') };
+      return { size, values: validColumns.map((entry) => values[entry.index] ?? '') };
     })
     .filter((row): row is SizeChartRow => row !== null);
   if (rows.length === 0) return undefined;
@@ -83,8 +85,15 @@ export function normalizeSizeChart(raw: unknown): SizeChart | undefined {
   return { columns, rows, ...(note ? { note } : {}) };
 }
 
-/** 將 cm 數值換算為英吋（保留範圍符號與其他文字） */
+/** 將 cm 數值換算為英吋（保留範圍符號與其他文字，移除數值內的 cm 標記） */
 export function toInches(value: string): string {
   if (!value || value === '-') return value || '-';
-  return value.replace(/\d+(?:\.\d+)?/g, (match) => (parseFloat(match) * 0.3937).toFixed(1));
+  return value
+    .replace(/\s*(?:cm\b|公分)/gi, '')
+    .replace(/\d+(?:\.\d+)?/g, (match) => (parseFloat(match) * 0.3937).toFixed(1));
+}
+
+/** 尺寸表是否有建議體重欄 */
+export function hasWeightColumn(chart: SizeChart): boolean {
+  return chart.columns.some((column) => column.unit === 'kg' || column.label.includes('體重'));
 }
