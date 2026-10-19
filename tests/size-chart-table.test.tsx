@@ -24,4 +24,11 @@ describe('SizeChartTable', () => {
     const chart = normalizeSizeChart({ columns: [{ label: '建議體重', unit: 'kg' }], rows: [{ size: 'M', values: ['40-50'] }] })!;
     expect(renderToString(<SizeChartTable chart={chart} />)).not.toContain('英吋');
   });
+
+  it('only mentions suggested weight in the fallback note when the chart has it', () => {
+    const noWeight = normalizeSizeChart({ columns: [{ label: '腰圍', unit: 'cm' }], rows: [{ size: 'M', values: ['60-68'] }] })!;
+    const withWeight = normalizeSizeChart({ columns: [{ label: '建議體重', unit: 'kg' }], rows: [{ size: 'M', values: ['40-50'] }] })!;
+    expect(renderToString(<SizeChartTable chart={noWeight} />)).not.toContain('體重');
+    expect(renderToString(<SizeChartTable chart={withWeight} />)).toContain('請以表中建議體重為準');
+  });
 });
