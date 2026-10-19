@@ -1,0 +1,30 @@
+{
+ "created": "2026-10-19",
+ "why": "#24 單支凝膠與 #25–27 組合的主圖、第二張原本放整盒 7 支裝凝膠外盒（1.8 g × 7 ea），但商品只含單支（依原價拆算：#25 129 = 89 + 20×2、#26 734 = 645 + 89、#27 883 = 645 + 89×2 + 20×3），且濕巾件數也不符。",
+ "decision": "2026-10-19 使用者指示凝膠圖必須用 NAS 原廠圖、可用 AI 合成；看過 before-after.jpg 後核可上傳，並把舊的外盒圖從商品移除。",
+ "sources": {
+  "gel_pouch": "NAS /saengak_kr/innersaengak image (2).zip → 3.이너생각/이너케어젤2.jpg（原廠商品照：單支包裝袋＋外盒），裁左半、Vision 去背，裁掉右側地面陰影",
+  "wipe_sachet": "同一 zip → 티슈.jpg（原廠商品照：單片＋盒），裁左半去背",
+  "mousse": "同一 zip → 포밍워시.jpg（原廠商品照）去背",
+  "scenes": "Canva 暫存設計 DAHYTPORdmA 第 6／22／23 頁（stone-ledge MAHYTM4PD9w、stone-counter MAHYTMexWX4、oak-shelf MAHYTN5J4YQ）匯出 PNG，即 second/provenance.json 所列 AI 空景"
+ },
+ "method": {
+  "main": "groups.py 組出 1／2 支凝膠並排、2／3 片濕巾錯疊 → scripts/product-images/studio.py 1600 stand；相對高度：慕斯 1、凝膠袋 0.95、濕巾 0.555（依原廠照中與外盒的比例）",
+  "second": "rowpng.py 排成同一底線的透明 PNG → scripts/product-images/scene.py，位置參數沿用 2026-10-18 第二張（24: stone-counter 720 884 610；25: oak-shelf 640 978 530；26: stone-counter 730 884 600；27: stone-ledge 700 992 600）",
+  "pixels": "商品像素皆為原廠照，未經生成模型；AI 只用在空景"
+ },
+ "items": {
+  "24": {"title": "Saengak 益生菌私密舒緩凝膠", "contents": "凝膠 1.8 g ×1", "main": "main-24.jpg", "second": "second-24.jpg"},
+  "25": {"title": "Saengak 益生菌舒緩養膚組", "contents": "凝膠 ×1＋濕巾 ×2", "main": "main-25.jpg", "second": "second-25.jpg"},
+  "26": {"title": "Saengak 潔淨調理舒緩組", "contents": "慕斯 160 ml ×1＋凝膠 ×1", "main": "main-26.jpg", "second": "second-26.jpg"},
+  "27": {"title": "Saengak 全效微生態修護組", "contents": "慕斯 ×1＋凝膠 ×2＋濕巾 ×3", "main": "main-27.jpg", "second": "second-27.jpg"}
+ },
+ "shopify": {
+  "date": "2026-10-19",
+  "method": "Chrome 已登入後台（使用者授權）：代理 file input → 媒體 dropzone → 拖曳到第 1、2 格 → 勾選舊的 <n>.jpg、second-<n>.jpg →「移除」→ 儲存",
+  "uploaded_as": "unit-<n>.jpg（第 1 張）、unit-second-<n>.jpg（第 2 張）",
+  "removed_from_product": "<n>.jpg、second-<n>.jpg（原外盒版，檔案仍在 creative/product-v1/main 與 second）",
+  "readback": "後台 products/<id>.json 與 Storefront API：4/4 第 1、2 張為新圖、舊外盒圖已不在；#24 共 8 張、#25–27 各 6 張；正式站 #27 商品頁顯示新主圖"
+ },
+ "note": "四件目前庫存皆為 0、顯示售完（本來就追蹤庫存，與 2026-10-19 開啟追蹤無關）。"
+}
