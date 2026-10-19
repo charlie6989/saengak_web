@@ -8,7 +8,7 @@
 -- 本次只重新定義 sync_shopify_order_webhook（參數與其他邏輯不變）：
 -- 1. 訂單成立但未付款、未取消時，把對應偏好保存到下單後 120 天。
 -- 2. 付款並建立發票工作後，偏好已寫入工作內容，刪除原始資料。
--- 3. 訂單取消時刪除偏好。
+-- 3. 訂單取消時刪除偏好（含以 orders/updated 帶 cancelled_at 的取消）。
 
 begin;
 
@@ -243,7 +243,12 @@ begin
 
   -- 貨到付款等未付款訂單要等標記已付款才開發票，可能超過偏好原本的 30 天保存期。
   -- 訂單成立但尚未付款時，把偏好保存到下單後 120 天，付款時仍能依結帳時的選擇開立。
-  if p_payment_status <> 'paid' and p_topic <> 'orders/cancelled' and p_status <> 'cancelled' then
+  -- 取消也可能只出現在 orders/updated（cancelled_at 會轉成 status = cancelled），一併刪除偏好。
+  if p_topic = 'orders/cancelled' or p_status = 'cancelled' then
+    delete from private.checkout_invoice_preferences
+    where shopify_store_domain = p_shopify_store_domain
+      and shopify_cart_token = p_shopify_cart_token;
+  elsif p_payment_status <> 'paid' then
     update private.checkout_invoice_preferences
     set expires_at = greatest(expires_at, coalesce(p_shopify_created_at, now()) + interval '120 days'),
         updated_at = now()

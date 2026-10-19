@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(10);
+select plan(11);
 
 -- 貨到付款（COD）：訂單成立時未付款，要等人工標記已付款才開發票。
 -- 發票偏好要保存到那時候，付款建立發票工作後再刪除；取消的訂單也刪除。
@@ -14,7 +14,8 @@ insert into public.shopify_checkout_links (
 ) values
   ('saengak.myshopify.com', 'cod-cart-token-0001', '99999999-9999-4999-8999-999999999991', 'member', '2030-01-01T00:00:00Z'),
   ('saengak.myshopify.com', 'cod-cart-token-0002', '99999999-9999-4999-8999-999999999991', 'member', '2030-01-01T00:00:00Z'),
-  ('saengak.myshopify.com', 'card-cart-token-0001', '99999999-9999-4999-8999-999999999991', 'member', '2030-01-01T00:00:00Z');
+  ('saengak.myshopify.com', 'card-cart-token-0001', '99999999-9999-4999-8999-999999999991', 'member', '2030-01-01T00:00:00Z'),
+  ('saengak.myshopify.com', 'cod-cart-token-0003', '99999999-9999-4999-8999-999999999991', 'member', '2030-01-01T00:00:00Z');
 
 set local role service_role;
 
@@ -138,6 +139,41 @@ select is(
   (select count(*)::int from private.checkout_invoice_preferences where shopify_cart_token = 'cod-cart-token-0002'),
   0,
   'the preference of a cancelled order is deleted'
+);
+
+-- 只以 orders/updated 帶來的取消（status = cancelled）也刪除偏好
+select public.save_checkout_invoice_preference(
+  'saengak.myshopify.com', 'cod-cart-token-0003',
+  '{"kind":"personal","notificationEmail":"cod-updated@example.test","carrier":"none","carrierId":""}'::jsonb
+);
+select public.sync_shopify_order_webhook(
+  p_webhook_id => 'cod-webhook-0005', p_topic => 'orders/create',
+  p_shopify_store_domain => 'saengak.myshopify.com',
+  p_shopify_order_gid => 'gid://shopify/Order/7100000000004',
+  p_shopify_cart_token => 'cod-cart-token-0003', p_order_number => '#3004',
+  p_total_amount => 249, p_currency_code => 'TWD', p_status => 'processing',
+  p_payment_status => 'pending', p_shipping_method => '全家店到店',
+  p_fulfillment_status => 'unfulfilled',
+  p_shopify_created_at => now(), p_shopify_updated_at => now(), p_triggered_at => now(),
+  p_line_items => '[]'::jsonb, p_fulfillments => '[]'::jsonb
+);
+select public.sync_shopify_order_webhook(
+  p_webhook_id => 'cod-webhook-0006', p_topic => 'orders/updated',
+  p_shopify_store_domain => 'saengak.myshopify.com',
+  p_shopify_order_gid => 'gid://shopify/Order/7100000000004',
+  p_shopify_cart_token => 'cod-cart-token-0003', p_order_number => '#3004',
+  p_total_amount => 249, p_currency_code => 'TWD', p_status => 'cancelled',
+  p_payment_status => 'voided', p_shipping_method => '全家店到店',
+  p_fulfillment_status => 'unfulfilled',
+  p_shopify_created_at => now(),
+  p_shopify_updated_at => now() + interval '1 minute',
+  p_triggered_at => now() + interval '1 minute',
+  p_line_items => '[]'::jsonb, p_fulfillments => '[]'::jsonb
+);
+select is(
+  (select count(*)::int from private.checkout_invoice_preferences where shopify_cart_token = 'cod-cart-token-0003'),
+  0,
+  'a cancellation that only arrives as orders/updated also deletes the preference'
 );
 
 -- =============================================================================

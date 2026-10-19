@@ -5,8 +5,8 @@
 ## COD 訂單保留發票偏好（2026-10-20，分支 `claude/cod-invoice-preference`）
 
 - 原因：貨到付款訂單要等送達、結算後人工標記已付款才開發票；結帳時的發票偏好（載具、捐贈碼、統編）原本只保存 30 天，超過就退回一般個人發票。這是開啟 COD 前的阻擋條件之一（PR #69 審查意見）。
-- 新增 migration `20261020120000_keep_invoice_preference_until_paid.sql`，只重新定義 `sync_shopify_order_webhook`（參數與其他邏輯不變）：訂單成立但未付款、未取消時，偏好保存到下單後 120 天；付款並建立發票工作後刪除偏好（內容已寫入工作）；訂單取消時刪除偏好。
-- 新增 `supabase/tests/database/cod_invoice_preference.test.sql`（10 項）並加入 `npm run test:db`；本機 Supabase 套用後全部 235 項資料庫測試、`verify:supabase`、Vitest 520 項、typecheck 通過。
+- 新增 migration `20261020120000_keep_invoice_preference_until_paid.sql`，只重新定義 `sync_shopify_order_webhook`（參數與其他邏輯不變）：訂單成立但未付款、未取消時，偏好保存到下單後 120 天；付款並建立發票工作後刪除偏好（內容已寫入工作）；訂單取消時刪除偏好，包含只以 `orders/updated` 帶 `cancelled_at` 送來的取消（webhook 會轉成 status = cancelled，PR #70 審查意見）。
+- 新增 `supabase/tests/database/cod_invoice_preference.test.sql`（11 項）並加入 `npm run test:db`；本機 Supabase 套用後全部 236 項資料庫測試、`verify:supabase`、Vitest 520 項、typecheck 通過。
 - **正式資料庫尚未套用**，需經使用者同意後再執行。
 
 ## MEDION 凝膠內容改寫（2026-10-19，分支 `claude/medion-content`）
