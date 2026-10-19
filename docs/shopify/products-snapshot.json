@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T05:09:12.174Z",
+ "generatedAt": "2026-10-19T12:09:51.605Z",
  "store": "gh2xgs-zf.myshopify.com",
  "apiVersion": "2025-01",
  "count": 27,
@@ -1961,85 +1961,88 @@
   {
    "id": "7811130785859",
    "handle": "rouxu-7811130785859",
-   "title": "MEDION 私密淨化凝膠",
+   "title": "MEDION 乳酸菌私密保濕凝膠",
    "productType": "女性護理",
    "vendor": "MEDION",
    "tags": [
-    "SAENGAK",
+    "MEDION",
+    "乳酸菌發酵",
+    "保濕",
     "女性護理",
     "弱酸平衡",
-    "益生菌凝膠",
-    "私密保養",
-    "舒緩保濕"
+    "私密保養"
    ],
    "category": {
     "id": "hb-3-8-8",
     "name": "Feminine Moisturizers & Oils"
    },
    "seo": {
-    "title": "益生菌女性私密舒緩修護凝膠 弱酸平衡保濕",
-    "description": "益生菌私密舒緩保濕凝膠，弱酸溫和配方維持私密微生態平衡，單支獨立密封乾淨衛生。"
+    "title": "MEDION 乳酸菌私密保濕凝膠 單支 1.8 g",
+    "description": "韓國製 MEDION Lacto Remedy 私密保濕凝膠，含乳酸桿菌發酵溶胞產物與植物萃取，pH 平衡、不含甘油，單支拋棄式推管，限外陰部使用。"
    },
    "availableForSale": true,
    "totalInventory": 2040,
    "metafields": {
-    "subtitle": "韓國製造｜益生菌發酵成分｜無香料・無色凝膠",
+    "subtitle": "韓國製造｜乳酸桿菌發酵溶胞產物＋植物萃取｜不含甘油",
     "highlights": [
-     "益生菌發酵成分：含乳酸桿菌、乳酸乳球菌、雙歧桿菌發酵溶胞產物",
-     "保濕成分：玻尿酸鈉、大豆胜肽與寡胜肽-191，舒緩私密部位外部乾燥",
-     "無香料、無色的凝膠精華質地，好推開、清爽不黏膩",
-     "單支獨立包裝推管，外出攜帶方便衛生"
+     "乳酸桿菌、雙歧桿菌與乳酸乳球菌三種發酵溶胞產物",
+     "含綠茶、艾草葉、積雪草、金縷梅、茶樹、母菊花等植物萃取與玻尿酸鈉",
+     "pH 平衡配方、不含甘油",
+     "單支獨立包裝＋拋棄式推管，開封後立即使用、不重複使用"
     ],
     "fit_guide": {
-     "fit": "私密護理凝膠 (Intimate Care)",
-     "thickness": "水潤凝膠 (Hydro-Gel)",
-     "elasticity": "溫和無刺激 (Mild & Safe)",
-     "breathability": "清爽保濕 (Hydrating)"
+     "fit": "外陰部保養凝膠 (External Intimate Care)",
+     "thickness": "凝膠 (Gel)",
+     "elasticity": "不含甘油 (Glycerin-free)",
+     "breathability": "保濕 (Moisturizing)"
     },
     "care_specs": {
-     "volume": "單支 1.8 g（原廠盒裝 7 支）",
-     "texture": "無香料、無色凝膠精華",
-     "application": "女性私密部位外部肌膚（不可置入陰道內）",
-     "origin": "韓國",
-     "ingredients": "水、丁二醇、1,2-己二醇、蛇床子萃取、甲基丙二醇、羥乙基纖維素、丙二醇、玉米糖膠、甘油、羥苯乙酮、玻尿酸鈉、檸檬酸、檸檬酸鈉、腺苷、乳酸桿菌發酵溶胞產物、乳酸乳球菌發酵溶胞產物、雙歧桿菌發酵溶胞產物、寡胜肽-191、甘草酸二鉀、大豆胜肽"
+     "volume": "單支 1.8 g（原廠盒裝 20 支）",
+     "texture": "凝膠（不含甘油）",
+     "application": "外陰部肌膚（不可用於陰道內）",
+     "origin": "韓國（製造：M&COS；品牌：MEDION）",
+     "ingredients": "水、丁二醇、甲基丙二醇、羥乙基纖維素、乳酸桿菌發酵溶胞產物、雙歧桿菌發酵溶胞產物、乳酸乳球菌發酵溶胞產物、綠茶萃取、艾草葉萃取、積雪草萃取、北美金縷梅葉萃取、茶樹葉萃取、沙棘果萃取、母菊花萃取、玻尿酸鈉、銀耳萃取、白薇萃取、腺苷、玉米糖膠、1,3-丙二醇、羥苯乙酮、1,2-己二醇、甘草酸二鉀、檸檬酸、檸檬酸鈉、二丙二醇"
     },
     "care_instructions": [
-     "使用前請先洗淨雙手，建議於沐浴後使用。",
-     "撕開包裝，握住推管尾端取出，小心取下前端保護蓋。",
-     "將凝膠塗於私密部位外部肌膚，使用後輕拭多餘凝膠。",
-     "本品不可置入陰道內；如有紅腫或不適，請停止使用並諮詢醫師。"
+     "使用前先洗淨雙手。",
+     "撕開包裝取出推管，取下前端保護蓋。",
+     "將凝膠塗於外陰部肌膚；僅供外陰部使用，不可用於陰道內。",
+     "開蓋後立即使用，用完即丟、不可重複使用。",
+     "有傷口、濕疹或皮膚炎的部位請勿使用；使用中或使用後如出現紅斑、腫脹、搔癢等異常，請停止使用並諮詢醫師。",
+     "懷孕期間建議不要使用，臨盆前請勿用於外陰部周圍；3 歲以下幼兒請勿使用。",
+     "請置於兒童無法取得處，避免陽光直射。"
     ],
     "lifestyle_showcase": [
      {
       "badge": "CARE 01",
-      "title": "益生菌發酵成分・溫和日常保養",
-      "description": "含乳酸桿菌、乳酸乳球菌與雙歧桿菌三種發酵溶胞產物，搭配甘草酸二鉀，為私密部位外部肌膚提供溫和的日常保養。",
+      "title": "三種發酵溶胞產物",
+      "description": "含乳酸桿菌、雙歧桿菌與乳酸乳球菌三種發酵溶胞產物，搭配玻尿酸鈉，幫助外陰部敏感肌膚保持濕潤。",
       "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_4ba5441d-cd6f-41b5-a9b6-1e7772c73880.jpg?v=1788773686"
      },
      {
       "badge": "TEXTURE 02",
-      "title": "玻尿酸鈉保濕・清爽不黏膩",
-      "description": "以玻尿酸鈉、大豆胜肽與寡胜肽-191 補充水分，無香料、無色的凝膠質地好推開，觸感清爽。",
+      "title": "pH 平衡・不含甘油",
+      "description": "原廠標示 pH 平衡、不含甘油的凝膠配方，含綠茶、艾草葉、積雪草、茶樹、母菊花等植物萃取。",
       "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_539705bb-1175-43a9-88e1-1f0f4108ad56.jpg?v=1788773686"
      },
      {
       "badge": "PACK 03",
-      "title": "單支獨立包裝・隨開即用",
-      "description": "每支獨立包裝，一次一支用完即丟，出差旅行放進包包也方便。",
+      "title": "單支包裝・用完即丟",
+      "description": "每支獨立包裝並附拋棄式推管，開封後立即使用，出差旅行放進包包也方便。",
       "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_098f498f-fb8a-4bcf-8a84-b55cac57aeb5.jpg?v=1788773686"
      }
     ],
     "craft_details": [
      {
       "category": "包裝設計",
-      "title": "圓弧推管前端・附保護蓋",
-      "description": "推管前端圓滑，出廠附保護蓋，取下即可使用。",
+      "title": "拋棄式推管・附保護蓋",
+      "description": "推管前端附保護蓋，取下即可使用；一次一支，不重複使用。",
       "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_d38fdfd3-e6c0-413b-b566-4467d99c4ec4.jpg?v=1788773686"
      },
      {
       "category": "配方設計",
-      "title": "蛇床子萃取與甘草酸二鉀・無香料配方",
-      "description": "原廠配方含蛇床子萃取與甘草酸二鉀，不添加香料與色素。",
+      "title": "乳酸菌發酵成分＋植物萃取",
+      "description": "以乳酸桿菌發酵溶胞產物為主，搭配多種植物萃取與甘草酸二鉀；全成分未列香料。",
       "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_f8fea395-ff82-46e1-9733-28faee5121ec.jpg?v=1788773686"
      }
     ]
@@ -2055,7 +2058,7 @@
    ],
    "variants": [
     {
-     "title": "MEDION 私密淨化凝膠 1支",
+     "title": "單支 1.8 g",
      "availableForSale": true,
      "price": "99.0",
      "compareAtPrice": "127.0"
@@ -2085,7 +2088,7 @@
     "description": "女性專用私密美體除毛刀，微距安全刀網防刮傷，人體工學防滑手柄，敏感肌溫和修整首選。"
    },
    "availableForSale": true,
-   "totalInventory": 23,
+   "totalInventory": 21,
    "metafields": {
     "subtitle": "比基尼線修整｜安全護網刀頭｜附保護蓋",
     "highlights": [
@@ -2432,7 +2435,7 @@
     "description": "隱形中腰無痕女內褲，純棉雙層透氣底襠，立體包臀無勒痕，日常舒適穿著推薦。"
    },
    "availableForSale": true,
-   "totalInventory": 58,
+   "totalInventory": 52,
    "metafields": {
     "subtitle": "中腰｜無痕熱壓切邊｜雙層底襠",
     "highlights": [
@@ -2562,7 +2565,7 @@
     },
     {
      "title": "[款式一] 隱形中腰無痕內褲-翠綠幽夢,XL（56-70kg）",
-     "availableForSale": true,
+     "availableForSale": false,
      "price": "54.0",
      "compareAtPrice": null
     },
@@ -2604,7 +2607,7 @@
     },
     {
      "title": "[款式一] 隱形中腰無痕內褲-黑羽優雅,XL（56-70kg）",
-     "availableForSale": true,
+     "availableForSale": false,
      "price": "54.0",
      "compareAtPrice": null
     },
@@ -2622,7 +2625,7 @@
     },
     {
      "title": "[款式一] 隱形中腰無痕內褲-純白嬌媚,XL（56-70kg）",
-     "availableForSale": true,
+     "availableForSale": false,
      "price": "54.0",
      "compareAtPrice": null
     },

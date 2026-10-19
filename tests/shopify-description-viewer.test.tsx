@@ -67,6 +67,30 @@ describe('ShopifyDescriptionViewer 跨品類自適應卡（萬用通用商品模
     for (const claim of FABRICATED_CLAIMS) expect(html).not.toContain(claim);
   });
 
+  it('其他品牌的保養品（MEDION）保留成分規格卡與品牌名稱，但不掛 SAENGAK 品牌故事', () => {
+    const html = renderToString(
+      <ShopifyDescriptionViewer
+        productName="MEDION 乳酸菌私密保濕凝膠"
+        category="女性護理"
+        vendor="MEDION"
+        careSpecs={{ volume: '單支 1.8 g（原廠盒裝 20 支）', origin: '韓國' }}
+      />
+    );
+
+    expect(html).toContain('護理規格與成分參數卡');
+    expect(html).toContain('MEDION');
+    expect(html).not.toContain('Brand Philosophy');
+    expect(html).not.toContain('SAENGAK');
+  });
+
+  it('SAENGAK 保養品仍顯示 SAENGAK 品牌故事', () => {
+    const html = renderToString(
+      <ShopifyDescriptionViewer productName="Saengak 平衡調理私密潔淨慕斯" category="女性護理" vendor="SAENGAK" />
+    );
+
+    expect(html).toContain('Brand Philosophy');
+  });
+
   it('服飾／內著類商品沒有填寫版型與尺碼資料時，不顯示預設數值', () => {
     const html = renderToString(
       <ShopifyDescriptionViewer

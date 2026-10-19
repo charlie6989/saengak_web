@@ -1,0 +1,98 @@
+{
+ "date": "2026-10-19",
+ "productId": "7811130785859",
+ "why": "商品說明、標籤、成分與內容欄位原本沿用 SAENGAK 凝膠的資料（含 SAENGAK 標籤、蛇床子萃取、「原廠盒裝 7 支」），與實際商品不符。",
+ "sources": [
+  "Shopify 商品圖中的原廠盒（韓國化粧品標示）：MEDION Lacto Remedy Lady's Inner Care Gel 2.0／메디온 락토리메디 레이디스 이너 케어 젤 2.0，1.8 g × 20 ea；全成分、用途「幫助敏感部位保持濕潤、維持 pH 平衡」、使用注意（外陰部專用，不可用於陰道內）；製造 주식회사 엠앤코스（M&COS），責任販售 ㈜이삼오구（2359 Inc.），themedion.co.kr",
+  "DailyMed：LACTO REMEDY LADYS INNER CARE GEL（setid fc6a45bf-4fec-7cac-e053-6294a90a2d60）與 LACTOMEDI SELF-CARE TRIAL KIT（setid fa11836a-5aec-c4ec-e053-6394a90ac468），標示業者 2359 US INC，確認 Lactomedi 為同一產品的美國品牌名"
+ ],
+ "decisions": [
+  "依使用者確認，Lactomedi 與本商品相同；文案只採韓國原廠盒（化粧品）標示，不採美國販售頁的陰道內使用、殺菌等說法",
+  "品名「私密淨化凝膠」改為「乳酸菌私密保濕凝膠」：原廠宣稱是保濕與 pH 平衡，不是淨化；網址 handle 未改",
+  "規格名改為「單支 1.8 g」，variant ID、SKU、價格、庫存不變"
+ ],
+ "applied": {
+  "title": "MEDION 乳酸菌私密保濕凝膠",
+  "variantTitle": "單支 1.8 g",
+  "subtitle": "韓國製造｜乳酸桿菌發酵溶胞產物＋植物萃取｜不含甘油",
+  "descriptionParagraphs": [
+   "MEDION Lacto Remedy 私密保濕凝膠 2.0，含乳酸桿菌發酵溶胞產物與植物萃取，幫助外陰部敏感肌膚保持濕潤、維持 pH 平衡。",
+   "不含甘油的凝膠質地，單支獨立包裝、附拋棄式推管，一次一支，用完即丟。",
+   "僅供外陰部使用，不可用於陰道內。"
+  ],
+  "highlights": [
+   "乳酸桿菌、雙歧桿菌與乳酸乳球菌三種發酵溶胞產物",
+   "含綠茶、艾草葉、積雪草、金縷梅、茶樹、母菊花等植物萃取與玻尿酸鈉",
+   "pH 平衡配方、不含甘油",
+   "單支獨立包裝＋拋棄式推管，開封後立即使用、不重複使用"
+  ],
+  "fit_guide": {
+   "fit": "外陰部保養凝膠 (External Intimate Care)",
+   "thickness": "凝膠 (Gel)",
+   "elasticity": "不含甘油 (Glycerin-free)",
+   "breathability": "保濕 (Moisturizing)"
+  },
+  "care_specs": {
+   "volume": "單支 1.8 g（原廠盒裝 20 支）",
+   "texture": "凝膠（不含甘油）",
+   "application": "外陰部肌膚（不可用於陰道內）",
+   "origin": "韓國（製造：M&COS；品牌：MEDION）",
+   "ingredients": "水、丁二醇、甲基丙二醇、羥乙基纖維素、乳酸桿菌發酵溶胞產物、雙歧桿菌發酵溶胞產物、乳酸乳球菌發酵溶胞產物、綠茶萃取、艾草葉萃取、積雪草萃取、北美金縷梅葉萃取、茶樹葉萃取、沙棘果萃取、母菊花萃取、玻尿酸鈉、銀耳萃取、白薇萃取、腺苷、玉米糖膠、1,3-丙二醇、羥苯乙酮、1,2-己二醇、甘草酸二鉀、檸檬酸、檸檬酸鈉、二丙二醇"
+  },
+  "care_instructions": [
+   "使用前先洗淨雙手。",
+   "撕開包裝取出推管，取下前端保護蓋。",
+   "將凝膠塗於外陰部肌膚；僅供外陰部使用，不可用於陰道內。",
+   "開蓋後立即使用，用完即丟、不可重複使用。",
+   "有傷口、濕疹或皮膚炎的部位請勿使用；使用中或使用後如出現紅斑、腫脹、搔癢等異常，請停止使用並諮詢醫師。",
+   "懷孕期間建議不要使用，臨盆前請勿用於外陰部周圍；3 歲以下幼兒請勿使用。",
+   "請置於兒童無法取得處，避免陽光直射。"
+  ],
+  "lifestyle_showcase": [
+   {
+    "badge": "CARE 01",
+    "title": "三種發酵溶胞產物",
+    "description": "含乳酸桿菌、雙歧桿菌與乳酸乳球菌三種發酵溶胞產物，搭配玻尿酸鈉，幫助外陰部敏感肌膚保持濕潤。",
+    "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/05_4ba5441d-cd6f-41b5-a9b6-1e7772c73880.jpg?v=1788773686"
+   },
+   {
+    "badge": "TEXTURE 02",
+    "title": "pH 平衡・不含甘油",
+    "description": "原廠標示 pH 平衡、不含甘油的凝膠配方，含綠茶、艾草葉、積雪草、茶樹、母菊花等植物萃取。",
+    "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/04_539705bb-1175-43a9-88e1-1f0f4108ad56.jpg?v=1788773686"
+   },
+   {
+    "badge": "PACK 03",
+    "title": "單支包裝・用完即丟",
+    "description": "每支獨立包裝並附拋棄式推管，開封後立即使用，出差旅行放進包包也方便。",
+    "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/03_098f498f-fb8a-4bcf-8a84-b55cac57aeb5.jpg?v=1788773686"
+   }
+  ],
+  "craft_details": [
+   {
+    "category": "包裝設計",
+    "title": "拋棄式推管・附保護蓋",
+    "description": "推管前端附保護蓋，取下即可使用；一次一支，不重複使用。",
+    "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/02_d38fdfd3-e6c0-413b-b566-4467d99c4ec4.jpg?v=1788773686"
+   },
+   {
+    "category": "配方設計",
+    "title": "乳酸菌發酵成分＋植物萃取",
+    "description": "以乳酸桿菌發酵溶胞產物為主，搭配多種植物萃取與甘草酸二鉀；全成分未列香料。",
+    "image": "https://cdn.shopify.com/s/files/1/0701/6454/5603/files/01_f8fea395-ff82-46e1-9733-28faee5121ec.jpg?v=1788773686"
+   }
+  ],
+  "tags": [
+   "MEDION",
+   "女性護理",
+   "私密保養",
+   "乳酸菌發酵",
+   "弱酸平衡",
+   "保濕"
+  ],
+  "seoTitle": "MEDION 乳酸菌私密保濕凝膠 單支 1.8 g",
+  "seoDescription": "韓國製 MEDION Lacto Remedy 私密保濕凝膠，含乳酸桿菌發酵溶胞產物與植物萃取，pH 平衡、不含甘油，單支拋棄式推管，限外陰部使用。",
+  "descriptionImageAlt": "MEDION Lacto Remedy 私密保濕凝膠 2.0 原廠包裝"
+ },
+ "verification": "Chrome 已登入後台寫入，每個欄位寫入前比對雜湊；後台 products.json／metafields.json 回讀全部一致；Storefront 快照與正式站商品頁顯示新內容。說明保留原有 5 張原廠包裝圖，只換替代文字。"
+}
