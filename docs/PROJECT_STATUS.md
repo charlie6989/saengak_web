@@ -1,12 +1,30 @@
 # 項目狀態
 
-更新日期：2026-10-20（Asia/Taipei）。最新工作為物流與金流上線清單、 MEDION 凝膠內容改寫、商品 SEO 標題與說明（網站改讀 SEO 欄位）、Shopify 商品類別補齊、組合商品主圖改為單支凝膠與 #19 尺寸更正、商品尺寸表改用原廠尺寸圖數值、零庫存停止下單與商品標籤／類別修正；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-20（Asia/Taipei）。最新工作為物流與金流上線（ShipAny／COD 設定與自動化）、舊 worktree 內容歸檔與測試移植、COD 發票偏好、MEDION 凝膠內容改寫、商品 SEO 標題與說明（網站改讀 SEO 欄位）、Shopify 商品類別補齊、組合商品主圖改為單支凝膠與 #19 尺寸更正、商品尺寸表改用原廠尺寸圖數值、零庫存停止下單與商品標籤／類別修正；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以各節日期及上線查核文件為準。
 
 ## 物流與金流上線清單（2026-10-20，分支 `claude/logistics-payments-plan`）
 
 - 讀取 Gmail 中 ShipAny 於 2026-10-16 對全家店到店取貨付款（COD）串接的回覆（原詢問以母站名義，COD 開通適用同一 ShipAny 帳號下兩站），並唯讀查核 CARE 後台：TapPay 測試模式、PayPal 未完成、無手動付款方式、只有黑貓宅配 NT$146／滿 NT$1,500 免運。
-- 使用者決定：兩站都做；COD 付款方式等 ShipAny 開通且全家選店完成後才在 Shopify 新增；「物流服務點列表」方案由使用者自行訂閱並申請 API。
-- 新增 `docs/LOGISTICS_PAYMENTS_PLAN.md`：ShipAny 回覆重點、上線步驟與負責人（TapPay 正式切換、全家 COD、發票開立時點、真實訂單驗收）與 COD 日常對帳作業。母站另開工作階段在 `LUCISSI_website` 處理。本次未修改任何 Shopify 或 ShipAny 設定。
+- 使用者決定：兩站都做；COD 付款方式等 ShipAny 開通後才在 Shopify 新增（原定等全家選店完成；確認黑貓宅配也能代收後，改為先開宅配 COD）；「物流服務點列表」方案由使用者自行訂閱並申請 API。
+- 新增 `docs/LOGISTICS_PAYMENTS_PLAN.md`：ShipAny 回覆重點、上線步驟與負責人（TapPay 正式切換、全家 COD、發票開立時點、真實訂單驗收）與 COD 日常對帳作業。母站另開工作階段在 `LUCISSI_website` 處理。
+- 之後經使用者逐項核可的正式設定（細節與回讀見 `docs/LOGISTICS_PAYMENTS_PLAN.md`）：ShipAny CARE 改用進階物流匹配（運送方式含「全家」→ 全家店到店；其餘台灣 → 黑貓常溫）、同步改為「銷售訂單已創建」、開啟已簽收回寫；使用者自行提交 COD 銀行資料並經 ShipAny 核准（黑貓、順豐、全家皆可代收）；CARE 新增手動付款方式「貨到付款 (COD)」，正式結帳頁可見；CARE 安裝 Shopify Flow 並啟用「COD 宅配送達後自動標記已付款」。母站設定未改。
+- 尚未驗證：第一筆真實 COD 訂單的匯入、送達、自動標記已付款與發票開立。仍待使用者：TapPay 測試模式、PayPal 設定未完成、ShipAny 運費儲值或月結、waaship 是否重複開立發票。
+
+## 舊 worktree 歸檔與測試保存（2026-10-20，分支 `codex/preserve-worktree-tests`）
+
+- 商品文案草稿原樣歸檔至本機專案外的 `~/Documents/Project Archives/saengak_web/2026-10-20-worktree-cleanup/`，附來源與狀態說明、逐檔 SHA-256。四款 SAENGAK 保養品的主要文案已存在 2026-10-19 商品快照；草稿保留作為歷史來源說明，不是待上架清單。本次未查核或修改正式 Shopify。
+- 舊整合 worktree 的完整 tracked diff（含刪除內容）與修改／未追蹤檔案也已存入同一歸檔。未採用其 npm 11 固定版本、Supabase 共用模組及發票流程簡化方案；這些不是目前主分支的替代版本。
+- 新增 `tests/checkout-architecture.test.ts`（3 項）：禁止恢復舊自建結帳路徑／對帳排程，保留 Shopify Cart、Webhook 與發票入口。新增 `tests/shopify-webhook-auth.test.ts`（5 項）：原始本文與簽章驗證、缺少／錯誤簽章、非授權商店、缺少密鑰；API 拒絕情況均確認未取得資料庫客戶端、未呼叫網路。已有現行測試涵蓋的發票授權案例不重複移植。
+- 已驗證：依 lock 執行 `npm ci` 後，Vitest 4.1.12 共 57 檔／528 項通過；typecheck、build、`verify:content`（179 檔）、`verify:supabase` 通過；依賴掃描 0 漏洞。build 仍有既有的大於 500 kB chunk 提示。額外 ESLint 檢查因 repository 未提供設定而無法執行，不列為通過。本次未執行資料庫整合測試或正式服務驗收。
+- 歸檔逐檔比對、測試提交保存並確認沒有程序占用後，已移除 `website-design-ux-review-4438d6` 與 `saengak_web_integration_20260823`，兩者原占用合計約 0.75 GiB。保留分支及提交；物流目錄 `product-details-review-645cd2` 的 HEAD、Git 狀態及未提交啟動設定回查未變。清理後僅剩主工作目錄與物流 worktree。
+- 以上記錄本機歸檔與驗證結果；分支另經 PR 檢查後整合。合併與 CI 狀態以 GitHub PR 為準，本節不代表正式服務已驗收；本機原稿與差異歸檔不隨 PR 上傳。
+
+## COD 訂單保留發票偏好（2026-10-20，PR #70 已合併並套用正式資料庫）
+
+- 原因：貨到付款訂單要等送達、結算後人工標記已付款才開發票；結帳時的發票偏好（載具、捐贈碼、統編）原本只保存 30 天，超過就退回一般個人發票。這是開啟 COD 前的阻擋條件之一（PR #69 審查意見）。
+- 新增 migration `20261019215834_keep_invoice_preference_until_paid.sql`，只重新定義 `sync_shopify_order_webhook`（參數與其他邏輯不變）：訂單成立但未付款、未取消時，偏好保存到下單後 120 天；付款並建立發票工作後刪除偏好（內容已寫入工作）；訂單取消時刪除偏好，包含只以 `orders/updated` 帶 `cancelled_at` 送來的取消（webhook 會轉成 status = cancelled，PR #70 審查意見）。
+- 新增 `supabase/tests/database/cod_invoice_preference.test.sql`（11 項）並加入 `npm run test:db`；本機 Supabase 套用後全部 236 項資料庫測試、`verify:supabase`、Vitest 520 項、typecheck 通過。
+- 正式資料庫：使用者同意後，2026-10-20 以 MCP `apply_migration` 套用到正式 Supabase `tmqzkagkrzhioftvwbqo`（正式版本 `20261019215834`，檔名由原本的 `20261020120000` 改為同步）。套用前確認正式函式與 `20261016024415` 版本相同（只差本次三處新增），偏好表 0 筆。套用後回讀：函式內容 md5 與本機測試版本一致（`4ca5a5c3e6db5c74011bc2032887b213`），僅 service_role 可執行，anon／authenticated 不可，函式只有一個版本。
 
 ## MEDION 凝膠內容改寫（2026-10-19，分支 `claude/medion-content`）
 
