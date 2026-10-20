@@ -68,6 +68,12 @@
 9. **確認發票時點**：發票目前在訂單付款後開立；COD 訂單要等人工標記已付款才會觸發，需確認這個時點符合營運與稅務要求。
 10. **驗收（真實訂單，會產生運費與派件）**：建立一筆選全家店到店的 COD 訂單 → 在 Shopify 手動選取並匯入 ShipAny（未付款訂單不會自動同步）→ 在 Shopify 修改品項或金額，確認 ShipAny 代收金額跟著更新 → 印單出貨 → 送達並結算後，在 ShipAny「貨到付款紀錄」核對，再到 Shopify 標記已付款，確認發票依結帳時的偏好開立。
 
+### B2. COD 自動化（2026-10-20）
+
+- **自動匯入 ShipAny（已套用，使用者核可）**：CARE 在 ShipAny 的同步策略由「銷售訂單已支付」改為「銷售訂單已創建」。CARE 付款擷取為「於結帳時自動執行」，信用卡／LINE Pay／街口建立時即已付款；建立時未付款的只有貨到付款與 TapPay ATM。匯入後為「訂單已草擬」，出貨前仍需在 ShipAny 確認；ATM 訂單確認前要先看 Shopify 付款狀態。未採用「自建 webhook 呼叫 ShipAny API」：ShipAny API 文件未公開，且 COD 付款後可能被 Paid 同步重複匯入。
+- **送達回寫（已套用）**：CARE 的「已簽收／已到服務點 → 自動更新 Shopify 為已送達」開啟（Shopify 會寄送達通知給顧客）。重新載入回讀：CARE 為已創建＋送達回寫開；母站、`mfwqtn-uy` 未變。
+- **Shopify Flow（已安裝，工作流程為草稿未啟用）**：觸發 Fulfillment event created；條件 fulfillmentEvent.status = DELIVERED、付款方式含「Cash on Delivery (COD)」、displayFinancialStatus = PENDING、shippingLine.title = 「標準」（CARE 台灣宅配運費名稱，滿 NT$1,500 免運也是同一運費）；動作 Mark order as paid。用「等於 標準」而非「不含 全家」，因 Flow 編輯器的運算子選單無法以自動化操作切換；效果相同，未來的全家運費不會被自動標記（全家「已到服務點」不代表已取貨付款）。標記已付款會觸發 orders/paid webhook 開立發票。啟用前需使用者核可；啟用後以第一筆真實 COD 訂單驗證。
+
 ### C. 日常作業（COD 上線後）
 
 - COD 訂單加 `COD` 標籤；出貨時在 Shopify 選取並匯入 ShipAny。
