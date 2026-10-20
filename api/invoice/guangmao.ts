@@ -7,6 +7,7 @@
  * - 投影至 public.order_invoices 並標記 INVOICE_ISSUED
  */
 
+import { verifyLiveCodOrder } from '../_lib/cod-dispatch.js';
 import { jsonResponse, timingSafeStringEqual } from '../_lib/security.js';
 import { getSupabaseAdminClient, updateTransactionLog } from '../_lib/supabase-admin.js';
 import {
@@ -159,10 +160,18 @@ async function handler(request: Request): Promise<Response> {
       // Use the platform fetch directly; that context is not a fetch dependency.
       fetch,
       async () => {
-        await admin.rpc('mark_amego_invoice_mutation_started', {
+        if (job.operation === 'issue' && job.request_payload.issueBasis === 'cod_dispatch') {
+          if (process.env.COD_DISPATCH_ENABLED !== 'true') throw new Error('COD_DISPATCH_DISABLED');
+          const { data: order, error } = await admin.from('orders').select('shopify_updated_at,total_amount')
+            .eq('shopify_order_gid', job.shopify_order_gid).single();
+          if (error || !order) throw new Error('COD_ORDER_UNAVAILABLE');
+          await verifyLiveCodOrder(job.shopify_order_gid, order.shopify_updated_at, Number(order.total_amount));
+        }
+        const marked = await admin.rpc('mark_amego_invoice_mutation_started', {
           p_job_id: job.job_id,
           p_lease_token: job.lease_token,
         });
+        if (marked.error) throw new Error('INVOICE_MUTATION_FENCE_REJECTED');
       }
     );
 
@@ -188,7 +197,7 @@ async function handler(request: Request): Promise<Response> {
     }
 
     // 6. 更新 transaction_logs
-    if (result.outcome === 'issued') {
+    if (result.outcome === 'issued' && job.request_payload.issueBasis !== 'cod_dispatch') {
       // 依 shopify_order_gid 更新對應 transaction_log
       try {
         const { data: logs } = await admin

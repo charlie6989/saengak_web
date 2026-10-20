@@ -74,6 +74,7 @@ export interface ShopifyOrderSyncInput {
   p_discount_amount: string;
   p_shipping_amount: string;
   p_contact_email: string;
+  p_invoice_context?: { paymentKind: 'cod' | 'mixed' | 'other' | 'unknown'; test: boolean | null };
 }
 
 // p_contact_email 是 20261016024415 migration 才加的參數。為空時不送，
@@ -502,6 +503,7 @@ export function parseShopifyOrderWebhook(
     p_discount_amount: discountAmount,
     p_shipping_amount: shippingAmount,
     p_contact_email: contactEmailFromOrder(payload),
+    p_invoice_context: invoiceContext(payload.payment_gateway_names, payload.test),
   };
 }
 
@@ -628,4 +630,13 @@ export function parseShopifyRefundWebhook(
       lineItems: parsedLines,
     },
   };
+}
+
+// Only the exact configured Shopify manual gateway is COD; mixed/absent evidence is not eligible.
+export function invoiceContext(gateways: unknown, test: unknown): NonNullable<ShopifyOrderSyncInput['p_invoice_context']> {
+  const valid = Array.isArray(gateways) && gateways.length > 0
+    && gateways.every((name) => typeof name === 'string' && name.trim().length > 0);
+  const cod = valid && gateways.includes('Cash on Delivery (COD)');
+  return { paymentKind: !valid ? 'unknown' : cod ? (gateways.length === 1 ? 'cod' : 'mixed') : 'other',
+    test: typeof test === 'boolean' ? test : null };
 }

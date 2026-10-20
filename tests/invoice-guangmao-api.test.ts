@@ -65,7 +65,7 @@ function buildJob(overrides: Partial<AmegoJob> = {}): AmegoJob {
  */
 function createAdminClientMock(claimQueue: Array<AmegoJob[]>) {
   let claimCallIndex = 0;
-  const rpc = vi.fn(async (fnName: string) => {
+  const rpc = vi.fn(async (fnName: string): Promise<{ data: AmegoJob[] | null; error: { message: string } | null }> => {
     if (fnName === 'claim_amego_invoice_job') {
       const jobs = claimQueue[claimCallIndex] ?? [];
       claimCallIndex += 1;
@@ -322,6 +322,30 @@ describe('光貿發票 Worker API (api/invoice/guangmao.ts)', () => {
       expect(mocks.dispatchAmegoJob).not.toHaveBeenCalled();
       expect(fetchMock).not.toHaveBeenCalled();
     });
+  });
+
+  it('propagates a rejected mutation RPC instead of letting provider issue', async () => {
+    process.env.AmegoDispatchToken = DISPATCH_TOKEN;
+    const admin = createAdminClientMock([[buildJob()]]);
+    const original = admin.rpc.getMockImplementation()!;
+    admin.rpc.mockImplementation(async (name: string) => name === 'mark_amego_invoice_mutation_started'
+      ? { data: null, error: { message: 'lease rejected' } } : original(name));
+    mocks.getSupabaseAdminClient.mockReturnValue(admin);
+    mocks.dispatchAmegoJob.mockImplementation(async (_job, _credentials, _fetch, mark) => {
+      await expect(mark()).rejects.toThrow('INVOICE_MUTATION_FENCE_REJECTED');
+      return { outcome: 'failed', retryable: false, errorCode: 'FENCE', errorMessage: 'rejected' };
+    });
+    await vercelHandler.fetch(request({ method: 'POST', token: DISPATCH_TOKEN, body: { shopifyOrderGid: 'gid://shopify/Order/1001' } }));
+    expect(mocks.dispatchAmegoJob).toHaveBeenCalledTimes(1); expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('issued COD does not overwrite the transaction payment status', async () => {
+    process.env.AmegoDispatchToken = DISPATCH_TOKEN;
+    const codJob = buildJob(); codJob.request_payload.issueBasis = 'cod_dispatch';
+    mocks.getSupabaseAdminClient.mockReturnValue(createAdminClientMock([[codJob]]));
+    mocks.dispatchAmegoJob.mockResolvedValue({ outcome: 'issued', invoiceNumber: 'AB12345678', providerStatus: 99 });
+    await vercelHandler.fetch(request({ method: 'POST', token: DISPATCH_TOKEN, body: { shopifyOrderGid: codJob.shopify_order_gid } }));
+    expect(mocks.updateTransactionLog).not.toHaveBeenCalled(); expect(fetchMock).not.toHaveBeenCalled();
   });
 
   describe('SEC-6：Amego 憑證 Fail-Closed（AmegoSellerTaxId／AmegoAppKey 缺漏時嚴禁靜默補上硬編測試值）', () => {

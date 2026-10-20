@@ -17,6 +17,8 @@ export interface AmegoJob {
   amego_order_id: string;
   operation: 'issue' | 'void';
   request_payload: {
+    issueBasis?: 'cod_dispatch';
+    confirmationId?: string;
     currencyCode: string;
     totalAmount: string | number;
     lineItems: JobLineItem[];
@@ -84,6 +86,16 @@ export function amegoMd5(value: string): string {
 
 export function buildAmegoInvoicePayload(job: AmegoJob, issuerNote = ''): UnknownRecord {
   const request = job.request_payload;
+  if (request.issueBasis === 'cod_dispatch') {
+    const lines = request.lineItems;
+    if (!Array.isArray(lines)) throw new Error('COD invoice amounts must reconcile exactly');
+    const sum = lines.reduce((n, line) => n + Number(line.price) * Number(line.quantity), 0);
+    if (!Array.isArray(lines) || !Number.isSafeInteger(sum)
+      || !Number.isSafeInteger(Number(request.shippingAmount)) || !Number.isSafeInteger(Number(request.discountAmount))
+      || sum + Number(request.shippingAmount) - Number(request.discountAmount) !== Number(request.totalAmount)) {
+      throw new Error('COD invoice amounts must reconcile exactly');
+    }
+  }
   if (request.currencyCode !== 'TWD') throw new Error('Only TWD invoices are supported');
   const totalAmount = integerMoney(request.totalAmount, 'Total amount');
   if (!Array.isArray(request.lineItems) || request.lineItems.length === 0 || request.lineItems.length > 250) {

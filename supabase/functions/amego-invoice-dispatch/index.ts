@@ -92,6 +92,9 @@ Deno.serve(async (request: Request) => {
   const job = Array.isArray(data) ? data[0] as AmegoJob | undefined : undefined;
   if (job) {
     const result = await dispatchAmegoJob(job, credentials, fetch, async () => {
+      if (job.operation === 'issue' && job.request_payload.issueBasis === 'cod_dispatch') {
+        throw new Error('COD issuance requires the Vercel live-order preflight');
+      }
       const { error: mutationError } = await admin.rpc('mark_amego_invoice_mutation_started', {
         p_job_id: job.job_id,
         p_lease_token: job.lease_token,

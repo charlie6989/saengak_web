@@ -74,3 +74,14 @@
 - 本機驗證輸出與限權限暫存憑證保存在 gitignored `.tmp/guest-launch/`；不可整包分享或提交。正式服務設定與資料不在 Git 備份內。
 
 參考：[Shopify 原地更新訂閱 API](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/webhookSubscriptionUpdate)、[Turnstile 錯誤碼](https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/)。
+
+
+## 黑貓 COD 整單出貨新增驗收（未完成正式驗收）
+
+- [ ] 會計確認發貨認定、開票日期、部分預收／拆單及退回折讓規則；光貿／waaship 唯一來源盤點完成。
+- [ ] 切換前逐單盤點舊單；確認 migration → webhook/API → 切換界線／啟用的順序與預設關閉狀態。
+- [ ] 整單 pending 開票、載具／公司／捐贈、通知及財政部存證的實際結果；只在本機測過不算本項通過。
+- [ ] 重複／超時回查、未開票取消、開票中取消、開票後退貨及跨日例外的營運演練；建立值班告警與交運證據保存。
+- [ ] ShipAny／waaship fulfillment 時序適配「核准時未履約」限制；代收成功後才確認付款，撥款獨立對帳。
+
+程式與隔離測試結果見 [COD 方案](COD_INVOICE_CHANGE_PLAN.md)；本次沒有正式 migration、部署、Flow／供應商設定變更或真實訂單。

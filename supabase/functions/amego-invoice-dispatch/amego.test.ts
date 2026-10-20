@@ -402,3 +402,24 @@ describe('Amego invoice dispatch', () => {
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });
+
+
+describe('COD exact amount and mutation fence', () => {
+  const codJob: AmegoJob = { ...job, request_payload: { ...job.request_payload,
+    issueBasis: 'cod_dispatch', totalAmount: 796, shippingAmount: 146, discountAmount: 0 } };
+  it('includes full sales amount and explicit shipping without waiting for settlement', () => {
+    expect(buildAmegoInvoicePayload(codJob)).toMatchObject({ TotalAmount: '796', CarrierId1: '/TRM+O+P' });
+  });
+  it('rejects amount mismatch instead of synthesizing an adjustment', () => {
+    expect(() => buildAmegoInvoicePayload({ ...codJob, request_payload: { ...codJob.request_payload, totalAmount: 800 } }))
+      .toThrow('COD invoice amounts must reconcile exactly');
+  });
+  it('a rejected database fence never reaches the issue API', async () => {
+    const fetcher = vi.fn().mockResolvedValue(response({ code: 71, msg: 'not found' }));
+    const fence = vi.fn().mockRejectedValue(new Error('COD_DISPATCH_REVIEW_REQUIRED'));
+    const result = await dispatchAmegoJob(codJob, credentials, fetcher, fence);
+    expect(result.outcome).toBe('failed'); expect(fence).toHaveBeenCalledTimes(1);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(fetcher.mock.calls[0][0]).toContain('/json/invoice_query');
+  });
+});
