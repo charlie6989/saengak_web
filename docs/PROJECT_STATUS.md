@@ -9,7 +9,7 @@
 - **現行操作與待驗證**：自動匯入不代表已付款或可出貨，非 COD 未付款單（含 ATM）須出貨前攔下。黑貓送達標記付款不代表 ShipAny 已撥款，仍需獨立對帳；原結帳說明「結算確認後開票」與 Flow 時點不一致，保留待使用者確認後另行處理。首筆實單的物流、代收額、Flow、CARE 訂單、發票／通知、重複事件與退款例外仍未驗收。
 - **全家後續階段**：選店方案／API、運費與收費決策、門市資料驗證、Shopify 運費、全家實際取貨付款確認方式及實單驗收均未完成；到服務點不得當成已取貨付款。約 10/30 自助申請是客服當時預估。網站仍只宣告黑貓宅配，驗收前不放寬超商文案。先不裝 Payfy，舊「只限全家 COD」方案已移至歷史備案。
 - **共同待辦**：TapPay 測試模式、PayPal 設定未完成但結帳可見、光貿正式配置／release、waaship 是否另有開票路徑、ShipAny 運費儲值或月結。發票偏好 120 天保存已有 PR #70／#71 完成紀錄；#1010 已有 ShipAny 訂單取消紀錄，不再列為未完成取消。
-- **文件檢查範圍**：本輪核對新舊流程與本地 Markdown 連結；PR CI 僅驗證 repository，不代表上述正式收款、物流、撥款或發票已通過驗收。推送文件更新後保持 PR 開啟，不合併。
+- **文件檢查範圍**：本輪核對新舊流程與本地 Markdown 連結；PR CI 僅驗證 repository，不代表上述正式收款、物流、撥款或發票已通過驗收。本次複核另修正舊段落的 #1010 取消待確認文字，並移除上一輪暫不合併的指示；合併與 CI 狀態以 GitHub PR #69 為準。
 
 ## 舊 worktree 歸檔與測試保存（2026-10-20，分支 `codex/preserve-worktree-tests`）
 
@@ -182,7 +182,7 @@
 - 訂單 webhook 寫入 CARE `orders`（`paid`、`discount_codes` 空），5 秒後 `partner_member_perks` 由 `issued` 變為 **`expired`**。
 - Shopify 後台該折扣狀態為「已到期」、已使用 0 次；時間軸顯示 SAENGAK Order Sync 停用此折扣兩次（推測訂單建立與付款兩個 webhook 各觸發一次，第二次無實質影響）。
 - 收尾：使用者同意後於 Shopify 取消 #1010，退款 NT$166 至 TapPay（沙盒）、補回庫存，未寄顧客通知。CARE `orders` 同步為 `cancelled`／`refunded`；電子發票工作（operation `issue`）在 0 次嘗試時轉為 `cancelled`，未開立發票。代碼維持 `expired`（取消訂單不退回首單權益）。
-- 尚未確認：#1010 的 ShipAny 出貨單（ShipAny Order ID `974c3fef…`）是否為「訂單取消」；ShipAny 後台需使用者登入，由使用者自行確認。
+- 當時尚未確認：#1010 的 ShipAny 出貨單（ShipAny Order ID `974c3fef…`）是否為「訂單取消」。後續 2026-10-20 已有全部訂單列表顯示「訂單取消」的回讀紀錄，詳見 [物流與金流上線清單](LOGISTICS_PAYMENTS_PLAN.md)；不再列為待取消項目。
 - 觀察：Shopify 結帳頁的瀏覽器分頁標題仍顯示「Checkout - My Store 7」（頁首已是 LUCISSI CARE、感謝頁標題亦為 LUCISSI CARE），可能為快取，待觀察。
 
 **Migration 版本對齊（2026-10-18）**：`partner_member_perks` 檔名由 `20261017120000` 改為正式站實際記錄的 `20261016205350`（母站 repo 另改為 `20261016205402`），避免日後 `supabase db push` 以為尚未套用。另發現 `20261016111000_grant_coupon_service_access.sql` 不在正式站 migration 紀錄，但正式站 `service_role` 已具 `promotions`／`user_coupons` 的 select／insert／update／delete 權限，內容等同已生效；是否補記錄需使用者同意，未變更正式站。ShipAny 端 #1009 已確認為「訂單取消」。
