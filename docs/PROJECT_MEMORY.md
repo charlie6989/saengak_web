@@ -109,7 +109,10 @@
 
 ## 物流與金流（2026-10-20）
 
-- 兩站共用 ShipAny 帳號。全家店到店 COD 依 `docs/LOGISTICS_PAYMENTS_PLAN.md` 推進：Shopify 的「貨到付款」付款方式等 ShipAny COD 審核通過、前台全家選店完成後才新增；COD 收款不會自動回寫 Shopify 已付款，要人工對帳。銀行資料、金鑰與付費訂閱由使用者操作。
+- 兩站共用 ShipAny 帳號，但設定與驗收各自處理。CARE 已有黑貓 COD 啟用、Created 同步草擬、送達回寫及 Shopify Flow 的操作回讀紀錄；現行 Flow 僅對 DELIVERED＋COD＋PENDING＋配送名稱「標準」標記已付款，首筆真實 COD 全流程仍未驗收。匯入不代表可出貨，非 COD 未付款單須人工檢查；送達付款標記與 ShipAny 撥款對帳分開。
+- 全家取貨付款為後續階段，尚待方案／API、有效門市驗證、運費、取貨付款確認方式與實單；不沿用黑貓送達 Flow，也不是黑貓 COD 的啟用前置條件。先不裝 Payfy，舊限制方案僅作備案。
+- 正式 TapPay／PayPal、光貿配置與可能的 waaship 開票路徑、ShipAny 運費帳務、結帳開票文字與 Flow 時點仍待確認。銀行資料、金鑰與付費訂閱由使用者操作。詳見 `docs/LOGISTICS_PAYMENTS_PLAN.md` 的現行、待驗證與歷史分區。
+- 本輪只整理文件與 PR 描述，未重新查後台或改正式設定；既有回讀不等於本輪驗收。PR #69 更新後保持開啟，未合併。
 
 ## Git 與交接
 
