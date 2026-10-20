@@ -1,5 +1,7 @@
 # 物流與金流上線清單（LUCISSI CARE）
 
+> 2026-10-21 最新方案：客人收貨付款後由光貿全自動開票、ShipAny 匯款獨立對帳，不採逐單人工核准，waaship 不列入流程。見 [全自動代收開票方案](COD_COLLECTION_INVOICE_PROPOSAL.md)。ShipAny 10/16 客服對全家收款／對帳回覆無 API 或 webhook，黑貓專屬能力與 DELIVERED 全額保證仍未取得，屬啟用阻擋。下列「發貨時開票」是舊方案；PR #73 程式、現行 Flow／正式設定未改，會計適用性待確認。
+
 更新：2026-10-20。適用 CARE Shopify `gh2xgs-zf`。母站 LUCISSI（`j97kr5-7b`）在 `LUCISSI_website` repo 另外處理；兩站共用 ShipAny 帳號，但各店的物流、付款與 Flow 設定不可互相推定。
 
 ## 閱讀方式與證據範圍

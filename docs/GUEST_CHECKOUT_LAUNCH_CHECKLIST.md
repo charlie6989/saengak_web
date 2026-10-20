@@ -76,7 +76,16 @@
 參考：[Shopify 原地更新訂閱 API](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/webhookSubscriptionUpdate)、[Turnstile 錯誤碼](https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/)。
 
 
-## 黑貓 COD 整單出貨新增驗收（未完成正式驗收）
+## 黑貓 COD 全自動收款後開票驗收（最新方案，未實作）
+
+最新方向見 [全自動代收開票方案](COD_COLLECTION_INVOICE_PROPOSAL.md)，取代下方出貨核准／10 分鐘期限的舊驗收目標。waaship 不列入流程；正式 Flow 與設定尚未修改。
+
+- [ ] ShipAny 確認本帳號黑貓 COD 有正式收款 webhook／唯讀 API，或有全額收款保證的精確狀態映射；目前未通過，10/16 對全家問題的客服答覆為無收款 API／webhook。
+- [ ] 會計確認收貨付款後開票的適用依據與時限；延遲、更正、跨期、退款折讓規則明確。
+- [ ] 自動證據驗證與去重、整單實收額核對、光貿防重、Shopify paid 獨立重試、補查排程／告警及取消改單競態完成測試；不以人工核准代替正常路徑。
+- [ ] 切換時排除舊 DELIVERED → paid 的循環證據、確認唯一開票來源與既有訂單／發票，不重開歷史單；完成另行授權的外部驗收。
+
+## 黑貓 COD 整單出貨新增驗收（歷史實作目標，已由新方向取代）
 
 - [ ] 會計確認發貨認定、開票日期、部分預收／拆單及退回折讓規則；光貿／waaship 唯一來源盤點完成。
 - [ ] 切換前逐單盤點舊單；確認 migration → webhook/API → 切換界線／啟用的順序與預設關閉狀態。
