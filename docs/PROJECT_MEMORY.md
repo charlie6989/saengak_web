@@ -1,6 +1,11 @@
 # 項目記憶
 
-更新日期：2026-10-19（Asia/Taipei）。本文件依 repository 與本次同步可查證資料整理；不包含聊天紀錄或外部服務資料的完整備份。
+更新日期：2026-10-20（Asia/Taipei）。本文件依 repository 與本次同步可查證資料整理；不包含聊天紀錄或外部服務資料的完整備份。
+
+## 本機歷史工作保存（2026-10-20）
+
+- 商品文案歷史草稿及舊整合 worktree 的未提交差異已歸檔到本機專案外 `~/Documents/Project Archives/saengak_web/2026-10-20-worktree-cleanup/`，附原檔與雜湊；未推送公開 repository。草稿部分內容已採用，後續使用須對照 `docs/shopify/` 最新紀錄，不可整份重貼後台。
+- 舊結帳架構防回歸及 Webhook 授權測試已挑選、調整到現行 API 並在本機驗證。未移植過時的 npm 固定版本及 Supabase／發票簡化方案。兩個已完成目錄移除後，保留物流 `product-details-review-645cd2` worktree。詳見 `PROJECT_STATUS.md`；此紀錄不代表新變更已合併或正式服務已驗收。
 
 ## 正式服務補充（2026-10-17）
 

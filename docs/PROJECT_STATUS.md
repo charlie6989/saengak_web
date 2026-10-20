@@ -1,6 +1,15 @@
 # 項目狀態
 
-更新日期：2026-10-19（Asia/Taipei）。最新工作為 MEDION 凝膠內容改寫、商品 SEO 標題與說明（網站改讀 SEO 欄位）、Shopify 商品類別補齊、組合商品主圖改為單支凝膠與 #19 尺寸更正、商品尺寸表改用原廠尺寸圖數值、零庫存停止下單與商品標籤／類別修正；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以本節及上線查核文件為準。
+更新日期：2026-10-20（Asia/Taipei）。最新本機工作為舊 worktree 內容歸檔、測試移植與清理；正式 COD 發票偏好的既有驗證紀錄見下一節。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以各節日期及上線查核文件為準。
+
+## 舊 worktree 歸檔與測試保存（2026-10-20，分支 `codex/preserve-worktree-tests`）
+
+- 商品文案草稿原樣歸檔至本機專案外的 `~/Documents/Project Archives/saengak_web/2026-10-20-worktree-cleanup/`，附來源與狀態說明、逐檔 SHA-256。四款 SAENGAK 保養品的主要文案已存在 2026-10-19 商品快照；草稿保留作為歷史來源說明，不是待上架清單。本次未查核或修改正式 Shopify。
+- 舊整合 worktree 的完整 tracked diff（含刪除內容）與修改／未追蹤檔案也已存入同一歸檔。未採用其 npm 11 固定版本、Supabase 共用模組及發票流程簡化方案；這些不是目前主分支的替代版本。
+- 新增 `tests/checkout-architecture.test.ts`（3 項）：禁止恢復舊自建結帳路徑／對帳排程，保留 Shopify Cart、Webhook 與發票入口。新增 `tests/shopify-webhook-auth.test.ts`（5 項）：原始本文與簽章驗證、缺少／錯誤簽章、非授權商店、缺少密鑰；API 拒絕情況均確認未取得資料庫客戶端、未呼叫網路。已有現行測試涵蓋的發票授權案例不重複移植。
+- 已驗證：依 lock 執行 `npm ci` 後，Vitest 4.1.12 共 57 檔／528 項通過；typecheck、build、`verify:content`（179 檔）、`verify:supabase` 通過；依賴掃描 0 漏洞。build 仍有既有的大於 500 kB chunk 提示。額外 ESLint 檢查因 repository 未提供設定而無法執行，不列為通過。本次未執行資料庫整合測試或正式服務驗收。
+- 歸檔逐檔比對、測試提交保存並確認沒有程序占用後，已移除 `website-design-ux-review-4438d6` 與 `saengak_web_integration_20260823`，兩者原占用合計約 0.75 GiB。保留分支及提交；物流目錄 `product-details-review-645cd2` 的 HEAD、Git 狀態及未提交啟動設定回查未變。清理後僅剩主工作目錄與物流 worktree。
+- 以上記錄本機歸檔與驗證結果；分支另經 PR 檢查後整合。合併與 CI 狀態以 GitHub PR 為準，本節不代表正式服務已驗收；本機原稿與差異歸檔不隨 PR 上傳。
 
 ## COD 訂單保留發票偏好（2026-10-20，PR #70 已合併並套用正式資料庫）
 
