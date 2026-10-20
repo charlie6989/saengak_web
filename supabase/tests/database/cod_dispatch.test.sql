@@ -6,7 +6,7 @@ insert into auth.users(id,email,raw_app_meta_data) values
  ('99999999-9999-4999-8999-999999999982','cod-member@example.test','{"role":"member"}');
 insert into public.shopify_checkout_links(shopify_store_domain,shopify_cart_token,user_id,checkout_kind,expires_at)
 select 'gh2xgs-zf.myshopify.com','cod-dispatch-cart-'||n,'99999999-9999-4999-8999-999999999982','member',now()+interval '1 year'
-from generate_series(1,20) n;
+from generate_series(1,31) n;
 create function pg_temp.sync(n int, extra jsonb default '{}') returns text language sql as $$
 select public.sync_shopify_order_webhook(
  p_webhook_id=>coalesce(extra->>'event', 'dispatch-event-'||n), p_topic=>coalesce(extra->>'topic','orders/create'),
@@ -28,8 +28,9 @@ select public.confirm_cod_dispatch('gid://shopify/Order/82000'||n,
 $$;
 set local role service_role;
 select public.save_checkout_invoice_preference('gh2xgs-zf.myshopify.com','cod-dispatch-cart-'||n,
- '{"kind":"personal","notificationEmail":"cod@example.test","carrier":"mobile","carrierId":"/ABC1234"}') from generate_series(1,20) n;
-select pg_temp.sync(n) from generate_series(1,20) n;
+ '{"kind":"personal","notificationEmail":"cod@example.test","carrier":"mobile","carrierId":"/ABC1234"}') from generate_series(1,31) n;
+select pg_temp.sync(n) from generate_series(1,31) n;
+-- END COD FIXTURE SETUP
 select throws_ok($$select pg_temp.confirm(1)$$,'P0001','COD_DISPATCH_DISABLED','default policy refuses dispatch');
 update private.cod_invoice_policy set enabled=true, starts_at=now()-interval '1 day';
 select is((select count(*)::int from private.amego_invoice_jobs where shopify_order_gid like 'gid://shopify/Order/82000%'),0,'draft orders do not invoice');
@@ -71,7 +72,7 @@ select throws_ok($$select public.mark_amego_invoice_mutation_started(id,lease_to
 select pg_temp.confirm(13);
 update private.cod_dispatch_confirmations set confirmed_at=now()-interval '11 minutes' where order_id=(select id from public.orders where shopify_order_gid='gid://shopify/Order/8200013');
 select public.claim_amego_invoice_job('gid://shopify/Order/8200013');
-select throws_ok($$select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200013'$$,'P0001','COD_DISPATCH_REVIEW_REQUIRED','expired approval cannot issue next morning');
+select throws_ok($$select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200013'$$,'P0001','COD_DISPATCH_APPROVAL_EXPIRED','expired approval cannot issue next morning');
 select pg_temp.confirm(14);
 select pg_temp.sync(14,'{"event":"edit-14","total":900,"seconds":1}');
 select public.claim_amego_invoice_job('gid://shopify/Order/8200014');
@@ -95,6 +96,70 @@ select pg_temp.sync(20,'{"event":"testpaid-20","payment":"paid","status":"paid",
 select is((select count(*)::int from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200020'),0,'test paid COD cannot enqueue');
 select throws_ok($$select public.confirm_cod_dispatch('gid://shopify/Order/820009','88888888-8888-4888-8888-000000000009','99999999-9999-4999-8999-999999999981',now(),826,'123456789012','familymart',true)$$,'P0001','COD_WHOLE_ORDER_REQUIRED','FamilyMart cannot use Black Cat dispatch');
 select throws_ok($$select public.enqueue_amego_invoice_job('gid://shopify/Order/9998200','S9998200','{}','hash',826)$$,'P0001','COD_ORDER_CONTEXT_REQUIRED','unlinked legacy job requires order evidence after cutover');
+
+-- Full completion lifecycle: provider result persists even when snapshot is redacted.
+select lives_ok($$select public.complete_amego_invoice_job(id,lease_token,'issued',true,false,'AB12345678',99,clock_timestamp()) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200012'$$,'issued completion may redact immutable payload');
+select is((public.get_cod_dispatch_status('gid://shopify/Order/8200012')->>'invoiceNumber'),'AB12345678','issued invoice is visible to operator');
+select is((select count(*)::int from public.claim_amego_invoice_job('gid://shopify/Order/8200012')),0,'issued job cannot be reclaimed and reissued');
+select lives_ok($$select public.complete_amego_invoice_job(id,lease_token,'failed_terminal',false,false,null,null,null,'COD_DISPATCH_APPROVAL_EXPIRED') from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200013'$$,'expired approval can finish as terminal without redaction failure');
+select is((select count(*)::int from public.claim_amego_invoice_job('gid://shopify/Order/8200013')),0,'expired terminal job is not endlessly retried');
+select pg_temp.confirm(21);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200021');
+select pg_temp.sync(21,'{"event":"fulfilled-after-21","fulfillment":"fulfilled","seconds":1}');
+select throws_ok($$select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200021'$$,'P0001','COD_DISPATCH_REVIEW_REQUIRED','fulfillment arriving after live preflight blocks issue');
+select pg_temp.confirm(22);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200022');
+select pg_temp.sync(22,'{"event":"paid-after-22","payment":"paid","seconds":1}');
+select throws_ok($$select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200022'$$,'P0001','COD_DISPATCH_REVIEW_REQUIRED','payment arriving after live preflight blocks new issue');
+select pg_temp.confirm(23);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200023');
+select pg_temp.sync(23,'{"event":"same-total-edit-23","seconds":1}');
+select throws_ok($$select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200023'$$,'P0001','COD_DISPATCH_REVIEW_REQUIRED','changed revision with same total invalidates approval');
+select pg_temp.confirm(24);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200024');
+select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200024';
+select pg_temp.sync(24,'{"event":"cancel-after-fence-24","status":"cancelled","seconds":1}');
+select lives_ok($$select public.complete_amego_invoice_job(id,lease_token,'issued',true,false,'AB12345679',99,clock_timestamp()) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200024'$$,'cancel after mutation still persists confirmed invoice');
+select is((public.get_cod_dispatch_status('gid://shopify/Order/8200024')->>'status'),'void_review','cancel after issue requires review not automatic void');
+select pg_temp.confirm(25);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200025');
+select pg_temp.sync(25,'{"event":"cancel-before-fence-25","status":"cancelled","seconds":1}');
+select throws_ok($$select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200025'$$,'P0001','Amego mutation lease is not claimable','cancel before mutation blocks lease');
+select lives_ok($$select public.complete_amego_invoice_job(id,lease_token,'failed_terminal',false) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200025'$$,'cancel before mutation finishes safely');
+select is((public.get_cod_dispatch_status('gid://shopify/Order/8200025')->>'status'),'cancelled','cancelled processing job does not return to pending');
+select pg_temp.confirm(26);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200026');
+update private.cod_dispatch_confirmations set confirmed_at=clock_timestamp()-interval '10 minutes' where order_id=(select id from public.orders where shopify_order_gid='gid://shopify/Order/8200026');
+select throws_ok($$select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200026'$$,'P0001','COD_DISPATCH_APPROVAL_EXPIRED','ten minute boundary uses wall clock not transaction start');
+select pg_temp.confirm(27);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200027');
+select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200027';
+update private.cod_dispatch_confirmations set confirmed_at=clock_timestamp()-interval '11 minutes' where order_id=(select id from public.orders where shopify_order_gid='gid://shopify/Order/8200027');
+select lives_ok($$select public.complete_amego_invoice_job(id,lease_token,'issued',true,false,'AB12345680',99,clock_timestamp()) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200027'$$,'expired approval does not block readback of already sent invoice');
+select pg_temp.confirm(28);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200028');
+update private.cod_dispatch_confirmations set confirmed_at=clock_timestamp()-interval '11 minutes' where order_id=(select id from public.orders where shopify_order_gid='gid://shopify/Order/8200028');
+select lives_ok($$select public.complete_amego_invoice_job(id,lease_token,'issued',true,false,'AB12345681',99,clock_timestamp()) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200028'$$,'query-only discovery of existing invoice is not a new mutation');
+select is((public.get_cod_dispatch_status('gid://shopify/Order/8200028')->>'approvalExpired'),'true','status exposes expiry separately from invoice status');
+select pg_temp.sync(29,'{"event":"waaship-29","fulfillment":"fulfilled","seconds":1}');
+select throws_ok($$select pg_temp.confirm(29)$$,'P0001','COD_WHOLE_ORDER_REQUIRED','pre-existing ShipAny or waaship fulfillment is not proof to issue');
+select is((public.get_cod_dispatch_status('gid://shopify/Order/8200029')->>'fulfillmentBlocked'),'true','UI can explain fulfillment sequence blocker');
+select pg_temp.confirm(30);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200030');
+-- Even a redacted job cannot regain issue permission by omitting issueBasis.
+update private.amego_invoice_jobs set request_payload='{}',status='manual_review' where shopify_order_gid='gid://shopify/Order/8200030';
+update private.amego_invoice_jobs set status='processing' where shopify_order_gid='gid://shopify/Order/8200030';
+select throws_ok($$select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200030'$$,'P0001','COD_DISPATCH_REVIEW_REQUIRED','redacted payload cannot bypass mutation guard');
+
+select pg_temp.confirm(31);
+select public.claim_amego_invoice_job('gid://shopify/Order/8200031');
+select public.mark_amego_invoice_mutation_started(id,lease_token) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200031';
+select pg_temp.sync(31,'{"event":"edit-after-send-31","total":900,"seconds":1}');
+select lives_ok($$select public.complete_amego_invoice_job(id,lease_token,'issued',true,false,'AB12345682',99,clock_timestamp()) from private.amego_invoice_jobs where shopify_order_gid='gid://shopify/Order/8200031'$$,'edit after mutation still saves original provider result');
+select is((public.get_cod_dispatch_status('gid://shopify/Order/8200031')->>'reviewRequired'),'true','edited issued invoice requires manual review before handover');
+select pg_temp.sync(31,'{"event":"revert-edit-31","seconds":2}');
+select is((public.get_cod_dispatch_status('gid://shopify/Order/8200031')->>'reviewRequired'),'true','reverting edit does not silently clear review evidence');
+select is((public.get_cod_dispatch_status('gid://shopify/Order/820001')->>'reviewRequired'),'false','ordinary paid event does not flag invoice content review');
 reset role;
 select ok(not has_function_privilege('authenticated','public.confirm_cod_dispatch(text,uuid,uuid,timestamptz,numeric,text,text,boolean)','EXECUTE'),'authenticated clients cannot call service RPC');
 select ok(not has_table_privilege('anon','private.cod_dispatch_confirmations','SELECT'),'anonymous cannot read approvals');

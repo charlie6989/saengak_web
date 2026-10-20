@@ -1,6 +1,15 @@
 # 項目記憶
 
 
+## 2026-10-21 PR #73 複審修正（未合併／未部署）
+
+- 修正 COD 快照 trigger 擋住成功／終態收尾，以及 worker 忽略 completion RPC error 的問題；寫回失敗明確回 503，保留原工作回查，不宣稱已完成。
+- mutation 最後放行與 webhook 共用訂單鎖，並核對付款、履約、來源 revision 與核准快照。核准期限改以實際時鐘判斷，等鎖不延長 10 分鐘期限；到期／改單停止新開票，已送出結果仍可回查。
+- 核准後發票內容變更會保留人工核對標記，即使 provider 已確認或訂單改回原值也不清除；一般 paid／履約回寫不誤標。管理頁顯示期限與履約阻擋；終態／void 工作不會由出貨重試按鈕送出。ShipAny／waaship 若在取得託運號時已建立 fulfillment，仍是正式啟用阻擋，沒有為此放寬限制或改設定。
+- 驗證：Vitest 581 項、pgTAP 299 項、獨立多連線競態 8 項通過；typecheck／build／內容與 Supabase 靜態檢查／npm audit 通過。直接 app/node tsc 與 main 同為既有 24／41 個診斷，沒有新增。
+- 所有 DB 操作僅在拋棄式本機副本；正式 migration、Flow、光貿／waaship 未變更，沒有外部實單或發票。會計與正式作業驗收繼續保留；物流 worktree 保留。詳細限制與證據見 [COD 方案第 10 節](COD_INVOICE_CHANGE_PLAN.md#10-pr-73-複審修正2026-10-21仍未上線)。
+
+
 ## 2026-10-21 黑貓 COD 整單出貨實作（未上線）
 
 - 分支 `codex/cod-dispatch-invoicing`：整單出貨核准 → 未付款也可建立唯一發票工作；paid 不重開，ShipAny 入帳仍外部對帳。新範圍由資料庫切換時間界定，API／前端／資料庫預設關閉。詳細檔案、部署順序與限制見 [方案第 9 節](COD_INVOICE_CHANGE_PLAN.md#9-第一階段實作與審查邊界2026-10-21)。

@@ -22,7 +22,7 @@ describe('Live COD preflight (mocked Shopify, no writes)', () => {
     { shippingLine: { title: '全家' } }, { currentTotalPriceSet: { shopMoney: { amount: '900', currencyCode: 'TWD' } } }
   ])('fails closed on changed state %j', async patch => {
     vi.mocked(fetch).mockResolvedValue(Response.json({ data: { order: { ...order, ...patch } } }));
-    await expect(verify()).rejects.toThrow('COD_LIVE_ORDER_CHANGED');
+    await expect(verify()).rejects.toThrow('displayFulfillmentStatus' in patch ? 'COD_FULFILLMENT_REVIEW_REQUIRED' : 'COD_LIVE_ORDER_CHANGED');
   });
   it('fails closed on unavailable Shopify response', async () => {
     vi.mocked(fetch).mockResolvedValue(Response.json({ errors: ['unavailable'] })); await expect(verify()).rejects.toThrow('COD_SHOPIFY_UNAVAILABLE');

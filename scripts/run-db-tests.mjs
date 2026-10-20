@@ -76,7 +76,7 @@ if (!/ok 12 - a member cannot issue a perk to themselves/i.test(output)) {
 if (!/ok 11 - a card order paid at once keeps its carrier and its preference is then deleted/i.test(output)) {
   errors.push('pgTAP did not complete all 11 COD invoice preference assertions');
 }
-if (!/ok 39 - anonymous cannot read approvals/i.test(output)) errors.push('COD dispatch tests incomplete');
+if (!/ok 63 - anonymous cannot read approvals/i.test(output)) errors.push('COD dispatch tests incomplete');
 const rollbackCount = output.match(/^ROLLBACK\r?$/gm)?.length ?? 0;
 if (rollbackCount !== testFiles.length) {
   errors.push(`expected ${testFiles.length} database test rollbacks, received ${rollbackCount}`);
@@ -89,7 +89,7 @@ if (errors.length) {
 
 console.log(JSON.stringify({
   ok: true,
-  assertions: 275,
+  assertions: 299,
   testFiles,
   database: 'local Supabase PostgreSQL',
 }, null, 2));

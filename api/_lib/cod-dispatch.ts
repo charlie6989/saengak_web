@@ -26,6 +26,7 @@ export async function verifyLiveCodOrder(gid: string, updatedAt: string, total: 
   } } };
   const o = payload?.data?.order;
   if (!response.ok || payload.errors || !o || o.id !== gid) throw new Error('COD_SHOPIFY_UNAVAILABLE');
+  if (o.displayFulfillmentStatus !== 'UNFULFILLED') throw new Error('COD_FULFILLMENT_REVIEW_REQUIRED');
   const context = invoiceContext(o.paymentGatewayNames, o.test);
   if (context.paymentKind !== 'cod' || context.test !== false || o.cancelledAt
     || o.displayFinancialStatus !== 'PENDING' || o.displayFulfillmentStatus !== 'UNFULFILLED'

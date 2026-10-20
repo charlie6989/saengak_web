@@ -18,8 +18,10 @@ create table private.cod_dispatch_confirmations (
   order_id uuid primary key references public.orders(id),
   confirmation_id uuid not null unique,
   actor_id uuid not null references auth.users(id),
-  confirmed_at timestamptz not null default now(),
+  confirmed_at timestamptz not null default clock_timestamp(),
   source_updated_at timestamptz not null,
+  review_required boolean not null default false,
+  review_reason text,
   carrier text not null check (carrier = 'black_cat_ambient'),
   tracking_number text not null check (tracking_number ~ '^[0-9]{10,20}$'),
   snapshot jsonb not null
@@ -235,6 +237,15 @@ begin
       'contactEmail', v_contact_email))
   on conflict (order_id) do update set context = excluded.context, snapshot = excluded.snapshot,
     cart_token = excluded.cart_token;
+
+  -- An edit can arrive after the external request has started. Keep an explicit,
+  -- sticky review flag even if provider confirmation later succeeds or edits revert.
+  -- Normal paid/fulfillment updates with the same invoice content do not set it.
+  update private.cod_dispatch_confirmations d
+  set review_required = true, review_reason = 'COD_ORDER_CHANGED_AFTER_APPROVAL'
+  from private.cod_order_context c
+  where d.order_id = v_order_id and c.order_id = d.order_id
+    and (c.snapshot - 'contactEmail') is distinct from (d.snapshot - 'preference' - 'issueBasis' - 'confirmationId');
 
   if v_checkout_kind = 'guest' and v_contact_email <> '' then
     insert into private.guest_order_contacts (order_id, email_normalized)
@@ -513,26 +524,36 @@ begin
   end if;
   if not private.cod_order_managed(o.shopify_store_domain, o.shopify_created_at) then return new; end if;
   select * into c from private.cod_order_context where order_id = o.id;
+  select * into d from private.cod_dispatch_confirmations where order_id = o.id;
+  -- Completion/purge redacts payloads after an immutable job reaches a terminal state.
+  -- This is not permission to enqueue or start a new provider mutation.
+  if tg_op = 'UPDATE' and new.request_payload = '{}'::jsonb
+    and new.status in ('issued','void_review','voided','cancelled','failed_terminal','manual_review') then
+    return new;
+  end if;
   if new.operation = 'issue' and (tg_op = 'INSERT' or new.request_payload is distinct from old.request_payload) then
     if c.context->>'test' is distinct from 'false' then raise exception 'COD_TEST_OR_UNKNOWN_ORDER'; end if;
-    if c.context->>'paymentKind' is distinct from 'other'
-      or exists (select 1 from private.cod_dispatch_confirmations where order_id = o.id) then
-      select * into d from private.cod_dispatch_confirmations where order_id = o.id;
-      if not found or new.request_payload is distinct from d.snapshot then
-        -- Cancellation may redact an unissued job, but may not enqueue it again.
-        if tg_op = 'UPDATE' and new.status = 'cancelled' then return new; end if;
+    if c.context->>'paymentKind' is distinct from 'other' or d.order_id is not null then
+      if d.order_id is null or new.request_payload is distinct from d.snapshot then
         raise exception 'COD_DISPATCH_CONFIRMATION_REQUIRED';
       end if;
     end if;
   end if;
-  -- At-most-once provider boundary: don't mutate an unconfirmed or changed COD invoice.
-  if new.operation = 'issue' and new.request_payload->>'issueBasis' = 'cod_dispatch'
-    and tg_op = 'UPDATE' and new.mutation_accepted and not old.mutation_accepted then
-    select * into d from private.cod_dispatch_confirmations where order_id = o.id;
-    if not exists (select 1 from private.cod_invoice_policy where enabled)
-      or d.confirmed_at < now() - interval '10 minutes'
+  -- Admission is only the processing -> mutation boundary, never completion/readback.
+  -- Check independent evidence, not only a removable issueBasis field in the payload.
+  if new.operation = 'issue' and new.status = 'processing' and tg_op = 'UPDATE'
+    and new.mutation_accepted and not old.mutation_accepted
+    and (c.context->>'paymentKind' is distinct from 'other' or d.order_id is not null) then
+    if d.order_id is not null and clock_timestamp() >= d.confirmed_at + interval '10 minutes' then
+      raise exception 'COD_DISPATCH_APPROVAL_EXPIRED';
+    end if;
+    if d.order_id is null or d.review_required or not exists (select 1 from private.cod_invoice_policy where enabled)
       or o.status in ('cancelled', 'refunded') or c.context->>'test' is distinct from 'false'
       or c.context->>'paymentKind' is distinct from 'cod'
+      or o.payment_status is distinct from 'pending' or o.fulfillment_status is distinct from 'unfulfilled'
+      or o.currency_code is distinct from 'TWD' or o.shipping_method is distinct from '標準'
+      or o.shopify_updated_at is distinct from d.source_updated_at
+      or exists (select 1 from public.order_fulfillments where order_id = o.id and status is distinct from 'cancelled')
       or new.request_payload is distinct from d.snapshot
       or (c.snapshot - 'contactEmail') is distinct from (d.snapshot - 'preference' - 'issueBasis' - 'confirmationId') then
       raise exception 'COD_DISPATCH_REVIEW_REQUIRED';
@@ -545,12 +566,38 @@ create trigger guard_cod_invoice_job before insert or update on private.amego_in
 for each row execute function private.guard_cod_invoice_job();
 revoke all on function private.guard_cod_invoice_job() from public, anon, authenticated;
 
+-- Acquire the same order lock BEFORE the job row lock. Webhooks also take this
+-- lock before touching cancellation/job/order rows; this avoids stale admission
+-- and the opposite lock ordering that could deadlock with a cancellation.
+create or replace function public.mark_amego_invoice_mutation_started(p_job_id uuid, p_lease_token uuid)
+returns void language plpgsql security invoker set search_path = '' as $$
+declare gid text;
+begin
+  select shopify_order_gid into gid from private.amego_invoice_jobs where id = p_job_id;
+  if gid is null then raise exception 'Amego mutation lease is not claimable'; end if;
+  perform pg_advisory_xact_lock(hashtextextended(gid, 0));
+  update private.amego_invoice_jobs set mutation_accepted = true, updated_at = clock_timestamp()
+  where id = p_job_id and lease_token = p_lease_token and status = 'processing'
+    and cancel_requested = false and mutation_accepted = false;
+  if not found then raise exception 'Amego mutation lease is not claimable'; end if;
+end;
+$$;
+revoke all on function public.mark_amego_invoice_mutation_started(uuid,uuid) from public, anon, authenticated;
+grant execute on function public.mark_amego_invoice_mutation_started(uuid,uuid) to service_role;
+
 create function public.get_cod_dispatch_status(p_order_gid text) returns jsonb
 language sql security invoker set search_path = '' as $$
   select jsonb_build_object('enabled', (select enabled from private.cod_invoice_policy),
     'confirmationId', d.confirmation_id, 'trackingNumber', d.tracking_number,
     'status', j.status, 'invoiceNumber', j.provider_invoice_number,
     'confirmedAt', d.confirmed_at, 'paymentStatus', o.payment_status,
+    'reviewRequired', coalesce(d.review_required, false), 'reviewReason', d.review_reason,
+    'operation', j.operation, 'mutationAccepted', coalesce(j.mutation_accepted, false),
+    'approvalExpiresAt', d.confirmed_at + interval '10 minutes',
+    'approvalExpired', coalesce(clock_timestamp() >= d.confirmed_at + interval '10 minutes', false),
+    'fulfillmentStatus', o.fulfillment_status,
+    'fulfillmentBlocked', o.fulfillment_status is distinct from 'unfulfilled'
+      or exists (select 1 from public.order_fulfillments f where f.order_id=o.id and f.status is distinct from 'cancelled'),
     'settlementStatus', 'external_reconciliation_required')
   from public.orders o left join private.cod_dispatch_confirmations d on d.order_id = o.id
   left join private.amego_invoice_jobs j on j.order_id = o.id

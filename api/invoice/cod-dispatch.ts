@@ -46,6 +46,14 @@ async function handler(request: Request): Promise<Response> {
     }
     const status = await db.rpc('get_cod_dispatch_status', { p_order_gid: body.orderGid });
     if (status.error || !status.data?.enabled) return jsonResponse({ error: 'COD_DISPATCH_DISABLED' }, { status: 503 });
+    // This endpoint never dispatches a void/terminal job as a side effect of a retry.
+    if (status.data.confirmationId && (status.data.operation === 'void'
+      || ['issued', 'void_review', 'voided', 'cancelled', 'failed_terminal', 'manual_review'].includes(status.data.status))) {
+      return jsonResponse(status.data);
+    }
+    if (!status.data.confirmationId && status.data.fulfillmentBlocked) {
+      return jsonResponse({ error: 'COD_FULFILLMENT_REVIEW_REQUIRED' }, { status: 409 });
+    }
     // An existing approval is immutable; retries only reconcile/dispatch that same operation.
     if (!status.data.confirmationId) await verifyLiveCodOrder(body.orderGid, body.expectedUpdatedAt, body.expectedTotal);
     const approved = await db.rpc('confirm_cod_dispatch', {

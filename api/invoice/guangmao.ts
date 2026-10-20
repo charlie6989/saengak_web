@@ -171,7 +171,11 @@ async function handler(request: Request): Promise<Response> {
           p_job_id: job.job_id,
           p_lease_token: job.lease_token,
         });
-        if (marked.error) throw new Error('INVOICE_MUTATION_FENCE_REJECTED');
+        if (marked.error) {
+          const reason = marked.error.message;
+          throw new Error(['COD_DISPATCH_APPROVAL_EXPIRED', 'COD_DISPATCH_REVIEW_REQUIRED'].includes(reason)
+            ? reason : 'INVOICE_MUTATION_FENCE_REJECTED');
+        }
       }
     );
 
@@ -180,7 +184,7 @@ async function handler(request: Request): Promise<Response> {
 
     // 5. 完成 Job 並寫入 order_invoices 投影
     try {
-      await admin.rpc('complete_amego_invoice_job', {
+      const completed = await admin.rpc('complete_amego_invoice_job', {
         p_job_id: job.job_id,
         p_lease_token: job.lease_token,
         p_outcome: persistedOutcome,
@@ -192,8 +196,11 @@ async function handler(request: Request): Promise<Response> {
         p_error_code: 'errorCode' in result ? result.errorCode : null,
         p_error_message: 'errorMessage' in result ? result.errorMessage : null,
       });
-    } catch (completeErr) {
-      console.error('Complete Amego job error', completeErr);
+      if (completed.error) throw new Error('INVOICE_RESULT_NOT_PERSISTED');
+    } catch {
+      // Provider may already have issued: surface failure and retain the fenced job
+      // for readback, rather than returning success or updating payment/logs.
+      return jsonResponse({ error: 'INVOICE_RESULT_NOT_PERSISTED', jobId: job.job_id }, { status: 503 });
     }
 
     // 6. 更新 transaction_logs

@@ -69,6 +69,19 @@ describe('COD admin dispatch boundary', () => {
     mocks.worker.mockResolvedValue(new Response('{}', { status: 503 }));
     expect(await (await handler.fetch(request())).json()).toEqual({ error: 'INVOICE_DISPATCH_UNAVAILABLE', approvalSaved: true });
   });
+  it.each(['issued','cancelled','void_review','voided','failed_terminal','manual_review'])('does not dispatch terminal retry %s', async status => {
+    rpc.mockResolvedValue({ data: { enabled: true, confirmationId: body.confirmationId, status } });
+    expect((await handler.fetch(request())).status).toBe(200); expect(mocks.worker).not.toHaveBeenCalled();
+  });
+  it('never invokes a void operation from the dispatch UI', async () => {
+    rpc.mockResolvedValue({ data: { enabled: true, confirmationId: body.confirmationId, operation: 'void', status: 'void_pending' } });
+    expect((await handler.fetch(request())).status).toBe(200); expect(mocks.worker).not.toHaveBeenCalled();
+  });
+  it('explains fulfillment-before-approval without creating approval', async () => {
+    rpc.mockResolvedValue({ data: { enabled: true, fulfillmentBlocked: true } });
+    expect(await (await handler.fetch(request())).json()).toEqual({ error: 'COD_FULFILLMENT_REVIEW_REQUIRED' });
+    expect(mocks.live).not.toHaveBeenCalled(); expect(mocks.worker).not.toHaveBeenCalled();
+  });
   it('GET only reads status', async () => {
     const response = await handler.fetch(new Request(`https://lucissicare.com/api/invoice/cod-dispatch?order=${encodeURIComponent(body.orderGid)}`, { headers: { authorization: 'Bearer token' } }));
     expect(response.status).toBe(200); expect(rpc).toHaveBeenCalledTimes(1); expect(mocks.worker).not.toHaveBeenCalled();

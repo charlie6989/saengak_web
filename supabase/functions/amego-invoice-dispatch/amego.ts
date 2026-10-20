@@ -495,6 +495,12 @@ export async function dispatchAmegoJob(
         mutationAccepted: true,
       };
     }
+    const reason = error instanceof Error ? error.message : '';
+    if (job.request_payload.issueBasis === 'cod_dispatch'
+      && ['COD_DISPATCH_APPROVAL_EXPIRED', 'COD_DISPATCH_REVIEW_REQUIRED', 'COD_LIVE_ORDER_CHANGED',
+        'COD_FULFILLMENT_REVIEW_REQUIRED', 'INVOICE_MUTATION_FENCE_REJECTED'].includes(reason)) {
+      return { outcome: 'failed', errorCode: reason, errorMessage: reason, retryable: false };
+    }
     return {
       outcome: 'failed',
       errorCode: 'NETWORK_OR_PROTOCOL_ERROR',

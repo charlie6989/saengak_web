@@ -113,15 +113,38 @@ ShipAny 草擬、建立標籤、Shopify fulfillment 建立或 `orders/fulfilled`
 
 - 僅整單、未履約、pending、TWD、黑貓常溫。已在 Shopify 建 fulfillment 即使尚未實際交運，也會被拒絕，須先調整並驗證作業順序；本 PR 不改 ShipAny 或 waaship。不得為通過檢查而偽改物流／付款狀態。
 - 核准建立後 **10 分鐘內**才允許新的開票 mutation。工作內容／金額改變、取消、超時或無法查核最新訂單就停止新的開票；仍可回查已發出的同一工作。過期核准不提供自動延長或重建工作，須由授權人員與會計查核 provider 後另案處理。
-- 既有每日排程沒有更改。Edge worker 沒有 Vercel 的 Shopify 即時前檢，因此只可回查 COD 已存在發票，不能首次開立 COD；主路徑是管理員操作觸發 Vercel worker。重試沿用原工作且受 10 分鐘限制，逾期可能保留 failed／人工處理狀態；通知／值班告警、實際交運證據附件與銀行對帳整合均未實作，正式放行前須建立人工值班與證據保存機制。
+- 既有每日排程沒有更改。Edge worker 沒有 Vercel 的 Shopify 即時前檢，因此只可回查 COD 已存在發票，不能首次開立 COD；主路徑是管理員操作觸發 Vercel worker。重試沿用原工作且受 10 分鐘限制，未送出即逾期／改單會收斂為 failed_terminal 並交人工處理，已送出工作則保留回查路徑；通知／值班告警、實際交運證據附件與銀行對帳整合均未實作，正式放行前須建立人工值班與證據保存機制。
 - Shopify 即時讀取與供應商寫入不是跨系統原子交易。資料庫鎖、取消旗標與 mutation fence 降低競態，但 provider 開始後的取消須回查並走既有作廢／折讓審核，不可保證撤回已送出的發票。
 - 光貿／waaship 是否有重複自動開票尚待確認；本 PR 防重範圍是 CARE outbox，不代表可阻止其他應用開另一張發票。Flow 也仍維持先前正式設定，代收證據與付款時點待另行調整。
 - 第 6 節所有會計待確認事項完整保留。這次沒有真實訂單、provider mutation、Flow 或服務商設定驗收；測試均使用 fixture／mock 與隔離本機 PostgreSQL。
 
 ### 本機驗證結果
 
-- Vitest：59 個測試檔、567 項通過；新增 API 管理員／origin／開關、不可偽造 actor、即時 Shopify 狀態、整單金額、重試與 provider fence 測試，所有網路均為 mock。
-- PostgreSQL：從原本機 schema 建立隔離副本，在副本重跑尚未套用 migration；275 項 pgTAP 通過（其中新 COD 39 項），涵蓋核准／付款分離、偏好保留、取消／改單、過期、混合付款／test／幣別、舊 enqueue 防護與存取權限。沒有修改原本機 postgres 或正式資料庫。
+- Vitest：59 個測試檔、581 項通過；新增 API 管理員／origin／開關、不可偽造 actor、即時 Shopify 狀態、整單金額、重試與 provider fence 測試，所有網路均為 mock。
+- PostgreSQL：從原本機 schema 建立隔離副本，在副本重跑尚未套用 migration；299 項 pgTAP 通過（其中 COD 63 項），另有 8 項真實多連線競態測試通過，涵蓋核准／付款分離、偏好保留、取消／改單、過期、混合付款／test／幣別、舊 enqueue 防護與存取權限。沒有修改原本機 postgres 或正式資料庫。
 - 專案 `typecheck`、`build`、`verify:content`、`verify:supabase`、`git diff --check` 通過；`npm audit --audit-level=moderate` 零弱點。
 - 額外直接執行 `tsc -p tsconfig.app.json` 與 `tsc -p tsconfig.node.json`，與 main 原始碼副本相比均無新增診斷；既有 app 24、node 41 個型別錯誤仍存在。既有 `npm run typecheck` 使用 root 空 files 加 references，不能當成這兩個子專案的完整型別驗證。
 - 未做正式瀏覽器操作、實際 Shopify／ShipAny 訂單或光貿開票；不把 mock、資料庫測試與編譯成功當成正式端到端驗收。
+
+
+## 10. PR #73 複審修正（2026-10-21，仍未上線）
+
+| 發現的問題 | 修正與證據 |
+|---|---|
+| 不可變快照 trigger 同時擋住成功／終態的 payload 清除，可能光貿已開票而本站無法收尾；Vercel worker 又未檢查 completion RPC 的 error | 終態允許清除 outbox payload，但不放寬新 mutation 的核准比對；worker 寫回失敗回 503，不再回成功或更新交易紀錄。新增 issued／failed_terminal／cancelled／取消後 void_review 的完整收尾測試。 |
+| 最後 mutation 放行未與 webhook 共用訂單鎖，改單未提交時可能讀到舊狀態；只比金額快照也漏掉付款／履約狀態變更 | mark RPC 先取與 webhook 相同的訂單 advisory lock，再鎖 job；放行重查 pending、未履約、有效 fulfillment、來源 revision 及核准快照。即使總額相同，訂單 revision 改變仍停止並交人工核對。多連線測試涵蓋先取消／改單／履約，以及 mutation 先於取消兩種順序。 |
+| 改單在 provider 已送出後到達，原本只會回寫訂單，查回發票後缺少需人工核對的提示 | 核准保存黏著的 `review_required`／原因；核准後發票內容變更就標記，即使改回原值或 provider 已確認也不自動清除。一般 paid／履約事件若發票內容未變不誤標。測試確認原發票可保存，但畫面明確禁止直接交運。 |
+| `now()` 是交易開始時間，等鎖可能跨過期限仍通過；原比較也沒有拒絕正好到期 | 核准記錄與期限判斷使用 `clock_timestamp()`，到期條件為 `>= confirmed_at + 10 minutes`。測試讓 worker 在期限前開始、等待鎖直到逾期，確認不放行。期限約束新 provider mutation 的授權邊界，不是限制已送出結果的回查或承諾 provider 在期限內完成。 |
+| 過期／改單原先當一般網路錯誤反覆重試，畫面未顯示期限；出貨重試入口可能呼叫人工核准的 void 工作 | 明確的 COD 拒絕原因收斂為終態，畫面顯示到期時間及履約阻擋。API 對終態／void 工作只回狀態，不由出貨按鈕執行作廢。已接受但暫時查不到的發票只回查，不送第二次 issue。 |
+
+### ShipAny／waaship 作業順序限制
+
+本輪沒有登入或修改服務商後台，因此沒有新增「正式履約順序已驗證」的證據。程式支援的順序仍為：**取得並核對黑貓託運號，但 Shopify 尚未建立履約 → 核准整單 → 確認 issued／發票號碼 → 交運及履約回寫**。
+
+如果 ShipAny／waaship 在產生標籤／託運號時就建立 Shopify fulfillment，這條作業順序會卡住，屬正式啟用前的阻擋事項。不可刪除 fulfillment 或把訂單偽改回未履約；先取得供應商實際事件與時間證據，再另案設計已建履約但未實際交運的可信核准方式。若在核准後、送出前回寫履約，新 mutation 也會停止；若已送出，僅回查既有工作並由營運核對是否已交運。
+
+跨 Shopify、資料庫與光貿仍無法形成單一原子交易。已放行／送出後才到達的取消或改單，不能承諾撤回外部請求；取消後確認已開票會保存發票並進 `void_review`；內容變更則保留原發票與人工核對標記，不自動作廢或重開。會計、Flow 代收證據、waaship 重複開票來源及首單驗收仍保持待確認。
+
+### 競態測試重現
+
+`DB_TEST_DATABASE=cod_invoice_tests_YYYYMMDD npm run test:db:cod-concurrency` 僅接受本機 Docker 的指定格式拋棄式資料庫名稱，拒絕預設 postgres。先在隔離副本套用 migration 並跑 `npm run test:db`。競態測試會提交 fixture，以兩個連線觀察 advisory wait，再驗證提交先後的結果；執行後丟棄測試副本。這些是本機 PostgreSQL 的真實競態，外部 Shopify／光貿仍使用 mock，沒有建立外部交易。

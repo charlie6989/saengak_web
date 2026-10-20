@@ -339,6 +339,18 @@ describe('光貿發票 Worker API (api/invoice/guangmao.ts)', () => {
     expect(mocks.dispatchAmegoJob).toHaveBeenCalledTimes(1); expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('returns 503 when provider success cannot be persisted', async () => {
+    process.env.AmegoDispatchToken = DISPATCH_TOKEN;
+    const admin = createAdminClientMock([[buildJob()]]);
+    const original = admin.rpc.getMockImplementation()!;
+    admin.rpc.mockImplementation(async name => name === 'complete_amego_invoice_job'
+      ? { data: null, error: { message: 'fixture failure' } } : original(name));
+    mocks.getSupabaseAdminClient.mockReturnValue(admin);
+    mocks.dispatchAmegoJob.mockResolvedValue({ outcome: 'issued', invoiceNumber: 'AB12345678', providerStatus: 99 });
+    const response = await vercelHandler.fetch(request({ method: 'POST', token: DISPATCH_TOKEN, body: { shopifyOrderGid: 'gid://shopify/Order/1001' } }));
+    expect(response.status).toBe(503); expect(mocks.updateTransactionLog).not.toHaveBeenCalled();
+    expect(await response.json()).toMatchObject({ error: 'INVOICE_RESULT_NOT_PERSISTED' });
+  });
   it('issued COD does not overwrite the transaction payment status', async () => {
     process.env.AmegoDispatchToken = DISPATCH_TOKEN;
     const codJob = buildJob(); codJob.request_payload.issueBasis = 'cod_dispatch';
