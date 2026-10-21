@@ -1,6 +1,30 @@
 # 項目記憶
 
-更新日期：2026-10-20（Asia/Taipei）。本文件依 repository 與本次同步可查證資料整理；不包含聊天紀錄或外部服務資料的完整備份。
+更新日期：2026-10-21（Asia/Taipei）。本文件依 repository 與本次同步可查證資料整理；不包含聊天紀錄或外部服務資料的完整備份。
+
+## ShipAny 客服證據界線（2026-10-21）
+
+- 客服視窗 17:22 未標示 AI 的 ShipAny 回覆只補充 COD 每月月結後寄 Email 確認金額、月結明細可核對訂單；不能推定運費可月結出單、固定撥款日或 `DELIVERED` 已代表收足貨款。
+- 17:10 ShipAnyGO AI 所述「Created 草擬單不自動同步改單」與 10/16 人工 Email 衝突，待人工釐清及實單驗證；不能因 AI 回答改採手動調額。出單前逐筆比對 Shopify 與 ShipAny，金額不一致先停止。詳見物流清單 A6；本輪未變更物流設定或 Flow。
+
+## 發票服務決策（2026-10-21）
+
+- 使用者確認「waaship 不需要，只需要光貿」：CARE 發票由自有 API／outbox 串接光貿，waaship 不列為整合或客服確認的上線前置項目。程式搜尋未發現 waaship 開票實作；僅有物流驗收工具拒絕 waaship 的測試。這是方案決策與本機查核，不代表已操作外部 app 停用／卸載。
+
+## 光貿 API 與正式設定界線（2026-10-21）
+
+- 使用者提供的公司 App Key 與統編 90014835 已通過本機 `/json/track_all` 唯讀查詢（兩期均 code=0），不等於 Vercel／Supabase 正式開票通過。金鑰未寫入 repo 或環境檔。
+- Vercel 原七個光貿欄位皆為不可讀值的 Sensitive 且共用三環境。使用者核准後，已把 seller／key／mode／allowed seller／issuer note／release 分成 Production 專用項目：90014835、使用者提供的 App Key、production、90014835、LUCISSI CARE 商店開立、false。五個非機密值用 encrypted 儲存並逐項讀回一致；App Key 為 Sensitive，寫入成功但不能讀回值。
+- 原六筆只移除 Production target，Preview／Development 保留原值與 ID；DispatchToken 及其他合計 54 筆設定未變，Supabase secrets 未改。使用者指示繼續後，已重部署同一 SHA `3ed8861`，新部署 `dpl_EysSSrLdh4J4HnBJNTsXLLBq8vVn` READY，Production target 與 lucissicare.com alias 均指向該部署；部署前五個非機密值再度讀回一致，release=false。
+- 部署後首頁與優惠 API 均 HTTP 200，運費回讀 1500／146；發票端點未授權請求回 401。沒有可讀的派送授權 token，未做帶授權的 gate 503 測試；亦未驗證 Vercel 對光貿出站連線、正式開票或通知寄達。不得把已部署或 401 當成完整發票驗收，詳見物流清單 C2。
+
+## 光貿後台唯讀查核（2026-10-21）
+
+- 使用者完成登入後，已查看拜悠衣品有限公司（90014835）公司資訊、字軌、帳務、環境設定及帳號列表。公司開通日期顯示 2024-03-05，API 資訊提供 App Key；此階段僅查閱，後續憑證驗證、Production 設定與重部署見上節。
+- 後台提示服務期限已到，將於 2026-11-01 鎖定開立功能，帳務有待繳費項目；續用及入帳回讀列為上線前待辦。未繳費或購買方案。
+- 2026 年 09–10 月字軌 FT 為自動配號、使用中，當時剩餘 10,003 張；11–12 月可用字軌查無資料，HV 共 21,850 張列在「未授權給光貿」。不可把下一期已配號視為光貿已可使用。
+- 環境設定說明開立／作廢會使用所設通知信主旨，但尚未驗證 CARE 正式寄信成功。帳號列表不是 API 使用者／串接來源清單；開票方案以同日使用者確認的「僅光貿」決策為準。
+- 此後台唯讀查核階段未修改設定、金鑰或 release，未開立／作廢發票、未部署；後續 Vercel 變更見上節。具體來源及剩餘驗收見 `docs/LOGISTICS_PAYMENTS_PLAN.md` C1。
 
 ## 本機歷史工作保存（2026-10-20）
 
@@ -111,7 +135,7 @@
 
 - 兩站共用 ShipAny 帳號，但設定與驗收各自處理。CARE 已有黑貓 COD 啟用、Created 同步草擬、送達回寫及 Shopify Flow 的操作回讀紀錄；現行 Flow 僅對 DELIVERED＋COD＋PENDING＋配送名稱「標準」標記已付款，首筆真實 COD 全流程仍未驗收。匯入不代表可出貨，非 COD 未付款單須人工檢查；送達付款標記與 ShipAny 撥款對帳分開。
 - 全家取貨付款為後續階段，尚待方案／API、有效門市驗證、運費、取貨付款確認方式與實單；不沿用黑貓送達 Flow，也不是黑貓 COD 的啟用前置條件。先不裝 Payfy，舊限制方案僅作備案。
-- 正式 TapPay／PayPal、光貿配置與可能的 waaship 開票路徑、ShipAny 運費帳務、結帳開票文字與 Flow 時點仍待確認。銀行資料、金鑰與付費訂閱由使用者操作。詳見 `docs/LOGISTICS_PAYMENTS_PLAN.md` 的現行、待驗證與歷史分區。
+- 正式 TapPay／PayPal、光貿配置（2026-10-21 已決定僅用光貿）、ShipAny 運費帳務、結帳開票文字與 Flow 時點仍待確認。銀行資料、金鑰與付費訂閱由使用者操作。詳見 `docs/LOGISTICS_PAYMENTS_PLAN.md` 的現行、待驗證與歷史分區。
 - 本輪只整理文件與 PR 描述，未重新查後台或改正式設定；既有回讀不等於本輪驗收。PR #69 的合併與 CI 狀態以 GitHub 為準；文件整合不代表正式服務驗收完成。
 
 ## Git 與交接
