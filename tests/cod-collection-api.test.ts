@@ -1,0 +1,20 @@
+import { beforeEach,afterEach,describe,expect,it,vi } from 'vitest';
+const m=vi.hoisted(()=>({db:vi.fn(),collect:vi.fn(),policy:vi.fn(),invoice:vi.fn()}));
+vi.mock('../api/_lib/supabase-admin.js',()=>({getSupabaseAdminClient:m.db}));
+vi.mock('../api/_lib/cod-collection-runner.js',()=>({collectCodOrder:m.collect}));
+vi.mock('../api/_lib/cod-collection.js',()=>({requireCollectionPolicy:m.policy}));
+vi.mock('../api/invoice/guangmao.js',()=>({default:{fetch:m.invoice}}));
+import handler from '../api/invoice/cod-collection.js';
+const request=(token='fixture')=>new Request('https://lucissicare.com/api/invoice/cod-collection',{headers:{authorization:`Bearer ${token}`}});
+let rpc:ReturnType<typeof vi.fn>;
+beforeEach(()=>{vi.resetAllMocks();vi.stubEnv('COD_COLLECTION_ENABLED','true');vi.stubEnv('AmegoInvoiceReleaseEnabled','true');vi.stubEnv('CRON_SECRET','fixture');vi.stubEnv('AmegoDispatchToken','');rpc=vi.fn().mockResolvedValueOnce({data:'gid://shopify/Order/1'}).mockResolvedValue({data:null});m.db.mockReturnValue({rpc});m.collect.mockResolvedValue({invoiceReady:true});m.invoice.mockResolvedValue(new Response('{}'));});
+afterEach(()=>vi.unstubAllEnvs());
+describe('automatic catchup endpoint',()=>{
+  it('rejects missing worker authorization before storage',async()=>{expect((await handler.fetch(request(''))).status).toBe(401);expect(rpc).not.toHaveBeenCalled();});
+  it('defaults disabled',async()=>{vi.stubEnv('COD_COLLECTION_ENABLED','false');expect((await handler.fetch(request())).status).toBe(503);expect(rpc).not.toHaveBeenCalled();});
+  it('requires validated mapping before claiming work',async()=>{m.policy.mockImplementation(()=>{throw Error('unverified');});expect((await handler.fetch(request())).status).toBe(503);expect(rpc).not.toHaveBeenCalled();});
+  it('automatically wakes invoices despite payment projection retry',async()=>{m.collect.mockResolvedValue({invoiceReady:true,error:'COD_COLLECTION_PAYMENT_UNCONFIRMED'});expect((await handler.fetch(request())).status).toBe(200);expect(m.invoice).toHaveBeenCalledTimes(1);expect(await m.invoice.mock.calls[0][0].json()).toEqual({shopifyOrderGid:'gid://shopify/Order/1'});});
+  it('never dispatches without saved evidence',async()=>{m.collect.mockResolvedValue({invoiceReady:false});expect((await handler.fetch(request())).status).toBe(200);expect(m.invoice).not.toHaveBeenCalled();});
+  it('respects invoice release gate independently',async()=>{vi.stubEnv('AmegoInvoiceReleaseEnabled','false');expect((await handler.fetch(request())).status).toBe(200);expect(m.invoice).not.toHaveBeenCalled();});
+  it('database failure is retryable HTTP failure',async()=>{rpc.mockReset().mockResolvedValue({error:{message:'private details'}});expect(await (await handler.fetch(request())).json()).toEqual({error:'COD_COLLECTION_STORAGE_UNAVAILABLE'});expect(m.collect).not.toHaveBeenCalled();});
+});

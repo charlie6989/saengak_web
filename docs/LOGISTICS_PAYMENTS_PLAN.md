@@ -1,5 +1,9 @@
 # 物流與金流上線清單（LUCISSI CARE）
 
+> 2026-10-22 最新：已收到 ShipAny 黑貓常溫 COD 送達＝託運單全額代收的書面確認，並完成 PR #73 自動收款後開票重構與本機測試。實際物流／運單金額對應、排程與實單驗收未完成，所有新開關關閉；現行 Flow 未改。見 [實作與啟用條件](COD_COLLECTION_IMPLEMENTATION.md)。下列 10/21「尚未取得保證／尚未重構」為歷史紀錄。
+
+> 2026-10-22 TapPay 登入後唯讀查核：信用卡／ATM／超商取貨審核通過，CARE 已安裝 TapPay、ATM、LINE Pay、街口套件；正式收單清單僅信用卡／ATM／超商取貨付款，正式 MGID 為 0 組。開通頁基本資訊與 MGID 尚未完成；未同意收費開通或切換 Shopify 測試模式。詳見 `PROJECT_STATUS.md` 的同日紀錄；下列歷史測試模式紀錄不代表本輪重新查驗 Shopify 開關。
+
 > 2026-10-21 最新方案：客人收貨付款後由光貿全自動開票、ShipAny 匯款獨立對帳，不採逐單人工核准，waaship 不列入流程。見 [全自動代收開票方案](COD_COLLECTION_INVOICE_PROPOSAL.md)。ShipAny 10/16 客服對全家收款／對帳回覆無 API 或 webhook，黑貓專屬能力與 DELIVERED 全額保證仍未取得，屬啟用阻擋。下列「發貨時開票」是舊方案；PR #73 程式、現行 Flow／正式設定未改，會計適用性待確認。
 
 更新：2026-10-20。適用 CARE Shopify `gh2xgs-zf`。母站 LUCISSI（`j97kr5-7b`）在 `LUCISSI_website` repo 另外處理；兩站共用 ShipAny 帳號，但各店的物流、付款與 Flow 設定不可互相推定。

@@ -1,5 +1,33 @@
 # 項目狀態
 
+## 2026-10-22 黑貓 COD 自動收款後開票已實作（本機驗證，未上線）
+
+- 依使用者「開始修改」完成 PR #73 重構：ShipAny 書面契約的 DELIVERED 語意＋Shopify Admin 即時貨件／訂單核對 → 保存不可變 collection evidence／唯一發票工作 → 光貿先查後開／回查；Shopify paid 獨立 lease／回讀／重試。正常流程不需要人工核准、人工 paid 或匯入檔案。
+- 舊人工 POST／確認 RPC 退役，管理頁改為唯讀進度；新增簽章物流事件耐久 inbox、撤回 tombstone、五分鐘補查程式設定，保留原發票每日 catchup。沒有新 ShipAny 收款 API；證據明確標示 contract_inferred。
+- 上線阻擋：尚未取得實際 service ID／tracking company／shipping code 與運單 COD 金額映射驗收。Shopify 此查詢不含實際運單代收額；若運單能獨立改額且無可信查核，本版須保持關閉。分包裹、部分付款、退款及更正保持等待／查核。
+- 本機驗證：62 檔／619 Vitest、286 pgTAP（COD 50）、10 真實多連線競態；typecheck 入口、build、180-file content、Supabase 靜態檢查通過。直接 app／node tsconfig 仍有 24／41 既有診斷，與 HEAD 基準相同。Vite 7.3.7 修補 audit 阻擋，0 vulnerabilities。
+- 本輪僅在 `cod_invoice_tests_20261022` 本機拋棄副本套 migration；未改正式 DB／Flow／設定，未開票、合併或部署。所有新開關維持 false；分支自動部署關閉。正式需物流金額映射、會計／唯一 writer、排程方案與告警、首單通知／存證驗收。
+- 詳細檔案、限制、配置與切換順序：[COD 實作與啟用條件](COD_COLLECTION_IMPLEMENTATION.md)。下方舊方向／測試／後台觀察均保留其日期，不當成當前正式狀態。
+
+
+## 2026-10-22 ShipAny 黑貓 COD 書面回覆（已確認語意，待實作驗收）
+
+- 已讀取 cs@shipany.io 於 15:59（台灣時間）的[最新回覆](https://mail.google.com/mail/#all/1a162a0033a0f79f)，對 CARE 商店 gh2xgs-zf 的黑貓常溫 COD 明確確認：回寫 Shopify DELIVERED 代表已收足託運單指定代收款，完成付款並取件才會轉為此狀態。
+- 不會自動回寫 Shopify 財務狀態；黑貓 COD 同樣沒有獨立收款／對帳 API。未提供狀態對照表、延遲數值及誤掃更正細節。
+- 這補上全自動開票方案路徑 C 的核心收款語意依據；下一步仍需辨識實際黑貓常溫 COD、核對託運單金額／整單履約、事件驗證／去重／更正與真實訂單驗收。現行 Flow 的配送名稱「標準」條件不能單獨證明服務與金額皆符合。
+- 本輪未修改程式、Flow、正式設定或開票；未寄送追問。詳見 [全自動收款後開票方案](COD_COLLECTION_INVOICE_PROPOSAL.md) 最新補充；10/21「尚無書面保證」判斷已由新信更新。
+
+## 2026-10-22 TapPay 正式開通查核（唯讀，尚未開通）
+
+- 已完成使用者授權登入及 Email 驗證；查核公司為拜悠衣品有限公司，Shopify 商家設定對應 CARE `gh2xgs-zf.myshopify.com`。不記錄密碼或驗證碼。
+- 金流服務申請頁：信用卡、ATM 轉帳、超商取貨均為「審核通過」；iPhone 卡緊收、AFTEE、OPPAY、分期趣顯示「前往申請」。此為帳號服務資格，不代表 Shopify 各付款方式已可正式交易。
+- Shopify 商家設定：已安裝 TapPay(ATM)、JKO Pay、LINE Pay、TapPay；3D 驗證；綁定 MGID 名稱尾碼 `_00005_spfy_backup`。
+- 正式收單商家清單共 3 筆：信用卡（3D／代收付）、超商取貨付款、ATM；未見 LINE Pay 或街口的正式收單條目。正式 MGID 頁顯示 Total: 0；測試環境有 2 組，CARE 對應群組只有 Direct Pay／3D 配置。
+- 帳號開通頁：Shopify 商家設定、正式收單帳號、測試交易為綠色；基本資訊與 MGID 測試及正式設定為灰色未完成。頁面要求同意審查通過後開始收費（依合約），本次未勾選或送出。
+- 使用者已選定 LINE Pay、街口支付；新增表單分別必填 Channel ID／Secret、Store ID。已完成蝦皮簡訊驗證，錢包確認綁定本公司的街口企業帳戶且有已完成交易；頁面未顯示 Store ID。街口商家後台已登入，電商平台綁定僅列蝦皮。官方 FAQ 要求新增平台另行申請 Store ID；已依使用者授權以 LUCISSI 名稱提交新增官網 Shopify／TapPay 串接需求，完成頁確認回覆至 company@lucissi.com；等待街口提供新 Store ID 或補件要求。詳見 [開通查核與客服草稿](TAPPAY_WALLET_ACTIVATION.md)。
+- 本次已送出街口既有商家的追加官網串接需求；未修改正式參數、切換 Shopify 測試模式、接受收費條款或建立交易。仍需補齊基本資訊與正式 MGID、各支付商家資格及正式付款驗收；TapPay 客服草稿未寄送，LINE Pay 申請未送出。
+- 來源：TapPay `/payment-facility/service`、`/activate`、`/shopify/merchant`、`/merchant/prod/pages/1`、`/merchant-group/sandbox`、`/merchant-group/prod` 的登入後頁面。未查驗完整合約與費率。
+
 ## 2026-10-21 全自動代收開票查核與 PR #73 新方案（未實作）
 
 - 最新方向為客人收貨付款後由光貿全自動開票、ShipAny 匯款獨立對帳；不採逐單人工確認，waaship 不列入流程。詳見 [全自動代收開票方案](COD_COLLECTION_INVOICE_PROPOSAL.md)，下文出貨前核准屬 PR #73 仍在的舊實作。

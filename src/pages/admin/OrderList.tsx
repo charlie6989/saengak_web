@@ -1,4 +1,4 @@
-import { CodDispatchPanel } from './CodDispatchPanel';
+import { CodCollectionPanel } from './CodCollectionPanel';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { captureExceptionSafe } from '../../lib/sentry';
@@ -53,7 +53,7 @@ const INVOICE_STATUS_LABEL: Record<OrderInvoiceStatus, string> = {
 };
 
 export const OrderList: React.FC = () => {
-  const [dispatchOrder, setDispatchOrder] = useState<OrderRecord | null>(null);
+  const [collectionOrder, setCollectionOrder] = useState<OrderRecord | null>(null);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [statusFilter, setStatusFilter] = useState<'ALL' | OrderStatus>('ALL');
@@ -244,7 +244,7 @@ export const OrderList: React.FC = () => {
         </div>
       </div>
 
-      {dispatchOrder && <CodDispatchPanel key={dispatchOrder.id} order={dispatchOrder} onClose={() => setDispatchOrder(null)} />}
+      {collectionOrder && <CodCollectionPanel key={collectionOrder.id} order={collectionOrder} onClose={() => setCollectionOrder(null)} />}
       {/* 訂單表格 */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         {isLoading ? (
@@ -278,8 +278,8 @@ export const OrderList: React.FC = () => {
                 {filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3 font-semibold text-gray-900">{order.order_number}
-                      {import.meta.env.VITE_PUBLIC_COD_DISPATCH_ENABLED === 'true' && order.shopify_order_gid && <button
-                        className="block mt-2 underline" type="button" onClick={() => setDispatchOrder(order)}>黑貓 COD 出貨</button>}
+                      {import.meta.env.VITE_PUBLIC_COD_COLLECTION_ENABLED === 'true' && order.shopify_order_gid && <button
+                        className="block mt-2 underline" type="button" onClick={() => setCollectionOrder(order)}>貨到付款／發票進度</button>}
                     </td>
                     <td className="px-4 py-3 font-mono text-[11px]">
                       {order.shopify_order_gid ? order.shopify_order_gid.split('/').pop() : '-'}

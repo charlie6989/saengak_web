@@ -1,3 +1,5 @@
+-- Historical dispatch-approval tests for migration 20261021000000 only.
+-- Superseded in the current test runner by cod_collection.test.sql.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();

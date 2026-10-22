@@ -10,6 +10,8 @@ export const REQUIRED_ORDER_WEBHOOK_TOPICS = [
   'ORDERS_FULFILLED',
   'ORDERS_CANCELLED',
   'REFUNDS_CREATE',
+  'FULFILLMENT_EVENTS_CREATE',
+  'FULFILLMENT_EVENTS_DELETE',
 ];
 
 export function normalizeShopifyDomain(value = '') {

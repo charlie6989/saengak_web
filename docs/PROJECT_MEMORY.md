@@ -1,5 +1,28 @@
 # 項目記憶
 
+## 2026-10-22 黑貓 COD 自動收款後開票已實作（本機驗證，未上線）
+
+- 依使用者「開始修改」完成 PR #73 重構：ShipAny 書面契約的 DELIVERED 語意＋Shopify Admin 即時貨件／訂單核對 → 保存不可變 collection evidence／唯一發票工作 → 光貿先查後開／回查；Shopify paid 獨立 lease／回讀／重試。正常流程不需要人工核准、人工 paid 或匯入檔案。
+- 舊人工 POST／確認 RPC 退役，管理頁改為唯讀進度；新增簽章物流事件耐久 inbox、撤回 tombstone、五分鐘補查程式設定，保留原發票每日 catchup。沒有新 ShipAny 收款 API；證據明確標示 contract_inferred。
+- 上線阻擋：尚未取得實際 service ID／tracking company／shipping code 與運單 COD 金額映射驗收。Shopify 此查詢不含實際運單代收額；若運單能獨立改額且無可信查核，本版須保持關閉。分包裹、部分付款、退款及更正保持等待／查核。
+- 本機驗證：62 檔／619 Vitest、286 pgTAP（COD 50）、10 真實多連線競態；typecheck 入口、build、180-file content、Supabase 靜態檢查通過。直接 app／node tsconfig 仍有 24／41 既有診斷，與 HEAD 基準相同。Vite 7.3.7 修補 audit 阻擋，0 vulnerabilities。
+- 本輪僅在 `cod_invoice_tests_20261022` 本機拋棄副本套 migration；未改正式 DB／Flow／設定，未開票、合併或部署。所有新開關維持 false；分支自動部署關閉。正式需物流金額映射、會計／唯一 writer、排程方案與告警、首單通知／存證驗收。
+- 詳細檔案、限制、配置與切換順序：[COD 實作與啟用條件](COD_COLLECTION_IMPLEMENTATION.md)。下方舊方向／測試／後台觀察均保留其日期，不當成當前正式狀態。
+
+
+## 2026-10-22 ShipAny 黑貓 COD 書面回覆（已確認語意，待實作驗收）
+
+- 已讀取 cs@shipany.io 於 15:59（台灣時間）的[最新回覆](https://mail.google.com/mail/#all/1a162a0033a0f79f)，對 CARE 商店 gh2xgs-zf 的黑貓常溫 COD 明確確認：回寫 Shopify DELIVERED 代表已收足託運單指定代收款，完成付款並取件才會轉為此狀態。
+- 不會自動回寫 Shopify 財務狀態；黑貓 COD 同樣沒有獨立收款／對帳 API。未提供狀態對照表、延遲數值及誤掃更正細節。
+- 這補上全自動開票方案路徑 C 的核心收款語意依據；下一步仍需辨識實際黑貓常溫 COD、核對託運單金額／整單履約、事件驗證／去重／更正與真實訂單驗收。現行 Flow 的配送名稱「標準」條件不能單獨證明服務與金額皆符合。
+- 本輪未修改程式、Flow、正式設定或開票；未寄送追問。詳見 [全自動收款後開票方案](COD_COLLECTION_INVOICE_PROPOSAL.md) 最新補充；10/21「尚無書面保證」判斷已由新信更新。
+
+## 2026-10-22 TapPay 開通前置缺口
+
+- 登入後唯讀查核：信用卡、ATM、超商取貨審核通過；CARE 已安裝 TapPay、TapPay(ATM)、LINE Pay、JKO Pay，但正式收單只有信用卡／ATM／超商取貨付款 3 筆，正式 MGID 為 0 組。
+- 開通頁的基本資訊與 MGID 設定仍灰色未完成；正式收單、Shopify 設定與測試交易為綠色。服務審核通過及套件已安裝均不等於正式交易可用。
+- 使用者已指定追加 LINE Pay、街口支付。表單分別需要 Channel ID／Secret、Store ID；蝦皮簡訊驗證已完成，錢包確認綁定本公司的街口企業帳戶且有已完成交易，未顯示 Store ID。街口商家後台已登入，僅列蝦皮綁定；官方 FAQ 明定新增平台須申請另一組 Store ID。已依使用者授權以 LUCISSI 名稱提交新增官網 Shopify／TapPay 串接需求，完成頁確認將以 company@lucissi.com 及原聯絡電話回覆。見 [開通查核與客服草稿](TAPPAY_WALLET_ACTIVATION.md)。街口送件不代表正式開通；未同意收費開通或改 Shopify 測試模式，LINE Pay 申請與 TapPay 客服草稿尚未送出。不得保存登入密碼、驗證碼或串接金鑰。
+
 ## 2026-10-21 後續方向：全自動收貨付款後開票（方案，未實作）
 
 - 使用者選定 ShipAny 黑貓 COD、客人收貨付款後由光貿全自動開票，不採逐單人工核准，waaship 不列入流程；此方向取代下文的出貨前開票方案，但 PR #73 `7cba3f1` 程式仍是舊方向，本輪只更新文件與 PR 描述。

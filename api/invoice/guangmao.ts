@@ -7,7 +7,7 @@
  * - 投影至 public.order_invoices 並標記 INVOICE_ISSUED
  */
 
-import { verifyLiveCodOrder } from '../_lib/cod-dispatch.js';
+import { verifyCollectionBeforeIssue } from '../_lib/cod-collection.js';
 import { jsonResponse, timingSafeStringEqual } from '../_lib/security.js';
 import { getSupabaseAdminClient, updateTransactionLog } from '../_lib/supabase-admin.js';
 import {
@@ -161,11 +161,10 @@ async function handler(request: Request): Promise<Response> {
       fetch,
       async () => {
         if (job.operation === 'issue' && job.request_payload.issueBasis === 'cod_dispatch') {
-          if (process.env.COD_DISPATCH_ENABLED !== 'true') throw new Error('COD_DISPATCH_DISABLED');
-          const { data: order, error } = await admin.from('orders').select('shopify_updated_at,total_amount')
-            .eq('shopify_order_gid', job.shopify_order_gid).single();
-          if (error || !order) throw new Error('COD_ORDER_UNAVAILABLE');
-          await verifyLiveCodOrder(job.shopify_order_gid, order.shopify_updated_at, Number(order.total_amount));
+          throw new Error('COD_DISPATCH_RETIRED');
+        }
+        if (job.operation === 'issue' && job.request_payload.issueBasis === 'cod_collection') {
+          await verifyCollectionBeforeIssue(admin, job.shopify_order_gid);
         }
         const marked = await admin.rpc('mark_amego_invoice_mutation_started', {
           p_job_id: job.job_id,
@@ -173,7 +172,7 @@ async function handler(request: Request): Promise<Response> {
         });
         if (marked.error) {
           const reason = marked.error.message;
-          throw new Error(['COD_DISPATCH_APPROVAL_EXPIRED', 'COD_DISPATCH_REVIEW_REQUIRED'].includes(reason)
+          throw new Error(['COD_COLLECTION_REVIEW_REQUIRED', 'COD_DISPATCH_RETIRED'].includes(reason)
             ? reason : 'INVOICE_MUTATION_FENCE_REJECTED');
         }
       }
@@ -204,7 +203,7 @@ async function handler(request: Request): Promise<Response> {
     }
 
     // 6. 更新 transaction_logs
-    if (result.outcome === 'issued' && job.request_payload.issueBasis !== 'cod_dispatch') {
+    if (result.outcome === 'issued' && !['cod_dispatch','cod_collection'].includes(job.request_payload.issueBasis ?? '')) {
       // 依 shopify_order_gid 更新對應 transaction_log
       try {
         const { data: logs } = await admin

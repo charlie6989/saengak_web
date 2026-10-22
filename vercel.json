@@ -46,6 +46,10 @@
         {
             "path": "/api/invoice/guangmao",
             "schedule": "0 1 * * *"
+        },
+        {
+            "path": "/api/invoice/cod-collection",
+            "schedule": "*/5 * * * *"
         }
     ],
     "redirects": [

@@ -12,7 +12,7 @@ const testFiles = [
   'supabase/tests/database/guest_checkout.test.sql',
   'supabase/tests/database/partner_member_perks.test.sql',
   'supabase/tests/database/cod_invoice_preference.test.sql',
-  'supabase/tests/database/cod_dispatch.test.sql',
+  'supabase/tests/database/cod_collection.test.sql',
 ];
 const sql = testFiles.map((testFile) => readFileSync(testFile, 'utf8')).join('\n');
 const result = spawnSync(
@@ -76,7 +76,7 @@ if (!/ok 12 - a member cannot issue a perk to themselves/i.test(output)) {
 if (!/ok 11 - a card order paid at once keeps its carrier and its preference is then deleted/i.test(output)) {
   errors.push('pgTAP did not complete all 11 COD invoice preference assertions');
 }
-if (!/ok 63 - anonymous cannot read approvals/i.test(output)) errors.push('COD dispatch tests incomplete');
+if (!/ok \d+ - members cannot read private collection snapshots/i.test(output)) errors.push('COD collection tests incomplete');
 const rollbackCount = output.match(/^ROLLBACK\r?$/gm)?.length ?? 0;
 if (rollbackCount !== testFiles.length) {
   errors.push(`expected ${testFiles.length} database test rollbacks, received ${rollbackCount}`);
@@ -89,7 +89,7 @@ if (errors.length) {
 
 console.log(JSON.stringify({
   ok: true,
-  assertions: 299,
+  assertions: (output.match(/^\s*ok \d+ -/gm) ?? []).length,
   testFiles,
   database: 'local Supabase PostgreSQL',
 }, null, 2));
