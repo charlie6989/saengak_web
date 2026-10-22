@@ -24,6 +24,7 @@
 - 隔離本機 PostgreSQL `cod_invoice_tests_20261023` 套用所需 migration：286 項 pgTAP、10 項真實多連線競態通過。未對正式 Supabase 或原本機應用 DB 套用 migration。
 - 本機副本還原時只有四個既有 `graphql_public.graphql` extension ACL 缺項；其餘還原完成，11 組 pgTAP 完整 rollback，競態測試使用副本內的假資料。這不是正式物流／收款證據。
 - 專案 `npm run typecheck` 不遍歷所有 referenced projects，不宣稱完整 TypeScript 零診斷。無實單、外部告警、排程處理量或瀏覽器完整回歸驗證。
+- 遠端修正提交 `5c731e7` 的 [PR CI 39857982260](https://github.com/charlie6989/saengak_web/actions/runs/39857982260) 與 [branch CI 39857976912](https://github.com/charlie6989/saengak_web/actions/runs/39857976912) 均成功；GitHub 回讀 MERGEABLE、Draft=true，審查紀錄 `5621134303` 已提交。測試後已刪除本輪建立的本機拋棄 DB；原應用 DB 未修改。
 
 ## 正式狀態：本輪直接讀回
 

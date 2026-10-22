@@ -8,6 +8,7 @@
 - PR #73 已整合 main、解決三份文件衝突，維持 Draft／不部署。一般 webhook 同步維持六個 topic；COD 物流訂閱改須明確 `--include-cod-collection`，避免例行維運提前啟用。新增 RPC 參數要求先準備 migration，再部署新版 webhook。
 - 本輪分支 63 檔／622 項 Vitest、286 項隔離 pgTAP、10 項多連線競態通過，typecheck／build／content／Supabase 靜態檢查與 audit 通過。正式 guest=false、光貿 release=false、新 COD flags 未設定、COD 表不存在；Shopify 最新仍 #1010，沒有新實單。ShipAny 金額 API 技術追問後尚無新回覆。
 - 完整來源、歷史狀態限制與正式收款／同步／發票／通知／退款證據表見 [本輪驗收紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。條件完成前不推進訪客結帳或全家啟用；缺實單不能以 fixture／沙盒替代。
+- 修正提交 `5c731e7` 的遠端 PR／branch CI 已成功，GitHub 回讀無衝突、Draft=true；已發布審查紀錄，尚未合併。隔離驗證 DB 已刪除。
 
 ## main CI 的 Vite 修補（2026-10-23）
 
