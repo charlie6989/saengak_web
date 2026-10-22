@@ -2,6 +2,12 @@
 
 更新日期：2026-10-21（Asia/Taipei）。最新工作包含光貿 Production 設定與同版本重部署（release=false）、ShipAny 客服新回覆核對、光貿正式後台唯讀查核及僅用光貿的開票決策；此前完成物流與金流文件分階段整理（黑貓 COD 現行設定與待驗收、全家後續計畫）、舊 worktree 內容歸檔與測試移植、COD 發票偏好及商品內容與圖片更新。以下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以各節日期及上線查核文件為準。
 
+## main CI 的 Vite 修補（2026-10-23）
+
+- main `b6dffb6` 的 CI run `39585929256` 在完整 moderate audit 因 Vite 7.3.6 的 launch-editor 高風險漏洞失敗；其餘步驟成功。將 PR #73 的 Vite 7.3.7 與對應 lock 修補獨立移入，不連帶啟用 COD 或變更付款／發票流程。
+- 本機 npm 11 乾淨 `npm ci`、typecheck、57 檔／528 項 Vitest、build、content（179 檔）、Supabase 靜態檢查通過，audit 為 0 vulnerabilities；保留既有大 chunk 警告。遠端 PR／main CI 仍以 GitHub 實際結果為準。
+- 正式 Supabase 本輪唯讀回查：`guest_checkout_enabled=false`；COD policy／evidence 表不存在，最新 migration 為 `20261019215834`。沒有套用新 migration、切換 Flow 或開啟訪客／COD 新功能。正式交易、發票及物流實單尚未驗收。
+
 ## ShipAny 客服回覆核對（2026-10-21）
 
 - 後台客服視窗 17:22 署名 ShipAny、未標示 AI 的訊息表示：COD 每月月結後另寄 Email 確認金額，可用月結交易明細核對訂單；未確認固定撥款日、運費月結資格或 NT$0 可出單。

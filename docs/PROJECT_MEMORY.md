@@ -2,6 +2,12 @@
 
 更新日期：2026-10-21（Asia/Taipei）。本文件依 repository 與本次同步可查證資料整理；不包含聊天紀錄或外部服務資料的完整備份。
 
+## main CI 的 Vite 修補（2026-10-23）
+
+- main `b6dffb6` 的 CI run `39585929256` 在完整 moderate audit 因 Vite 7.3.6 的 launch-editor 高風險漏洞失敗；其餘步驟成功。將 PR #73 的 Vite 7.3.7 與對應 lock 修補獨立移入，不連帶啟用 COD 或變更付款／發票流程。
+- 本機 npm 11 乾淨 `npm ci`、typecheck、57 檔／528 項 Vitest、build、content（179 檔）、Supabase 靜態檢查通過，audit 為 0 vulnerabilities；保留既有大 chunk 警告。遠端 PR／main CI 仍以 GitHub 實際結果為準。
+- 正式 Supabase 本輪唯讀回查：`guest_checkout_enabled=false`；COD policy／evidence 表不存在，最新 migration 為 `20261019215834`。沒有套用新 migration、切換 Flow 或開啟訪客／COD 新功能。正式交易、發票及物流實單尚未驗收。
+
 ## ShipAny 客服證據界線（2026-10-21）
 
 - 客服視窗 17:22 未標示 AI 的 ShipAny 回覆只補充 COD 每月月結後寄 Email 確認金額、月結明細可核對訂單；不能推定運費可月結出單、固定撥款日或 `DELIVERED` 已代表收足貨款。
