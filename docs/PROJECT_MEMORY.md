@@ -2,6 +2,13 @@
 
 更新日期：2026-10-23（Asia/Taipei）。歷史段落保留當時證據；最新驗收以本輪紀錄為準。
 
+## COD 關閉狀態部署（2026-10-23，接續）
+
+- 使用者要求處理合併與部署；功能關閉不再作為保留 Draft 的理由。PR #73 準備合併，實際合併與部署結果待回讀。
+- 已先在正式 Supabase 套用 repository 的兩份 COD migration，版本對齊 `20261021000000`、`20261022000000`。回讀 policy：`enabled=false`、`collection_enabled=false`、`starts_at=null`；新 RPC 僅 service_role 可執行。舊 webhook 呼叫仍可省略有預設值的新參數。
+- Vercel Production 光貿 release=false，四個新 COD 旗標未設定，依程式預設關閉。移除尚未啟用的五分鐘 COD cron，保留既有每日發票排程；啟用時需另驗證並加入 COD 排程及告警。
+- 本輪新增變更只有排程配置與文件，相關 22 項 API／webhook／訂閱測試通過。沒有新增 Shopify 物流訂閱、修改 Flow、建立訂單、收款或開票。正式實單及供應商金額條件仍待完成。
+
 ## main 修復、PR #73 審查與正式驗收邊界（2026-10-23）
 
 - Vite 7.3.7 已由 PR #74 合併 main `b3ed008`，main push CI `39857072277` 成功；正式 CARE 部署 READY、24 項公開站檢查通過。這不代表真實付款／物流／發票驗收。

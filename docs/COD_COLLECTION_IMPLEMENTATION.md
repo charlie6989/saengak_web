@@ -1,6 +1,6 @@
 # 黑貓 COD 收款後自動開票：實作與啟用條件
 
-更新：2026-10-22（Asia/Taipei）。分支 `codex/cod-dispatch-invoicing`、[Draft PR #73](https://github.com/charlie6989/saengak_web/pull/73)。程式及隔離本機測試完成；未部署、未套用遠端 migration、未改 Flow／正式設定、未建立外部訂單或發票。
+更新：2026-10-23（Asia/Taipei）。[PR #73](https://github.com/charlie6989/saengak_web/pull/73) 正準備合併並以關閉狀態部署；兩份 COD migration 已套用正式 Supabase，policy 維持 false／starts_at=null。部署結果見 [當日紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。未改 Flow、未建立外部訂單或發票。
 
 同日後續已完成 [ShipAny／CARE 後台欄位查核](SHIPANY_COD_LIVE_VERIFICATION.md)：黑貓規則、草稿匯入及送達回寫設定已讀回；CARE 沒有已出貨實單，使用者亦確認尚無真實黑貓 COD 訂單。COD 額是獨立可編輯欄位，金額映射與修改控制仍未成立，不能開啟 amount mapping verified 或背景開關。現行送達 → paid Flow 仍作用中，首單交運前須安排切換。
 
@@ -63,7 +63,7 @@ flowchart TD
 
 **金額限制：** Shopify Admin 此查詢沒有 ShipAny 的「實際託運單指定 COD 金額」。目前會核對訂單總額與全量履約，但金額本身仍依服務契約與映射不變量推導。啟用前必須在 owner system 證實訂單折扣後含運費總額確實完整帶入該運單，以及改額／手動修改的控制。如果作業允許運單金額獨立變動且沒有可信回讀，本版不能可靠判斷每筆實收，必須保持關閉並補充來源能力。
 
-`vercel.json` 新增 `/api/invoice/cod-collection` 每五分鐘 cron，保留原發票每日一次 catchup。這只是程式設定，尚未建立正式排程；須確認 Vercel 方案支援該頻率／函式時間與費用，否則不能宣稱五分鐘自動恢復。正式排程中斷無外部監控時不保證及時開票。分支自動部署維持關閉。
+2026-10-23 部署準備：`vercel.json` 僅保留原發票每日一次 catchup，暫不註冊 COD 排程，讓新程式可在功能關閉時部署。啟用前須確認 Vercel 方案／函式時間與費用、監控及告警，再加入 `/api/invoice/cod-collection` 的 `*/5 * * * *` 排程；未加入前沒有五分鐘自動恢復保證。PR 分支自動部署維持關閉，合併後由 main 部署。
 
 正式驗收順序：
 
