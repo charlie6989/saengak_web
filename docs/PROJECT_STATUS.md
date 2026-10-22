@@ -2,6 +2,11 @@
 
 更新日期：2026-10-23（Asia/Taipei）。歷史段落保留當時證據；最新驗收以本輪紀錄為準。
 
+## ShipAny API 文件接續查核（2026-10-23）
+
+- 台灣後台 API Overview v0.1.0 已可閱讀，明列 `GET /v3/shipments/{id}` 與 `X-ShipAny-AUTH-HMAC-SHA256` Webhook 簽章；更新先前未取得 endpoint／簽章的判斷。
+- 完整文件仍提示訂閱門檻；沒有讀到 COD 金額欄位、生效／鎖定規則及現有 Shopify 匯入運單可查證據。客服追問仍無新回覆。僅文件查核，沒有 API 呼叫、試用訂閱、金鑰或正式設定變更；詳見 [來源紀錄](SHIPANY_COD_AMOUNT_SOURCE.md)。
+
 ## COD 關閉狀態部署（2026-10-23，接續）
 
 - 使用者要求處理合併與部署；功能關閉不再作為保留 Draft 的理由。PR #73 已合併至 main `7362920d04a8c45b6eed051d2a36f4e7c48bbbd1`；[main CI 39860327330](https://github.com/charlie6989/saengak_web/actions/runs/39860327330) 成功。

@@ -2,6 +2,19 @@
 
 更新：2026-10-22（Asia/Taipei）。接續 [後台查核](SHIPANY_COD_LIVE_VERIFICATION.md)，處理 ShipAny COD 金額可獨立修改、Shopify 不會反向取得該變更的缺口。本輪完成來源能力調查及接入判準；尚未取得 API schema／授權，沒有部署讀取器或宣稱實單通過。
 
+## 2026-10-23 接續查核：已看到查單路徑與簽章概要
+
+直接查看已登入的 [台灣 API 文件入口](https://portal-tw.shipany.io/developer/api-doc)，頁面顯示 ShipAny API Platform v0.1.0。仍提示「訂閱 API 系統對接服務功能即可瀏覽完整 API 文件及試用 API」，但 Overview 已能閱讀；因此先前「未取得查單 endpoint／簽章」需要縮小為「未取得完整 Shipment schema 與金額語意」。
+
+- Shipping flow 明列 `GET /v3/shipments/{id}` 查運單，另列 rates、建立 draft、confirm、cancel 與 pickup 流程。這是路徑證據；尚未確認正式 base URL、現有 Shopify App 匯入運單的查詢範圍或成功回應。
+- 每個 API 請求要求 Client Key（`X-Api-Key`）及 merchant bearer token。沒有開啟 token 頁、產生或讀取帳號金鑰，亦未發出查單 API 請求。
+- Overview 明列五種 lifecycle Webhook，`results` 使用與 endpoint 相同的 Shipment 結構，簽章 header 為 `X-ShipAny-AUTH-HMAC-SHA256`。概要說明以原 query string 與移除非必要空白的 JSON 本文組合後計算 HMAC；實作前仍需取得完整文字／測試向量及驗證。未註冊 webhook。
+- 可見內容沒有 COD 金額欄位定義、物流接受／鎖定狀態、送達時金額版本、Shopify 原單識別映射。不能據此宣稱已取得可信金額來源，也不能斷言 API 沒有該欄位。
+- 曾展開官方 Export 選單（Original／Bundled References）；後續瀏覽器已切到使用者其他分頁，停止操作，沒有取得匯出檔。未嘗試繞過完整文件的訂閱門檻。
+- Gmail 重新搜尋 ShipAny 寄件者並讀原討論串：最新客服仍為 10/22 15:59，最後一封仍是我們 18:44 的追問；沒有新的技術答覆。
+
+目前可確定有官方查單 API 與簽章通知設計；接下來需要官方提供 Shipment schema 節錄（特別是 COD 額及其生效／鎖定語意），或在明確授權後開通對應文件／API 存取。此輪僅查核文件，未開通試用、付費、建立運單或變更功能開關。
+
 ## 結論與接法
 
 **優先路徑為 ShipAny 官方、具身分驗證的逐單讀取 API，搭配訂單生命週期 Webhook 喚醒查詢。** 查詢對象必須是 Shopify App 已匯入的原運單，不能另建 API 運單替代。收款語意仍以 ShipAny 10/22 黑貓常溫 COD 書面確認為依據，逐單金額則必須改由 ShipAny 的可信運單欄位提供。
