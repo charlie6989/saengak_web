@@ -1,5 +1,11 @@
 # 項目記憶
 
+## 2026-10-22 ShipAny 指定代收額來源接入方向
+
+- 一般物流查單 API 與收款／結算對帳 API 分開：後者客服說沒有，不代表前者一定沒有 COD 欄位。API 文件目前需 API Pro 訂閱；本輪未開通。五類訂單 Webhook 可見但無 schema／簽章證據，沒有註冊端點。
+- CARE #1007 官方訂單 CSV 共 22 欄，沒有 COD 額；不採此匯出補缺口。優先確認官方 API 能否讀原 Shopify 匯入運單、黑貓已接受的生效 COD 額及版本／送達時金額。後台最新表單值不一定等於送達時收款額。
+- 規格取得前保持新流程關閉，不猜 API、不依賴後台 cookie、不將方案存在當成金額驗收通過。技術問題草稿未寄送、API Pro 試用未開通；見 [來源調查](SHIPANY_COD_AMOUNT_SOURCE.md)。
+
 ## 2026-10-22 ShipAny 後台欄位驗證與首單阻擋
 
 - CARE 黑貓規則、草稿匯入及物流回寫已現場讀回；使用者確認尚無真實黑貓 COD 訂單。CARE 10 筆訂單沒有已出貨履約，ShipAny 全狀態 COD 查詢無紀錄，不能填入真實 service GID／tracking company／shipping code 或宣稱實單驗收完成。

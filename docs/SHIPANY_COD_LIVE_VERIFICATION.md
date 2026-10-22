@@ -2,6 +2,8 @@
 
 查核日期：2026-10-22（Asia/Taipei）。範圍：CARE `gh2xgs-zf.myshopify.com`、拜悠衣品有限公司 ShipAny 帳號；登入後直接查看實際後台。使用者本輪確認「目前還沒有真實黑貓 COD 訂單」。
 
+後續已進一步調查一般物流 API、五類訂單 Webhook 及實際 CSV，見 [逐單代收額來源與驗收](SHIPANY_COD_AMOUNT_SOURCE.md)。API 完整規格尚在訂閱門檻後，CSV 沒有 COD 額；供應商確認信已備妥但未寄送。
+
 **結論：後台設定與可見欄位查核完成，物流／金額端到端驗收未完成，不能正式啟用 PR #73。** 沒有已出貨或已送達的 CARE 貨件；運單 COD 金額有獨立可編輯欄位，未證明與 Shopify 訂單總額持續一致。程式仍使用 `contract_inferred`，不能把本文件當作 `COD_SHIPANY_AMOUNT_MAPPING_VERIFIED=true` 的依據。
 
 ## 已確認的正式後台設定

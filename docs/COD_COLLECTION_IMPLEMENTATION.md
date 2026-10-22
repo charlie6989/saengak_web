@@ -47,6 +47,8 @@ flowchart TD
 
 ## 預設關閉與待啟用條件
 
+逐單運單金額來源的後續調查與接入需求見 [ShipAny 代收額來源](SHIPANY_COD_AMOUNT_SOURCE.md)。API／Webhook 存在不代表欄位與驗簽已驗證；尚未修改下列 adapter 或門檻。
+
 | 設定 | 預設／要求 |
 |---|---|
 | `COD_COLLECTION_ENABLED` | false，開啟前需完成下列驗收 |

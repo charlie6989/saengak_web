@@ -1,5 +1,12 @@
 # 項目狀態
 
+## 2026-10-22 ShipAny 逐單代收額來源調查（API 規格待確認）
+
+- 已確認一般 API 文件被「API 系統對接服務」訂閱門檻阻擋；Pro 頁列 NT$398／月、14 天試用、期後後付、10,000 次 API／週期、達 200 成功出單可豁免月費。未訂閱或接受條款，方案頁未保證 COD 金額可查。
+- 後台可見五種訂單 Webhook：updated／fulfilled／delivered／merged／splitted；全部無端點。只展開空白欄位查看後重新載入，確認未新增端點；payload、簽章及金額／版本尚未取得。
+- 已從 CARE #1007 官方匯出 1 筆 22 欄 CSV，沒有 COD 開關／金額／幣別，不能作逐單金額來源。原始含個資檔僅在本機 Downloads，未進 Git。
+- 優先查一般物流 API 是否可讀 Shopify App 原運單的生效代收額及修改版本，結合 DELIVERED 契約；「最新可編輯值」仍不足證明送達時金額。沒有猜 endpoint 或修改程式放寬驗證。技術確認信已準備但未寄送；見 [來源調查與驗收](SHIPANY_COD_AMOUNT_SOURCE.md) 及 [草稿](SHIPANY_COD_AMOUNT_INQUIRY.md)。
+
 ## 2026-10-22 ShipAny 正式啟用前後台查核（實單驗收仍阻擋）
 
 - 已登入後台核對 CARE 黑貓常溫規則、Sales Order Created → 草稿、出貨／送達回寫、自動拆單關閉及變更異常通知設定。CARE 全部 10 筆訂單無已出貨履約；ShipAny 7/22–10/22 全部 14 筆為草稿／取消，1/1–10/22 五種 COD 狀態全選仍無紀錄。使用者確認目前沒有真實黑貓 COD 訂單。
