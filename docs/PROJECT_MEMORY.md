@@ -1,5 +1,11 @@
 # 項目記憶
 
+## 2026-10-22 ShipAny 後台欄位驗證與首單阻擋
+
+- CARE 黑貓規則、草稿匯入及物流回寫已現場讀回；使用者確認尚無真實黑貓 COD 訂單。CARE 10 筆訂單沒有已出貨履約，ShipAny 全狀態 COD 查詢無紀錄，不能填入真實 service GID／tracking company／shipping code 或宣稱實單驗收完成。
+- #1007 Shopify ID 與 ShipAny Order ID 相符，商品總值 2,720；但為舊測試非 COD 全家草稿。編輯畫面展開後有獨立可編輯 COD 數值欄位、預帶 2,720，已取消未儲存。包裹總值不是代收金額；含運／折扣／改額控制未驗證，不能開啟 `COD_SHIPANY_AMOUNT_MAPPING_VERIFIED`。
+- 舊送達 → paid Flow 仍作用中、無執行紀錄，首筆交運前先處理新舊來源切換。沒有改正式設定、DB 或建立交易；正式 env 未取得本輪回讀。詳見 [後台證據與首單步驟](SHIPANY_COD_LIVE_VERIFICATION.md)。
+
 ## 2026-10-22 黑貓 COD 自動收款後開票已實作（本機驗證，未上線）
 
 - 依使用者「開始修改」完成 PR #73 重構：ShipAny 書面契約的 DELIVERED 語意＋Shopify Admin 即時貨件／訂單核對 → 保存不可變 collection evidence／唯一發票工作 → 光貿先查後開／回查；Shopify paid 獨立 lease／回讀／重試。正常流程不需要人工核准、人工 paid 或匯入檔案。

@@ -2,6 +2,8 @@
 
 更新：2026-10-22（Asia/Taipei）。分支 `codex/cod-dispatch-invoicing`、[Draft PR #73](https://github.com/charlie6989/saengak_web/pull/73)。程式及隔離本機測試完成；未部署、未套用遠端 migration、未改 Flow／正式設定、未建立外部訂單或發票。
 
+同日後續已完成 [ShipAny／CARE 後台欄位查核](SHIPANY_COD_LIVE_VERIFICATION.md)：黑貓規則、草稿匯入及送達回寫設定已讀回；CARE 沒有已出貨實單，使用者亦確認尚無真實黑貓 COD 訂單。COD 額是獨立可編輯欄位，金額映射與修改控制仍未成立，不能開啟 amount mapping verified 或背景開關。現行送達 → paid Flow 仍作用中，首單交運前須安排切換。
+
 ## 業務依據與實作範圍
 
 ShipAny 10/22 15:59 [書面回覆](https://mail.google.com/mail/#all/1a162a0033a0f79f)確認 CARE 黑貓常溫 COD 的 Shopify DELIVERED 代表已收足**該託運單指定代收款**並完成取件。沒有獨立收款 API，也不自動寫 Shopify paid。新實作採此服務契約推導，保存 `amountBasis=contract_inferred`；沒有虛構實收金額或付款時間欄位。
