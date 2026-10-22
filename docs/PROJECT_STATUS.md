@@ -1,6 +1,21 @@
 # 項目狀態
 
-更新日期：2026-10-21（Asia/Taipei）。最新工作包含光貿 Production 設定與同版本重部署（release=false）、ShipAny 客服新回覆核對、光貿正式後台唯讀查核及僅用光貿的開票決策；此前完成物流與金流文件分階段整理（黑貓 COD 現行設定與待驗收、全家後續計畫）、舊 worktree 內容歸檔與測試移植、COD 發票偏好及商品內容與圖片更新。以下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以各節日期及上線查核文件為準。
+更新日期：2026-10-23（Asia/Taipei）。歷史段落保留當時證據；最新驗收以本輪紀錄為準。
+
+## COD 關閉狀態部署（2026-10-23，接續）
+
+- 使用者要求處理合併與部署；功能關閉不再作為保留 Draft 的理由。PR #73 準備合併，實際合併與部署結果待回讀。
+- 已先在正式 Supabase 套用 repository 的兩份 COD migration，版本對齊 `20261021000000`、`20261022000000`。回讀 policy：`enabled=false`、`collection_enabled=false`、`starts_at=null`；新 RPC 僅 service_role 可執行。舊 webhook 呼叫仍可省略有預設值的新參數。
+- Vercel Production 光貿 release=false，四個新 COD 旗標未設定，依程式預設關閉。移除尚未啟用的五分鐘 COD cron，保留既有每日發票排程；啟用時需另驗證並加入 COD 排程及告警。
+- 本輪新增變更只有排程配置與文件，相關 22 項 API／webhook／訂閱測試通過。沒有新增 Shopify 物流訂閱、修改 Flow、建立訂單、收款或開票。正式實單及供應商金額條件仍待完成。
+
+## main 修復、PR #73 審查與實單待辦（2026-10-23）
+
+- **已完成**：PR #74 合併 main `b3ed008`，Vite 7.3.7；main push CI `39857072277` 成功。正式 CARE 部署 `dpl_5MLpnV8bzCcDLiYPc75CeRVhGtPg` READY、alias 與 SHA 一致，公開站 24 項檢查通過。
+- **PR #73**：合併 main 並解決三份交接文件衝突；修正一般 webhook 同步預設提前加入 COD 物流訂閱，改為明確選用。分支 63 檔／622 項 Vitest、286 項 pgTAP、10 項競態及靜態／建置／audit 通過。保留 Draft，沒有合併／部署新 COD 功能；遠端結果見 PR checks。
+- **直接回查**：正式 guest=false、光貿 release=false、新 COD flags 未設定及 policy／evidence 表不存在；CARE 訂單最新 #1010、沒有新的正式驗收樣本；ShipAny API 金額技術追問後尚無新答覆。
+- **尚未完成**：正式金流與黑貓實單的收款、訂單同步、發票號碼、通知／存證及退款例外。需要指定實單／測試範圍，補齊金流、逐單代收額、唯一開票來源與切換條件；之後才推進訪客及全家。詳見 [本輪驗收紀錄與證據表](RELEASE_ACCEPTANCE_2026-10-23.md)。
+- **遠端確認**：修正提交 `5c731e7` 的 PR／branch CI `39857982260`、`39857976912` 皆成功，PR #73 回讀 MERGEABLE 且 Draft=true；已提交審查紀錄，未合併。隔離本機驗證 DB 已清理。
 
 ## main CI 的 Vite 修補（2026-10-23）
 
@@ -8,6 +23,83 @@
 - 本機 npm 11 乾淨 `npm ci`、typecheck、57 檔／528 項 Vitest、build、content（179 檔）、Supabase 靜態檢查通過，audit 為 0 vulnerabilities；保留既有大 chunk 警告。遠端 PR／main CI 仍以 GitHub 實際結果為準。
 - 正式 Supabase 本輪唯讀回查：`guest_checkout_enabled=false`；COD policy／evidence 表不存在，最新 migration 為 `20261019215834`。沒有套用新 migration、切換 Flow 或開啟訪客／COD 新功能。正式交易、發票及物流實單尚未驗收。
 
+## 2026-10-22 ShipAny 逐單代收額來源調查（API 規格待確認）
+
+- 已確認一般 API 文件被「API 系統對接服務」訂閱門檻阻擋；Pro 頁列 NT$398／月、14 天試用、期後後付、10,000 次 API／週期、達 200 成功出單可豁免月費。未訂閱或接受條款，方案頁未保證 COD 金額可查。
+- 後台可見五種訂單 Webhook：updated／fulfilled／delivered／merged／splitted；全部無端點。只展開空白欄位查看後重新載入，確認未新增端點；payload、簽章及金額／版本尚未取得。
+- 已從 CARE #1007 官方匯出 1 筆 22 欄 CSV，沒有 COD 開關／金額／幣別，不能作逐單金額來源。原始含個資檔僅在本機 Downloads，未進 Git。
+- 優先查一般物流 API 是否可讀 Shopify App 原運單的生效代收額及修改版本，結合 DELIVERED 契約；「最新可編輯值」仍不足證明送達時金額。沒有猜 endpoint 或修改程式放寬驗證。技術確認信已於 10/22 18:44 經使用者同意寄至 cs@shipany.io、副本 info@shipany.io，回讀確認 SENT、原討論串、收件人及核准本文；待供應商回覆。未訂閱服務。見 [來源調查與驗收](SHIPANY_COD_AMOUNT_SOURCE.md) 及 [已寄送信件](SHIPANY_COD_AMOUNT_INQUIRY.md)。
+
+## 2026-10-22 ShipAny 正式啟用前後台查核（實單驗收仍阻擋）
+
+- 已登入後台核對 CARE 黑貓常溫規則、Sales Order Created → 草稿、出貨／送達回寫、自動拆單關閉及變更異常通知設定。CARE 全部 10 筆訂單無已出貨履約；ShipAny 7/22–10/22 全部 14 筆為草稿／取消，1/1–10/22 五種 COD 狀態全選仍無紀錄。使用者確認目前沒有真實黑貓 COD 訂單。
+- #1007 兩側 Shopify 訂單 ID 與 ShipAny Order ID 可相互對應，商品 680 × 4 與包裹總值 2,720 相符；但它是舊測試、非 COD、全家草稿，不是新黑貓規則的驗收樣本。未儲存表單展開可見獨立可編輯 COD 額，預帶 2,720；已取消並讀回原狀，未改額／儲存／出單。
+- service GID、tracking company、shipping code、實際託運單 COD 額、含運／折扣／改額同步仍未驗證。不能用包裹總值或配送 title 代替。現有 adapter 的金額推導門檻仍不成立，所有新功能保持未部署；正式 env 本輪未取得回讀，不能宣稱正式開關值已確認。
+- 舊「COD 宅配送達後自動標記已付款」Flow 本輪讀回仍作用中且無執行紀錄；首單交運前須安排新舊付款／開票來源切換。未變更正式設定、Flow、資料庫或建立任何交易。
+- 完整來源、欄位對應、限制與第一筆實單驗收順序：[ShipAny 後台驗證紀錄](SHIPANY_COD_LIVE_VERIFICATION.md)。本輪只有文件更新，不把先前程式測試當成真實物流／收款驗收。
+
+## 2026-10-22 黑貓 COD 自動收款後開票已實作（本機驗證，未上線）
+
+- 依使用者「開始修改」完成 PR #73 重構：ShipAny 書面契約的 DELIVERED 語意＋Shopify Admin 即時貨件／訂單核對 → 保存不可變 collection evidence／唯一發票工作 → 光貿先查後開／回查；Shopify paid 獨立 lease／回讀／重試。正常流程不需要人工核准、人工 paid 或匯入檔案。
+- 舊人工 POST／確認 RPC 退役，管理頁改為唯讀進度；新增簽章物流事件耐久 inbox、撤回 tombstone、五分鐘補查程式設定，保留原發票每日 catchup。沒有新 ShipAny 收款 API；證據明確標示 contract_inferred。
+- 上線阻擋：尚未取得實際 service ID／tracking company／shipping code 與運單 COD 金額映射驗收。Shopify 此查詢不含實際運單代收額；若運單能獨立改額且無可信查核，本版須保持關閉。分包裹、部分付款、退款及更正保持等待／查核。
+- 本機驗證：62 檔／619 Vitest、286 pgTAP（COD 50）、10 真實多連線競態；typecheck 入口、build、180-file content、Supabase 靜態檢查通過。直接 app／node tsconfig 仍有 24／41 既有診斷，與 HEAD 基準相同。Vite 7.3.7 修補 audit 阻擋，0 vulnerabilities。
+- 本輪僅在 `cod_invoice_tests_20261022` 本機拋棄副本套 migration；未改正式 DB／Flow／設定，未開票、合併或部署。所有新開關維持 false；分支自動部署關閉。正式需物流金額映射、會計／唯一 writer、排程方案與告警、首單通知／存證驗收。
+- 詳細檔案、限制、配置與切換順序：[COD 實作與啟用條件](COD_COLLECTION_IMPLEMENTATION.md)。下方舊方向／測試／後台觀察均保留其日期，不當成當前正式狀態。
+
+
+## 2026-10-22 ShipAny 黑貓 COD 書面回覆（已確認語意，待實作驗收）
+
+- 已讀取 cs@shipany.io 於 15:59（台灣時間）的[最新回覆](https://mail.google.com/mail/#all/1a162a0033a0f79f)，對 CARE 商店 gh2xgs-zf 的黑貓常溫 COD 明確確認：回寫 Shopify DELIVERED 代表已收足託運單指定代收款，完成付款並取件才會轉為此狀態。
+- 不會自動回寫 Shopify 財務狀態；黑貓 COD 同樣沒有獨立收款／對帳 API。未提供狀態對照表、延遲數值及誤掃更正細節。
+- 這補上全自動開票方案路徑 C 的核心收款語意依據；下一步仍需辨識實際黑貓常溫 COD、核對託運單金額／整單履約、事件驗證／去重／更正與真實訂單驗收。現行 Flow 的配送名稱「標準」條件不能單獨證明服務與金額皆符合。
+- 本輪未修改程式、Flow、正式設定或開票；未寄送追問。詳見 [全自動收款後開票方案](COD_COLLECTION_INVOICE_PROPOSAL.md) 最新補充；10/21「尚無書面保證」判斷已由新信更新。
+
+## 2026-10-22 TapPay 正式開通查核（唯讀，尚未開通）
+
+- 已完成使用者授權登入及 Email 驗證；查核公司為拜悠衣品有限公司，Shopify 商家設定對應 CARE `gh2xgs-zf.myshopify.com`。不記錄密碼或驗證碼。
+- 金流服務申請頁：信用卡、ATM 轉帳、超商取貨均為「審核通過」；iPhone 卡緊收、AFTEE、OPPAY、分期趣顯示「前往申請」。此為帳號服務資格，不代表 Shopify 各付款方式已可正式交易。
+- Shopify 商家設定：已安裝 TapPay(ATM)、JKO Pay、LINE Pay、TapPay；3D 驗證；綁定 MGID 名稱尾碼 `_00005_spfy_backup`。
+- 正式收單商家清單共 3 筆：信用卡（3D／代收付）、超商取貨付款、ATM；未見 LINE Pay 或街口的正式收單條目。正式 MGID 頁顯示 Total: 0；測試環境有 2 組，CARE 對應群組只有 Direct Pay／3D 配置。
+- 帳號開通頁：Shopify 商家設定、正式收單帳號、測試交易為綠色；基本資訊與 MGID 測試及正式設定為灰色未完成。頁面要求同意審查通過後開始收費（依合約），本次未勾選或送出。
+- 使用者已選定 LINE Pay、街口支付；新增表單分別必填 Channel ID／Secret、Store ID。已完成蝦皮簡訊驗證，錢包確認綁定本公司的街口企業帳戶且有已完成交易；頁面未顯示 Store ID。街口商家後台已登入，電商平台綁定僅列蝦皮。官方 FAQ 要求新增平台另行申請 Store ID；已依使用者授權以 LUCISSI 名稱提交新增官網 Shopify／TapPay 串接需求，完成頁確認回覆至 company@lucissi.com；等待街口提供新 Store ID 或補件要求。詳見 [開通查核與客服草稿](TAPPAY_WALLET_ACTIVATION.md)。
+- 本次已送出街口既有商家的追加官網串接需求；未修改正式參數、切換 Shopify 測試模式、接受收費條款或建立交易。仍需補齊基本資訊與正式 MGID、各支付商家資格及正式付款驗收；TapPay 客服草稿未寄送，LINE Pay 申請未送出。
+- 來源：TapPay `/payment-facility/service`、`/activate`、`/shopify/merchant`、`/merchant/prod/pages/1`、`/merchant-group/sandbox`、`/merchant-group/prod` 的登入後頁面。未查驗完整合約與費率。
+
+## 2026-10-21 全自動代收開票查核與 PR #73 新方案（未實作）
+
+- 最新方向為客人收貨付款後由光貿全自動開票、ShipAny 匯款獨立對帳；不採逐單人工確認，waaship 不列入流程。詳見 [全自動代收開票方案](COD_COLLECTION_INVOICE_PROPOSAL.md)，下文出貨前核准屬 PR #73 仍在的舊實作。
+- 已讀：ShipAny COD 紀錄的五種狀態、金額／費用／追蹤欄位、收款分頁及 COD 協議；2026-07-21 至 2026-10-21 的 COD 查詢移除狀態限制後仍無資料。已回讀 CARE 送達標記付款 Flow 作用中。未證實 DELIVERED＝全額代收、收款狀態的主體及延遲、可用 API／webhook 或實單時間線。
+- 新證據：10/16 ShipAny 人工客服表示收款／對帳沒有 API 或 webhook，不自動回寫 paid；原詢問是母站全家，CARE 黑貓有無專屬例外仍待確認。公開物流 webhook 說明不等於收款 webhook；DELIVERED 未取得全額保證。光貿開立／查詢 API 已確認有官方文件。
+- 阻擋：取得黑貓可信機器收款來源、會計適用性、獨立驗收與唯一開票來源盤點。目前無可直接啟用的端到端路徑。方案規劃自動驗證、去重、開票／paid 分別重試；未知狀態自動等待補查與告警，不退回日常人工核准。每日一次的既有 cron 也須另案設計足夠的補查頻率。
+- 本次僅文件與 PR 描述更新，沒有程式變更或新功能測試，沒有正式設定變更、訂單／標籤／發票、合併／部署。既有程式測試不代表此方案已驗證，物流 worktree 保留。
+- 本輪文件驗證：`git diff --check`、`npm run verify:content`（180 files）及 7 份文件的相對檔案連結檢查通過。遠端 CI 結果以 PR 最新 commit checks 為準；不把 CI 通過視為代收介面或正式開票驗收。
+- 遠端 `20de2cf` 的兩個 CI（39493975789／39493985706）通過 typecheck、單元測試、build、content 與 Supabase 靜態驗證，但均在 npm audit 失敗：既有 Vite 7.3.6 涉及 [GHSA-698v-4r3x-3vcv](https://github.com/advisories/GHSA-698v-4r3x-3vcv)，moderate，官方修補版 7.3.7。另列相依套件修補待辦，本輪未改套件或降低 audit 門檻；舊版「audit 零弱點」僅是當時歷史結果。
+
+
+## 2026-10-21 PR #73 複審修正（未合併／未部署）
+
+- 修正 COD 快照 trigger 擋住成功／終態收尾，以及 worker 忽略 completion RPC error 的問題；寫回失敗明確回 503，保留原工作回查，不宣稱已完成。
+- mutation 最後放行與 webhook 共用訂單鎖，並核對付款、履約、來源 revision 與核准快照。核准期限改以實際時鐘判斷，等鎖不延長 10 分鐘期限；到期／改單停止新開票，已送出結果仍可回查。
+- 核准後發票內容變更會保留人工核對標記，即使 provider 已確認或訂單改回原值也不清除；一般 paid／履約回寫不誤標。管理頁顯示期限與履約阻擋；終態／void 工作不會由出貨重試按鈕送出。ShipAny／waaship 若在取得託運號時已建立 fulfillment，仍是正式啟用阻擋，沒有為此放寬限制或改設定。
+- 驗證：Vitest 581 項、pgTAP 299 項、獨立多連線競態 8 項通過；typecheck／build／內容與 Supabase 靜態檢查／npm audit 通過。直接 app/node tsc 與 main 同為既有 24／41 個診斷，沒有新增。
+- 所有 DB 操作僅在拋棄式本機副本；正式 migration、Flow、光貿／waaship 未變更，沒有外部實單或發票。會計與正式作業驗收繼續保留；物流 worktree 保留。詳細限制與證據見 [COD 方案第 10 節](COD_INVOICE_CHANGE_PLAN.md#10-pr-73-複審修正2026-10-21仍未上線)。
+
+
+## 2026-10-21 黑貓 COD 整單出貨實作（未上線）
+
+- 分支 `codex/cod-dispatch-invoicing`：整單出貨核准 → 未付款也可建立唯一發票工作；paid 不重開，ShipAny 入帳仍外部對帳。新範圍由資料庫切換時間界定，API／前端／資料庫預設關閉。詳細檔案、部署順序與限制見 [方案第 9 節](COD_INVOICE_CHANGE_PLAN.md#9-第一階段實作與審查邊界2026-10-21)。
+- 僅在獨立本機測試資料庫套用 migration；不改原本機 Supabase 的 postgres 資料庫。單元／API 測試使用 mock，沒有建立真實訂單或發票。
+- 會計、Flow 代收證據、光貿／waaship 唯一來源、實際交運及銀行對帳仍待確認。沒有合併、部署、套用正式 migration 或變更 Flow／供應商設定；物流 worktree 保留。
+- 本 PR 分支以 `vercel.json` 關閉自動部署。核准僅有效 10 分鐘，過期／改單轉人工，沒有重新核准入口或自動延長。本機驗證：Vitest 567 項、隔離資料庫 pgTAP 275 項、專案 typecheck、build、verify:content、verify:supabase、npm audit 通過。另直接檢查 app/node tsconfig：與 main 相同的既有 24／41 個診斷，沒有新增；一般 typecheck 指令不會遍歷這兩份 references，因此不宣稱完整型別檢查零錯誤。
+
+## 2026-10-21 設計階段紀錄（後續實作見上節）
+
+- 已完成 [具體修改方案](COD_INVOICE_CHANGE_PLAN.md)：程式／migration、出貨核准、Flow 代收確認、光貿／waaship 唯一開票來源、獨立對帳、文件與分階段驗收。目標為發貨時開票，尚待會計確認適用細節。
+- 設計階段唯讀核對開票的 paid 條件、同單唯一工作、webhook 支援 topic、取消／退款及派送入口；未執行功能測試、未修改程式、未套用 migration、未部署、未改 Flow／供應商設定、未開票或建立訂單。文件與本地連結已檢查；正式狀態仍以前次日期證據為準。
+- 以下為 2026-10-20 及更早紀錄；不能把分支程式當成現行服務已變更或已驗收。
+
+更新日期：2026-10-20（Asia/Taipei）。最新工作為物流與金流文件分階段整理（黑貓 COD 現行設定與待驗收、全家後續計畫）、舊 worktree 內容歸檔與測試移植、COD 發票偏好、MEDION 凝膠內容改寫、商品 SEO 標題與說明（網站改讀 SEO 欄位）、Shopify 商品類別補齊、組合商品主圖改為單支凝膠與 #19 尺寸更正、商品尺寸表改用原廠尺寸圖數值、零庫存停止下單與商品標籤／類別修正；以下各節依時間由新到舊排列。其下保留各分支當時的驗證紀錄。歷史段落中的「未部署／未套用」只描述當時範圍，現況以各節日期及上線查核文件為準。
 ## ShipAny 客服回覆核對（2026-10-21）
 
 - 後台客服視窗 17:22 署名 ShipAny、未標示 AI 的訊息表示：COD 每月月結後另寄 Email 確認金額，可用月結交易明細核對訂單；未確認固定撥款日、運費月結資格或 NT$0 可出單。

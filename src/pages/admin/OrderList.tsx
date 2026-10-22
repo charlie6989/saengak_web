@@ -1,3 +1,4 @@
+import { CodCollectionPanel } from './CodCollectionPanel';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { captureExceptionSafe } from '../../lib/sentry';
@@ -27,6 +28,7 @@ export interface OrderRecord {
   currency_code: string;
   status: OrderStatus;
   payment_status: 'pending' | 'authorized' | 'paid' | 'partially_refunded' | 'refunded' | 'failed' | 'voided';
+  shopify_updated_at: string;
   created_at: string;
   updated_at: string;
   order_invoices: OrderInvoiceProjection[] | null;
@@ -51,6 +53,7 @@ const INVOICE_STATUS_LABEL: Record<OrderInvoiceStatus, string> = {
 };
 
 export const OrderList: React.FC = () => {
+  const [collectionOrder, setCollectionOrder] = useState<OrderRecord | null>(null);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [statusFilter, setStatusFilter] = useState<'ALL' | OrderStatus>('ALL');
@@ -241,6 +244,7 @@ export const OrderList: React.FC = () => {
         </div>
       </div>
 
+      {collectionOrder && <CodCollectionPanel key={collectionOrder.id} order={collectionOrder} onClose={() => setCollectionOrder(null)} />}
       {/* 訂單表格 */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         {isLoading ? (
@@ -273,7 +277,10 @@ export const OrderList: React.FC = () => {
               <tbody className="divide-y divide-gray-100">
                 {filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 font-semibold text-gray-900">{order.order_number}</td>
+                    <td className="px-4 py-3 font-semibold text-gray-900">{order.order_number}
+                      {import.meta.env.VITE_PUBLIC_COD_COLLECTION_ENABLED === 'true' && order.shopify_order_gid && <button
+                        className="block mt-2 underline" type="button" onClick={() => setCollectionOrder(order)}>貨到付款／發票進度</button>}
+                    </td>
                     <td className="px-4 py-3 font-mono text-[11px]">
                       {order.shopify_order_gid ? order.shopify_order_gid.split('/').pop() : '-'}
                     </td>

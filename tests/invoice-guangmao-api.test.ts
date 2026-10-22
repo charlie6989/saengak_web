@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   getSupabaseAdminClient: vi.fn(),
   updateTransactionLog: vi.fn(),
   dispatchAmegoJob: vi.fn(),
+  verifyCollection: vi.fn(),
 }));
 
 vi.mock('../api/_lib/supabase-admin.js', () => ({
@@ -28,6 +29,7 @@ vi.mock('../supabase/functions/amego-invoice-dispatch/amego.js', () => ({
   dispatchAmegoJob: mocks.dispatchAmegoJob,
 }));
 
+vi.mock('../api/_lib/cod-collection.js',()=>({verifyCollectionBeforeIssue:mocks.verifyCollection}));
 import vercelHandler from '../api/invoice/guangmao.js';
 
 const DISPATCH_TOKEN = 'fixture-only-dispatch-token-never-real';
@@ -65,7 +67,7 @@ function buildJob(overrides: Partial<AmegoJob> = {}): AmegoJob {
  */
 function createAdminClientMock(claimQueue: Array<AmegoJob[]>) {
   let claimCallIndex = 0;
-  const rpc = vi.fn(async (fnName: string) => {
+  const rpc = vi.fn(async (fnName: string): Promise<{ data: AmegoJob[] | null; error: { message: string } | null }> => {
     if (fnName === 'claim_amego_invoice_job') {
       const jobs = claimQueue[claimCallIndex] ?? [];
       claimCallIndex += 1;
@@ -322,6 +324,78 @@ describe('光貿發票 Worker API (api/invoice/guangmao.ts)', () => {
       expect(mocks.dispatchAmegoJob).not.toHaveBeenCalled();
       expect(fetchMock).not.toHaveBeenCalled();
     });
+  });
+
+  it('propagates a rejected mutation RPC instead of letting provider issue', async () => {
+    process.env.AmegoDispatchToken = DISPATCH_TOKEN;
+    const admin = createAdminClientMock([[buildJob()]]);
+    const original = admin.rpc.getMockImplementation()!;
+    admin.rpc.mockImplementation(async (name: string) => name === 'mark_amego_invoice_mutation_started'
+      ? { data: null, error: { message: 'lease rejected' } } : original(name));
+    mocks.getSupabaseAdminClient.mockReturnValue(admin);
+    mocks.dispatchAmegoJob.mockImplementation(async (_job, _credentials, _fetch, mark) => {
+      await expect(mark()).rejects.toThrow('INVOICE_MUTATION_FENCE_REJECTED');
+      return { outcome: 'failed', retryable: false, errorCode: 'FENCE', errorMessage: 'rejected' };
+    });
+    await vercelHandler.fetch(request({ method: 'POST', token: DISPATCH_TOKEN, body: { shopifyOrderGid: 'gid://shopify/Order/1001' } }));
+    expect(mocks.dispatchAmegoJob).toHaveBeenCalledTimes(1); expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('returns 503 when provider success cannot be persisted', async () => {
+    process.env.AmegoDispatchToken = DISPATCH_TOKEN;
+    const admin = createAdminClientMock([[buildJob()]]);
+    const original = admin.rpc.getMockImplementation()!;
+    admin.rpc.mockImplementation(async name => name === 'complete_amego_invoice_job'
+      ? { data: null, error: { message: 'fixture failure' } } : original(name));
+    mocks.getSupabaseAdminClient.mockReturnValue(admin);
+    mocks.dispatchAmegoJob.mockResolvedValue({ outcome: 'issued', invoiceNumber: 'AB12345678', providerStatus: 99 });
+    const response = await vercelHandler.fetch(request({ method: 'POST', token: DISPATCH_TOKEN, body: { shopifyOrderGid: 'gid://shopify/Order/1001' } }));
+    expect(response.status).toBe(503); expect(mocks.updateTransactionLog).not.toHaveBeenCalled();
+    expect(await response.json()).toMatchObject({ error: 'INVOICE_RESULT_NOT_PERSISTED' });
+  });
+  it('collection invoice revalidates live delivery before the DB mutation fence', async () => {
+    process.env.AmegoDispatchToken=DISPATCH_TOKEN;
+    const job=buildJob();job.request_payload.issueBasis='cod_collection';
+    const admin=createAdminClientMock([[job]]);mocks.getSupabaseAdminClient.mockReturnValue(admin);
+    mocks.verifyCollection.mockResolvedValue(undefined);
+    mocks.dispatchAmegoJob.mockImplementation(async (_job,_credentials,_fetch,mark)=>{
+      await mark();return {outcome:'issued',invoiceNumber:'AB12345678',providerStatus:99};
+    });
+    await vercelHandler.fetch(request({method:'POST',token:DISPATCH_TOKEN,body:{shopifyOrderGid:job.shopify_order_gid}}));
+    expect(mocks.verifyCollection).toHaveBeenCalledWith(admin,job.shopify_order_gid);
+    const index=admin.rpc.mock.calls.findIndex(c=>c[0]==='mark_amego_invoice_mutation_started');
+    expect(index).toBeGreaterThan(-1);
+    expect(mocks.verifyCollection.mock.invocationCallOrder.at(-1)).toBeLessThan(admin.rpc.mock.invocationCallOrder[index]);
+    expect(mocks.updateTransactionLog).not.toHaveBeenCalled();
+  });
+  it('failed collection revalidation prevents the mutation fence', async () => {
+    process.env.AmegoDispatchToken=DISPATCH_TOKEN;
+    const job=buildJob();job.request_payload.issueBasis='cod_collection';
+    const admin=createAdminClientMock([[job]]);mocks.getSupabaseAdminClient.mockReturnValue(admin);
+    mocks.verifyCollection.mockRejectedValue(new Error('COD_COLLECTION_EVIDENCE_CHANGED'));
+    mocks.dispatchAmegoJob.mockImplementation(async (_job,_credentials,_fetch,mark)=>{
+      await expect(mark()).rejects.toThrow('COD_COLLECTION_EVIDENCE_CHANGED');return {outcome:'failed',retryable:false};
+    });
+    await vercelHandler.fetch(request({method:'POST',token:DISPATCH_TOKEN,body:{shopifyOrderGid:job.shopify_order_gid}}));
+    expect(admin.rpc.mock.calls.some(c=>c[0]==='mark_amego_invoice_mutation_started')).toBe(false);
+  });
+  it('old dispatch jobs may only recover an existing provider result', async () => {
+    process.env.AmegoDispatchToken=DISPATCH_TOKEN;
+    const job=buildJob();job.request_payload.issueBasis='cod_dispatch';
+    const admin=createAdminClientMock([[job]]);mocks.getSupabaseAdminClient.mockReturnValue(admin);
+    mocks.dispatchAmegoJob.mockImplementation(async (_job,_credentials,_fetch,mark)=>{
+      await expect(mark()).rejects.toThrow('COD_DISPATCH_RETIRED');return {outcome:'failed',retryable:false};
+    });
+    await vercelHandler.fetch(request({method:'POST',token:DISPATCH_TOKEN,body:{shopifyOrderGid:job.shopify_order_gid}}));
+    expect(admin.rpc.mock.calls.some(c=>c[0]==='mark_amego_invoice_mutation_started')).toBe(false);
+  });
+  it('issued COD does not overwrite the transaction payment status', async () => {
+    process.env.AmegoDispatchToken = DISPATCH_TOKEN;
+    const codJob = buildJob(); codJob.request_payload.issueBasis = 'cod_dispatch';
+    mocks.getSupabaseAdminClient.mockReturnValue(createAdminClientMock([[codJob]]));
+    mocks.dispatchAmegoJob.mockResolvedValue({ outcome: 'issued', invoiceNumber: 'AB12345678', providerStatus: 99 });
+    await vercelHandler.fetch(request({ method: 'POST', token: DISPATCH_TOKEN, body: { shopifyOrderGid: codJob.shopify_order_gid } }));
+    expect(mocks.updateTransactionLog).not.toHaveBeenCalled(); expect(fetchMock).not.toHaveBeenCalled();
   });
 
   describe('SEC-6：Amego 憑證 Fail-Closed（AmegoSellerTaxId／AmegoAppKey 缺漏時嚴禁靜默補上硬編測試值）', () => {

@@ -7,6 +7,7 @@
  * - 投影至 public.order_invoices 並標記 INVOICE_ISSUED
  */
 
+import { verifyCollectionBeforeIssue } from '../_lib/cod-collection.js';
 import { jsonResponse, timingSafeStringEqual } from '../_lib/security.js';
 import { getSupabaseAdminClient, updateTransactionLog } from '../_lib/supabase-admin.js';
 import {
@@ -159,10 +160,21 @@ async function handler(request: Request): Promise<Response> {
       // Use the platform fetch directly; that context is not a fetch dependency.
       fetch,
       async () => {
-        await admin.rpc('mark_amego_invoice_mutation_started', {
+        if (job.operation === 'issue' && job.request_payload.issueBasis === 'cod_dispatch') {
+          throw new Error('COD_DISPATCH_RETIRED');
+        }
+        if (job.operation === 'issue' && job.request_payload.issueBasis === 'cod_collection') {
+          await verifyCollectionBeforeIssue(admin, job.shopify_order_gid);
+        }
+        const marked = await admin.rpc('mark_amego_invoice_mutation_started', {
           p_job_id: job.job_id,
           p_lease_token: job.lease_token,
         });
+        if (marked.error) {
+          const reason = marked.error.message;
+          throw new Error(['COD_COLLECTION_REVIEW_REQUIRED', 'COD_DISPATCH_RETIRED'].includes(reason)
+            ? reason : 'INVOICE_MUTATION_FENCE_REJECTED');
+        }
       }
     );
 
@@ -171,7 +183,7 @@ async function handler(request: Request): Promise<Response> {
 
     // 5. 完成 Job 並寫入 order_invoices 投影
     try {
-      await admin.rpc('complete_amego_invoice_job', {
+      const completed = await admin.rpc('complete_amego_invoice_job', {
         p_job_id: job.job_id,
         p_lease_token: job.lease_token,
         p_outcome: persistedOutcome,
@@ -183,12 +195,15 @@ async function handler(request: Request): Promise<Response> {
         p_error_code: 'errorCode' in result ? result.errorCode : null,
         p_error_message: 'errorMessage' in result ? result.errorMessage : null,
       });
-    } catch (completeErr) {
-      console.error('Complete Amego job error', completeErr);
+      if (completed.error) throw new Error('INVOICE_RESULT_NOT_PERSISTED');
+    } catch {
+      // Provider may already have issued: surface failure and retain the fenced job
+      // for readback, rather than returning success or updating payment/logs.
+      return jsonResponse({ error: 'INVOICE_RESULT_NOT_PERSISTED', jobId: job.job_id }, { status: 503 });
     }
 
     // 6. 更新 transaction_logs
-    if (result.outcome === 'issued') {
+    if (result.outcome === 'issued' && !['cod_dispatch','cod_collection'].includes(job.request_payload.issueBasis ?? '')) {
       // 依 shopify_order_gid 更新對應 transaction_log
       try {
         const { data: logs } = await admin

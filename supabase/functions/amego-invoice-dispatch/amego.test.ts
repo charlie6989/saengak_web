@@ -402,3 +402,76 @@ describe('Amego invoice dispatch', () => {
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });
+
+
+describe('COD exact amount and mutation fence', () => {
+  const codJob: AmegoJob = { ...job, request_payload: { ...job.request_payload,
+    issueBasis: 'cod_dispatch', totalAmount: 796, shippingAmount: 146, discountAmount: 0 } };
+  it('includes full sales amount and explicit shipping without waiting for settlement', () => {
+    expect(buildAmegoInvoicePayload(codJob)).toMatchObject({ TotalAmount: '796', CarrierId1: '/TRM+O+P' });
+  });
+  it('rejects amount mismatch instead of synthesizing an adjustment', () => {
+    expect(() => buildAmegoInvoicePayload({ ...codJob, request_payload: { ...codJob.request_payload, totalAmount: 800 } }))
+      .toThrow('COD invoice amounts must reconcile exactly');
+  });
+  it('a rejected database fence never reaches the issue API', async () => {
+    const fetcher = vi.fn().mockResolvedValue(response({ code: 71, msg: 'not found' }));
+    const fence = vi.fn().mockRejectedValue(new Error('COD_DISPATCH_REVIEW_REQUIRED'));
+    const result = await dispatchAmegoJob(codJob, credentials, fetcher, fence);
+    expect(result.outcome).toBe('failed'); expect(fence).toHaveBeenCalledTimes(1);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(fetcher.mock.calls[0][0]).toContain('/json/invoice_query');
+  });
+});
+
+
+describe('COD expiry versus reconciliation', () => {
+  const codJob: AmegoJob = { ...job, request_payload: { ...job.request_payload,
+    issueBasis: 'cod_dispatch', totalAmount: 680, shippingAmount: 30, discountAmount: 0 } };
+  it.each(['COD_DISPATCH_APPROVAL_EXPIRED','COD_DISPATCH_REVIEW_REQUIRED','COD_FULFILLMENT_REVIEW_REQUIRED'])(
+    'does not retry new mutation after %s', async reason => {
+      const fetcher = vi.fn().mockResolvedValue(response({ code: 71 }));
+      const result = await dispatchAmegoJob(codJob, credentials, fetcher, async () => { throw new Error(reason); });
+      expect(result).toMatchObject({ outcome: 'failed', retryable: false, errorCode: reason }); expect(fetcher).toHaveBeenCalledTimes(1);
+    });
+  it('expiry does not turn already accepted but not yet visible invoice into a second issue', async () => {
+    const fetcher = vi.fn().mockResolvedValue(response({ code: 71 })); const fence = vi.fn();
+    expect(await dispatchAmegoJob({ ...codJob, mutation_accepted: true }, credentials, fetcher, fence)).toMatchObject({ outcome: 'provider_pending', mutationAccepted: true });
+    expect(fetcher).toHaveBeenCalledTimes(1); expect(fence).not.toHaveBeenCalled();
+  });
+  it('existing invoice is reconciled after expiry or fulfillment without issuing', async () => {
+    const fetcher = vi.fn().mockResolvedValue(response({ code: 0, data: { invoice_number: 'AA12345678', invoice_type: 'C0401', invoice_status: 99,
+      order_id: job.amego_order_id, total_amount: 680, buyer_identifier: '0000000000', create_date: 1788000000 } }));
+    const fence = vi.fn().mockRejectedValue(new Error('COD_DISPATCH_APPROVAL_EXPIRED'));
+    expect(await dispatchAmegoJob(codJob, credentials, fetcher, fence)).toMatchObject({ outcome: 'issued' });
+    expect(fetcher).toHaveBeenCalledTimes(1); expect(fence).not.toHaveBeenCalled();
+  });
+});
+
+describe('collection evidence recovery', () => {
+  const codJob: AmegoJob = { ...job, request_payload: { ...job.request_payload,
+    issueBasis:'cod_collection', collectionFingerprint:'fixture', totalAmount:680, shippingAmount:30, discountAmount:0 } };
+  it.each(['COD_COLLECTION_DISABLED','COD_COLLECTION_SOURCE_UNAVAILABLE','COD_COLLECTION_STORAGE_UNAVAILABLE'])(
+    'retries without issuing when %s',async reason=>{
+      const fetcher=vi.fn().mockResolvedValue(response({code:71}));
+      expect(await dispatchAmegoJob(codJob,credentials,fetcher,async()=>{throw Error(reason);})).toMatchObject({outcome:'failed',retryable:true,errorCode:reason});
+      expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][0]).toContain('/json/invoice_query');
+    });
+  it.each(['COD_COLLECTION_REVIEW_REQUIRED','COD_COLLECTION_EVIDENCE_CHANGED'])(
+    'blocks new issuance after %s',async reason=>{
+      const fetcher=vi.fn().mockResolvedValue(response({code:71}));
+      expect(await dispatchAmegoJob(codJob,credentials,fetcher,async()=>{throw Error(reason);})).toMatchObject({outcome:'failed',retryable:false,errorCode:reason});
+      expect(fetcher).toHaveBeenCalledTimes(1);
+    });
+  it('unknown accepted result only queries despite withdrawn evidence',async()=>{
+    const fetcher=vi.fn().mockResolvedValue(response({code:71})),fence=vi.fn().mockRejectedValue(Error('COD_COLLECTION_REVIEW_REQUIRED'));
+    expect(await dispatchAmegoJob({...codJob,mutation_accepted:true},credentials,fetcher,fence)).toMatchObject({outcome:'provider_pending',mutationAccepted:true});
+    expect(fetcher).toHaveBeenCalledTimes(1);expect(fence).not.toHaveBeenCalled();
+  });
+  it('recovers an existing invoice even when collection automation is disabled',async()=>{
+    const fetcher=vi.fn().mockResolvedValue(response({code:0,data:{invoice_number:'AA12345678',invoice_type:'C0401',invoice_status:99,order_id:job.amego_order_id,total_amount:680,buyer_identifier:'0000000000',create_date:1788000000}}));
+    const fence=vi.fn().mockRejectedValue(Error('COD_COLLECTION_DISABLED'));
+    expect(await dispatchAmegoJob(codJob,credentials,fetcher,fence)).toMatchObject({outcome:'issued'});
+    expect(fetcher).toHaveBeenCalledTimes(1);expect(fence).not.toHaveBeenCalled();
+  });
+});

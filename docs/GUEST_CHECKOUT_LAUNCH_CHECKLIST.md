@@ -74,3 +74,27 @@
 - 本機驗證輸出與限權限暫存憑證保存在 gitignored `.tmp/guest-launch/`；不可整包分享或提交。正式服務設定與資料不在 Git 備份內。
 
 參考：[Shopify 原地更新訂閱 API](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/webhookSubscriptionUpdate)、[Turnstile 錯誤碼](https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/)。
+
+
+## 黑貓 COD 全自動收款後開票驗收（已實作，尚未正式啟用）
+
+最新實作及啟用條件見 [實作文件](COD_COLLECTION_IMPLEMENTATION.md)，取代下方出貨核准／10 分鐘期限的舊驗收目標。waaship 不列入流程；新 COD 流程未部署，正式 Flow 未修改。2026-10-23 回查與實單驗收表見 [本輪查核](RELEASE_ACCEPTANCE_2026-10-23.md)。
+
+- [x] ShipAny 10/22 書面確認黑貓常溫 DELIVERED 表示收足該運單指定代收額；這項契約證據不代表已驗收實單或逐單金額。
+- [ ] 取得可信的原 ShipAny 運單生效 COD 額、版本及送達時金額，驗證與 Shopify 折扣後含運應收一致；獨立可修改欄位不能靠 mapping flag 取代驗收。
+- [ ] 會計確認收貨付款後開票的適用依據與時限；延遲、更正、跨期、退款折讓規則明確。
+- [ ] 自動證據驗證與去重、整單實收額核對、光貿防重、Shopify paid 獨立重試、補查排程／告警及取消改單競態完成測試；不以人工核准代替正常路徑。
+- [ ] 切換時排除舊 DELIVERED → paid 的循環證據、確認唯一開票來源與既有訂單／發票，不重開歷史單；完成另行授權的外部驗收。
+
+## 黑貓 COD 整單出貨新增驗收（歷史實作目標，已由新方向取代）
+
+- [ ] 會計確認發貨認定、開票日期、部分預收／拆單及退回折讓規則；光貿／waaship 唯一來源盤點完成。
+- [ ] 切換前逐單盤點舊單；確認 migration → webhook/API → 切換界線／啟用的順序與預設關閉狀態。
+- [ ] 整單 pending 開票、載具／公司／捐贈、通知及財政部存證的實際結果；只在本機測過不算本項通過。
+- [ ] 重複／超時回查、未開票取消、開票中取消、開票後退貨及跨日例外的營運演練；建立值班告警與交運證據保存。
+- [ ] ShipAny／waaship fulfillment 時序適配「核准時未履約」限制；代收成功後才確認付款，撥款獨立對帳。
+
+程式與隔離測試結果見 [COD 方案](COD_INVOICE_CHANGE_PLAN.md)；本次沒有正式 migration、部署、Flow／供應商設定變更或真實訂單。
+
+- [ ] 確認能在 Shopify 未建立 fulfillment 時取得黑貓託運號；若供應商在標籤階段已回寫履約，須另案解決時序，不可刪除／偽改履約後放行。
+- [ ] 演練核准到期、等鎖跨期限、已送出後才收到取消／改單，以及 provider 成功但本站寫回失敗的人工回查；本機 8 項多連線測試不代替正式作業驗收。

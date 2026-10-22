@@ -1,3 +1,6 @@
+import { waitUntil } from '@vercel/functions';
+import { collectionEvent } from '../_lib/cod-collection-event.js';
+import { nudgeCodCollection } from '../_lib/cod-collection-nudge.js';
 /**
  * Shopify Webhooks 接收端點 (Shopify Orders & Refunds Webhook API)
  * 依據 docs/VERCEL_MIGRATION_SPEC.md §4.1 與 docs/00_DECISION_LOG.md 規格：
@@ -12,6 +15,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { jsonResponse } from '../_lib/security.js';
 import { getSupabaseAdminClient } from '../_lib/supabase-admin.js';
 import {
+  readRequestBodyWithLimit,
+  WebhookBodyTooLargeError,
   callOrderSyncRpc,
   parseShopifyOrderWebhook,
   parseShopifyRefundWebhook,
@@ -19,6 +24,7 @@ import {
   normalizeShopifyDomain,
 } from '../../supabase/functions/shopify-orders-webhook/webhook.js';
 
+export const maxDuration = 60;
 export const config = {
   api: {
     bodyParser: false,
@@ -92,7 +98,8 @@ async function handler(request: Request): Promise<Response> {
   const triggeredAt = request.headers.get('x-shopify-triggered-at') || new Date().toISOString();
 
   // 1. 驗證 Topic
-  if (!isAcceptedShopifyWebhookTopic(topic)) {
+  const isCollectionEvent = ['fulfillment_events/create','fulfillment_events/delete'].includes(topic);
+  if (!isAcceptedShopifyWebhookTopic(topic) && !isCollectionEvent) {
     return jsonResponse({ error: `未支援的 Webhook 主題: ${topic}` }, { status: 400 });
   }
 
@@ -107,7 +114,10 @@ async function handler(request: Request): Promise<Response> {
   }
 
   // 3. 讀取 Raw Body 與驗證 HMAC (Fail-Closed：未設定密鑰視為伺服器設定錯誤，一律拒絕)
-  const rawBody = await request.text();
+  let rawBody: string;
+  try { rawBody = await readRequestBodyWithLimit(request); } catch (error) {
+    return jsonResponse({ error: 'INVALID_WEBHOOK_BODY' }, { status: error instanceof WebhookBodyTooLargeError ? 413 : 400 });
+  }
   const webhookSecret =
     process.env.SHOPIFY_WEBHOOK_SECRET || process.env.ShopifyWebhookSecret || '';
 
@@ -147,6 +157,16 @@ async function handler(request: Request): Promise<Response> {
 
   // 5. 呼叫 Supabase RPC 執行去重、防倒退與投影寫入
   try {
+    if (isCollectionEvent) {
+      const event = payload && collectionEvent(payload, topic);
+      if (!event || shopDomain !== 'gh2xgs-zf.myshopify.com' || !/^[a-zA-Z0-9-]{1,100}$/.test(webhookId)) {
+        return jsonResponse({ error: 'INVALID_FULFILLMENT_EVENT' }, { status: 422 });
+      }
+      const saved = await admin.rpc('receive_cod_fulfillment_event', { ...event, p_webhook_id: webhookId });
+      if (saved.error) return jsonResponse({ error: 'WEBHOOK_STORAGE_UNAVAILABLE' }, { status: 503 });
+      if (process.env.COD_COLLECTION_ENABLED === 'true') waitUntil(nudgeCodCollection(admin, event.p_order_gid));
+      return jsonResponse({ ok: true, result: saved.data });
+    }
     if (topic === 'refunds/create') {
       const parsedRefund = parseShopifyRefundWebhook(payload, metadata);
       if (!parsedRefund) {
@@ -178,6 +198,10 @@ async function handler(request: Request): Promise<Response> {
       if (error) {
         console.error('sync_shopify_order_webhook error', error);
         return jsonResponse({ error: '儲存訂單投影失敗' }, { status: 500 });
+      }
+
+      if (process.env.COD_COLLECTION_ENABLED === 'true') {
+        waitUntil(nudgeCodCollection(admin, parsedOrder.p_shopify_order_gid));
       }
 
       // LUCISSI 會員首單免運：第一筆付款訂單成立後結算（用掉或停用），失敗不影響訂單同步

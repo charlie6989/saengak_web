@@ -1,5 +1,6 @@
 import {
   REQUIRED_ORDER_WEBHOOK_TOPICS,
+  COD_COLLECTION_WEBHOOK_TOPICS,
   LUCISSI_CARE_ORDER_WEBHOOK_URI,
   LUCISSI_CARE_SHOPIFY_API_VERSION,
   LUCISSI_CARE_SHOPIFY_DOMAIN,
@@ -9,6 +10,9 @@ import {
 } from './shopify-webhooks-lib.mjs';
 
 const apply = process.argv.includes('--apply');
+const topics = process.argv.includes('--include-cod-collection')
+  ? [...REQUIRED_ORDER_WEBHOOK_TOPICS, ...COD_COLLECTION_WEBHOOK_TOPICS]
+  : REQUIRED_ORDER_WEBHOOK_TOPICS;
 const config = validateWebhookConfiguration({
   shopDomain: process.env.SHOPIFY_SHOP_DOMAIN || LUCISSI_CARE_SHOPIFY_DOMAIN,
   apiVersion: process.env.SHOPIFY_API_VERSION || LUCISSI_CARE_SHOPIFY_API_VERSION,
@@ -98,16 +102,16 @@ if (!accessToken) {
     shopDomain: config.shopDomain,
     apiVersion: config.apiVersion,
     webhookUri: config.webhookUri,
-    requiredTopics: REQUIRED_ORDER_WEBHOOK_TOPICS,
+    requiredTopics: topics,
     next: '設定 SHOPIFY_ADMIN_ACCESS_TOKEN，或設定 SHOPIFY_APP_CLIENT_ID 與 SHOPIFY_APP_CLIENT_SECRET，再執行 npm run shopify:webhooks -- --apply',
   }, null, 2));
   if (apply) process.exitCode = 1;
 } else {
   const current = await shopifyGraphql(listQuery, {
-    topics: REQUIRED_ORDER_WEBHOOK_TOPICS,
+    topics,
   });
   const existing = current?.webhookSubscriptions?.nodes ?? [];
-  const plan = buildWebhookSubscriptionPlan(existing, config.webhookUri);
+  const plan = buildWebhookSubscriptionPlan(existing, config.webhookUri, topics);
 
   if (plan.some((item) => item.action === 'conflict')) {
     console.error(JSON.stringify({
@@ -131,11 +135,12 @@ if (!accessToken) {
   }
 
   const verified = await shopifyGraphql(listQuery, {
-    topics: REQUIRED_ORDER_WEBHOOK_TOPICS,
+    topics,
   });
   const finalPlan = buildWebhookSubscriptionPlan(
     verified?.webhookSubscriptions?.nodes ?? [],
     config.webhookUri,
+    topics,
   );
 
   console.log(JSON.stringify({

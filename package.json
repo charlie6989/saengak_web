@@ -65,7 +65,8 @@
     "verify:commerce": "node scripts/verify-commerce-sandbox.mjs",
     "verify:production": "node scripts/verify-production-surface.mjs",
     "verify:supabase": "node scripts/verify-supabase-baseline.mjs",
-    "shopify:webhooks": "node scripts/sync-shopify-webhooks.mjs"
+    "shopify:webhooks": "node scripts/sync-shopify-webhooks.mjs",
+    "test:db:cod-concurrency": "node scripts/test-cod-concurrency.mjs"
   },
   "type": "module",
   "version": "0.0.0"

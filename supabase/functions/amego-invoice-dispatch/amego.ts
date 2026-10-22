@@ -17,6 +17,9 @@ export interface AmegoJob {
   amego_order_id: string;
   operation: 'issue' | 'void';
   request_payload: {
+    issueBasis?: 'cod_dispatch' | 'cod_collection';
+    collectionFingerprint?: string;
+    confirmationId?: string;
     currencyCode: string;
     totalAmount: string | number;
     lineItems: JobLineItem[];
@@ -84,6 +87,16 @@ export function amegoMd5(value: string): string {
 
 export function buildAmegoInvoicePayload(job: AmegoJob, issuerNote = ''): UnknownRecord {
   const request = job.request_payload;
+  if (request.issueBasis === 'cod_dispatch' || request.issueBasis === 'cod_collection') {
+    const lines = request.lineItems;
+    if (!Array.isArray(lines)) throw new Error('COD invoice amounts must reconcile exactly');
+    const sum = lines.reduce((n, line) => n + Number(line.price) * Number(line.quantity), 0);
+    if (!Array.isArray(lines) || !Number.isSafeInteger(sum)
+      || !Number.isSafeInteger(Number(request.shippingAmount)) || !Number.isSafeInteger(Number(request.discountAmount))
+      || sum + Number(request.shippingAmount) - Number(request.discountAmount) !== Number(request.totalAmount)) {
+      throw new Error('COD invoice amounts must reconcile exactly');
+    }
+  }
   if (request.currencyCode !== 'TWD') throw new Error('Only TWD invoices are supported');
   const totalAmount = integerMoney(request.totalAmount, 'Total amount');
   if (!Array.isArray(request.lineItems) || request.lineItems.length === 0 || request.lineItems.length > 250) {
@@ -482,6 +495,16 @@ export async function dispatchAmegoJob(
         errorCode: 'MUTATION_OUTCOME_UNKNOWN',
         mutationAccepted: true,
       };
+    }
+    const reason = error instanceof Error ? error.message : '';
+    if (job.request_payload.issueBasis === 'cod_collection' && /^(COD_COLLECTION_|INVOICE_MUTATION_FENCE_REJECTED)/.test(reason)) {
+      return { outcome: 'failed', errorCode: reason, errorMessage: reason, retryable: !['COD_COLLECTION_REVIEW_REQUIRED', 'COD_COLLECTION_EVIDENCE_CHANGED'].includes(reason) };
+    }
+    if (reason === 'COD_DISPATCH_RETIRED') return { outcome: 'failed', errorCode: reason, errorMessage: reason, retryable: false };
+    if (job.request_payload.issueBasis === 'cod_dispatch'
+      && ['COD_DISPATCH_APPROVAL_EXPIRED', 'COD_DISPATCH_REVIEW_REQUIRED', 'COD_LIVE_ORDER_CHANGED',
+        'COD_FULFILLMENT_REVIEW_REQUIRED', 'INVOICE_MUTATION_FENCE_REJECTED'].includes(reason)) {
+      return { outcome: 'failed', errorCode: reason, errorMessage: reason, retryable: false };
     }
     return {
       outcome: 'failed',

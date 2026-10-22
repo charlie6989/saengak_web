@@ -71,5 +71,10 @@
             "destination": "https://lucissicare.com/:path",
             "permanent": true
         }
-    ]
+    ],
+    "git": {
+        "deploymentEnabled": {
+            "codex/cod-dispatch-invoicing": false
+        }
+    }
 }
