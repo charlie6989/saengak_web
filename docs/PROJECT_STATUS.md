@@ -5,7 +5,7 @@
 - 已確認一般 API 文件被「API 系統對接服務」訂閱門檻阻擋；Pro 頁列 NT$398／月、14 天試用、期後後付、10,000 次 API／週期、達 200 成功出單可豁免月費。未訂閱或接受條款，方案頁未保證 COD 金額可查。
 - 後台可見五種訂單 Webhook：updated／fulfilled／delivered／merged／splitted；全部無端點。只展開空白欄位查看後重新載入，確認未新增端點；payload、簽章及金額／版本尚未取得。
 - 已從 CARE #1007 官方匯出 1 筆 22 欄 CSV，沒有 COD 開關／金額／幣別，不能作逐單金額來源。原始含個資檔僅在本機 Downloads，未進 Git。
-- 優先查一般物流 API 是否可讀 Shopify App 原運單的生效代收額及修改版本，結合 DELIVERED 契約；「最新可編輯值」仍不足證明送達時金額。沒有猜 endpoint 或修改程式放寬驗證。技術確認信已準備但未寄送；見 [來源調查與驗收](SHIPANY_COD_AMOUNT_SOURCE.md) 及 [草稿](SHIPANY_COD_AMOUNT_INQUIRY.md)。
+- 優先查一般物流 API 是否可讀 Shopify App 原運單的生效代收額及修改版本，結合 DELIVERED 契約；「最新可編輯值」仍不足證明送達時金額。沒有猜 endpoint 或修改程式放寬驗證。技術確認信已於 10/22 18:44 經使用者同意寄至 cs@shipany.io、副本 info@shipany.io，回讀確認 SENT、原討論串、收件人及核准本文；待供應商回覆。未訂閱服務。見 [來源調查與驗收](SHIPANY_COD_AMOUNT_SOURCE.md) 及 [已寄送信件](SHIPANY_COD_AMOUNT_INQUIRY.md)。
 
 ## 2026-10-22 ShipAny 正式啟用前後台查核（實單驗收仍阻擋）
 

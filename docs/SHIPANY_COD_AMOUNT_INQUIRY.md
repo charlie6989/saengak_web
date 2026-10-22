@@ -1,7 +1,9 @@
-# ShipAny 逐單 COD 金額技術確認信（草稿，未寄送）
+# ShipAny 逐單 COD 金額技術確認信（已寄送）
 
 收件人：cs@shipany.io；副本：info@shipany.io。
-預計回覆既有討論串「LUCISSI：確認台灣 Shopify App／黑貓沙盒運單與追蹤回寫測試」。本信不授權訂閱、派件或設定變更。
+已回覆既有討論串「LUCISSI：確認台灣 Shopify App／黑貓沙盒運單與追蹤回寫測試」。本信不授權訂閱、派件或設定變更。
+
+寄送紀錄：2026-10-22 18:44:33（Asia/Taipei），經使用者明確同意後寄送。[Gmail 已寄出郵件](https://mail.google.com/mail/#sent/1a163366ba8537ae)，原 thread `1a103d9e680f0f61`。已回讀 SENT、To／Cc／主旨及原 thread，核對新信本文與核准草稿一致（後方附原討論串引用）。等待供應商回覆；未開通任何服務。
 
 ---
 
