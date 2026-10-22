@@ -4,9 +4,11 @@
 
 ## COD 關閉狀態部署（2026-10-23，接續）
 
-- 使用者要求處理合併與部署；功能關閉不再作為保留 Draft 的理由。PR #73 準備合併，實際合併與部署結果待回讀。
+- 使用者要求處理合併與部署；功能關閉不再作為保留 Draft 的理由。PR #73 已合併至 main `7362920d04a8c45b6eed051d2a36f4e7c48bbbd1`；[main CI 39860327330](https://github.com/charlie6989/saengak_web/actions/runs/39860327330) 成功。
 - 已先在正式 Supabase 套用 repository 的兩份 COD migration，版本對齊 `20261021000000`、`20261022000000`。回讀 policy：`enabled=false`、`collection_enabled=false`、`starts_at=null`；新 RPC 僅 service_role 可執行。舊 webhook 呼叫仍可省略有預設值的新參數。
 - Vercel Production 光貿 release=false，四個新 COD 旗標未設定，依程式預設關閉。移除尚未啟用的五分鐘 COD cron，保留既有每日發票排程；啟用時需另驗證並加入 COD 排程及告警。
+- 正式 Vercel 部署 `dpl_828qF5PhmSVSWHxvCkw6GHG8gYZP` READY，SHA 為上述 merge commit，`lucissicare.com`／`www.lucissicare.com` alias 已指向此部署；crons 回讀只有既有每日光貿工作。公開站檢查 24 pass／0 fail，COD API 未授權請求回 401。這只證明部署及存取邊界，不是收款或開票驗收。
+- Supabase Edge `amego-invoice-dispatch` v3、`shopify-orders-webhook` v9 已部署 ACTIVE，保留既有驗證模式及程式內 token／HMAC 檢查；前者新增禁止 Edge 首次開立 COD 的防護。DB 回讀 collection evidence=0、COD invoice jobs=0，關閉政策下 claim 回 null。
 - 本輪新增變更只有排程配置與文件，相關 22 項 API／webhook／訂閱測試通過。沒有新增 Shopify 物流訂閱、修改 Flow、建立訂單、收款或開票。正式實單及供應商金額條件仍待完成。
 
 ## 已完成：main CI 與 Vite

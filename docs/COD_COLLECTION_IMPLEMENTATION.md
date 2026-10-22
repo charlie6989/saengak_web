@@ -1,6 +1,6 @@
 # 黑貓 COD 收款後自動開票：實作與啟用條件
 
-更新：2026-10-23（Asia/Taipei）。[PR #73](https://github.com/charlie6989/saengak_web/pull/73) 正準備合併並以關閉狀態部署；兩份 COD migration 已套用正式 Supabase，policy 維持 false／starts_at=null。部署結果見 [當日紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。未改 Flow、未建立外部訂單或發票。
+更新：2026-10-23（Asia/Taipei）。[PR #73](https://github.com/charlie6989/saengak_web/pull/73) 已合併 main `7362920` 並以關閉狀態部署；兩份 COD migration 已套用正式 Supabase，policy 維持 false／starts_at=null。部署結果見 [當日紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。未改 Flow、未建立外部訂單或發票。
 
 同日後續已完成 [ShipAny／CARE 後台欄位查核](SHIPANY_COD_LIVE_VERIFICATION.md)：黑貓規則、草稿匯入及送達回寫設定已讀回；CARE 沒有已出貨實單，使用者亦確認尚無真實黑貓 COD 訂單。COD 額是獨立可編輯欄位，金額映射與修改控制仍未成立，不能開啟 amount mapping verified 或背景開關。現行送達 → paid Flow 仍作用中，首單交運前須安排切換。
 

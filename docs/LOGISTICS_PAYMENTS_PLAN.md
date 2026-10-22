@@ -1,5 +1,7 @@
 # 物流與金流上線清單（LUCISSI CARE）
 
+> 2026-10-23 最新部署：PR #73 已合併 main `7362920`，Vercel READY、兩份 COD migration 及兩個相關 Edge function 已部署。新 COD／付款／UI／資料庫 policy 與光貿放行仍關閉，未新增物流 webhook 或 COD 排程，未做實單驗收。下方未部署敘述為當時紀錄；目前結果見 [驗收紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。
+
 > 2026-10-23：main Vite 修補與 CI 已恢復，PR #73 衝突及審查處理中、維持 Draft／新功能關閉。正式 guest=false、光貿 release=false、沒有新增實單；收款／同步／發票／通知／退款逐項證據與啟用阻擋見 [本輪驗收紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。
 
 > 2026-10-22 後續實際後台查核：CARE 黑貓規則、Sales Order Created → 草稿、物流回寫均已讀回；CARE 10 筆訂單無已出貨實例，ShipAny 全狀態 COD 紀錄查詢無資料，使用者確認尚無真實黑貓 COD 訂單。運單 COD 額有獨立可編輯欄位，未證明與折扣後含運總額持續一致；舊送達 → paid Flow 仍作用中。正式啟用阻擋及首單順序見 [後台驗證紀錄](SHIPANY_COD_LIVE_VERIFICATION.md)。
