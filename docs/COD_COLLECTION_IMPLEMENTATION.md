@@ -73,7 +73,13 @@ flowchart TD
 4. 經正式變更授權才部署新 migration／程式、建立 webhook 與合適排程，替換現有只看「標準」名稱的 DELIVERED → paid Flow，最後啟用兩個背景開關。舊 Flow 本輪未修改。
 5. 驗收真實「送達／代收 → 證據 → 光貿發票號碼 → 通知／財政部存證 → Shopify paid」，以及拒收、更正、重試、取消退款；ShipAny 撥款另表對帳。
 
-## 本機驗證（2026-10-22）
+## 2026-10-23 審查與再次驗證
+
+- 已合併 main 的 Vite 修補與光貿部署紀錄，PR #73 保留 Draft，尚未合併／部署。最新查核、測試與實單證據表見 [本輪驗收紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。
+- 一般 `npm run shopify:webhooks` 及 `--apply` 僅處理既有六種訂單 topic。COD 額外兩種物流事件須在 migration、接收端及啟用條件驗證完成後，明確使用 `npm run shopify:webhooks -- --include-cod-collection` 檢視計畫；正式訂閱變更再加 `--apply`。選用訂閱不會自動開啟付款／發票旗標。本輪未建立任何外部訂閱。
+- 部署相容性：新版 webhook 會傳入 `p_invoice_context`，須先套用相應 migration 才能部署新接收端；不能只部署程式並以開關關閉當成資料庫已相容。
+
+## 本機驗證（2026-10-22，歷史紀錄）
 
 - Vitest：62 檔、619 項通過，包括新版來源校驗、webhook 簽章／body limit／耐久保存、付款獨立重試、發票最後放行及 provider 查回。測試均使用假資料，未呼叫正式 Shopify／光貿金融操作。
 - pgTAP：286 項通過（新版 COD 50 項），於本機拋棄式 `cod_invoice_tests_20261022`；正式 Supabase 及本機原始應用 DB 均未套用本次 migration。副本還原的四個 `graphql_public.graphql` extension ACL 缺項與本測試無關；11 組測試完整 rollback。

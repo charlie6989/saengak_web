@@ -10,6 +10,11 @@ export const REQUIRED_ORDER_WEBHOOK_TOPICS = [
   'ORDERS_FULFILLED',
   'ORDERS_CANCELLED',
   'REFUNDS_CREATE',
+];
+
+// Subscribe only during the separately verified COD rollout. Ordinary order
+// webhook maintenance must not activate delivery-event ingestion early.
+export const COD_COLLECTION_WEBHOOK_TOPICS = [
   'FULFILLMENT_EVENTS_CREATE',
   'FULFILLMENT_EVENTS_DELETE',
 ];
@@ -54,8 +59,8 @@ export function validateWebhookConfiguration({ shopDomain, apiVersion, webhookUr
   };
 }
 
-export function buildWebhookSubscriptionPlan(existingSubscriptions, webhookUri) {
-  return REQUIRED_ORDER_WEBHOOK_TOPICS.map((topic) => {
+export function buildWebhookSubscriptionPlan(existingSubscriptions, webhookUri, topics = REQUIRED_ORDER_WEBHOOK_TOPICS) {
+  return topics.map((topic) => {
     const matchingTopic = existingSubscriptions.filter((subscription) => subscription.topic === topic);
     const staleUris = matchingTopic
       .filter((subscription) => subscription.uri !== webhookUri)

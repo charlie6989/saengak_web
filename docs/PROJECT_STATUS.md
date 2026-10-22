@@ -2,6 +2,13 @@
 
 更新日期：2026-10-23（Asia/Taipei）。歷史段落保留當時證據；最新驗收以本輪紀錄為準。
 
+## main 修復、PR #73 審查與實單待辦（2026-10-23）
+
+- **已完成**：PR #74 合併 main `b3ed008`，Vite 7.3.7；main push CI `39857072277` 成功。正式 CARE 部署 `dpl_5MLpnV8bzCcDLiYPc75CeRVhGtPg` READY、alias 與 SHA 一致，公開站 24 項檢查通過。
+- **PR #73**：合併 main 並解決三份交接文件衝突；修正一般 webhook 同步預設提前加入 COD 物流訂閱，改為明確選用。分支 63 檔／622 項 Vitest、286 項 pgTAP、10 項競態及靜態／建置／audit 通過。保留 Draft，沒有合併／部署新 COD 功能；遠端結果見 PR checks。
+- **直接回查**：正式 guest=false、光貿 release=false、新 COD flags 未設定及 policy／evidence 表不存在；CARE 訂單最新 #1010、沒有新的正式驗收樣本；ShipAny API 金額技術追問後尚無新答覆。
+- **尚未完成**：正式金流與黑貓實單的收款、訂單同步、發票號碼、通知／存證及退款例外。需要指定實單／測試範圍，補齊金流、逐單代收額、唯一開票來源與切換條件；之後才推進訪客及全家。詳見 [本輪驗收紀錄與證據表](RELEASE_ACCEPTANCE_2026-10-23.md)。
+
 ## main CI 的 Vite 修補（2026-10-23）
 
 - main `b6dffb6` 的 CI run `39585929256` 在完整 moderate audit 因 Vite 7.3.6 的 launch-editor 高風險漏洞失敗；其餘步驟成功。將 PR #73 的 Vite 7.3.7 與對應 lock 修補獨立移入，不連帶啟用 COD 或變更付款／發票流程。

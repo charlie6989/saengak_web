@@ -76,11 +76,12 @@
 參考：[Shopify 原地更新訂閱 API](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/webhookSubscriptionUpdate)、[Turnstile 錯誤碼](https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/)。
 
 
-## 黑貓 COD 全自動收款後開票驗收（最新方案，未實作）
+## 黑貓 COD 全自動收款後開票驗收（已實作，尚未正式啟用）
 
-最新方向見 [全自動代收開票方案](COD_COLLECTION_INVOICE_PROPOSAL.md)，取代下方出貨核准／10 分鐘期限的舊驗收目標。waaship 不列入流程；正式 Flow 與設定尚未修改。
+最新實作及啟用條件見 [實作文件](COD_COLLECTION_IMPLEMENTATION.md)，取代下方出貨核准／10 分鐘期限的舊驗收目標。waaship 不列入流程；新 COD 流程未部署，正式 Flow 未修改。2026-10-23 回查與實單驗收表見 [本輪查核](RELEASE_ACCEPTANCE_2026-10-23.md)。
 
-- [ ] ShipAny 確認本帳號黑貓 COD 有正式收款 webhook／唯讀 API，或有全額收款保證的精確狀態映射；目前未通過，10/16 對全家問題的客服答覆為無收款 API／webhook。
+- [x] ShipAny 10/22 書面確認黑貓常溫 DELIVERED 表示收足該運單指定代收額；這項契約證據不代表已驗收實單或逐單金額。
+- [ ] 取得可信的原 ShipAny 運單生效 COD 額、版本及送達時金額，驗證與 Shopify 折扣後含運應收一致；獨立可修改欄位不能靠 mapping flag 取代驗收。
 - [ ] 會計確認收貨付款後開票的適用依據與時限；延遲、更正、跨期、退款折讓規則明確。
 - [ ] 自動證據驗證與去重、整單實收額核對、光貿防重、Shopify paid 獨立重試、補查排程／告警及取消改單競態完成測試；不以人工核准代替正常路徑。
 - [ ] 切換時排除舊 DELIVERED → paid 的循環證據、確認唯一開票來源與既有訂單／發票，不重開歷史單；完成另行授權的外部驗收。

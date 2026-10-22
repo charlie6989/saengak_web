@@ -2,6 +2,13 @@
 
 更新日期：2026-10-23（Asia/Taipei）。歷史段落保留當時證據；最新驗收以本輪紀錄為準。
 
+## main 修復、PR #73 審查與正式驗收邊界（2026-10-23）
+
+- Vite 7.3.7 已由 PR #74 合併 main `b3ed008`，main push CI `39857072277` 成功；正式 CARE 部署 READY、24 項公開站檢查通過。這不代表真實付款／物流／發票驗收。
+- PR #73 已整合 main、解決三份文件衝突，維持 Draft／不部署。一般 webhook 同步維持六個 topic；COD 物流訂閱改須明確 `--include-cod-collection`，避免例行維運提前啟用。新增 RPC 參數要求先準備 migration，再部署新版 webhook。
+- 本輪分支 63 檔／622 項 Vitest、286 項隔離 pgTAP、10 項多連線競態通過，typecheck／build／content／Supabase 靜態檢查與 audit 通過。正式 guest=false、光貿 release=false、新 COD flags 未設定、COD 表不存在；Shopify 最新仍 #1010，沒有新實單。ShipAny 金額 API 技術追問後尚無新回覆。
+- 完整來源、歷史狀態限制與正式收款／同步／發票／通知／退款證據表見 [本輪驗收紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。條件完成前不推進訪客結帳或全家啟用；缺實單不能以 fixture／沙盒替代。
+
 ## main CI 的 Vite 修補（2026-10-23）
 
 - main `b6dffb6` 的 CI run `39585929256` 在完整 moderate audit 因 Vite 7.3.6 的 launch-editor 高風險漏洞失敗；其餘步驟成功。將 PR #73 的 Vite 7.3.7 與對應 lock 修補獨立移入，不連帶啟用 COD 或變更付款／發票流程。
