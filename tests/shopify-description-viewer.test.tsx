@@ -207,3 +207,46 @@ describe('ShopifyDescriptionViewer 跨品類自適應卡（萬用通用商品模
   });
 });
 
+
+
+describe('商品內容的功能、細節與情境順序', () => {
+  it('保留每一段實際功能並置於部位細節及使用情境之前', () => {
+    const features = Array.from({ length: 6 }, (_, i) => ({
+      kind: 'feature' as const, badge: `特色 ${i + 1}`, title: `功能段落 ${i + 1}`,
+      description: `已核實功能 ${i + 1}`, image: `https://example.com/feature-${i}.jpg`,
+    }));
+    const html = renderToString(<ShopifyDescriptionViewer
+      productName="Saengak 平衡調理私密潔淨慕斯" vendor="SAENGAK"
+      lifestyleShowcase={[{ badge: '情境', title: '沐浴清潔', description: '沖洗乾淨', image: 'https://example.com/usage.jpg' }, ...features]}
+      craftDetails={[{ category: '瓶口', title: '按壓部位', description: '取用泡沫', image: 'https://example.com/detail.jpg' }]}
+    />);
+    expect(html).toContain('功能段落 6');
+    expect(html.indexOf('>功能段落 6</h4>')).toBeLessThan(html.indexOf('>按壓部位</h4>'));
+    expect(html.indexOf('>按壓部位</h4>')).toBeLessThan(html.indexOf('>沐浴清潔</h4>'));
+    expect(html.indexOf('>沐浴清潔</h4>')).toBeLessThan(html.indexOf('Brand Philosophy'));
+    expect(html).toContain('質地與使用細節');
+    expect(html).not.toContain('工藝細節與特點解析');
+  });
+
+  it.each([
+    ['蕾絲內褲', '版型與穿著細節'],
+    ['清洗護衣袋', '設計與操作細節'],
+    ['MEDION 私密保濕凝膠', '質地與使用細節'],
+  ])('%s 使用適合商品的細節標題，描述圖不冒充問答', (name, label) => {
+    const html = renderToString(<ShopifyDescriptionViewer productName={name}
+      vendor={name.startsWith('MEDION') ? 'MEDION' : ''}
+      craftDetails={[{ category: '', title: '實際部位', description: '依實品', image: 'https://example.com/detail.jpg' }]}
+      descriptionImages={[{ src: 'https://example.com/original.jpg', alt: '原商品說明圖' }]}
+    />);
+    expect(html).toContain(label);
+    expect(html).toContain('商品詳細圖文');
+    expect(html).not.toContain('Q&amp;A');
+    expect(html).not.toContain('常見問答與詳細圖文說明');
+  });
+
+  it('未填功能或情境欄位時不憑空補段落', () => {
+    const html = renderToString(<ShopifyDescriptionViewer productName="收納包" />);
+    expect(html).not.toContain('data-testid="product-features"');
+    expect(html).not.toContain('data-testid="product-usage"');
+  });
+});

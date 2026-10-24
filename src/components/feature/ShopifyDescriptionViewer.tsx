@@ -15,6 +15,7 @@ export interface ContentSection {
   description: string;
   image: string;
   badge: string;
+  kind?: 'feature' | 'usage';
 }
 
 export interface ShopifyDescriptionViewerProps {
@@ -252,6 +253,7 @@ export default function ShopifyDescriptionViewer({
     if (lifestyleShowcase && lifestyleShowcase.length > 0) {
       return lifestyleShowcase.map((item, idx) => ({
         badge: item.badge || `0${idx + 1}`,
+        kind: item.kind,
         title: item.title,
         description: item.description,
         image: item.image || contentImagesPool[idx] || '',
@@ -321,6 +323,44 @@ export default function ShopifyDescriptionViewer({
   // 品牌欄：SAENGAK 商品顯示 SAENGAK；其他商品只在有合法 vendor 時顯示
   const brandLabel = isNonOwnBrand ? legitVendor : (legitVendor || 'SAENGAK');
 
+  const renderSections = (sections: ContentSection[], kind: 'feature' | 'usage') => sections.length > 0 ? (
+      <section className="space-y-6" data-testid={kind === 'feature' ? 'product-features' : 'product-usage'}>
+        <h3 className="text-xl font-bold text-gray-900 border-l-4 border-brand pl-3.5">{kind === 'feature' ? '產品特色' : '使用情境'}</h3>
+        {sections.map((sec, idx) => (
+          <div
+            key={idx}
+            className={`flex flex-col ${idx % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-8 bg-white p-6 sm:p-8 rounded-2xl border border-gray-200/70`}
+          >
+            {sec.image && (
+            <div className="w-full md:w-1/2 aspect-4/3 rounded-xl overflow-hidden relative group bg-gray-100">
+              <img
+                src={shopifyImageUrl(sec.image, 900)}
+                alt={sec.title}
+                onError={() => markImageFailed(sec.image)}
+                className={`w-full h-full ${kind === 'feature' ? 'object-contain' : 'object-cover'} transition-transform duration-700 group-hover:scale-105`}
+                loading="lazy"
+              />
+              <span className="absolute top-3 left-3 bg-black/60 text-white text-[11px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                {sec.badge}
+              </span>
+            </div>
+            )}
+            <div className={`w-full ${sec.image ? 'md:w-1/2' : ''} space-y-3 text-left`}>
+              <span className="text-xs font-bold text-brand tracking-widest uppercase">
+                {kind === 'feature' ? '產品特色' : '使用情境'}
+              </span>
+              <h4 className="text-xl sm:text-2xl sm:leading-8 font-bold text-gray-900 leading-snug" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+                {sec.title}
+              </h4>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {sec.description}
+              </p>
+            </div>
+          </div>
+        ))}
+      </section>
+  ) : null;
+
   return (
     <div className="space-y-12 animate-fadeIn">
       {/* 方案 A 小編富文本引言內容 (已智慧分離圖片至下方) */}
@@ -332,69 +372,16 @@ export default function ShopifyDescriptionViewer({
         />
       ) : null}
 
-      {/* 2. 品牌美學故事專區：只放在 SAENGAK 商品，避免其他品牌商品掛上 SAENGAK 品牌敘事 */}
-      {showSaengakStory && (
-      <div className="rounded-2xl border border-gray-200/70 bg-linear-to-br/srgb from-stone-50 via-white to-blush/20 p-6 sm:p-10 space-y-4 text-left">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand">
-          <i className="ri-leaf-line text-sm"></i>
-          <span>Brand Philosophy</span>
-        </div>
-        <h3 className="text-2xl sm:text-3xl font-black text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-          從日常微小之處，重新感受肌膚的純淨自在
-        </h3>
-        <p className="text-sm sm:text-base sm:leading-6 text-gray-600 leading-relaxed max-w-3xl">
-          SAENGAK
-          始終深信，最美好的生活品質來自對身體肌膚的細微呵護。回歸純淨自然、屏除無謂冗贅，我們堅持挑選最高規格原物料與嚴謹工藝，讓每一次穿戴與使用，都成為陪伴妳身心放鬆的溫柔儀式。
-        </p>
-      </div>
-      )}
-
-      {/* 3. 核心特色圖文專區 */}
-      {displaySections.length > 0 && (
-      <div className="space-y-6">
-        {displaySections.map((sec, idx) => (
-          <div
-            key={idx}
-            className={`flex flex-col ${idx % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-8 bg-white p-6 sm:p-8 rounded-2xl border border-gray-200/70`}
-          >
-            {sec.image && (
-            <div className="w-full md:w-1/2 aspect-4/3 rounded-xl overflow-hidden relative group bg-gray-100">
-              <img
-                src={shopifyImageUrl(sec.image, 900)}
-                alt={sec.title}
-                onError={() => markImageFailed(sec.image)}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                loading="lazy"
-              />
-              <span className="absolute top-3 left-3 bg-black/60 text-white text-[11px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                {sec.badge}
-              </span>
-            </div>
-            )}
-            <div className={`w-full ${sec.image ? 'md:w-1/2' : ''} space-y-3 text-left`}>
-              <span className="text-xs font-bold text-brand tracking-widest uppercase">
-                Lifestyle & Feature
-              </span>
-              <h4 className="text-xl sm:text-2xl sm:leading-8 font-bold text-gray-900 leading-snug" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-                {sec.title}
-              </h4>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {sec.description}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-      )}
+      {renderSections(displaySections.filter((section) => section.kind === 'feature'), 'feature')}
 
       {/* 4. 工藝細節與特點解析 */}
       {displayCrafts.length > 0 && (
       <div className="space-y-6">
         <div className="border-l-4 border-brand pl-3.5">
           <h3 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-            工藝細節與特點解析
+            {isApparel ? '版型與穿著細節' : isGenericAccessory ? '設計與操作細節' : '質地與使用細節'}
           </h3>
-          <p className="text-xs text-gray-500">解析每處微小細節，詮釋嚴謹的品質堅持</p>
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -427,6 +414,8 @@ export default function ShopifyDescriptionViewer({
         </div>
       </div>
       )}
+
+      {renderSections(displaySections.filter((section) => section.kind !== 'feature'), 'usage')}
 
       {/* 5. 跨品類自適應卡 */}
       {isApparel ? (
@@ -660,7 +649,7 @@ export default function ShopifyDescriptionViewer({
           <div className="flex items-center gap-2.5 pb-2 border-b border-gray-100">
             <span className="w-1.5 h-5 rounded-full bg-brand"></span>
             <h4 className="text-lg sm:text-xl font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
-              常見問答與詳細圖文說明 (Q&A & Details)
+              商品詳細圖文
             </h4>
           </div>
 
@@ -683,6 +672,23 @@ export default function ShopifyDescriptionViewer({
             ))}
           </div>
         </div>
+      )}
+
+      {/* 2. 品牌美學故事專區：只放在 SAENGAK 商品，避免其他品牌商品掛上 SAENGAK 品牌敘事 */}
+      {showSaengakStory && (
+      <div className="rounded-2xl border border-gray-200/70 bg-linear-to-br/srgb from-stone-50 via-white to-blush/20 p-6 sm:p-10 space-y-4 text-left">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand">
+          <i className="ri-leaf-line text-sm"></i>
+          <span>Brand Philosophy</span>
+        </div>
+        <h3 className="text-2xl sm:text-3xl font-black text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+          從日常微小之處，重新感受肌膚的純淨自在
+        </h3>
+        <p className="text-sm sm:text-base sm:leading-6 text-gray-600 leading-relaxed max-w-3xl">
+          SAENGAK
+          始終深信，最美好的生活品質來自對身體肌膚的細微呵護。回歸純淨自然、屏除無謂冗贅，我們堅持挑選最高規格原物料與嚴謹工藝，讓每一次穿戴與使用，都成為陪伴妳身心放鬆的溫柔儀式。
+        </p>
+      </div>
       )}
 
       {/* 7. 購物保障：只列出對所有商品都成立的商店層級事實，不放品牌授權或檢驗宣稱 */}
