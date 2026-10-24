@@ -71,6 +71,8 @@ export default function ShopifyDescriptionViewer({
     const combined = `${category} ${tags.join(' ')} ${productName}`.toLowerCase();
     // 排除除毛刀、護衣袋/洗衣袋、凝膠、噴霧、清潔露、濕巾等用品
     if (
+      combined.includes('收納') ||
+      combined.includes('剃毛') ||
       combined.includes('護衣') ||
       combined.includes('洗衣') ||
       combined.includes('清洗袋') ||
@@ -115,11 +117,11 @@ export default function ShopifyDescriptionViewer({
   // 是否應套用「萬用通用商品模板」：非服飾類、且非 SAENGAK 自有保養品類的第三方配件/工具
   // （例如除毛刀、護衣袋、洗衣袋等）。這類商品既不適用服飾版型卡，也不該套用保養品專屬的
   // 「主要成分」「韓國原裝進口」等預設文案（此為 BRAND-2 修復後續發現的內容模板缺口）。
-  const isGenericAccessory = !isApparel && isNonOwnBrand;
+  const isGenericAccessory = !isApparel && (isNonOwnBrand || /收納|剃毛器/.test(`${category} ${productName}`));
 
   // SAENGAK 品牌故事只放在品牌確實是 SAENGAK（或未填 vendor）的保養品；
   // 同為保養品類但來自其他品牌的商品（例如 MEDION）不掛 SAENGAK 品牌敘事
-  const showSaengakStory = !isNonOwnBrand && (!legitVendor || legitVendor.toUpperCase() === 'SAENGAK');
+  const showSaengakStory = !isGenericAccessory && !isNonOwnBrand && (!legitVendor || legitVendor.toUpperCase() === 'SAENGAK');
 
   // 攔截 HTML 內部圖片點擊以支援點擊放大燈箱
   useEffect(() => {
