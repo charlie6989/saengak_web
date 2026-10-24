@@ -77,6 +77,8 @@ export interface CareSpecs {
 }
 
 export interface LifestyleShowcaseItem {
+  /** Explicitly authored feature rows precede details; legacy rows remain usage content. */
+  kind?: 'feature' | 'usage';
   badge: string;
   title: string;
   description: string;
