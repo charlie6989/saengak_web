@@ -231,6 +231,9 @@ describe('商品內容的功能、細節與情境順序', () => {
   it.each([
     ['蕾絲內褲', '版型與穿著細節'],
     ['清洗護衣袋', '設計與操作細節'],
+    ['絨面收納包', '設計與操作細節'],
+    ['六格內衣分隔收納盒', '設計與操作細節'],
+    ['雙頭電動剃毛器', '設計與操作細節'],
     ['MEDION 私密保濕凝膠', '質地與使用細節'],
   ])('%s 使用適合商品的細節標題，描述圖不冒充問答', (name, label) => {
     const html = renderToString(<ShopifyDescriptionViewer productName={name}
@@ -239,6 +242,7 @@ describe('商品內容的功能、細節與情境順序', () => {
       descriptionImages={[{ src: 'https://example.com/original.jpg', alt: '原商品說明圖' }]}
     />);
     expect(html).toContain(label);
+    if (label === '設計與操作細節') expect(html).not.toContain('Brand Philosophy');
     expect(html).toContain('商品詳細圖文');
     expect(html).not.toContain('Q&amp;A');
     expect(html).not.toContain('常見問答與詳細圖文說明');
