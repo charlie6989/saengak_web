@@ -27,6 +27,7 @@ import { fetchShippingSettings } from '../../lib/promotions';
 import { computeFreeShippingGap, DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
 import SizeChartTable from '../../components/feature/SizeChartTable';
 import type { SizeChart } from '../../domain/sizeChart';
+import { siteContent } from '../../content/site';
 
 interface Product {
   id: string;
@@ -152,7 +153,7 @@ export default function ProductPage() {
   const [publishedReviews, setPublishedReviews] = useState<ProductReview[]>([]);
   const [productQA, setProductQA] = useState<ProductQuestion[]>([]);
   const [allowProductQA, setAllowProductQA] = useState<boolean>(true);
-  const [lineOaUrl, setLineOaUrl] = useState<string>('https://line.me/R/ti/p/@saengak');
+  const [lineOaUrl, setLineOaUrl] = useState<string>(siteContent.lineAddFriendUrl);
   const [questionInput, setQuestionInput] = useState<string>('');
   const [isSubmittingQuestion, setIsSubmittingQuestion] = useState<boolean>(false);
   const [questionMessage, setQuestionMessage] = useState<string>('');

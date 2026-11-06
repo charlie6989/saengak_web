@@ -143,7 +143,7 @@ describe('LUCISSI CARE 後台商品評價審核、問答客服與營運設定測
       expect(html).toContain('💬 商品問答與即時客服設定');
       expect(html).toContain('開放前台商品問答表單 (allow_product_qa)');
       expect(html).toContain('官方 LINE 客服連結 (line_oa_url)');
-      expect(html).toContain('https://line.me/R/ti/p/@saengak');
+      expect(html).toContain('https://line.me/R/ti/p/@lucissi');
     });
   });
 

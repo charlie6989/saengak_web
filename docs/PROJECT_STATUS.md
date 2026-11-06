@@ -1,5 +1,12 @@
 # 項目狀態
 
+## Footer LINE QR code（2026-11-07，分支 `claude/footer-line-qr`）
+
+- 程式碼：Footer 改版並加入 `@lucissi` QR code 與加好友連結；商品頁、優惠頁、後台預設值改用 `siteContent.lineAddFriendUrl`。修正手機版底部導覽列蓋住法律連結的既有問題。
+- 已驗證：QR 解碼回 `https://line.me/R/ti/p/@lucissi`（含縮到 96px）；該網址回 200；瀏覽器檢查 1440、1024、375px 版面（無橫向捲動，法律連結在手機都點得到）；Vitest、typecheck、build、內容檢查。
+- 依賴稽核：main 自 2026-10-24 起 CI 因 `npm audit` 失敗；本分支以 `npm audit fix` 升級 zod 至 4.6.7、`@sentry/vite-plugin` 升至 11、`typescript-eslint` 升至 8.72，並以 `overrides` 將 `typescript-estree` 的 `minimatch` 指定為 ^11.0.5。全部依賴 audit 為 0。
+- 尚未完成：正式 Supabase `site_settings.line_oa_url` 仍是已失效的 `https://line.me/R/ti/p/@saengak`，商品問答區會優先讀這個值；需另外更新。未用實體手機掃描 QR。
+
 
 ## 商品內容恢復與分類呈現（2026-10-25）
 

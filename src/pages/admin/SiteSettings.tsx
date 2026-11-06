@@ -24,7 +24,7 @@ const DEFAULT_SETTINGS: OperationalSettings = {
   contactEmail: 'service@saengak.com.tw',
   supportPhone: '尚待營運確認',
   allowProductQa: true,
-  lineOaUrl: 'https://line.me/R/ti/p/@saengak',
+  lineOaUrl: siteContent.lineAddFriendUrl,
 };
 
 // 對應 public.site_settings 表之 key（見 supabase/migrations/20260820000002、20260822000001）
@@ -300,7 +300,7 @@ export const SiteSettings: React.FC = () => {
                   type="url"
                   value={settings.lineOaUrl}
                   onChange={(e) => handleChange('lineOaUrl', e.target.value)}
-                  placeholder="https://line.me/R/ti/p/@saengak"
+                  placeholder={siteContent.lineAddFriendUrl}
                   className="mt-1 w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-brand focus:outline-hidden font-mono"
                 />
                 <p className="mt-1 text-[11px] text-gray-500">
