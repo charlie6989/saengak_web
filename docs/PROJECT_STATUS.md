@@ -1,5 +1,12 @@
 # 項目狀態
 
+## 付款方式與貨到付款標準（2026-11-07，分支 `claude/cod-standard`）
+
+- 正式設定（Shopify 後台，已回讀結帳頁）：PayPal、LINE Pay（含 TapPay 內的開關）、街口已停用；保留 TapPay 信用卡、Tappay ATM、貨到付款。LINE Pay 與街口依 11/06、10/22 的紀錄判斷，TapPay 後台未登入查看。
+- 文件：貨到付款標準寫入 `docs/INVOICE_STANDARD.md`（依 ShipAny 10/16、10/22、10/28 書面回覆，使用者採用），操作步驟寫入 `docs/SHOPIFY_ADMIN_RUNBOOK.md`。FAQ 改列實際付款方式。
+- 已查看：Flow「COD 宅配送達後自動標記已付款」作用中，條件為 DELIVERED、Cash on Delivery (COD)、PENDING、運送方式「標準」，尚未執行過；免運訂單 #1007 的運送方式也叫「標準」。
+- 未驗證：沒有真實貨到付款訂單；ShipAny 後台未登入查看（最後讀取 10/22）；實際付款方式名稱；開票時點待會計確認。LUCISSI 尚未改完。
+
 ## 電子發票與 LUCISSI 統一（2026-11-07，分支 `claude/unify-amego-invoice`）
 
 - 程式碼：`buildAmegoInvoicePayload` 改為 LUCISSI 標準（個人發票一律光貿會員載具、`PrintMark`、`RandomNumber`、`DetailVat`、`BuyerName`、`MainRemark`）；金額對不上不再補猜測行；統編改用可被 5 整除規則；結帳選單移除重複的 Email 載具選項。標準見 `docs/INVOICE_STANDARD.md`。

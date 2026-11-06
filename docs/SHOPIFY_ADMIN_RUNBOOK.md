@@ -69,6 +69,16 @@
 ### 庫存
 - 零庫存仍可下單的原因是規格的 `inventory_management` 為空（沒有追蹤庫存），不是庫存政策。上架規格都要開啟追蹤，並設為售完停止販售。可用後台 `products/<id>.json` 檢查 `variants[].inventory_management` 與 `inventory_policy`。
 
+## 貨到付款出貨（2026-11-07）
+
+標準見 `docs/INVOICE_STANDARD.md`。
+
+- 出貨前在 ShipAny 確認：黑貓常溫、有勾 COD、代收額等於 Shopify 訂單總額。金額不符時先查原因，不要直接在 ShipAny 改。
+- 未付款的非貨到付款訂單也有草稿，不可出貨。
+- 改單只在 Shopify 改。物流取件後運單不能再改。
+- 送達後確認 Flow「COD 宅配送達後自動標記已付款」已把訂單標成已付款，隔天排程開票。沒有標記時先查付款方式名稱與運送方式名稱（目前條件為「標準」）。
+- 撥款到 ShipAny「貨到付款紀錄」對帳。
+
 ## 原廠資料來源（NAS，唯讀）
 
 - 用 `node scripts/nas-readonly.mjs`（`ls`／`find`／`stat`／`get`）讀取，連線設定與密碼來自本機 env 檔與 Keychain，不進 Git。
@@ -78,7 +88,7 @@
 
 ## 尚需使用者處理（2026-10-19）
 
-- TapPay 在 Shopify 付款設定仍是測試模式，刷卡不會實際收款；PayPal 設定未完成。
+- ~~TapPay 在 Shopify 付款設定仍是測試模式；PayPal 設定未完成。~~ 2026-11-07：TapPay 已切正式模式，PayPal 未完成設定已先停用。
 
 
 ## 黑貓 COD 全自動收款後開票（最新方案，未實作）
