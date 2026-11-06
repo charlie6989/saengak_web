@@ -145,4 +145,71 @@ describe('Shopify webhook Vercel API', () => {
     expect(rpc).toHaveBeenCalledTimes(2);
     expect(result).toEqual({ data: 'applied', error: null });
   });
+
+  describe('failure visibility', () => {
+    const SENSITIVE = 'Key (email)=(buyer@example.test) 王小明 0912345678';
+    const send = () => {
+      const rawBody = JSON.stringify(payload);
+      const hmac = createHmac('sha256', process.env.SHOPIFY_WEBHOOK_SECRET!).update(rawBody, 'utf8').digest('base64');
+      return vercelHandler.fetch(new Request('https://lucissicare.com/api/webhooks/shopify', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-shopify-hmac-sha256': hmac,
+          'x-shopify-topic': 'orders/paid',
+          'x-shopify-shop-domain': 'gh2xgs-zf.myshopify.com',
+          'x-shopify-webhook-id': 'b54557e4-bdd9-4b37-8a5f-bf7d70bcd043',
+          'x-shopify-triggered-at': '2026-08-22T04:00:01Z',
+        },
+        body: rawBody,
+      }));
+    };
+
+    it('reports an order sync failure to Sentry without personal data and keeps the retryable status', async () => {
+      const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
+      vi.stubGlobal('fetch', fetchMock);
+      vi.stubEnv('SENTRY_DSN', 'https://publickey@o123.ingest.us.sentry.io/456');
+      const logged = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+      mocks.getSupabaseAdminClient.mockReturnValue({
+        rpc: vi.fn(async () => ({ data: null, error: { code: '23505', message: SENSITIVE, details: SENSITIVE } })),
+      });
+
+      const response = await send();
+
+      expect(response.status).toBe(500);
+      expect(await response.text()).not.toContain('buyer@example.test');
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+      expect(url).toContain('/api/456/envelope/');
+      const body = String(init.body);
+      expect(body).toContain('ORDER_SYNC_FAILED');
+      expect(body).toContain('23505');
+      expect(body).toContain('orders/paid');
+      for (const fragment of ['buyer@example.test', '王小明', '0912345678', '深層修護私密清潔露']) {
+        expect(body).not.toContain(fragment);
+        expect(logged.mock.calls.flat().join(' ')).not.toContain(fragment);
+      }
+
+      logged.mockRestore();
+      vi.unstubAllGlobals();
+      vi.unstubAllEnvs();
+    });
+
+    it('does not echo exception text back in the response', async () => {
+      vi.stubEnv('SENTRY_DSN', '');
+      const logged = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+      mocks.getSupabaseAdminClient.mockReturnValue({
+        rpc: vi.fn(async () => { throw new Error(SENSITIVE); }),
+      });
+
+      const response = await send();
+
+      expect(response.status).toBe(500);
+      expect(await response.text()).not.toContain('buyer@example.test');
+      expect(logged.mock.calls.flat().join(' ')).not.toContain('buyer@example.test');
+
+      logged.mockRestore();
+      vi.unstubAllEnvs();
+    });
+  });
 });

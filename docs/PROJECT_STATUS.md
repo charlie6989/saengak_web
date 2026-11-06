@@ -1,5 +1,25 @@
 # 項目狀態
 
+## 上線前程式修正（2026-11-07，PR 審查中，尚未部署）
+
+**程式已修改（本機驗證，正式站仍是舊版）**
+
+- 404 改為繁中頁面，含導覽與 noindex。
+- `/promotion`：不再使用 Shopify 英文 summary；`SAVE15`、`SPECIAL30` 由 `src/domain/promotionPresentation.ts` 隱藏且不可經網站領券；`FREESHIP` 的標題與副標由網站依實際門檻覆寫；移除「限時」與「長期有效」的矛盾文字。規則同時套用於 API、Supabase 備援與預設清單。
+- 購物車顯示預估運費（NT$146／免運）與預估總計，免運資格以折扣後小計判斷。`formatTwd` 全站改為 `NT$` 標示。
+- `/`、`/best-rated` 精選版位優先放有貨商品（`src/domain/featuredProducts.ts`）。
+- `lucissi.com` 連結由 `LUCISSI_PUBLIC_URL` 單一常數控制，目前為 `null`；母站公開後改成網址即可恢復。
+- `/privacy`、`/terms`、FAQ 移除草稿語氣；隱私權與條款頁保留 `OWNER-REVIEW` 註記，法律文字待店主核准。未新增保存期間、退款天數或電話。
+- 伺服器端失敗回報：`api/_lib/server-monitoring.ts` 把 webhook、發票與 COD 失敗送到既有 Sentry 專案，只送穩定代碼與白名單標籤。移除 Header 的 Email log；本機來源不再進正式與預覽環境的 CORS。
+- SEO：商品頁 canonical 與 JSON-LD（不含評分）；`/sitemap.xml` 改由 `api/sitemap.ts` 動態產生並包含商品，刪除靜態檔；Noto Sans TC 改用可變字重，CSS 約由 242 KB 降到 35 KB。
+- 分析代碼未加入，只新增 [CSP 準備筆記](ANALYTICS_CSP_NOTES.md)。
+
+**已驗證（本機）**：Vitest、build、verify:content、verify:supabase、typecheck、npm audit（0 vulnerabilities）通過；1440px 與 375px 瀏覽器檢查 404、`/promotion`、`/`、`/best-rated`、`/privacy`、`/faq`、`/terms`、商品頁與購物車，無水平捲動。瀏覽器測試使用正式站公開的 Storefront 與 Supabase 讀取設定；`/api/shopify/discounts` 本機無 Admin 憑證，該頁實際走 Supabase 備援路徑，API 路徑由單元測試涵蓋。JSON-LD 在相同 script-src 規則下未被阻擋。
+
+**尚未驗證**：Sentry 實際收到伺服器事件（需部署且正式環境有 DSN，本輪未送出測試事件）；正式站的 `/sitemap.xml` rewrite；Search Console 收錄。Supabase Edge Functions 不在本次回報範圍內。
+
+**待店主**：Shopify 折扣資料、法律文字核准與「最後更新」日期、SAVE15／SPECIAL30 的去留，詳見 PR 說明。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
+
 ## Footer LINE QR code（2026-11-07，分支 `claude/footer-line-qr`）
 
 - 程式碼：Footer 改版並加入 `@lucissi` QR code 與加好友連結；商品頁、優惠頁、後台預設值改用 `siteContent.lineAddFriendUrl`。修正手機版底部導覽列蓋住法律連結的既有問題。

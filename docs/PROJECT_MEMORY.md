@@ -1,5 +1,12 @@
 # 項目記憶
 
+## 上線前程式修正的長期規則（2026-11-07）
+
+- `/promotion` 的公開規則集中在 `src/domain/promotionPresentation.ts`：隱藏代碼清單與文案覆寫都註明了移除條件，店主更新 Shopify 後要回頭刪除。Shopify 的英文 `summary` 不顯示。
+- `LUCISSI_PUBLIC_URL`（`src/content/carePillars.ts`）是母站連結的唯一開關；`lucissi.com` 2026-11-07 回應 401。
+- 伺服器失敗回報一律走 `api/_lib/server-monitoring.ts`，只能傳穩定代碼，不可傳 Error message、資料庫 details 或 payload。DSN 讀 `SENTRY_DSN`，沒有時沿用 `VITE_PUBLIC_SENTRY_DSN`。
+- `/sitemap.xml` 由 `api/sitemap.ts` 動態產生。Vercel 靜態檔優先於 rewrite，不要再新增 `public/sitemap.xml`。新增 API 檔案前先確認 Vercel 方案的函式數量限制：目前 `api/` 共 12 個函式。
+- 法律文字以 `OWNER-REVIEW` 註記標示待核准，不可自行補上保存期間、退款天數或電話。
 
 ## 商品內容恢復與分類呈現（2026-10-25）
 

@@ -4,6 +4,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ProductCard from '../../components/feature/ProductCard';
 import { deriveCatalogSignals, sortAvailableFirst } from '../../domain/algorithms';
+import { selectFeaturedProducts } from '../../domain/featuredProducts';
 import { getShopifyProducts, isFeaturedShopifyProduct, type ShopifyProduct } from '../../lib/shopify';
 import { captureExceptionSafe } from '../../lib/sentry';
 
@@ -18,36 +19,7 @@ export default function BestRated() {
       try {
         const items = await getShopifyProducts({ first: 50 });
         if (items && items.length > 0) {
-          const CORE_ORDER = [
-            '深層修護私密清潔露',
-            '私密雙層修護精華噴霧',
-            '益生菌私密養膚濕巾',
-            '平衡調理私密潔淨慕斯',
-            '益生菌私密舒緩凝膠',
-          ];
-
-          const taggedFeatured = items.filter(isFeaturedShopifyProduct);
-          let displayItems: ShopifyProduct[] = [];
-
-          if (taggedFeatured.length > 0) {
-            const taggedIds = new Set(taggedFeatured.map((p) => p.id));
-            const supplementaryCore = items
-              .filter((p) => !taggedIds.has(p.id) && CORE_ORDER.some((kw) => (p.name || p.title || '').includes(kw)))
-              .sort((a, b) => {
-                const idxA = CORE_ORDER.findIndex((kw) => (a.name || a.title || '').includes(kw));
-                const idxB = CORE_ORDER.findIndex((kw) => (b.name || b.title || '').includes(kw));
-                return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
-              });
-            displayItems = [...taggedFeatured, ...supplementaryCore];
-          } else {
-            displayItems = items
-              .filter((p) => CORE_ORDER.some((kw) => (p.name || p.title || '').includes(kw)))
-              .sort((a, b) => {
-                const idxA = CORE_ORDER.findIndex((kw) => (a.name || a.title || '').includes(kw));
-                const idxB = CORE_ORDER.findIndex((kw) => (b.name || b.title || '').includes(kw));
-                return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
-              });
-          }
+          const displayItems: ShopifyProduct[] = selectFeaturedProducts(items, isFeaturedShopifyProduct);
 
           if (displayItems.length > 0) {
             setProducts(sortAvailableFirst(displayItems.map((p) => ({

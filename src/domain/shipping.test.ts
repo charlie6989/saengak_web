@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_FREE_SHIPPING_THRESHOLD, computeFreeShippingGap } from './shipping';
+import { DEFAULT_FREE_SHIPPING_THRESHOLD, computeFreeShippingGap, estimateCartTotals } from './shipping';
 import { DEFAULT_PROMOTIONS } from '../lib/promotions';
 
 describe('free shipping threshold', () => {
@@ -27,5 +27,44 @@ describe('computeFreeShippingGap', () => {
 
   it('reports an already free cart regardless of the item', () => {
     expect(computeFreeShippingGap(1500, 0, 1500)).toEqual({ status: 'already-free', remaining: 0 });
+  });
+});
+
+describe('estimateCartTotals', () => {
+  const base = { freeShippingThreshold: 1500, shippingFee: 146 };
+
+  it('adds the NT$146 shipping fee below the threshold', () => {
+    expect(estimateCartTotals({ ...base, subtotal: 680, discountAmount: 0 })).toEqual({
+      discountedSubtotal: 680,
+      shippingFee: 146,
+      isFreeShipping: false,
+      amountToFreeShipping: 820,
+      estimatedTotal: 826,
+    });
+  });
+
+  it('is free at exactly NT$1,500', () => {
+    const estimate = estimateCartTotals({ ...base, subtotal: 1500, discountAmount: 0 });
+    expect(estimate.isFreeShipping).toBe(true);
+    expect(estimate.shippingFee).toBe(0);
+    expect(estimate.amountToFreeShipping).toBe(0);
+    expect(estimate.estimatedTotal).toBe(1500);
+  });
+
+  it('charges shipping when a discount drops the subtotal below the threshold', () => {
+    const estimate = estimateCartTotals({ ...base, subtotal: 1500, discountAmount: 100 });
+    expect(estimate.isFreeShipping).toBe(false);
+    expect(estimate.amountToFreeShipping).toBe(100);
+    expect(estimate.estimatedTotal).toBe(1546);
+  });
+
+  it('honours an eligible free-shipping coupon below the threshold', () => {
+    const estimate = estimateCartTotals({ ...base, subtotal: 680, discountAmount: 0, hasFreeShippingCoupon: true });
+    expect(estimate.shippingFee).toBe(0);
+    expect(estimate.estimatedTotal).toBe(680);
+  });
+
+  it('never returns a negative subtotal', () => {
+    expect(estimateCartTotals({ ...base, subtotal: 50, discountAmount: 100 }).discountedSubtotal).toBe(0);
   });
 });

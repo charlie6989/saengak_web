@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { LUCISSI_URL } from '../../content/carePillars';
+import { LUCISSI_PUBLIC_URL } from '../../content/carePillars';
 import { LUCISSI_MEMBER_PERK_ENABLED, claimLucissiMemberPerk, fetchMyMemberPerk, visibleMemberPerk, type MemberPerk } from '../../lib/memberPerk';
 
 /** LUCISSI 會員首單免運：確認母站會員資格後，發給一組只屬於自己的免運代碼。 */
@@ -93,8 +93,13 @@ export default function LucissiMemberPerkCard({ className = '' }: { className?: 
       )}
 
       <p className="mt-5 text-xs leading-5 text-gray-500">
-        我們只會向 LUCISSI 確認這個 Email 是否為已驗證的會員，不交換地址或訂單資料。還不是 LUCISSI 會員？
-        <a href={LUCISSI_URL} target="_blank" rel="noopener" className="ml-1 border-b border-gray-400 text-gray-600">前往 LUCISSI</a>
+        我們只會向 LUCISSI 確認這個 Email 是否為已驗證的會員，不交換地址或訂單資料。
+        {LUCISSI_PUBLIC_URL && (
+          <>
+            還不是 LUCISSI 會員？
+            <a href={LUCISSI_PUBLIC_URL} target="_blank" rel="noopener" className="ml-1 border-b border-gray-400 text-gray-600">前往 LUCISSI</a>
+          </>
+        )}
       </p>
     </section>
   );

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { siteContent } from '../../content/site';
-import { ENDORSEMENT, LUCISSI_URL } from '../../content/carePillars';
+import { ENDORSEMENT, LUCISSI_PUBLIC_URL } from '../../content/carePillars';
 
 const footerLinkClass = 'text-base text-gray-600 transition-colors duration-200 hover:text-gray-900';
 const footerHeadingClass = 'mb-5 text-sm font-bold tracking-wide text-gray-900';
@@ -91,14 +91,16 @@ export default function Footer() {
               {siteContent.brandName} 是 {ENDORSEMENT}，照顧貼近身體的每一天：私密保養、舒適內搭，與生理期照護。
             </p>
           </div>
-          <a
-            href={LUCISSI_URL}
-            target="_blank"
-            rel="noopener"
-            className="inline-flex shrink-0 self-start border-b border-brand pb-1 text-sm font-medium text-brand md:self-auto"
-          >
-            前往 LUCISSI<span aria-hidden="true" className="ml-3">↗</span>
-          </a>
+          {LUCISSI_PUBLIC_URL && (
+            <a
+              href={LUCISSI_PUBLIC_URL}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex shrink-0 self-start border-b border-brand pb-1 text-sm font-medium text-brand md:self-auto"
+            >
+              前往 LUCISSI<span aria-hidden="true" className="ml-3">↗</span>
+            </a>
+          )}
         </div>
 
         {/* 主要內容區域 */}

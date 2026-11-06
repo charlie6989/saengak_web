@@ -20,7 +20,7 @@ import { fetchPublishedReviews, fetchProductQA, submitProductQuestion } from '..
 import type { ProductReview, ProductQuestion } from '../../types/reviews-qa';
 import { captureExceptionSafe } from '../../lib/sentry';
 import { formatTwd, pickInitialVariant } from '../../domain/algorithms';
-import { applyMetaDescription, productMetaDescription, productPageTitle } from '../../lib/productMeta';
+import { applyMetaDescription, applyProductSeo, productMetaDescription, productPageTitle } from '../../lib/productMeta';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
 import { shopifyImageUrl } from '../../lib/shopifyImage';
 import { fetchShippingSettings } from '../../lib/promotions';
@@ -109,7 +109,12 @@ export default function ProductPage() {
   useEffect(() => {
     if (!product?.name) return;
     document.title = productPageTitle(product);
-    return applyMetaDescription(productMetaDescription(product));
+    const restoreDescription = applyMetaDescription(productMetaDescription(product));
+    const removeProductSeo = applyProductSeo(product);
+    return () => {
+      restoreDescription();
+      removeProductSeo();
+    };
   }, [product]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);

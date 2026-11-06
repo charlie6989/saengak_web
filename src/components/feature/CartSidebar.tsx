@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { formatTwd, getCartLineKey } from '../../domain/algorithms';
-import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
+import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE, estimateCartTotals } from '../../domain/shipping';
 import { 
   defaultInvoicePreference, 
   type InvoicePreference, 
@@ -142,8 +142,6 @@ export default function CartSidebar() {
   }, [isCartOpen]);
 
   const totalPrice = getTotalPrice();
-  const amountToFreeShipping = Math.max(0, shippingSettings.freeShippingThreshold - totalPrice);
-  const freeShippingProgress = Math.min(100, Math.round((totalPrice / shippingSettings.freeShippingThreshold) * 100));
 
   const activeCoupon = userCoupons.find((c) => c.coupon_code === selectedCouponCode);
   const discountCalculation = activeCoupon?.promotion
@@ -155,6 +153,18 @@ export default function CartSidebar() {
     discountCalculation.amount,
     shippingSettings.freeShippingThreshold,
   );
+
+  const cartEstimate = estimateCartTotals({
+    subtotal: totalPrice,
+    discountAmount: discountCalculation.amount,
+    freeShippingThreshold: shippingSettings.freeShippingThreshold,
+    shippingFee: shippingSettings.defaultShippingFee,
+    hasFreeShippingCoupon: activeCoupon?.promotion?.discount_type === 'free_shipping' && discountCalculation.isEligible,
+  });
+  const amountToFreeShipping = cartEstimate.amountToFreeShipping;
+  const freeShippingProgress = cartEstimate.isFreeShipping
+    ? 100
+    : Math.min(100, Math.round((cartEstimate.discountedSubtotal / shippingSettings.freeShippingThreshold) * 100));
 
   const checkUserPhone = async (): Promise<boolean> => {
     if (userProfilePhone && isValidTaiwanPhone(userProfilePhone)) {
@@ -549,17 +559,23 @@ export default function CartSidebar() {
                   <span>套用此折扣後金額將低於免運門檻，還差 {formatTwd(shippingWarning.amountStillNeeded)} 才能維持免運，實際運費以 Shopify 結帳頁計算結果為準。</span>
                 </div>
               )}
+              <div className="flex items-center justify-between text-xs text-gray-600" data-testid="cart-estimated-shipping">
+                <span>預估運費</span>
+                {cartEstimate.isFreeShipping ? (
+                  <span className="font-semibold text-brand">免運</span>
+                ) : (
+                  <span>{formatTwd(cartEstimate.shippingFee)}</span>
+                )}
+              </div>
               <div className="flex items-center justify-between pt-1 border-t border-gray-100">
                 <div>
                   <span className="text-sm text-gray-900 font-bold" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                    總結帳金額
+                    預估總計
                   </span>
-                  {selectedCouponCode && (
-                    <p className="text-[10px] text-gray-500">實際金額於 Shopify Checkout 結算</p>
-                  )}
+                  <p className="text-[10px] text-gray-500">運費與最終金額以結帳頁為準</p>
                 </div>
-                <span className="text-xl font-bold text-brand" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                  {formatTwd(Math.max(0, totalPrice - discountCalculation.amount))}
+                <span className="text-xl font-bold text-brand" data-testid="cart-estimated-total" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+                  {formatTwd(cartEstimate.estimatedTotal)}
                 </span>
               </div>
             </div>

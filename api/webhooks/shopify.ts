@@ -13,6 +13,7 @@ import { nudgeCodCollection } from '../_lib/cod-collection-nudge.js';
 import { readOrderForPerk, settleMemberPerkAfterOrder } from '../_lib/member-perk.js';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { jsonResponse } from '../_lib/security.js';
+import { reportServerFailure, safeErrorCode } from '../_lib/server-monitoring.js';
 import { getSupabaseAdminClient } from '../_lib/supabase-admin.js';
 import {
   readRequestBodyWithLimit,
@@ -122,7 +123,7 @@ async function handler(request: Request): Promise<Response> {
     process.env.SHOPIFY_WEBHOOK_SECRET || process.env.ShopifyWebhookSecret || '';
 
   if (!webhookSecret) {
-    console.error('SHOPIFY_WEBHOOK_SECRET 未設定，拒絕處理 Webhook 以避免未簽章請求被接受');
+    await reportServerFailure({ area: 'shopify_webhook', failure: 'WEBHOOK_SECRET_MISSING', tags: { topic, webhook_id: webhookId } });
     return jsonResponse({ error: 'Webhook 簽章金鑰未設定，暫時無法處理' }, { status: 500 });
   }
 
@@ -148,7 +149,7 @@ async function handler(request: Request): Promise<Response> {
 
   const admin = getSupabaseAdminClient();
   if (!admin) {
-    console.error('Supabase server secret 未設定，拒絕確認 Shopify Webhook');
+    await reportServerFailure({ area: 'shopify_webhook', failure: 'WEBHOOK_STORAGE_UNCONFIGURED', tags: { topic, webhook_id: webhookId } });
     return jsonResponse({
       error: '訂單同步資料庫未設定，暫時無法處理',
       code: 'WEBHOOK_STORAGE_UNAVAILABLE',
@@ -160,16 +161,21 @@ async function handler(request: Request): Promise<Response> {
     if (isCollectionEvent) {
       const event = payload && collectionEvent(payload, topic);
       if (!event || shopDomain !== 'gh2xgs-zf.myshopify.com' || !/^[a-zA-Z0-9-]{1,100}$/.test(webhookId)) {
+        await reportServerFailure({ area: 'shopify_webhook', failure: 'INVALID_FULFILLMENT_EVENT', level: 'warning', tags: { topic, webhook_id: webhookId } });
         return jsonResponse({ error: 'INVALID_FULFILLMENT_EVENT' }, { status: 422 });
       }
       const saved = await admin.rpc('receive_cod_fulfillment_event', { ...event, p_webhook_id: webhookId });
-      if (saved.error) return jsonResponse({ error: 'WEBHOOK_STORAGE_UNAVAILABLE' }, { status: 503 });
+      if (saved.error) {
+        await reportServerFailure({ area: 'shopify_webhook', failure: 'FULFILLMENT_EVENT_NOT_SAVED', tags: { topic, webhook_id: webhookId, error_code: safeErrorCode(saved.error) } });
+        return jsonResponse({ error: 'WEBHOOK_STORAGE_UNAVAILABLE' }, { status: 503 });
+      }
       if (process.env.COD_COLLECTION_ENABLED === 'true') waitUntil(nudgeCodCollection(admin, event.p_order_gid));
       return jsonResponse({ ok: true, result: saved.data });
     }
     if (topic === 'refunds/create') {
       const parsedRefund = parseShopifyRefundWebhook(payload, metadata);
       if (!parsedRefund) {
+        await reportServerFailure({ area: 'shopify_webhook', failure: 'INVALID_REFUND_PAYLOAD', level: 'warning', tags: { topic, webhook_id: webhookId } });
         return jsonResponse({ error: '無效的 Refund Webhook Payload' }, { status: 422 });
       }
 
@@ -179,7 +185,7 @@ async function handler(request: Request): Promise<Response> {
         parsedRefund,
       );
       if (error) {
-        console.error('sync_shopify_refund_webhook error', error);
+        await reportServerFailure({ area: 'shopify_webhook', failure: 'REFUND_SYNC_FAILED', tags: { topic, webhook_id: webhookId, error_code: safeErrorCode(error) } });
         return jsonResponse({ error: '儲存退款投影失敗' }, { status: 500 });
       }
 
@@ -187,6 +193,7 @@ async function handler(request: Request): Promise<Response> {
     } else {
       const parsedOrder = parseShopifyOrderWebhook(payload, metadata);
       if (!parsedOrder) {
+        await reportServerFailure({ area: 'shopify_webhook', failure: 'INVALID_ORDER_PAYLOAD', level: 'warning', tags: { topic, webhook_id: webhookId } });
         return jsonResponse({ error: '無效的 Order Webhook Payload' }, { status: 422 });
       }
 
@@ -196,7 +203,7 @@ async function handler(request: Request): Promise<Response> {
         params,
       ));
       if (error) {
-        console.error('sync_shopify_order_webhook error', error);
+        await reportServerFailure({ area: 'shopify_webhook', failure: 'ORDER_SYNC_FAILED', tags: { topic, webhook_id: webhookId, error_code: safeErrorCode(error) } });
         return jsonResponse({ error: '儲存訂單投影失敗' }, { status: 500 });
       }
 
@@ -210,14 +217,14 @@ async function handler(request: Request): Promise<Response> {
         try {
           await settleMemberPerkAfterOrder(admin, perkOrder);
         } catch (perkError) {
-          console.error('member perk settlement failed', perkError);
+          await reportServerFailure({ area: 'shopify_webhook', failure: 'MEMBER_PERK_SETTLEMENT_FAILED', level: 'warning', tags: { topic, webhook_id: webhookId, error_code: safeErrorCode(perkError) } });
         }
       }
 
       return jsonResponse({ ok: true, result: data });
     }
-  } catch (err: any) {
-    console.error('Webhook processing exception', err);
-    return jsonResponse({ error: `處理異常: ${err.message}` }, { status: 500 });
+  } catch (err: unknown) {
+    await reportServerFailure({ area: 'shopify_webhook', failure: 'WEBHOOK_PROCESSING_EXCEPTION', tags: { topic, webhook_id: webhookId, error_code: safeErrorCode(err) } });
+    return jsonResponse({ error: 'WEBHOOK_PROCESSING_FAILED' }, { status: 500 });
   }
 }

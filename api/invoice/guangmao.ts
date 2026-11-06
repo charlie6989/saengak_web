@@ -9,6 +9,7 @@
 
 import { verifyCollectionBeforeIssue } from '../_lib/cod-collection.js';
 import { jsonResponse, timingSafeStringEqual } from '../_lib/security.js';
+import { reportServerFailure, safeErrorCode } from '../_lib/server-monitoring.js';
 import { getSupabaseAdminClient, updateTransactionLog } from '../_lib/supabase-admin.js';
 import {
   dispatchAmegoJob,
@@ -78,7 +79,7 @@ async function handler(request: Request): Promise<Response> {
     .filter((value): value is string => Boolean(value));
 
   if (acceptedTokens.length === 0) {
-    console.error('AmegoDispatchToken/CRON_SECRET 均未設定，拒絕處理發票派送以避免未授權呼叫');
+    await reportServerFailure({ area: 'invoice', failure: 'DISPATCH_TOKEN_MISSING' });
     return jsonResponse({ error: '派送金鑰未設定，暫時無法處理' }, { status: 500 });
   }
 
@@ -98,7 +99,7 @@ async function handler(request: Request): Promise<Response> {
   //    一律直接拒絕並記錄告警日誌，避免誤用測試憑證對正式光貿環境發出請求 (docs/CHECKOUT_PAYMENT_SPEC.md §7.8)。
   const credentials = getAmegoCredentials();
   if (!credentials) {
-    console.error('AmegoSellerTaxId/AmegoAppKey 未設定，拒絕派送光貿發票以避免誤用硬編測試憑證');
+    await reportServerFailure({ area: 'invoice', failure: 'INVOICE_CREDENTIALS_MISSING' });
     return jsonResponse({ error: '發票憑證未設定，暫時無法處理' }, { status: 500 });
   }
 
@@ -140,11 +141,13 @@ async function handler(request: Request): Promise<Response> {
       const { data, error } = await admin.rpc('claim_amego_invoice_job', {
         p_shopify_order_gid: targetOrderGid,
       });
-      if (!error && Array.isArray(data) && data.length > 0) {
+      if (error) {
+        await reportServerFailure({ area: 'invoice', failure: 'INVOICE_CLAIM_FAILED', tags: { error_code: safeErrorCode(error) } });
+      } else if (Array.isArray(data) && data.length > 0) {
         claimedJob = data[0] as AmegoJob;
       }
     } catch (err) {
-      console.error('Claim Amego job error', err);
+      await reportServerFailure({ area: 'invoice', failure: 'INVOICE_CLAIM_FAILED', tags: { error_code: safeErrorCode(err) } });
       break;
     }
 
@@ -199,7 +202,18 @@ async function handler(request: Request): Promise<Response> {
     } catch {
       // Provider may already have issued: surface failure and retain the fenced job
       // for readback, rather than returning success or updating payment/logs.
+      await reportServerFailure({ area: 'invoice', failure: 'INVOICE_RESULT_NOT_PERSISTED', tags: { job_id: job.job_id, outcome: result.outcome } });
       return jsonResponse({ error: 'INVOICE_RESULT_NOT_PERSISTED', jobId: job.job_id }, { status: 503 });
+    }
+
+    // 只回報穩定的 errorCode，不回報 errorMessage：後者可能包含光貿回傳內容
+    if (result.outcome === 'failed') {
+      await reportServerFailure({
+        area: 'invoice',
+        failure: 'INVOICE_DISPATCH_FAILED',
+        level: result.retryable ? 'warning' : 'error',
+        tags: { job_id: job.job_id, outcome: persistedOutcome, error_code: result.errorCode },
+      });
     }
 
     // 6. 更新 transaction_logs

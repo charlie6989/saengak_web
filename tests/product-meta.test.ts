@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { applyMetaDescription, productMetaDescription, productPageTitle, summarizeText } from '../src/lib/productMeta';
+import { applyMetaDescription, buildProductJsonLd, productCanonicalUrl, productMetaDescription, productPageTitle, summarizeText } from '../src/lib/productMeta';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -56,5 +56,52 @@ describe('product page meta', () => {
     vi.stubGlobal('document', { querySelector: () => ({ getAttribute: () => 'x', setAttribute, removeAttribute: vi.fn() }) });
     applyMetaDescription('')();
     expect(setAttribute).not.toHaveBeenCalled();
+  });
+});
+
+describe('product page SEO', () => {
+  const product = {
+    id: 'gid://shopify/Product/7819900551235',
+    name: '冰絲無痕中腰三角褲',
+    description: '商品說明',
+    price: 680,
+    image: 'https://cdn.shopify.com/a.jpg',
+    images: [{ url: 'https://cdn.shopify.com/a.jpg' }, { url: 'https://cdn.shopify.com/b.jpg' }],
+    vendor: 'LUCISSI',
+    availableForSale: true,
+    variants: [{ availableForSale: true, sku: 'SKU-1' }],
+  };
+
+  it('builds the canonical URL from the numeric product ID', () => {
+    expect(productCanonicalUrl(product.id)).toBe('https://lucissicare.com/product/7819900551235');
+    expect(productCanonicalUrl('7819900551235')).toBe('https://lucissicare.com/product/7819900551235');
+    expect(productCanonicalUrl('some-handle')).toBeUndefined();
+    expect(productCanonicalUrl(undefined)).toBeUndefined();
+  });
+
+  it('describes the offer in TWD with live availability', () => {
+    const jsonLd = buildProductJsonLd(product)!;
+    expect(jsonLd['@type']).toBe('Product');
+    expect(jsonLd.url).toBe('https://lucissicare.com/product/7819900551235');
+    expect(jsonLd.image).toEqual(['https://cdn.shopify.com/a.jpg', 'https://cdn.shopify.com/b.jpg']);
+    expect(jsonLd.sku).toBe('SKU-1');
+    expect(jsonLd.offers).toMatchObject({ price: 680, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' });
+  });
+
+  it('reports sold-out products as out of stock', () => {
+    const jsonLd = buildProductJsonLd({ ...product, availableForSale: false })!;
+    expect((jsonLd.offers as { availability: string }).availability).toBe('https://schema.org/OutOfStock');
+  });
+
+  it('omits a single SKU for multi-variant products and never adds ratings', () => {
+    const jsonLd = buildProductJsonLd({ ...product, variants: [{ sku: 'A' }, { sku: 'B' }] })!;
+    expect(jsonLd.sku).toBeUndefined();
+    expect(jsonLd.aggregateRating).toBeUndefined();
+    expect(jsonLd.review).toBeUndefined();
+  });
+
+  it('emits nothing for a product it cannot describe accurately', () => {
+    expect(buildProductJsonLd({ ...product, price: 0 })).toBeUndefined();
+    expect(buildProductJsonLd({ ...product, id: 'some-handle' })).toBeUndefined();
   });
 });
