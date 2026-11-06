@@ -20,12 +20,34 @@
 
 **待店主**：Shopify 折扣資料、法律文字核准與「最後更新」日期、SAVE15／SPECIAL30 的去留，詳見 PR 說明。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
 
+## 正式金流與發票開關（2026-11-07）
+
+以下正式環境事實由店主工作階段於 2026-11-07 確認並轉交記錄；本 PR 沒有變更任何正式設定，也未另行回讀。
+
+**程式設定**
+
+- `api/invoice/guangmao.ts` 只有在 `AmegoInvoiceReleaseEnabled=true` 時才派送發票；此時若 `AmegoIssuerNote` 為空，視同憑證不完整並拒絕派送。
+
+**已確認的正式狀態**
+
+- 店主已在 Shopify 關閉 TapPay 測試模式；已於後台確認，結帳頁開啟時沒有測試提示。
+- 結帳頁列出 PayPal、TapPay 信用卡、Tappay ATM、街口支付、LINE Pay 與貨到付款。
+- 經店主同意，Vercel Production 的 `AmegoInvoiceReleaseEnabled` 由 false 改為 true；`AmegoMode` 原本就是 `production`。
+- Production 已重新部署為 `dpl_6Tpu2dp2gEiskU9KhkRJZaw6NMtv`，commit 為 `8022e6e`。
+
+**尚未驗證**
+
+- 變更後尚無真實訂單，`order_invoices` 仍為 0 筆。
+- 實際收款與發票開立都尚未證實；`AmegoIssuerNote` 的值未讀取，因此也未確認。
+- 付款方式中只有信用卡排定在第一筆真實訂單驗證，其餘方式尚無驗證安排。
+
 ## Footer LINE QR code（2026-11-07，分支 `claude/footer-line-qr`）
 
 - 程式碼：Footer 改版並加入 `@lucissi` QR code 與加好友連結；商品頁、優惠頁、後台預設值改用 `siteContent.lineAddFriendUrl`。修正手機版底部導覽列蓋住法律連結的既有問題。
 - 已驗證：QR 解碼回 `https://line.me/R/ti/p/@lucissi`（含縮到 96px）；該網址回 200；瀏覽器檢查 1440、1024、375px 版面（無橫向捲動，法律連結在手機都點得到）；Vitest、typecheck、build、內容檢查。
 - 依賴稽核：main 自 2026-10-24 起 CI 因 `npm audit` 失敗；本分支以 `npm audit fix` 升級 zod 至 4.6.7、`@sentry/vite-plugin` 升至 11、`typescript-eslint` 升至 8.72，並以 `overrides` 將 `typescript-estree` 的 `minimatch` 指定為 ^11.0.5。全部依賴 audit 為 0。
-- 尚未完成：正式 Supabase `site_settings.line_oa_url` 仍是已失效的 `https://line.me/R/ti/p/@saengak`，商品問答區會優先讀這個值；需另外更新。未用實體手機掃描 QR。
+- 正式 Supabase `site_settings.line_oa_url` 已於 2026-11-07 更新為 `https://line.me/R/ti/p/@lucissi`，並由公開 REST 端點讀回確認；另一個工作階段回報正式站 Footer 與 `/promotion` 也已使用 `@lucissi`。
+- 尚未完成：未用實體手機掃描 QR。
 
 
 ## 商品內容恢復與分類呈現（2026-10-25）
