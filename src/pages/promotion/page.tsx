@@ -14,6 +14,7 @@ import {
   claimPromotionCoupon,
 } from '../../lib/promotions';
 import type { Promotion, UserCoupon, CouponCategory } from '../../types/promotions';
+import { siteContent } from '../../content/site';
 
 const categoryTabs: { key: CouponCategory; label: string; icon: string }[] = [
   { key: 'all', label: '全部優惠', icon: 'ri-apps-line' },
@@ -664,7 +665,7 @@ export default function PromotionPage() {
               </p>
             </div>
             <a
-              href="https://line.me/R/ti/p/@saengak"
+              href={siteContent.lineAddFriendUrl}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#06C755] text-white font-bold hover:bg-[#05b34c] shadow-md hover:shadow-lg transition-all whitespace-nowrap cursor-pointer"
