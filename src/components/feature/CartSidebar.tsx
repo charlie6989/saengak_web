@@ -796,9 +796,8 @@ export default function CartSidebar() {
                         }
                         className="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm bg-white focus:outline-hidden focus:border-brand transition-colors"
                       >
-                        <option value="none">一般電子發票 (系統自動對獎)</option>
+                        <option value="none">Email 載具（發票通知寄到 Email）</option>
                         <option value="mobile">手機條碼載具</option>
-                        <option value="amego-email">Email 載具（發票寄到 Email）</option>
                         <option value="donation">社福團體捐贈碼</option>
                       </select>
                     </div>

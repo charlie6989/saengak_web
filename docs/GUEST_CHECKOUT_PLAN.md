@@ -144,7 +144,7 @@ Email 變更：Supabase 的 Email 變更需要確認，`claim_guest_orders` 只�
 2. Shopify Checkout 設定的顧客聯絡方式：建議設為「僅 Email」，否則訪客可能只留手機，無法查詢與認領。
 3. 實際註冊在 Shopify 的 webhook 端點是 Vercel `api/webhooks/shopify` 還是 Edge Function `shopify-orders-webhook`。
 4. 不經網站建立的 Shopify 訂單（`unlinked`）目前不會開立發票；這是既有缺口，與訪客結帳分開決定。
-5. 個人發票未選載具（`carrier: 'none'`）時目前送出空的 `CarrierType`，即紙本發票；是否改以光貿 Email 載具為預設，需會計確認。
+5. ~~個人發票未選載具時送出空的 `CarrierType`~~：2026-11-07 依使用者要求與 LUCISSI 統一，改以光貿會員載具為預設，見 `docs/INVOICE_STANDARD.md`。
 6. 訪客訂單在後台（`OrderList`）的顯示方式與客服依 Email 查訂單的需求。
 
 ## 9. 實作順序與測試

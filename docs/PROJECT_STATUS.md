@@ -1,5 +1,11 @@
 # 項目狀態
 
+## 電子發票與 LUCISSI 統一（2026-11-07，分支 `claude/unify-amego-invoice`）
+
+- 程式碼：`buildAmegoInvoicePayload` 改為 LUCISSI 標準（個人發票一律光貿會員載具、`PrintMark`、`RandomNumber`、`DetailVat`、`BuyerName`、`MainRemark`）；金額對不上不再補猜測行；統編改用可被 5 整除規則；結帳選單移除重複的 Email 載具選項。標準見 `docs/INVOICE_STANDARD.md`。
+- 正式狀態：第一筆真實訂單 #1011（NT$277）的發票工作於 2026-11-07 改為 `manual_review` 暫緩，避免用舊方法開出空載具發票；尚未開立（`attempts=0`、`mutation_accepted=false`）。新程式部署後要改回 `pending` 才會開立。
+- 已驗證：單元測試涵蓋 #1011 的組態。未驗證：尚未向光貿實際開立；公司發票類別兩站不一致，需沙盒實測；Edge Function `amego-invoice-dispatch` 尚未重新部署。
+
 ## Footer LINE QR code（2026-11-07，分支 `claude/footer-line-qr`）
 
 - 程式碼：Footer 改版並加入 `@lucissi` QR code 與加好友連結；商品頁、優惠頁、後台預設值改用 `siteContent.lineAddFriendUrl`。修正手機版底部導覽列蓋住法律連結的既有問題。
