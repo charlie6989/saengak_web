@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomInt } from 'node:crypto';
 import type { InvoicePreference } from '../_shared/invoice-preference.ts';
 
 const AMEGO_BASE_URL = 'https://invoice-api.amego.tw';
@@ -18,6 +18,7 @@ export interface AmegoJob {
   operation: 'issue' | 'void';
   request_payload: {
     issueBasis?: 'cod_dispatch' | 'cod_collection';
+    orderNumber?: string;
     collectionFingerprint?: string;
     confirmationId?: string;
     currencyCode: string;
@@ -83,6 +84,12 @@ export function validateAmegoCredentials(credentials: AmegoCredentials): void {
 
 export function amegoMd5(value: string): string {
   return createHash('md5').update(value, 'utf8').digest('hex');
+}
+
+function mainRemark(issuerNote: string, orderNumber: string | undefined): string {
+  const note = issuerNote.trim().slice(0, 60);
+  const order = (orderNumber ?? '').trim().slice(0, note ? 38 : 100);
+  return [note, order].filter(Boolean).join('｜').slice(0, 100);
 }
 
 export function buildAmegoInvoicePayload(job: AmegoJob, issuerNote = ''): UnknownRecord {
@@ -154,33 +161,26 @@ export function buildAmegoInvoicePayload(job: AmegoJob, issuerNote = ''): Unknow
     }
   }
 
-  if (!appliedExplicitAdjustments) {
-    const remainder = totalAmount - itemTotal;
-    if (remainder !== 0) {
-      productItems.push({
-        Description: remainder > 0 ? '運費／訂單調整' : '折扣／訂單調整',
-        Quantity: '1',
-        UnitPrice: String(remainder),
-        Amount: String(remainder),
-        Remark: '',
-        TaxType: '1',
-      });
-    }
+  // 與 LUCISSI 相同：金額對不上就不開立，不猜測補一行調整。
+  if (!appliedExplicitAdjustments && totalAmount !== itemTotal) {
+    throw new Error('Invoice amounts must reconcile exactly');
   }
 
   const preference = request.preference;
   const common: UnknownRecord = {
     OrderId: job.amego_order_id,
     BuyerIdentifier: '0000000000',
-    BuyerName: '客人',
+    BuyerName: '消費者',
     BuyerAddress: '',
     BuyerTelephoneNumber: '',
     BuyerEmailAddress: preference.notificationEmail,
-    MainRemark: issuerNote.trim().slice(0, 100),
+    MainRemark: mainRemark(issuerNote, request.orderNumber),
     CarrierType: '',
     CarrierId1: '',
     CarrierId2: '',
+    PrintMark: 'N',
     NPOBAN: '',
+    RandomNumber: String(randomInt(0, 10_000)).padStart(4, '0'),
     ProductItem: productItems,
     SalesAmount: String(totalAmount),
     FreeTaxSalesAmount: '0',
@@ -189,6 +189,7 @@ export function buildAmegoInvoicePayload(job: AmegoJob, issuerNote = ''): Unknow
     TaxRate: '0.05',
     TaxAmount: '0',
     TotalAmount: String(totalAmount),
+    DetailVat: 1,
   };
 
   if (preference.kind === 'company') {
@@ -199,7 +200,7 @@ export function buildAmegoInvoicePayload(job: AmegoJob, issuerNote = ''): Unknow
       BuyerName: preference.buyerName,
       SalesAmount: String(salesAmount),
       TaxAmount: String(totalAmount - salesAmount),
-      DetailVat: 1,
+      PrintMark: 'Y',
     };
   }
 
@@ -207,12 +208,18 @@ export function buildAmegoInvoicePayload(job: AmegoJob, issuerNote = ''): Unknow
     common.CarrierType = '3J0002';
     common.CarrierId1 = preference.carrierId;
     common.CarrierId2 = preference.carrierId;
-  } else if (preference.carrier === 'amego-email') {
-    common.CarrierType = 'amego';
-    common.CarrierId1 = preference.carrierId;
-    common.CarrierId2 = preference.carrierId;
   } else if (preference.carrier === 'donation') {
     common.NPOBAN = preference.carrierId;
+  } else {
+    // 'none' 與 'amego-email' 都開到光貿會員載具，與 LUCISSI 的預設相同；絕不留空載具（空載具是紙本發票）。
+    const email = (preference.carrier === 'amego-email' ? preference.carrierId : preference.notificationEmail)
+      .trim()
+      .toLowerCase();
+    if (!email) throw new Error('Amego carrier requires an email');
+    common.CarrierType = 'amego';
+    common.CarrierId1 = email;
+    common.CarrierId2 = email;
+    common.BuyerEmailAddress = preference.notificationEmail || email;
   }
   return common;
 }

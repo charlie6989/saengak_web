@@ -10,6 +10,8 @@ const job: AmegoJob = {
     currencyCode: 'TWD',
     totalAmount: '680',
     lineItems: [{ productName: '深層修護私密清潔露', quantity: 1, price: '650' }],
+    shippingAmount: 30,
+    discountAmount: 0,
     preference: { kind: 'personal', notificationEmail: 'buyer@example.test', carrier: 'mobile', carrierId: '/TRM+O+P' },
   },
   expected_total_amount: '680',
@@ -52,7 +54,7 @@ describe('Amego invoice dispatch', () => {
       TotalAmount: '680',
       ProductItem: [
         { Description: '深層修護私密清潔露', Amount: '650' },
-        { Description: '運費／訂單調整', Amount: '30' },
+        { Description: '運費', Amount: '30' },
       ],
     });
   });
@@ -88,46 +90,89 @@ describe('Amego invoice dispatch', () => {
     expect(items.reduce((sum, item) => sum + Number(item.Amount), 0)).toBe(680);
   });
 
-  it('falls back to the single-line adjustment when discountAmount is missing', () => {
+  it('refuses to issue when discountAmount is missing and the lines do not reach the total', () => {
     const partialJob: AmegoJob = {
       ...job,
-      request_payload: {
-        ...job.request_payload,
-        shippingAmount: 146,
-        // discountAmount intentionally omitted to simulate a pre-migration job payload
-      },
+      request_payload: { ...job.request_payload, shippingAmount: 30, discountAmount: undefined },
     };
-    const payload = buildAmegoInvoicePayload(partialJob);
-    expect(payload).toMatchObject({
-      TotalAmount: '680',
-      ProductItem: [
-        { Description: '深層修護私密清潔露', Amount: '650' },
-        { Description: '運費／訂單調整', Amount: '30' },
-      ],
-    });
-    const items = payload.ProductItem as Array<{ Description: string; Amount: string }>;
-    expect(items.reduce((sum, item) => sum + Number(item.Amount), 0)).toBe(680);
+    expect(() => buildAmegoInvoicePayload(partialJob)).toThrow('reconcile');
   });
 
-  it('falls back to the single-line adjustment when shipping and discount do not reconcile with the total', () => {
+  it('refuses to issue when shipping and discount do not reconcile with the total', () => {
     const mismatchedJob: AmegoJob = {
+      ...job,
+      request_payload: { ...job.request_payload, shippingAmount: 999, discountAmount: 0 },
+    };
+    expect(() => buildAmegoInvoicePayload(mismatchedJob)).toThrow('reconcile');
+  });
+
+  it('issues the same personal invoice as LUCISSI when no carrier was chosen', () => {
+    const order: AmegoJob = {
+      ...job,
+      expected_total_amount: '277',
+      request_payload: {
+        orderNumber: '#1011',
+        currencyCode: 'TWD',
+        totalAmount: '277.00',
+        shippingAmount: '146.00',
+        discountAmount: '0',
+        lineItems: [
+          { productName: '濕巾', quantity: 1, price: '20.00' },
+          { productName: '三角褲', quantity: 1, price: '111.00' },
+        ],
+        preference: { kind: 'personal', notificationEmail: 'Buyer@Example.test', carrier: 'none', carrierId: '' },
+      },
+    };
+    const payload = buildAmegoInvoicePayload(order, 'LUCISSI CARE 商店開立');
+    expect(payload).toMatchObject({
+      BuyerIdentifier: '0000000000',
+      BuyerName: '消費者',
+      BuyerEmailAddress: 'Buyer@Example.test',
+      CarrierType: 'amego',
+      CarrierId1: 'buyer@example.test',
+      CarrierId2: 'buyer@example.test',
+      PrintMark: 'N',
+      DetailVat: 1,
+      MainRemark: 'LUCISSI CARE 商店開立｜#1011',
+      SalesAmount: '277',
+      TaxAmount: '0',
+      TotalAmount: '277',
+      ProductItem: [
+        { Description: '濕巾', Amount: '20' },
+        { Description: '三角褲', Amount: '111' },
+        { Description: '運費', Amount: '146' },
+      ],
+    });
+    expect(payload.RandomNumber).toMatch(/^\d{4}$/);
+  });
+
+  it('never leaves a personal invoice without a carrier', () => {
+    const noEmail: AmegoJob = {
       ...job,
       request_payload: {
         ...job.request_payload,
-        shippingAmount: 999,
-        discountAmount: 0,
+        preference: { kind: 'personal', notificationEmail: '', carrier: 'none', carrierId: '' },
       },
     };
-    const payload = buildAmegoInvoicePayload(mismatchedJob);
-    expect(payload).toMatchObject({
-      TotalAmount: '680',
-      ProductItem: [
-        { Description: '深層修護私密清潔露', Amount: '650' },
-        { Description: '運費／訂單調整', Amount: '30' },
-      ],
-    });
-    const items = payload.ProductItem as Array<{ Description: string; Amount: string }>;
-    expect(items.reduce((sum, item) => sum + Number(item.Amount), 0)).toBe(680);
+    expect(() => buildAmegoInvoicePayload(noEmail)).toThrow('email');
+  });
+
+  it('prints company invoices and keeps the amego-email carrier working', () => {
+    expect(buildAmegoInvoicePayload({
+      ...job,
+      expected_buyer_identifier: '04595257',
+      request_payload: {
+        ...job.request_payload,
+        preference: { kind: 'company', notificationEmail: 'a@example.test', buyerName: 'A 公司', taxId: '04595257' },
+      },
+    })).toMatchObject({ BuyerIdentifier: '04595257', PrintMark: 'Y', DetailVat: 1 });
+    expect(buildAmegoInvoicePayload({
+      ...job,
+      request_payload: {
+        ...job.request_payload,
+        preference: { kind: 'personal', notificationEmail: '', carrier: 'amego-email', carrierId: 'c@example.test' },
+      },
+    })).toMatchObject({ CarrierType: 'amego', CarrierId1: 'c@example.test', BuyerEmailAddress: 'c@example.test' });
   });
 
   it('omits the shipping line when shippingAmount is zero but still applies a positive discount', () => {
