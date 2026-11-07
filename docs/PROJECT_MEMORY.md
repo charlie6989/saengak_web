@@ -5,7 +5,7 @@
 - `/promotion` 的公開規則集中在 `src/domain/promotionPresentation.ts`：隱藏代碼清單與文案覆寫都註明了移除條件，店主更新 Shopify 後要回頭刪除。Shopify 的英文 `summary` 不顯示。
 - `LUCISSI_PUBLIC_URL`（`src/content/carePillars.ts`）是母站連結的唯一開關；`lucissi.com` 2026-11-07 回應 401。
 - 伺服器失敗回報一律走 `api/_lib/server-monitoring.ts`，只能傳穩定代碼，不可傳 Error message、資料庫 details 或 payload。DSN 讀 `SENTRY_DSN`，沒有時沿用 `VITE_PUBLIC_SENTRY_DSN`。
-- `/sitemap.xml` 由 `api/sitemap.ts` 動態產生。Vercel 靜態檔優先於 rewrite，不要再新增 `public/sitemap.xml`。新增 API 檔案前先確認 Vercel 方案的函式數量限制：目前 `api/` 共 12 個函式。
+- `/sitemap.xml` 由 `vite build` 產生（`src/domain/sitemap.ts`），商品清單在每次部署時更新；讀不到 Shopify 時只列固定頁面並在建置 log 警告。不要加 `public/sitemap.xml`。Vercel Hobby 上限 12 個函式（`api/` 加 `middleware.js`），目前已滿，`tests/vercel-function-limit.test.ts` 會擋下超額。
 - 法律文字以 `OWNER-REVIEW` 註記標示待核准，不可自行補上保存期間、退款天數或電話。
 
 ## 商品內容恢復與分類呈現（2026-10-25）
@@ -208,6 +208,8 @@
 - 全站免運門檻為 NT$1,500（2026-10-17 決定比照 LUCISSI 母站，原為 NT$1,499；migration `20261016195154` 已套用正式 Supabase，Shopify 運費規則與 FREESHIP 已改為 1,500）。程式碼預設值在 `src/domain/shipping.ts`（`DEFAULT_FREE_SHIPPING_THRESHOLD`），但 API 與購物車優先採用 Supabase `site_settings.free_shipping_threshold`；三處（程式碼、Supabase、Shopify 運費規則）必須一起改。
 - 未達門檻的基本運費為 NT$146（黑貓宅急便常溫宅配，參照 LUCISSI 網站）。`DEFAULT_SHIPPING_FEE` 只是後備值，顧客看到的是 Supabase `site_settings.default_shipping_fee`；改運費時程式碼、Supabase、Shopify 運費三處一起改。
 - 配送方式比照 LUCISSI（2026-10-17 讀取兩店 Shopify 後台）：兩店都只有台灣「標準」宅配（NT$146、滿 NT$1,500 免運；CARE 標示 3 至 5 個工作天、出貨地點汐止倉庫），沒有超商取貨運費；國際運費存在但國家未加入市場、實際不開放。母站設定檔已列 7-11（黑貓 NT$118）、全家（NT$65）、萊爾富（順豐 NT$82）但皆關閉。CARE 文案只寫黑貓宅急便常溫宅配，`verify:content` 擋超商取貨宣稱；開通超商取貨前須先建立 Shopify 運費與 ShipAny 門市選擇。
+- 付款方式（2026-11-07）：TapPay 信用卡、Tappay ATM、黑貓貨到付款。PayPal、LINE Pay、街口已在 Shopify 停用，等設定完成或審核通過再開。貨到付款流程見 `docs/INVOICE_STANDARD.md`。
+- 電子發票開立方法與 LUCISSI 統一（2026-11-07 使用者要求），標準與剩餘差異見 `docs/INVOICE_STANDARD.md`；個人發票不得開空載具。
 - 客服使用 Email（`Company@lucissi.com`）與 LINE 官方帳號 `@lucissi`（2026-11-07 使用者指定，新購買的 ID；取代已失效的 `@saengak`）。帳號單一來源在 `src/content/site.ts`，QR code 是 `public/images/line-qr.svg`，內容為 `https://line.me/R/ti/p/@lucissi`；更換帳號時兩者要一起改，商品頁另讀 Supabase `site_settings.line_oa_url`。
 - 訪客結帳已決定開放；登入改為會員優惠入口。前後端已隨 PR #37／#38 合併至 `main`，2026-10-16 正式 Vercel API 確認 `530b2c3` 為 Production／Ready／Current，綁定 `lucissicare.com`。正式 Supabase 已存在 migration `20261016024415`，但當日回讀 `guest_checkout_enabled=false`，尚未對外開放。
 - 2026-10-16 已建立正式 Turnstile widget 並設定訪客專用 `VITE_PUBLIC_GUEST_CHECKOUT_TURNSTILE_SITE_KEY`／`TURNSTILE_SECRET_KEY`；會員 CAPTCHA 的 `VITE_PUBLIC_TURNSTILE_SITE_KEY` 必須與 Supabase Auth 獨立配置，避免訪客設定誤影響登入。自動瀏覽器出現 300030，仍待真人成功與端到端驗收。

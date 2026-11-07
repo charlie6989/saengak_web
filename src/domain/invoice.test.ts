@@ -7,6 +7,11 @@ describe('invoice preference validation', () => {
     expect(isValidTaiwanTaxId('12345678')).toBe(false);
   });
 
+  it('uses the divisible-by-5 tax ID rule, same as LUCISSI', () => {
+    expect(isValidTaiwanTaxId('10000004')).toBe(true);
+    expect(isValidTaiwanTaxId('10000005')).toBe(false);
+  });
+
   it('accepts personal email, mobile barcode, and donation preferences', () => {
     expect(validateInvoicePreference({
       kind: 'personal', notificationEmail: 'buyer@example.com', carrier: 'none', carrierId: '',
@@ -34,7 +39,7 @@ describe('invoice preference validation', () => {
 
 describe('invoice preference summary', () => {
   it('summarises the preference in one customer-facing line', () => {
-    expect(describeInvoicePreference({ kind: 'personal', notificationEmail: '', carrier: 'none', carrierId: '' })).toBe('個人電子發票');
+    expect(describeInvoicePreference({ kind: 'personal', notificationEmail: '', carrier: 'none', carrierId: '' })).toBe('個人電子發票・Email 載具');
     expect(describeInvoicePreference({ kind: 'personal', notificationEmail: '', carrier: 'mobile', carrierId: '/ABC1234' })).toBe('個人電子發票・手機條碼載具');
     expect(describeInvoicePreference({ kind: 'company', notificationEmail: '', buyerName: 'A', taxId: '04595257' })).toBe('公司統編發票（04595257）');
     expect(describeInvoicePreference({ kind: 'personal', notificationEmail: '', carrier: 'amego-email', carrierId: '' })).not.toContain('光貿');

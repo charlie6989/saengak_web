@@ -27,12 +27,10 @@ export function describeInvoicePreference(preference: InvoicePreference): string
   switch (preference.carrier) {
     case 'mobile':
       return '個人電子發票・手機條碼載具';
-    case 'amego-email':
-      return '個人電子發票・Email 載具';
     case 'donation':
       return '捐贈電子發票';
     default:
-      return '個人電子發票';
+      return '個人電子發票・Email 載具';
   }
 }
 
@@ -48,7 +46,8 @@ export function isValidTaiwanTaxId(value: string): boolean {
     const product = digit * weights[index];
     return total + Math.floor(product / 10) + (product % 10);
   }, 0);
-  return sum % 10 === 0 || (digits[6] === 7 && (sum + 1) % 10 === 0);
+  // 財政部 2023 年起的規則：加權和可被 5 整除；第 7 碼為 7 時可多算 1。與 LUCISSI 相同。
+  return sum % 5 === 0 || (digits[6] === 7 && (sum + 1) % 5 === 0);
 }
 
 export function validateInvoicePreference(preference: InvoicePreference): string | undefined {

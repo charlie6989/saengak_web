@@ -5,41 +5,39 @@
 **程式已修改（本機驗證，正式站仍是舊版）**
 
 - 404 改為繁中頁面，含導覽與 noindex。
-- `/promotion`：不再使用 Shopify 英文 summary；`SAVE15`、`SPECIAL30` 由 `src/domain/promotionPresentation.ts` 隱藏且不可經網站領券；`FREESHIP` 的標題與副標由網站依實際門檻覆寫；移除「限時」與「長期有效」的矛盾文字。規則同時套用於 API、Supabase 備援與預設清單。
+- `/promotion`：不再使用 Shopify 英文 summary；`SAVE15`、`SPECIAL30` 由 `src/domain/promotionPresentation.ts` 隱藏，領券 API 與前端都會拒絕；`FREESHIP` 的標題與副標由網站依實際門檻覆寫；移除「限時」與「長期有效」的矛盾文字。規則同時套用於 API、Supabase 備援與預設清單。
 - 購物車顯示預估運費（NT$146／免運）與預估總計，免運資格以折扣後小計判斷。`formatTwd` 全站改為 `NT$` 標示。
 - `/`、`/best-rated` 精選版位優先放有貨商品（`src/domain/featuredProducts.ts`）。
 - `lucissi.com` 連結由 `LUCISSI_PUBLIC_URL` 單一常數控制，目前為 `null`；母站公開後改成網址即可恢復。
 - `/privacy`、`/terms`、FAQ 移除草稿語氣；隱私權與條款頁保留 `OWNER-REVIEW` 註記，法律文字待店主核准。未新增保存期間、退款天數或電話。
 - 伺服器端失敗回報：`api/_lib/server-monitoring.ts` 把 webhook、發票與 COD 失敗送到既有 Sentry 專案，只送穩定代碼與白名單標籤。移除 Header 的 Email log；本機來源不再進正式與預覽環境的 CORS。
-- SEO：商品頁 canonical 與 JSON-LD（不含評分）；`/sitemap.xml` 改由 `api/sitemap.ts` 動態產生並包含商品，刪除靜態檔；Noto Sans TC 改用可變字重，CSS 約由 242 KB 降到 35 KB。
+- SEO：商品頁 canonical 與 JSON-LD（不含評分）；`/sitemap.xml` 改由 `vite build` 產生並包含商品，商品清單在每次部署時更新，刪除 `public/sitemap.xml`；Noto Sans TC 改用可變字重，CSS 約由 242 KB 降到 35 KB。
 - 分析代碼未加入，只新增 [CSP 準備筆記](ANALYTICS_CSP_NOTES.md)。
 
 **已驗證（本機）**：Vitest、build、verify:content、verify:supabase、typecheck、npm audit（0 vulnerabilities）通過；1440px 與 375px 瀏覽器檢查 404、`/promotion`、`/`、`/best-rated`、`/privacy`、`/faq`、`/terms`、商品頁與購物車，無水平捲動。瀏覽器測試使用正式站公開的 Storefront 與 Supabase 讀取設定；`/api/shopify/discounts` 本機無 Admin 憑證，該頁實際走 Supabase 備援路徑，API 路徑由單元測試涵蓋。JSON-LD 在相同 script-src 規則下未被阻擋。
 
-**尚未驗證**：Sentry 實際收到伺服器事件（需部署且正式環境有 DSN，本輪未送出測試事件）；正式站的 `/sitemap.xml` rewrite；Search Console 收錄。Supabase Edge Functions 不在本次回報範圍內。
+**尚未驗證**：Sentry 實際收到伺服器事件（需部署且正式環境有 DSN，本輪未送出測試事件）；正式站的 `/sitemap.xml`；Search Console 收錄。Supabase Edge Functions 不在本次回報範圍內。
 
 **待店主**：Shopify 折扣資料、法律文字核准與「最後更新」日期、SAVE15／SPECIAL30 的去留，詳見 PR 說明。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
 
-## 正式金流與發票開關（2026-11-07）
+## 正式發票開關（2026-11-07）
 
-以下正式環境事實由店主工作階段於 2026-11-07 確認並轉交記錄；本 PR 沒有變更任何正式設定，也未另行回讀。
+- `api/invoice/guangmao.ts` 只有在 `AmegoInvoiceReleaseEnabled=true` 時才派送發票；此時若 `AmegoIssuerNote` 為空，視同憑證不完整並拒絕派送。#1011 已成功送出，代表這兩項在當時都有設定。
+- 店主同意後，Vercel Production 的 `AmegoInvoiceReleaseEnabled` 由 false 改為 true；`AmegoMode` 原本就是 `production`。TapPay 測試模式已關閉，#1011 是第一筆真實刷卡。
 
-**程式設定**
+## 付款方式與貨到付款標準（2026-11-07，分支 `claude/cod-standard`）
 
-- `api/invoice/guangmao.ts` 只有在 `AmegoInvoiceReleaseEnabled=true` 時才派送發票；此時若 `AmegoIssuerNote` 為空，視同憑證不完整並拒絕派送。
+- 正式設定（Shopify 後台，已回讀結帳頁）：PayPal、LINE Pay（含 TapPay 內的開關）、街口已停用；保留 TapPay 信用卡、Tappay ATM、貨到付款。LINE Pay 與街口依 11/06、10/22 的紀錄判斷，TapPay 後台未登入查看。
+- 文件：貨到付款標準寫入 `docs/INVOICE_STANDARD.md`（依 ShipAny 10/16、10/22、10/28 書面回覆，使用者採用），操作步驟寫入 `docs/SHOPIFY_ADMIN_RUNBOOK.md`。FAQ 改列實際付款方式。
+- 已查看：Flow「COD 宅配送達後自動標記已付款」作用中，條件為 DELIVERED、Cash on Delivery (COD)、PENDING、運送方式「標準」，尚未執行過；免運訂單 #1007 的運送方式也叫「標準」。
+- 未驗證：沒有真實貨到付款訂單；ShipAny 後台未登入查看（最後讀取 10/22）；實際付款方式名稱；開票時點待會計確認。LUCISSI 改為此標準的 PR #105 尚未合併，也還沒安裝 Flow。
 
-**已確認的正式狀態**
+## 電子發票與 LUCISSI 統一（2026-11-07，分支 `claude/unify-amego-invoice`）
 
-- 店主已在 Shopify 關閉 TapPay 測試模式；已於後台確認，結帳頁開啟時沒有測試提示。
-- 結帳頁列出 PayPal、TapPay 信用卡、Tappay ATM、街口支付、LINE Pay 與貨到付款。
-- 經店主同意，Vercel Production 的 `AmegoInvoiceReleaseEnabled` 由 false 改為 true；`AmegoMode` 原本就是 `production`。
-- Production 已重新部署為 `dpl_6Tpu2dp2gEiskU9KhkRJZaw6NMtv`，commit 為 `8022e6e`。
-
-**尚未驗證**
-
-- 變更後尚無真實訂單，`order_invoices` 仍為 0 筆。
-- 實際收款與發票開立都尚未證實；`AmegoIssuerNote` 的值未讀取，因此也未確認。
-- 付款方式中只有信用卡排定在第一筆真實訂單驗證，其餘方式尚無驗證安排。
+- 程式碼：`buildAmegoInvoicePayload` 改為 LUCISSI 標準（個人發票一律光貿會員載具、`PrintMark`、`RandomNumber`、`DetailVat`、`BuyerName`、`MainRemark`）；金額對不上不再補猜測行；統編改用可被 5 整除規則；結帳選單移除重複的 Email 載具選項。標準見 `docs/INVOICE_STANDARD.md`。
+- 正式狀態：第一筆真實訂單 #1011（NT$277）的發票工作先暫緩，新程式部署後改回 `pending`。2026-11-07 09:33 排程送出，光貿受理並配號，09:39 寄出開立通知，發票日期 2026/11/07、金額 277 與訂單相符。
+- 系統狀態（2026-11-07 10:16 讀取）：工作仍是 `provider_pending`、`provider_status=1`，`order_invoices` 沒有資料，會員頁看不到發票，要等下一次每日排程回查。
+- 已驗證：單元測試涵蓋 #1011 的組態；光貿開立通知信。未驗證：回查到 `invoice_status=99`、財政部平台上傳、發票明細（品項、稅額、載具）；公司發票類別兩站不一致，需沙盒實測；Edge Function `amego-invoice-dispatch` 尚未重新部署。
 
 ## Footer LINE QR code（2026-11-07，分支 `claude/footer-line-qr`）
 
