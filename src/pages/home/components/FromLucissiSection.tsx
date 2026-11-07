@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import EditorialHero from '../../../components/feature/EditorialHero';
-import { LUCISSI_URL } from '../../../content/carePillars';
+import { LUCISSI_PUBLIC_URL } from '../../../content/carePillars';
 
 /** 說明與母品牌 LUCISSI 的關係。會員權益是否與 LUCISSI 互通尚未確認，文案不承諾共用會員。 */
 export default function FromLucissiSection() {
@@ -16,9 +16,11 @@ export default function FromLucissiSection() {
     >
       <div className="mt-7 flex flex-wrap items-center gap-6">
         <Link to="/login" className="bg-brand px-6 py-3 text-sm font-semibold text-white">登入領取會員優惠</Link>
-        <a href={LUCISSI_URL} target="_blank" rel="noopener" className="inline-flex border-b border-brand pb-1 text-sm font-medium text-brand">
-          前往 LUCISSI<span aria-hidden="true" className="ml-3">↗</span>
-        </a>
+        {LUCISSI_PUBLIC_URL && (
+          <a href={LUCISSI_PUBLIC_URL} target="_blank" rel="noopener" className="inline-flex border-b border-brand pb-1 text-sm font-medium text-brand">
+            前往 LUCISSI<span aria-hidden="true" className="ml-3">↗</span>
+          </a>
+        )}
       </div>
     </EditorialHero>
   );

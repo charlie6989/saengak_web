@@ -15,6 +15,14 @@ export function getEffectiveOrigin(request: Request): string {
   }
 }
 
+const LOCAL_DEVELOPMENT_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+
+/** Vercel 執行環境一律有 VERCEL_ENV；只有 `vercel dev` 或未部署的本機／測試流程才算本機開發。 */
+function isLocalDevelopment(): boolean {
+  if (process.env.VERCEL_ENV) return process.env.VERCEL_ENV === 'development';
+  return process.env.NODE_ENV !== 'production';
+}
+
 /**
  * 驗證請求 Origin 是否合法（防禦 CSRF 與惡意跨域呼叫）
  * 1. 若有 Origin 標頭：僅接受「與本次請求真實 URL 同源」或「命中白名單」兩種情況放行，
@@ -28,14 +36,13 @@ export function getEffectiveOrigin(request: Request): string {
  *      會放行任何 Vercel 專案的 preview 網址，範圍過寬，已收斂為僅允許明確清單內的主機）。
  */
 export function isOriginAllowed(requestOrigin: string | null, request: Request): boolean {
-  // 預設允許清單
+  // 預設允許清單；本機開發來源不進正式與預覽環境
   const defaultAllowed = [
     'https://lucissicare.com',
     'https://www.lucissicare.com',
     'https://saengak.com.tw',
     'https://www.saengak.com.tw',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
+    ...(isLocalDevelopment() ? LOCAL_DEVELOPMENT_ORIGINS : []),
   ];
 
   const customAllowed = (process.env.CheckoutAllowedOrigins ?? '')

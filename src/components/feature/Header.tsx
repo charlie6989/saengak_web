@@ -53,7 +53,6 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
           if (error) {
             // 如果是會話錯誤，不要拋出錯誤，只是設置用戶為 null
             if (error.message.includes('Auth session missing') || error.message.includes('session')) {
-              console.log('No active session, user not logged in');
               setUser(null);
             } else {
               console.error('Supabase getUser error:', error);
@@ -74,8 +73,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
     // 若為真實模式則監聽認證狀態變化
     if (!useMockData) {
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          console.log('Auth state changed:', event, session?.user?.email || 'no user');
+        (_event, session) => {
           setUser(session?.user || null);
         }
       );

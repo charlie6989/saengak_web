@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 import { mapDiscountNodeToPromotion } from '../api/shopify/discounts.js';
 
@@ -286,7 +286,91 @@ describe('LUCISSI CARE Shopify 折扣轉換純函式測試 (api/shopify/discount
     });
   });
 
+  describe('公開呈現：不顯示 Shopify 英文摘要與過時文案', () => {
+    const fixedAmountNode = {
+      id: 'gid://shopify/DiscountCodeNode/10',
+      codeDiscount: {
+        title: '新會員見面禮',
+        status: 'ACTIVE',
+        summary: '$100.00 off entire order • Minimum purchase of $1,500.00 • One use per customer',
+        codes: { nodes: [{ code: 'WELCOME100' }] },
+        customerGets: { value: { amount: { amount: '100.0', currencyCode: 'TWD' } } },
+        minimumRequirement: { greaterThanOrEqualToSubtotal: { amount: '1500.0' } },
+      },
+    };
+
+    it('以中文條件取代英文 summary', () => {
+      const result = mapDiscountNodeToPromotion(fixedAmountNode as any);
+      expect(result!.subtitle).toBe('滿 NT$ 1,500 現折 NT$ 100');
+      expect(JSON.stringify(result)).not.toContain('off entire order');
+    });
+
+    it('後台自訂的 subtitle metafield 仍優先', () => {
+      const result = mapDiscountNodeToPromotion({ ...fixedAmountNode, metafieldSubtitle: { value: '自訂副標' } } as any);
+      expect(result!.subtitle).toBe('自訂副標');
+    });
+
+    it('FREESHIP 以實際門檻覆寫過時的標題與 metafield', () => {
+      const result = mapDiscountNodeToPromotion({
+        id: 'gid://shopify/DiscountCodeNode/11',
+        metafieldSubtitle: { value: '滿 NT$ 1,499 享宅配與超商免運送到家' },
+        codeDiscount: {
+          title: '初夏免運專案 - 滿額免運費',
+          status: 'ACTIVE',
+          codes: { nodes: [{ code: 'FREESHIP' }] },
+          minimumRequirement: { greaterThanOrEqualToSubtotal: { amount: '1500.0' } },
+        },
+      } as any);
+      expect(result!.title).toBe('滿額免運');
+      expect(result!.subtitle).toBe('黑貓宅配滿 NT$ 1,500 免運費');
+      expect(result!.badge_text).toBe('滿額免運');
+      expect(JSON.stringify(result)).not.toMatch(/超商|1,499|初夏/);
+    });
+
+    it('未核准公開的折扣不能經網站領取', async () => {
+      const { fetchShopifyPromotionByCode } = await import('../api/shopify/discounts.js');
+      const fetchMock = vi.fn();
+      vi.stubGlobal('fetch', fetchMock);
+      await expect(fetchShopifyPromotionByCode('SPECIAL30')).resolves.toBeUndefined();
+      await expect(fetchShopifyPromotionByCode('save15')).resolves.toBeUndefined();
+      expect(fetchMock).not.toHaveBeenCalled();
+      vi.unstubAllGlobals();
+    });
+
+    it('前台備援清單同樣過濾隱藏折扣與已過期活動', async () => {
+      const { DEFAULT_PROMOTIONS, toPublicPromotions } = await import('../src/lib/promotions');
+      expect(DEFAULT_PROMOTIONS.map((p) => p.code)).toEqual(['WELCOME100', 'FREESHIP']);
+      const base = DEFAULT_PROMOTIONS[0];
+      const visible = toPublicPromotions([
+        { ...base, code: 'SAVE15' },
+        { ...base, code: 'EXPIRED', ends_at: '2026-01-01T00:00:00Z' },
+        { ...base, code: 'CURRENT', ends_at: '2026-12-31T00:00:00Z' },
+      ], new Date('2026-11-07T00:00:00Z'));
+      expect(visible.map((p) => p.code)).toEqual(['CURRENT']);
+    });
+  });
+
   describe('6. isOriginAllowed 安全檢驗 (同源 GET 放行與跨域惡意阻擋)', () => {
+    it('正式與預覽環境不接受本機開發來源', async () => {
+      const { isOriginAllowed } = await import('../api/_lib/security.js');
+      const req = new Request('https://lucissicare.com/api/shopify/discounts', { method: 'POST' });
+      for (const environment of ['production', 'preview']) {
+        vi.stubEnv('VERCEL_ENV', environment);
+        expect(isOriginAllowed('http://localhost:3000', req)).toBe(false);
+        expect(isOriginAllowed('http://127.0.0.1:3000', req)).toBe(false);
+        expect(isOriginAllowed('https://lucissicare.com', req)).toBe(true);
+      }
+      vi.unstubAllEnvs();
+    });
+
+    it('本機開發仍可使用本機來源', async () => {
+      const { isOriginAllowed } = await import('../api/_lib/security.js');
+      const req = new Request('https://lucissicare.com/api/shopify/discounts', { method: 'POST' });
+      vi.stubEnv('VERCEL_ENV', 'development');
+      expect(isOriginAllowed('http://localhost:3000', req)).toBe(true);
+      vi.unstubAllEnvs();
+    });
+
     it('同源 GET 請求缺少 Origin 標頭但 Host 為本機或合法網域時，應放行 (true)', async () => {
       const { isOriginAllowed } = await import('../api/_lib/security.js');
       const req = new Request('http://localhost:3000/api/shopify/discounts', {

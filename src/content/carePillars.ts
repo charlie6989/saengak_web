@@ -33,7 +33,11 @@ export interface CarePillar {
 }
 
 export const ENDORSEMENT = 'LUCISSI 的日常照護系列';
-export const LUCISSI_URL = 'https://lucissi.com';
+/**
+ * 母站對外連結的唯一開關。lucissi.com 目前回應 401，尚未對外開放，所以設為 null，全站不顯示「前往 LUCISSI」。
+ * 母站公開後改成 'https://lucissi.com' 即可恢復 Footer、首頁與會員禮遇卡的連結。
+ */
+export const LUCISSI_PUBLIC_URL: string | null = null;
 /** 品牌主張：貼近身體的日常照護。 */
 export const CARE_SCOPE = '私密保養、舒適內搭，與生理期的每一天';
 

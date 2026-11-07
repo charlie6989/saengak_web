@@ -20,3 +20,45 @@ export function computeFreeShippingGap(cartSubtotal: number, addAmount: number, 
   if (remaining <= 0) return { status: 'free-after-add', remaining: 0 };
   return { status: 'short', remaining };
 }
+
+export interface CartTotalsInput {
+  subtotal: number;
+  discountAmount: number;
+  freeShippingThreshold: number;
+  shippingFee: number;
+  /** 已選用且符合門檻的免運折扣碼 */
+  hasFreeShippingCoupon?: boolean;
+}
+
+export interface CartTotalsEstimate {
+  discountedSubtotal: number;
+  shippingFee: number;
+  isFreeShipping: boolean;
+  /** 折扣後距離免運門檻還差多少；已免運時為 0 */
+  amountToFreeShipping: number;
+  estimatedTotal: number;
+}
+
+/**
+ * 購物車的預估金額：免運資格以折扣後小計判斷，與結帳頁的運費規則一致。
+ * 只是預估，最終運費與應付金額以 Shopify 結帳頁為準。
+ */
+export function estimateCartTotals({
+  subtotal,
+  discountAmount,
+  freeShippingThreshold,
+  shippingFee,
+  hasFreeShippingCoupon = false,
+}: CartTotalsInput): CartTotalsEstimate {
+  const discountedSubtotal = Math.max(0, subtotal - Math.max(0, discountAmount));
+  const reachedThreshold = discountedSubtotal >= freeShippingThreshold;
+  const isFreeShipping = reachedThreshold || hasFreeShippingCoupon;
+  const estimatedShipping = isFreeShipping ? 0 : Math.max(0, shippingFee);
+  return {
+    discountedSubtotal,
+    shippingFee: estimatedShipping,
+    isFreeShipping,
+    amountToFreeShipping: isFreeShipping ? 0 : freeShippingThreshold - discountedSubtotal,
+    estimatedTotal: discountedSubtotal + estimatedShipping,
+  };
+}

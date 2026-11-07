@@ -1,5 +1,32 @@
 # 項目狀態
 
+## 上線前程式修正（2026-11-07，PR 審查中，尚未部署）
+
+**程式已修改（本機驗證，正式站仍是舊版）**
+
+- 404 改為繁中頁面，含導覽與 noindex。
+- `/promotion`：不再使用 Shopify 英文 summary；`SAVE15`、`SPECIAL30` 由 `src/domain/promotionPresentation.ts` 隱藏，領券 API 與前端都會拒絕；`FREESHIP` 的標題與副標由網站依實際門檻覆寫；移除「限時」與「長期有效」的矛盾文字。規則同時套用於 API、Supabase 備援與預設清單。
+- 購物車顯示預估運費（NT$146／免運）與預估總計，免運資格以折扣後小計判斷。`formatTwd` 全站改為 `NT$` 標示。
+- `/`、`/best-rated` 精選版位優先放有貨商品（`src/domain/featuredProducts.ts`）。
+- `lucissi.com` 連結由 `LUCISSI_PUBLIC_URL` 單一常數控制，目前為 `null`；母站公開後改成網址即可恢復。
+- `/privacy`、`/terms`、FAQ 移除草稿語氣；店主於 2026-11-07 核准法律文字與退換貨信箱 `Company@lucissi.com`，共用的最後更新日期改為 2026年11月7日（隱私權、條款、客服、退換貨、AdChoices 五頁）。隱私權頁仍未載明資料保存期間。未新增保存期間、退款天數或電話。
+- 伺服器端失敗回報：`api/_lib/server-monitoring.ts` 把 webhook、發票與 COD 失敗送到既有 Sentry 專案，只送穩定代碼與白名單標籤。移除 Header 的 Email log；本機來源不再進正式與預覽環境的 CORS。
+- SEO：商品頁 canonical 與 JSON-LD（不含評分）；`/sitemap.xml` 改由 `vite build` 產生並包含商品，商品清單在每次部署時更新，刪除 `public/sitemap.xml`；Noto Sans TC 改用可變字重，CSS 約由 242 KB 降到 35 KB。
+- 分析代碼未加入，只新增 [CSP 準備筆記](ANALYTICS_CSP_NOTES.md)。
+
+**已驗證（本機）**：Vitest、build、verify:content、verify:supabase、typecheck、npm audit（0 vulnerabilities）通過；1440px 與 375px 瀏覽器檢查 404、`/promotion`、`/`、`/best-rated`、`/privacy`、`/faq`、`/terms`、商品頁與購物車，無水平捲動。瀏覽器測試使用正式站公開的 Storefront 與 Supabase 讀取設定；`/api/shopify/discounts` 本機無 Admin 憑證，該頁實際走 Supabase 備援路徑，API 路徑由單元測試涵蓋。JSON-LD 在相同 script-src 規則下未被阻擋。
+
+**已驗證（Vercel 預覽部署 `c3aa677`）**：部署成功；`/sitemap.xml` 回傳 XML，含 12 個固定頁與 28 個商品；`/api/shopify/discounts` 回 200，只有 WELCOME100 與 FREESHIP；404 為繁中且 noindex；商品頁只有一個 canonical，JSON-LD 正確；375px 購物車顯示預估運費 NT$146、預估總計 NT$166，無水平捲動。
+
+**尚未驗證**：正式站部署；Sentry 實際收到伺服器事件（需部署且正式環境有 DSN，本輪未送出測試事件）；已登入會員領取隱藏代碼的完整流程（單元測試涵蓋）；Search Console 收錄。Supabase Edge Functions 不在本次回報範圍內。
+
+**待店主**：Shopify 折扣資料、SAVE15／SPECIAL30 的去留、資料保存期間，詳見 PR 說明。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
+
+## 正式發票開關（2026-11-07）
+
+- `api/invoice/guangmao.ts` 只有在 `AmegoInvoiceReleaseEnabled=true` 時才派送發票；此時若 `AmegoIssuerNote` 為空，視同憑證不完整並拒絕派送。#1011 已成功送出，代表這兩項在當時都有設定。
+- 店主同意後，Vercel Production 的 `AmegoInvoiceReleaseEnabled` 由 false 改為 true；`AmegoMode` 原本就是 `production`。TapPay 測試模式已關閉，#1011 是第一筆真實刷卡。
+
 ## 付款方式與貨到付款標準（2026-11-07，分支 `claude/cod-standard`）
 
 - 正式設定（Shopify 後台，已回讀結帳頁）：PayPal、LINE Pay（含 TapPay 內的開關）、街口已停用；保留 TapPay 信用卡、Tappay ATM、貨到付款。LINE Pay 與街口依 11/06、10/22 的紀錄判斷，TapPay 後台未登入查看。
@@ -19,7 +46,8 @@
 - 程式碼：Footer 改版並加入 `@lucissi` QR code 與加好友連結；商品頁、優惠頁、後台預設值改用 `siteContent.lineAddFriendUrl`。修正手機版底部導覽列蓋住法律連結的既有問題。
 - 已驗證：QR 解碼回 `https://line.me/R/ti/p/@lucissi`（含縮到 96px）；該網址回 200；瀏覽器檢查 1440、1024、375px 版面（無橫向捲動，法律連結在手機都點得到）；Vitest、typecheck、build、內容檢查。
 - 依賴稽核：main 自 2026-10-24 起 CI 因 `npm audit` 失敗；本分支以 `npm audit fix` 升級 zod 至 4.6.7、`@sentry/vite-plugin` 升至 11、`typescript-eslint` 升至 8.72，並以 `overrides` 將 `typescript-estree` 的 `minimatch` 指定為 ^11.0.5。全部依賴 audit 為 0。
-- 尚未完成：正式 Supabase `site_settings.line_oa_url` 仍是已失效的 `https://line.me/R/ti/p/@saengak`，商品問答區會優先讀這個值；需另外更新。未用實體手機掃描 QR。
+- 正式 Supabase `site_settings.line_oa_url` 已於 2026-11-07 更新為 `https://line.me/R/ti/p/@lucissi`，並由公開 REST 端點讀回確認；另一個工作階段回報正式站 Footer 與 `/promotion` 也已使用 `@lucissi`。
+- 尚未完成：未用實體手機掃描 QR。
 
 
 ## 商品內容恢復與分類呈現（2026-10-25）

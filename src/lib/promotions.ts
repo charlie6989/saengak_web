@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../domain/shipping';
+import { applyPromotionCopy, isPublicPromotionCode } from '../domain/promotionPresentation';
 import type { Promotion, UserCoupon, ClaimCouponResult } from '../types/promotions';
 
 // 預設促銷活動（僅在 Shopify API 與 Supabase 皆無法讀取時使用之最後備援；
@@ -24,24 +25,6 @@ export const DEFAULT_PROMOTIONS: Promotion[] = [
     combines_with: { order_discounts: false, product_discounts: false, shipping_discounts: false },
   },
   {
-    id: 'promo-save-15',
-    code: 'SAVE15',
-    title: 'VIP 專屬回饋',
-    subtitle: '質感選品全品項 85 折',
-    description: '全館消費滿 NT$ 3,000 享結帳 85 折優惠。',
-    category: 'discount',
-    discount_type: 'percentage',
-    discount_value: 15,
-    min_spend: 3000,
-    starts_at: '2026-01-01T00:00:00Z',
-    badge_text: '15% OFF',
-    image_url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=800',
-    is_active: true,
-    applies_once_per_customer: true,
-    usage_limit: null,
-    combines_with: { order_discounts: false, product_discounts: false, shipping_discounts: false },
-  },
-  {
     id: 'promo-free-ship',
     code: 'FREESHIP',
     title: '滿額免運',
@@ -52,26 +35,8 @@ export const DEFAULT_PROMOTIONS: Promotion[] = [
     discount_value: 0,
     min_spend: DEFAULT_FREE_SHIPPING_THRESHOLD,
     starts_at: '2026-01-01T00:00:00Z',
-    badge_text: '全館免運',
+    badge_text: '滿額免運',
     image_url: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&q=80&w=800',
-    is_active: true,
-    applies_once_per_customer: true,
-    usage_limit: null,
-    combines_with: { order_discounts: false, product_discounts: false, shipping_discounts: false },
-  },
-  {
-    id: 'promo-special-30',
-    code: 'SPECIAL30',
-    title: '限時會員日狂歡',
-    subtitle: '指定熱銷組合 7 折特惠',
-    description: '單筆訂單滿 NT$ 5,250 即享 7 折專屬特惠。',
-    category: 'member',
-    discount_type: 'percentage',
-    discount_value: 30,
-    min_spend: 5250,
-    starts_at: '2026-01-01T00:00:00Z',
-    badge_text: '30% OFF',
-    image_url: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=800',
     is_active: true,
     applies_once_per_customer: true,
     usage_limit: null,
@@ -109,7 +74,7 @@ export async function fetchActivePromotions(): Promise<Promotion[]> {
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data?.promotions) && data.promotions.length > 0) {
-        return data.promotions as Promotion[];
+        return toPublicPromotions(data.promotions as Promotion[]);
       }
     }
   } catch (apiErr) {
@@ -125,21 +90,29 @@ export async function fetchActivePromotions(): Promise<Promotion[]> {
       .order('created_at', { ascending: false });
 
     if (!error && data && data.length > 0) {
-      return data.map((p: any) => ({
+      return toPublicPromotions(data.map((p: any) => ({
         ...p,
         applies_once_per_customer: p.applies_once_per_customer ?? true,
         usage_limit: p.usage_limit ?? null,
         async_usage_count: p.async_usage_count ?? 0,
         is_exhausted: typeof p.usage_limit === 'number' && typeof p.async_usage_count === 'number' && p.async_usage_count >= p.usage_limit,
         combines_with: p.combines_with ?? { order_discounts: false, product_discounts: false, shipping_discounts: false },
-      })) as Promotion[];
+      })) as Promotion[]);
     }
   } catch (dbErr) {
     console.warn('載入 Supabase 促銷活動失敗:', dbErr);
   }
 
   // 3. 退回預設促銷活動
-  return DEFAULT_PROMOTIONS;
+  return toPublicPromotions(DEFAULT_PROMOTIONS);
+}
+
+/** 三個資料來源共用：隱藏未核准公開的折扣、已過期的活動，並套用網站端文案覆寫。 */
+export function toPublicPromotions(promotions: Promotion[], now: Date = new Date()): Promotion[] {
+  return promotions
+    .filter((promotion) => isPublicPromotionCode(promotion.code))
+    .filter((promotion) => !promotion.ends_at || new Date(promotion.ends_at) > now)
+    .map(applyPromotionCopy);
 }
 
 /**
@@ -213,6 +186,11 @@ export async function claimPromotionCoupon(
   userId: string,
   promotion: Promotion,
 ): Promise<ClaimCouponResult> {
+  // API 拒絕後下方會走 Supabase 直接歸戶，隱藏代碼要在所有路徑之前擋下
+  if (!isPublicPromotionCode(promotion.code)) {
+    return { success: false, message: '這張優惠券目前無法領取' };
+  }
+
   if (!userId) {
     return { success: false, message: '請先登入會員以領取優惠券' };
   }

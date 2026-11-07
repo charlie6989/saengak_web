@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AmegoJob } from '../supabase/functions/amego-invoice-dispatch/amego.js';
 
 /**
@@ -468,6 +468,69 @@ describe('光貿發票 Worker API (api/invoice/guangmao.ts)', () => {
         if (originalAppKey === undefined) delete process.env.AmegoAppKey;
         else process.env.AmegoAppKey = originalAppKey;
       }
+    });
+  });
+
+  describe('failure visibility', () => {
+    const SENTRY = 'https://publickey@o123.ingest.us.sentry.io/456';
+    const SENSITIVE = 'buyer@example.test 王小明';
+
+    beforeEach(() => {
+      process.env.CRON_SECRET = CRON_TOKEN;
+      process.env.AmegoInvoiceReleaseEnabled = 'true';
+      process.env.AmegoSellerTaxId = SELLER_TAX_ID_FIXTURE;
+      process.env.AmegoAppKey = APP_KEY_FIXTURE;
+      process.env.AmegoIssuerNote = ISSUER_NOTE_FIXTURE;
+      vi.stubEnv('SENTRY_DSN', SENTRY);
+      vi.spyOn(console, 'error').mockImplementation(() => undefined);
+      vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      fetchMock.mockResolvedValue(new Response(null, { status: 200 }));
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.unstubAllEnvs();
+    });
+
+    const sentryBodies = () => (fetchMock.mock.calls as unknown as [string, RequestInit][]).map(([, init]) => String(init.body));
+
+    it('reports a terminal dispatch failure with the stable code, not the provider message', async () => {
+      mocks.getSupabaseAdminClient.mockReturnValue(createAdminClientMock([[buildJob()], []]));
+      mocks.dispatchAmegoJob.mockResolvedValue({
+        outcome: 'failed', errorCode: 'RECONCILIATION_MISMATCH', errorMessage: SENSITIVE, retryable: false,
+      });
+
+      const response = await vercelHandler.fetch(request({ token: CRON_TOKEN }));
+
+      expect(response.status).toBe(200);
+      const [body] = sentryBodies();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(String((fetchMock.mock.calls as unknown as [string][])[0][0])).toContain('/api/456/envelope/');
+      expect(body).toContain('INVOICE_DISPATCH_FAILED');
+      expect(body).toContain('RECONCILIATION_MISMATCH');
+      expect(body).toContain('job-1');
+      expect(body).not.toContain('buyer@example.test');
+      expect(body).not.toContain('王小明');
+    });
+
+    it('stays silent when a job is issued normally', async () => {
+      mocks.getSupabaseAdminClient.mockReturnValue(createAdminClientMock([[buildJob()], []]));
+      mocks.dispatchAmegoJob.mockResolvedValue({
+        outcome: 'issued', invoiceNumber: 'AB12345678', providerStatus: 99, providerUpdatedAt: '2026-11-07T00:00:00Z',
+      });
+
+      await vercelHandler.fetch(request({ token: CRON_TOKEN }));
+
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('does not raise an alert for the release gate being closed', async () => {
+      process.env.AmegoInvoiceReleaseEnabled = 'false';
+
+      const response = await vercelHandler.fetch(request({ token: CRON_TOKEN }));
+
+      expect(response.status).toBe(503);
+      expect(fetchMock).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,5 +1,6 @@
 import { getSupabaseAdminClient } from '../_lib/supabase-admin.js';
 import { jsonResponse, timingSafeStringEqual } from '../_lib/security.js';
+import { reportServerFailure, safeErrorCode } from '../_lib/server-monitoring.js';
 import { collectCodOrder } from '../_lib/cod-collection-runner.js';
 import { requireCollectionPolicy } from '../_lib/cod-collection.js';
 import invoiceWorker from './guangmao.js';
@@ -36,5 +37,8 @@ async function handler(request: Request): Promise<Response> {
       results.push({orderGid:claimed.data,...result,invoiceDispatched});
     }
     return jsonResponse({ok:true,results});
-  } catch { return jsonResponse({error:'COD_COLLECTION_STORAGE_UNAVAILABLE'},{status:503}); }
+  } catch (error) {
+    await reportServerFailure({ area:'cod_collection', failure:'COD_COLLECTION_RUN_FAILED', tags:{ error_code:safeErrorCode(error) } });
+    return jsonResponse({error:'COD_COLLECTION_STORAGE_UNAVAILABLE'},{status:503});
+  }
 }

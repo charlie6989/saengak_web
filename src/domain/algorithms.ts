@@ -263,10 +263,7 @@ export function buildShopifyCheckoutLines(items: CheckoutItemInput[]): CheckoutL
   };
 }
 
+// zh-TW 的貨幣格式只顯示「$」，容易與美元混淆，全站統一標示 NT$
 export function formatTwd(amount: number): string {
-  return new Intl.NumberFormat('zh-TW', {
-    style: 'currency',
-    currency: 'TWD',
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return `NT$${new Intl.NumberFormat('zh-TW', { maximumFractionDigits: 0 }).format(amount)}`;
 }

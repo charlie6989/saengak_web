@@ -1,6 +1,27 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
+import { SHOPIFY_API_VERSION, SHOPIFY_STOREFRONT_PUBLIC_TOKEN, SHOPIFY_STORE_DOMAIN } from './api/_lib/shopify-config'
+import { fetchSitemapProducts, renderSitemap } from './src/domain/sitemap'
+
+/** 建置時產生 sitemap.xml。讀不到 Shopify 時只列固定頁面並警告，不讓部署失敗。 */
+function sitemapPlugin(): Plugin {
+  return {
+    name: 'product-sitemap',
+    apply: 'build',
+    async generateBundle() {
+      const products = await fetchSitemapProducts({
+        domain: SHOPIFY_STORE_DOMAIN,
+        apiVersion: SHOPIFY_API_VERSION,
+        token: SHOPIFY_STOREFRONT_PUBLIC_TOKEN,
+      }).catch((error: unknown) => {
+        this.warn(`sitemap.xml 只列固定頁面，讀取商品失敗：${error instanceof Error ? error.message : 'unknown error'}`);
+        return [];
+      });
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: renderSitemap(products) });
+    },
+  };
+}
 
 function devApiPlugin(): Plugin {
   return {
@@ -188,6 +209,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       devApiPlugin(),
+      sitemapPlugin(),
       ...(process.env.SENTRY_AUTH_TOKEN
         ? [sentryVitePlugin({
             org: process.env.SENTRY_ORG,

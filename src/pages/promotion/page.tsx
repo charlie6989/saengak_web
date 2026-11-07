@@ -19,7 +19,7 @@ import { siteContent } from '../../content/site';
 const categoryTabs: { key: CouponCategory; label: string; icon: string }[] = [
   { key: 'all', label: '全部優惠', icon: 'ri-apps-line' },
   { key: 'welcome', label: '新客專享', icon: 'ri-user-star-line' },
-  { key: 'discount', label: '限時折扣', icon: 'ri-percent-line' },
+  { key: 'discount', label: '折扣優惠', icon: 'ri-percent-line' },
   { key: 'shipping', label: '免運專區', icon: 'ri-truck-line' },
   { key: 'member', label: '會員專屬', icon: 'ri-vip-crown-line' },
 ];
@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: '優惠券有使用期限嗎？',
-    a: '部分優惠券設有明確的有效起訖日期，請以票券卡片標示之到期日或「無使用期限」為準；已標示期限者逾期將自動失效且無法延長。',
+    a: '部分優惠券設有明確的有效起訖日期，請以票券卡片標示之到期日為準，已標示期限者逾期將自動失效且無法延長；標示「未設定截止日」者，實際可否使用以結帳頁為準。',
   },
 ];
 
@@ -221,7 +221,7 @@ export default function PromotionPage() {
           alt="霧粉禮盒與 Saengak 隨身護理產品"
           eyebrow="LUCISSI CARE · OFFERS"
           title="專屬優惠禮遇"
-          description="探索專屬折扣與限時特惠，登入會員一鍵歸戶，為您的日常生活增添優雅與美好提案。"
+          description="探索專屬折扣與會員優惠，登入會員一鍵歸戶，為您的日常生活增添優雅與美好提案。"
         >
             {user ? (
               <div className="mt-6 inline-flex items-center gap-3 bg-white/80 border border-blush/80 px-4 py-2 rounded-full text-xs sm:text-sm text-brand">
@@ -342,7 +342,7 @@ export default function PromotionPage() {
                               ? `${promo.discount_value}% OFF`
                               : promo.discount_type === 'fixed_amount'
                               ? `NT$ ${promo.discount_value.toLocaleString()} 折抵`
-                              : '全館免運費'}
+                              : promo.min_spend > 0 ? '滿額免運' : '全館免運費'}
                           </p>
                           <p className="text-xs text-gray-200 mt-0.5">
                             {promo.min_spend > 0
@@ -379,7 +379,7 @@ export default function PromotionPage() {
                           </p>
                         )}
                         <p className="text-xs text-gray-600 mt-2 leading-relaxed">
-                          {promo.description || '結帳時自動套用折扣，限量優惠送完為止。'}
+                          {promo.description || '結帳時套用折扣碼，實際折抵以結帳頁為準。'}
                         </p>
 
                         {/* 後台規則動態標籤 */}
@@ -475,7 +475,7 @@ export default function PromotionPage() {
 
                         <div className="flex items-center justify-between gap-3 pt-1">
                           <span className="text-[11px] text-gray-500">
-                            {promo.ends_at ? `有效期限至 ${new Date(promo.ends_at).toLocaleDateString('zh-TW')}` : '無使用期限 • 長期有效'}
+                            {promo.ends_at ? `有效期限至 ${new Date(promo.ends_at).toLocaleDateString('zh-TW')}` : '未設定截止日'}
                           </span>
 
                           {isExhausted ? (

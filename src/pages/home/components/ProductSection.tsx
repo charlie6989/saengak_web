@@ -8,6 +8,7 @@ import {
   type ShopifyProduct,
 } from '../../../lib/shopify';
 import { deriveCatalogSignals, sortAvailableFirst } from '../../../domain/algorithms';
+import { selectFeaturedProducts } from '../../../domain/featuredProducts';
 import { captureExceptionSafe } from '../../../lib/sentry';
 
 interface Product {
@@ -59,43 +60,9 @@ export default function ProductSection({ title, subtitle, shopifyProductIds }: P
         items = await getShopifyProducts({ first: 50 });
       }
 
-      // 首頁精選產品：優先篩選帶有 featured / 精選 標籤的商品，並結合 SAENGAK 核心保養品
+      // 首頁精選產品：優先放有貨的 featured / 精選 標籤商品，並結合 SAENGAK 核心保養品
       if (!shopifyProductIds || shopifyProductIds.length === 0) {
-        const CORE_ORDER = [
-          '深層修護私密清潔露',
-          '私密雙層修護精華噴霧',
-          '益生菌私密養膚濕巾',
-          '平衡調理私密潔淨慕斯',
-          '益生菌私密舒緩凝膠',
-        ];
-
-        // 智慧標籤優先：提取在 Shopify 標記為 featured / 精選商品 之品項
-        const taggedFeatured = items.filter(isFeaturedShopifyProduct);
-
-        if (taggedFeatured.length > 0) {
-          const taggedIds = new Set(taggedFeatured.map((p) => p.id));
-          const supplementaryCore = items
-            .filter((p) => !taggedIds.has(p.id) && CORE_ORDER.some((kw) => (p.name || p.title || '').includes(kw)))
-            .sort((a, b) => {
-              const idxA = CORE_ORDER.findIndex((kw) => (a.name || a.title || '').includes(kw));
-              const idxB = CORE_ORDER.findIndex((kw) => (b.name || b.title || '').includes(kw));
-              return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
-            });
-          items = [...taggedFeatured, ...supplementaryCore];
-        } else {
-          // 若無特定標籤商品，以核心保養商品順序呈現
-          const coreItems = items.filter((p) =>
-            CORE_ORDER.some((kw) => (p.name || p.title || '').includes(kw))
-          );
-          if (coreItems.length > 0) {
-            coreItems.sort((a, b) => {
-              const idxA = CORE_ORDER.findIndex((kw) => (a.name || a.title || '').includes(kw));
-              const idxB = CORE_ORDER.findIndex((kw) => (b.name || b.title || '').includes(kw));
-              return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
-            });
-            items = coreItems;
-          }
-        }
+        items = selectFeaturedProducts(items, isFeaturedShopifyProduct);
       }
 
       if (items && items.length > 0) {

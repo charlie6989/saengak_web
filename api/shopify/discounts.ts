@@ -3,6 +3,11 @@ import { jsonResponse, isOriginAllowed } from '../_lib/security.js';
 import { SHOPIFY_STORE_DOMAIN, SHOPIFY_ADMIN_API_VERSION } from '../_lib/shopify-config.js';
 import { getSiteSetting } from '../_lib/supabase-admin.js';
 import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../src/domain/shipping.js';
+import {
+  applyPromotionCopy,
+  buildPromotionSubtitle,
+  isPublicPromotionCode,
+} from '../../src/domain/promotionPresentation.js';
 
 interface ShopifyDiscountNode {
   id: string;
@@ -256,7 +261,7 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
   } else {
     discountType = 'free_shipping';
     discountValue = 0;
-    badgeText = '全館免運';
+    badgeText = subtotal > 0 ? '滿額免運' : '全館免運';
   }
 
   const upperCode = code.toUpperCase();
@@ -265,7 +270,7 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
     badgeText = badgeText || '新客專享';
   } else if (discountType === 'free_shipping' || upperCode.includes('SHIP')) {
     category = 'shipping';
-    badgeText = '全館免運';
+    badgeText = subtotal > 0 ? '滿額免運' : '全館免運';
   } else if (upperCode.includes('SPECIAL') || upperCode.includes('MEMBER') || title.includes('會員')) {
     category = 'member';
     badgeText = badgeText || '會員專屬';
@@ -287,13 +292,13 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
     ? Number(cd.minimumRequirement.greaterThanOrEqualToQuantity)
     : null;
 
-  const subtitle = customSubtitle || cd.summary || (
-    subtotal > 0
-      ? `滿 NT$ ${subtotal.toLocaleString()} 可折抵`
-      : minQuantity && minQuantity > 0
-      ? `滿 ${minQuantity} 件可折抵`
-      : '全館無門檻享用'
-  );
+  // 不使用 Shopify 的 summary：它固定是英文（如 "$100.00 off entire order"），改由實際條件產生中文副標
+  const subtitle = customSubtitle || buildPromotionSubtitle({
+    discount_type: discountType,
+    discount_value: discountValue,
+    min_spend: subtotal,
+    min_quantity: minQuantity,
+  });
 
   // 使用量限制 1：每位顧客限用一次 (appliesOncePerCustomer)
   // 勾選為 true (每人限用一次)；未勾選為 false (不限每人使用次數)
@@ -347,9 +352,9 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
     ruleDetails.push(`可與${comboNames.join('、')}併用`);
   }
 
-  const description = `Shopify 官方活動，結帳時直接折抵。${ruleDetails.join(' • ')}。`;
+  const description = `結帳時直接折抵。${ruleDetails.join(' • ')}。`;
 
-  return {
+  return applyPromotionCopy({
     id: n.id,
     code,
     title,
@@ -370,7 +375,7 @@ export function mapDiscountNodeToPromotion(n: ShopifyDiscountNode): ShopifyPromo
     async_usage_count: asyncUsageCount,
     is_exhausted: isExhausted,
     combines_with: combinesWith,
-  };
+  });
 }
 
 /**
@@ -387,7 +392,7 @@ export function isMemberPerkDiscountNode(n: ShopifyDiscountNode): boolean {
 
 export async function fetchShopifyPromotionByCode(code: string): Promise<ShopifyPromotion | undefined> {
   const normalizedCode = code.trim().toUpperCase();
-  if (!normalizedCode || isMemberPerkCode(normalizedCode)) return undefined;
+  if (!normalizedCode || isMemberPerkCode(normalizedCode) || !isPublicPromotionCode(normalizedCode)) return undefined;
 
   const domain = SHOPIFY_STORE_DOMAIN || 'gh2xgs-zf.myshopify.com';
   const clientId = process.env.SHOPIFY_APP_CLIENT_ID;
@@ -538,7 +543,7 @@ export async function GET(request: Request): Promise<Response> {
     const promotions = nodes
       .filter((n) => n.codeDiscount?.status === 'ACTIVE' && !isMemberPerkDiscountNode(n))
       .map(mapDiscountNodeToPromotion)
-      .filter((p): p is NonNullable<typeof p> => Boolean(p));
+      .filter((p): p is NonNullable<typeof p> => Boolean(p) && isPublicPromotionCode(p?.code));
 
     const [freeShippingThresholdSetting, defaultShippingFeeSetting] = await Promise.all([
       getSiteSetting<number>('free_shipping_threshold'),

@@ -5,6 +5,7 @@ import {
   clampCartQuantity,
   deriveCatalogSignals,
   estimateReadingMinutes,
+  formatTwd,
   isProductSoldOut,
   matchesVariantOption,
   paginateItems,
@@ -13,6 +14,14 @@ import {
   sortAvailableFirst,
 } from './algorithms';
 import { mockProducts } from '../mocks/products';
+
+describe('formatTwd', () => {
+  it('labels amounts as NT$ with thousands separators and no decimals', () => {
+    expect(formatTwd(146)).toBe('NT$146');
+    expect(formatTwd(1500)).toBe('NT$1,500');
+    expect(formatTwd(0)).toBe('NT$0');
+  });
+});
 
 const products = [
   { id: '1', name: '溫和私密清潔露', description: '敏感肌適用', tags: ['女性護理'], price: 680 },
