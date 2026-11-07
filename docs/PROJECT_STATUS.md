@@ -8,7 +8,8 @@
 - 已驗證（本機）：typecheck、Vitest 73 檔／719 項、build、verify:content 通過。瀏覽器連正式 Storefront：濕巾商品頁與購物車顯示告知，內著與除毛刀不顯示；`/return-policy`、`/privacy` 內容正確，375px 無橫向捲動。
 - 已驗證（Shopify 正式，11/07）：退貨與退款、運送、服務條款、聯絡資訊四份政策已發布，內容與網站一致；後台與公開 `/policies/` 頁回讀到相同文字。運送政策的 NT$146、滿 NT$1,500 免運、3 至 5 個工作天已對照 Shopify 運費設定。結帳頁尾「條款及政策」已列出退款、運送、隱私、服務條款與聯絡（開到結帳頁檢查，未送出訂單）。
 - 已驗證（正式站 `lucissicare.com`，部署 `dpl_FMFQVWkEvgqZfSygv3ir5tJAEttE`，`c73c793`，READY）：`/return-policy`、`/terms`、`/privacy`、`/faq` 為新內容；濕巾商品頁與購物車顯示拆封告知，內褲與除毛刀商品頁不顯示。未送出訂單。
-- 未驗證或未處理：Shopify 隱私權政策仍是自動範本，與網站 `/privacy` 內容不同；Shopify「退貨與取消規則」（預設規則）與法律聲明未設定。
+- 已驗證（Shopify 正式，11/07，店主要求）：隱私權政策關閉「使用自動化政策」，改為網站 `/privacy` 的文字（資料控管者、可能處理的資料、服務供應商與資料安全、與 LUCISSI 的會員資格互認、資料保存期間、查詢更正與刪除）。後台與公開 `/policies/privacy-policy` 回讀到新文字，Shopify 範本文字已不在頁面上。之後改網站 `/privacy` 時，要同步改 Shopify 這份政策，Shopify 不會再自動更新它。
+- 未驗證或未處理：Shopify「退貨與取消規則」（預設規則）與法律聲明未設定。
 
 ## 客服信箱統一為 service@lucissi.com（2026-11-07，店主要求）
 
