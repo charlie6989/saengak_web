@@ -3,7 +3,8 @@ import EditorialHero from '../../../components/feature/EditorialHero';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getShopifyProducts } from '../../../lib/shopify';
-import { deriveCatalogSignals, isProductSoldOut, sortAvailableFirst } from '../../../domain/algorithms';
+import { deriveCatalogSignals } from '../../../domain/algorithms';
+import { isBundleProduct, selectSolutionView, type SolutionTab } from '../../../domain/solutionSection';
 import { captureExceptionSafe } from '../../../lib/sentry';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../../lib/brandOwnership';
 
@@ -36,8 +37,8 @@ interface Product {
 export default function SolutionSection() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'bundles' | 'singles' | 'all'>('bundles');
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<SolutionTab>('bundles');
 
   useEffect(() => {
     fetchShopifyProducts();
@@ -89,7 +90,7 @@ export default function SolutionSection() {
         tags: p.tags,
       }));
 
-      setProducts(sortAvailableFirst(displayList));
+      setProducts(displayList);
     } catch (err) {
       captureExceptionSafe(err, { source: 'SolutionSection' });
       setProducts([]);
@@ -113,26 +114,28 @@ export default function SolutionSection() {
     handleProductClick(product);
   };
 
-  const isBundle = (p: Product) => {
-    const title = (p.name || '').toLowerCase();
-    const tags = (p.tags || []).map((t) => t.toLowerCase());
-    return (
-      title.includes('組') ||
-      title.includes('套裝') ||
-      tags.includes('超值組合') ||
-      tags.includes('shopify bundles') ||
-      tags.includes('組合包')
-    );
-  };
+  const view = selectSolutionView(products, activeTab);
 
-  const bundles = products.filter(isBundle);
-  const singles = products.filter((p) => !isBundle(p));
+  const editorialHero = (
+    <EditorialHero
+      priority={false}
+      image="/images/lucissi-v5/home-wear-banner.webp"
+      alt="親膚棉質內著的蝴蝶結、織紋與車縫細節"
+      eyebrow="舒適內搭 · EVERYDAY COMFORT"
+      headingLevel="h2"
+      title="貼身的，更要舒服"
+      description="無痕、純棉與生理期內搭，每天貼近肌膚的選擇，回到自己的舒適感受。"
+    >
+      <div className="mt-7 flex flex-wrap gap-4">
+        <a href="/search?category=舒適內搭" className="bg-brand px-6 py-3 text-sm font-semibold text-white">探索舒適內搭</a>
+        <a href="/community" className="border border-brand/30 px-6 py-3 text-sm font-semibold text-brand">了解更多</a>
+      </div>
+    </EditorialHero>
+  );
 
-  const displayedProducts = (() => {
-    if (activeTab === 'bundles') return bundles.length > 0 ? bundles : products;
-    if (activeTab === 'singles') return singles.length > 0 ? singles : products;
-    return products;
-  })();
+  if (!loading && view.products.length === 0) {
+    return editorialHero;
+  }
 
   return (
     <>
@@ -141,7 +144,7 @@ export default function SolutionSection() {
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-4">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
-                超值組合
+                {view.heading}
               </h2>
             </div>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
@@ -178,9 +181,10 @@ export default function SolutionSection() {
               {/* 分類切換按鈕 */}
               <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#D5C2C0]">
                 <span className="text-xs sm:text-sm font-bold text-brand tracking-wider">
-                  {activeTab === 'bundles' ? '✨ 官方推薦特惠組合' : activeTab === 'singles' ? '🌿 日常基礎護理單品' : '全系列私密護理品項'}
+                  {view.label}
                 </span>
 
+                {view.showTabs && (
                 <div className="inline-flex bg-white/80 p-1 rounded-xl border border-gray-200/60 text-xs sm:text-sm">
                   <button
                     onClick={() => setActiveTab('bundles')}
@@ -192,7 +196,7 @@ export default function SolutionSection() {
                   >
                     <span>✨ 超值優惠組</span>
                     <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === 'bundles' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'}`}>
-                      {bundles.length}
+                      {view.bundles.length}
                     </span>
                   </button>
                   <button
@@ -205,7 +209,7 @@ export default function SolutionSection() {
                   >
                     <span>經典單品</span>
                     <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === 'singles' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'}`}>
-                      {singles.length}
+                      {view.singles.length}
                     </span>
                   </button>
                   <button
@@ -216,9 +220,10 @@ export default function SolutionSection() {
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    全部 ({products.length})
+                    全部 ({view.products.length})
                   </button>
                 </div>
+                )}
               </div>
 
               {loading ? (
@@ -230,9 +235,8 @@ export default function SolutionSection() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4" data-product-shop>
-                  {displayedProducts.map((product) => {
+                  {view.displayed.map((product) => {
                     const discountRate = calculateDiscountRate(product.price, product.originalPrice);
-                    const isSoldOut = isProductSoldOut(product);
 
                     return (
                       <div
@@ -246,18 +250,18 @@ export default function SolutionSection() {
                           <img
                             src={product.image}
                             alt={product.name}
-                            className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300 ${isSoldOut ? 'opacity-75 grayscale-30' : ''}`}
+                            className={`w-full h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-300`}
                           />
                           {product.hoverImage && (
                             <img
                               src={product.hoverImage}
                               alt={product.name}
-                              className={`w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSoldOut ? 'grayscale-30' : ''}`}
+                              className={`w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
                             />
                           )}
                           {/* Labels */}
                           <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-                            {isBundle(product) && (
+                            {isBundleProduct(product) && (
                               <span className="bg-brand text-white text-[11px] px-2 py-0.5 font-bold rounded-sm tracking-wider">
                                 組合特惠
                               </span>
@@ -265,22 +269,10 @@ export default function SolutionSection() {
                             {product.isBest && (
                               <span className="bg-brand text-white text-xs px-2 py-1 font-medium">BEST</span>
                             )}
-                            {product.isNew && !isBundle(product) && (
+                            {product.isNew && !isBundleProduct(product) && (
                               <span className="bg-brand text-white text-xs px-2 py-1 font-medium">NEW</span>
                             )}
                           </div>
-
-                          {/* 已售完 圖層 (第 1 層) */}
-                          {isSoldOut && (
-                            <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-20 pointer-events-none">
-                              <span
-                                className="bg-black/80 text-white text-xs md:text-sm px-3.5 py-1.5 rounded-full font-medium tracking-wider shadow-md border border-white/20"
-                                style={{ fontFamily: "Noto Sans TC, sans-serif" }}
-                              >
-                                已售完
-                              </span>
-                            </div>
-                          )}
                         </div>
 
                         {/* Product Info */}
@@ -363,20 +355,20 @@ export default function SolutionSection() {
                             aria-label={`查看 ${product.name} 商品詳情`}
                             className="add-to-cart-btn mt-auto cursor-pointer"
                             style={{
-                              backgroundColor: isSoldOut ? '#F7F6F3' : '#ECE8E2',
-                              color: isSoldOut ? '#5C5552' : '#2A2725',
+                              backgroundColor: '#ECE8E2',
+                              color: '#2A2725',
                               fontFamily: "Noto Sans TC, sans-serif"
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = isSoldOut ? '#D6D0C8' : '#5B3D48';
-                              e.currentTarget.style.color = isSoldOut ? '#5C5552' : '#FFFFFF';
+                              e.currentTarget.style.backgroundColor = '#5B3D48';
+                              e.currentTarget.style.color = '#FFFFFF';
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = isSoldOut ? '#F7F6F3' : '#ECE8E2';
-                              e.currentTarget.style.color = isSoldOut ? '#5C5552' : '#2A2725';
+                              e.currentTarget.style.backgroundColor = '#ECE8E2';
+                              e.currentTarget.style.color = '#2A2725';
                             }}
                           >
-                            {isSoldOut ? '已售完・查看詳情' : isBundle(product) ? '查看特惠組合' : '查看商品'}
+                            {isBundleProduct(product) ? '查看特惠組合' : '查看商品'}
                           </button>
                         </div>
                       </div>
@@ -389,20 +381,7 @@ export default function SolutionSection() {
         </div>
       </section>
 
-      <EditorialHero
-        priority={false}
-        image="/images/lucissi-v5/home-wear-banner.webp"
-        alt="親膚棉質內著的蝴蝶結、織紋與車縫細節"
-        eyebrow="舒適內搭 · EVERYDAY COMFORT"
-        headingLevel="h2"
-        title="貼身的，更要舒服"
-        description="無痕、純棉與生理期內搭，每天貼近肌膚的選擇，回到自己的舒適感受。"
-      >
-        <div className="mt-7 flex flex-wrap gap-4">
-          <a href="/search?category=舒適內搭" className="bg-brand px-6 py-3 text-sm font-semibold text-white">探索舒適內搭</a>
-          <a href="/community" className="border border-brand/30 px-6 py-3 text-sm font-semibold text-brand">了解更多</a>
-        </div>
-      </EditorialHero>
+      {editorialHero}
     </>
   );
 }
