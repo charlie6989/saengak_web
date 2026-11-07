@@ -1,5 +1,20 @@
 # 項目狀態
 
+## 上線前全站檢查（2026-11-08，店主要求「徹底檢查並修復到上線狀態」）
+
+- 檢查範圍：typecheck、Vitest 73 檔／719 項、build、`verify:content`、`verify:production`（24 項全過）；以 headless Chrome 開正式站 sitemap 全部 38 個網址加 15 個額外路由（桌機 1366px、手機 375px，共 81 次），記錄 console 錯誤、失敗請求、破圖、橫向捲動、h1 與 meta；Storefront 395 張商品圖逐一 HEAD；手機慢速 4G 量 LCP／CLS；Supabase 安全與效能 advisors；OAuth 起始導向。
+- 正式站原有結果：無 JavaScript 錯誤、無橫向捲動、每頁都有 meta description；兩張 Shopify CDN 圖片偶發 503，重抓 200。
+- 修正（程式碼，本分支）：
+  - 首頁輪播只有第一張用 h1，其餘改 h2；登入、註冊、忘記密碼、重設密碼頁標題由 h2 改 h1。
+  - `/product`（無商品編號）原本永遠停在「正在載入商品資料」，改導向 `/products`；找不到的商品頁改為 `noindex, nofollow`。
+  - 版面跳動：商品主圖預留 1:1 空間並加 `srcset`（手機抓 600–900px）；商品列表、常見問題、LUCISSI Talk、文章頁的外層加 `flow-root`，避免 `mt-24` 穿透到 body 讓整頁下移；頁面切換時的 Suspense 佔位由英文「Loading...」改為同色滿版空白。本機量測商品頁 CLS 0.314→0、列表 0.395→0、常見問題與 Talk 0.118→0。
+  - `vercel.json`：`/assets/*`（檔名含雜湊）加一年 immutable 快取，`/images/*` 快取一天。
+- 修正（正式環境，已生效）：
+  - Shopify「Saengak 益生菌私密舒緩凝膠」說明中失效的 `desc_04` 圖片（CDN 404）已從後台移除並儲存，後台回讀剩 `desc_05`、`desc_06`。Storefront 快取更新前仍可能讀到舊說明。
+  - Supabase migration `20261107180107_revoke_anon_get_admin_profiles`：收回 anon 執行 `get_admin_profiles()` 的權限（函式內本來就檢查 admin），回讀 anon=false、authenticated=true。
+- 已確認不需修改：`claim_guest_orders` 需登入且只認領已驗證 Email；其餘 advisors 為 RLS 寫法與未用索引等規模優化，資料量小不影響上線。Google、Facebook OAuth 都能導向各自登入頁（實際登入未測）。
+- 需店主處理（程式無法代做）：6 件 Saengak 保養品與 1 件內褲售完需補貨；Shopify 寄件信箱待到 `company@` 收件匣點驗證信；#1011 TapPay 請款待 11/08 08:30 後確認；Supabase「外洩密碼保護」需付費方案才能開；Facebook 登入若 App 仍在開發模式，一般顧客無法登入，需到 Meta 開發者後台確認；Shopify「退貨與取消規則」與法律聲明未設定；政策文字未經律師審閱。
+
 ## 退換貨規則與資料保存期間（2026-11-07，店主已核可內容；PR #90 已上線）
 
 - 店主決定：比照 LUCISSI：收到商品的次日起 7 日內可退貨，退回運費由公司負擔，瑕疵、寄錯或缺件的來回運費由公司負擔，不提供直接換貨，收到退貨或解除通知的次日起 15 日內退款。只有密封護理品（濕巾、凝膠、慕斯、噴霧與其組合）拆除衛生密封後不適用 7 日解除權，內著不列入。資料保存期間比照 LUCISSI，不列固定年限。這些文字未經律師審閱。

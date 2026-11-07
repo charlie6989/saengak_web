@@ -18,7 +18,8 @@ function App() {
             <BrowserRouter>
               <ScrollToTop />
               <ErrorBoundary>
-                <Suspense fallback={<div style={{ padding: 20, fontSize: 24 }}>Loading...</div>}>
+                {/* 頁面程式載入中：顯示與頁面同色的空白畫面，不閃出英文 Loading 字樣，也避免版面跳動 */}
+                <Suspense fallback={<div className="min-h-screen bg-[#F7F6F3]" aria-busy="true" aria-label="頁面載入中" />}>
                   <AppRoutes />
                 </Suspense>
               </ErrorBoundary>

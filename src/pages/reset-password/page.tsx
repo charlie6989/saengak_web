@@ -107,9 +107,9 @@ export default function ResetPasswordPage() {
           </Link>
         </div>
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
+          <h1 className="mt-6 text-3xl font-bold text-gray-900">
             重設密碼
-          </h2>
+          </h1>
           <p className="mt-2 text-sm text-gray-600">
             請輸入您的新密碼
           </p>

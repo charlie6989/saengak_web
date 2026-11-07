@@ -205,9 +205,9 @@ export default function RegisterPage() {
       <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8" style={{ paddingTop: '120px' }}>
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
               會員註冊
-            </h2>
+            </h1>
             <p className="text-gray-600">
               建立您的新帳號，享受更多服務
             </p>
