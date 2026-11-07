@@ -1,10 +1,19 @@
 # 項目狀態
 
+## 退換貨規則與資料保存期間（2026-11-07，店主決定，未提交、未部署）
+
+- 店主決定：比照 LUCISSI：收到商品的次日起 7 日內可退貨，退回運費由公司負擔，瑕疵、寄錯或缺件的來回運費由公司負擔，不提供直接換貨，收到退貨或解除通知的次日起 15 日內退款。只有密封護理品（濕巾、凝膠、慕斯、噴霧與其組合）拆除衛生密封後不適用 7 日解除權，內著不列入。資料保存期間比照 LUCISSI，不列固定年限。這些文字未經律師審閱。
+- 程式碼：改寫 `/return-policy`，更新 FAQ、條款與隱私權頁；`src/domain/returnPolicy.ts` 以品名判斷密封護理品，商品頁與購物車顯示事前告知。
+- 新增、待店主確認：ATM 與貨到付款由客服確認帳戶後匯款退款（LUCISSI 頁面只寫信用卡）。
+- 已驗證（本機）：typecheck、Vitest 73 檔／719 項、build、verify:content 通過。瀏覽器連正式 Storefront：濕巾商品頁與購物車顯示告知，內著與除毛刀不顯示；`/return-policy`、`/privacy` 內容正確，375px 無橫向捲動。
+- 未完成：Shopify 退貨、運送、條款與聯絡資訊政策尚未填寫；結帳頁（Shopify 頁面）本身沒有這則告知，需靠 Shopify 退貨政策連結。
+
 ## 客服信箱統一為 service@lucissi.com（2026-11-07，店主要求）
 
 - 依據：GoDaddy 後台 `service@lucissi.com` 是 `company@lucissi.com` 的別名，信進同一個信箱；LUCISSI 已用它寄信。未寄測試信實測收信。
 - 程式碼（未提交、未部署）：`src/content/site.ts`、`/welcome`、後台設定預設值與測試改用 service@；`verify:content` 封鎖 `company@lucissi.com`、`service@saengak.com.tw`。退換貨與條款頁只換信箱，文字不變。
 - 正式環境（已生效）：Shopify 商店電子郵件改為 service@；Supabase `site_settings.contact_email` 由 `service@saengak.com.tw` 改為 service@ 並回讀（目前只有管理後台讀取此欄位）。
+- 已上線：PR #89 合併部署為 `88ad4b2`（Vercel READY、main CI 通過）。正式站 40 個 JS 檔查得到 service@，查無 `Company@lucissi.com` 與舊社群文案；`/sitemap.xml` 共 38 筆，不含測試商品。未以瀏覽器開啟正式站頁面。
 - 歷史文件中的 `company@lucissi.com` 是當時紀錄，未修改；街口與 TapPay 申請資料的聯絡信箱也未變更。
 
 ## Shopify 與 ShipAny 設定變更（2026-11-07，店主核准，正式環境已生效）

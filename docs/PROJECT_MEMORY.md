@@ -7,9 +7,10 @@
 - `LUCISSI_PUBLIC_URL`（`src/content/carePillars.ts`）是母站連結的唯一開關；`lucissi.com` 2026-11-07 回應 401。
 - 內部驗收商品的判斷規則在 `src/domain/testProducts.ts`，前台與 sitemap 共用。`/blog` 是 `/community` 的轉址，文章網址是 `/blog/:handle`；只會轉址的路徑不列入 sitemap。
 - Shopify 商店預設語言是繁體中文（2026-11-07 由英文改），結帳頁與顧客通知信的語言由此決定。商店聯絡信箱是 `service@lucissi.com`。
+- 退換貨規則比照 LUCISSI（2026-11-07 店主決定）。密封護理品的判斷在 `src/domain/returnPolicy.ts`，用品名比對；新增這類商品時要確認品名符合，告知才會顯示。
 - 伺服器失敗回報一律走 `api/_lib/server-monitoring.ts`，只能傳穩定代碼，不可傳 Error message、資料庫 details 或 payload。DSN 讀 `SENTRY_DSN`，沒有時沿用 `VITE_PUBLIC_SENTRY_DSN`。
 - `/sitemap.xml` 由 `vite build` 產生（`src/domain/sitemap.ts`），商品清單在每次部署時更新；讀不到 Shopify 時只列固定頁面並在建置 log 警告。不要加 `public/sitemap.xml`。Vercel Hobby 上限 12 個函式（`api/` 加 `middleware.js`），目前已滿，`tests/vercel-function-limit.test.ts` 會擋下超額。
-- 隱私權與條款頁的現行文字由店主於 2026-11-07 核准（未經律師審閱的紀錄）。`OWNER-REVIEW` 註記標示仍待決定的內容，不可自行補上保存期間、退款天數或電話。
+- 隱私權與條款頁的現行文字由店主於 2026-11-07 核准（未經律師審閱）。`OWNER-REVIEW` 註記標示仍待決定的內容；不可自行補上具體保存年限或電話。
 - 顧客文字不提內部服務與後台設定；例外是隱私權頁的服務商揭露、條款頁（店主核准的法律文字）與 `src/pages/admin/`。`scripts/verify-public-content.mjs` 只封鎖完整句段，新增文案仍要自行避開。
 
 ## 商品內容恢復與分類呈現（2026-10-25）

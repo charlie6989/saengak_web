@@ -28,6 +28,7 @@ import { computeFreeShippingGap, DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPI
 import SizeChartTable from '../../components/feature/SizeChartTable';
 import type { SizeChart } from '../../domain/sizeChart';
 import { siteContent } from '../../content/site';
+import { isSealedCareProduct, SEALED_CARE_NOTICE } from '../../domain/returnPolicy';
 
 interface Product {
   id: string;
@@ -1395,6 +1396,9 @@ export default function ProductPage() {
                   <Link to="/return-policy" className="underline-offset-2 hover:text-brand hover:underline">退換貨說明</Link>
                 </div>
               </div>
+              {isSealedCareProduct(product.name) && (
+                <p className="mt-3 text-xs leading-5 text-gray-600" data-testid="sealed-care-notice">{SEALED_CARE_NOTICE}</p>
+              )}
             </div>
           </aside>
         </section>
