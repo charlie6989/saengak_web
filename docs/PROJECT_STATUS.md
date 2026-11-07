@@ -18,6 +18,7 @@
 - 正式環境（已生效）：Shopify 商店電子郵件改為 service@；Supabase `site_settings.contact_email` 由 `service@saengak.com.tw` 改為 service@ 並回讀（目前只有管理後台讀取此欄位）。
 - 已上線：PR #89 合併部署為 `88ad4b2`（Vercel READY、main CI 通過）。正式站 40 個 JS 檔查得到 service@，查無 `Company@lucissi.com` 與舊社群文案；`/sitemap.xml` 共 38 筆，不含測試商品。未以瀏覽器開啟正式站頁面。
 - 歷史文件中的 `company@lucissi.com` 是當時紀錄，未修改；街口與 TapPay 申請資料的聯絡信箱也未變更。
+- 11/08 再確認（GoDaddy Email 及 Office，唯讀）：lucissi.com 只有 `company@lucissi.com` 一個信箱，`service@` 是它的別名（1/50），沒有獨立密碼，也沒有轉寄設定。Mac 的 Spark 已有 `company@lucissi.com`，service@ 的信會進這個收件匣，不需另外加帳號。Shopify 通知設定仍顯示寄件信箱「未驗證」、網域驗證「需要設定」，驗證信要到 `company@` 收件匣點開。
 
 ## Shopify 與 ShipAny 設定變更（2026-11-07，店主核准，正式環境已生效）
 
@@ -46,6 +47,10 @@
 - Sentry：正式站前端程式含 Sentry DSN，CSP 也允許送出，所以回報是開著的；店主不確定有在使用，帳號歸屬未確認。
 - ShipAny 後台（11/07，唯讀）：可用額度 NT$0，11/07 11:08 有一筆 NT$500 增值等待批准。#1011 為已草擬、未交運，黑貓常溫、上門取件、預估運費 NT$98；寄件地址是公司登記的汐止地址；包裹資料帶入 2×2×2 公分、0.05 公斤，非 COD。CARE 舊測試單 #1003–#1007 在 ShipAny 仍是已草擬。貨到付款紀錄為空。物流服務點列表 NT$398／月，11/21 自動續期，當月有收費運單可豁免；API Pro 11/30 自動續期。
 - TapPay 後台（11/07，唯讀）：帳號已開通；正式 MGID 1 組（`charlieliu0809_00005_spfy_backup`，含 Direct Pay 3D、ATM、Apple Pay），與 Shopify 商家設定相符，正式收單商家 3 筆。#1011 交易狀態為「已授權」、尚未請款，NT$277，3D 驗證通過，預計 11/07 18:00 請款；查核時（約 12:40）尚未到請款時間。實際請款結果與入帳未驗證，後台未操作請款、退款或寄送報表。
+- TapPay 後台（11/08 約 01:20，唯讀）：#1011（`D20261107Fgp9KV`）仍為「已授權」，「是否請款過：否」，交易歷史只有 11/07 04:07 授權成功一筆；預計請款日仍顯示 11/07 18:00。頁面說明首次請款失敗會於 T+1、T+2 自動再請款。未按「當日請款」。
+- 請款時程（TapPay 文件「Each bank capture time」）：TapPay 在固定時間把當日授權的交易送銀行請款，部分銀行要到隔天清晨才回覆結果。例如中國信託批次是 18:00 送出、06:30 回覆、建議 08:30 後查詢；玉山是 23:30 送出、04:30 回覆、建議 06:30 後查詢。CARE 的收單帳號在 MGID 顯示為 `TW_TAPPAY`（TapPay 代收，`tppf_charlieliu0809_5808001`），文件表格沒有列出這類帳號的時程，實際收單銀行未確認。11/08 01:20 顯示未請款，可能只是銀行還沒回覆；應在 11/08 08:30 後再查，若仍是「已授權」且無請款紀錄，再寄信問 TapPay（support@cherri.tech）。
+- ShipAny 後台（11/08，唯讀）：11/07 的 NT$500 增值已確認，可用額度 NT$500，應付與暫扣為 0。#1011 尚未交運。
+- #1011 發票（11/08 01:03）：工作仍為 `provider_pending`、`provider_status=1`，`order_invoices` 無資料，等 09:00 排程回查。
 - Search Console：目前的 Google 帳號對 `https://lucissicare.com/` 沒有權限，收錄狀況未知。Sentry 未登入，事件未查看；30 天內信箱沒有 Sentry 通知信，這不能證明回報正常。
 
 ## 上線前盤點（2026-11-07，唯讀，未變更任何正式設定）
