@@ -38,7 +38,7 @@
 - 程式碼：`/welcome`、購物車、Google／Facebook 登入錯誤、結帳錯誤訊息、FAQ、會員資料、訂單查詢、發票載具驗證與評價／提問錯誤訊息不再提 Shopify、TapPay、Supabase、光貿與後台設定；規則內容未變更。購物車顯示 API 英文訊息時，提到 Shopify／Storefront 的改為「建立結帳失敗 (狀態碼)，請稍後再試。」，其他訊息照舊顯示。
 - 登入按鈕修正：原本只要錯誤是 `Error` 就回傳原始訊息，對應好的中文永遠不會顯示；改為一律回傳對應後的訊息。
 - `/welcome` 仍可到達：登入、註冊、Email 驗證後導向，也列在 `/sitemap` 頁，所以一併修改。
-- `verify:content` 新增全站封鎖句段，舊文案會失敗；`Shopify 結帳頁` 改為全站封鎖（#88，尚未合併）。`Shopify Checkout` 仍只封鎖優惠頁：條款與管理後台還在使用。
+- `verify:content` 新增全站封鎖句段，舊文案會失敗；`Shopify 結帳頁` 由 #88 改為全站封鎖。`Shopify Checkout` 仍只封鎖優惠頁：條款與管理後台還在使用。
 - 已驗證（本機）：typecheck、Vitest 72 檔／704 項、build、verify:content。瀏覽器開本機站，確認 `/welcome` 提示、FAQ 兩題、Google／Facebook 登入錯誤、會員資料標籤、購物車免運提示、兩種結帳失敗訊息、訪客訂單查詢提示。登入狀態、優惠券、後端錯誤與訪客開關都是瀏覽器內模擬，未對正式服務寫入，也未建立訂單。
 - 已驗證（Vercel 預覽 `saengak-web-d2ux`，提交 `9454b93`）：`/faq` 顯示新文案、畫面沒有 Shopify；40 個 JS 檔中找得到抽查的 12 句新文案，16 句舊文案都不存在。
 - 已驗證（正式站 `158abea`，瀏覽器）：`/faq` 兩題顯示新文案，畫面沒有 Shopify、TapPay、Supabase；40 個 JS 檔中找得到抽查的 12 句新文案，18 句舊文案都不存在。預覽與正式站都未操作登入或結帳。
