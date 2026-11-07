@@ -2,6 +2,7 @@
 
 ## 上線前程式修正的長期規則（2026-11-07）
 
+- `scripts/verify-public-content.mjs` 的 `forbiddenContent` 可加第三欄路徑前綴，只檢查該路徑；測試檔不掃描。`Shopify Checkout` 目前只封鎖優惠頁，因為條款、`/welcome` 與管理後台仍使用，且 `tests/admin-portal.test.tsx` 要求後台顯示。
 - `/promotion` 的公開規則集中在 `src/domain/promotionPresentation.ts`：隱藏代碼清單與文案覆寫都註明了移除條件，店主更新 Shopify 後要回頭刪除。Shopify 的英文 `summary` 不顯示。
 - `LUCISSI_PUBLIC_URL`（`src/content/carePillars.ts`）是母站連結的唯一開關；`lucissi.com` 2026-11-07 回應 401。
 - 伺服器失敗回報一律走 `api/_lib/server-monitoring.ts`，只能傳穩定代碼，不可傳 Error message、資料庫 details 或 payload。DSN 讀 `SENTRY_DSN`，沒有時沿用 `VITE_PUBLIC_SENTRY_DSN`。

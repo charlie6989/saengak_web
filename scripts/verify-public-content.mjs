@@ -68,6 +68,14 @@ const forbiddenContent = [
   ['unsupported convenience-store pickup claim', '超商門市'],
   ['unsupported convenience-store pickup claim', '宅配或超商取貨'],
   ['unsupported convenience-store pickup claim', '超商取貨簡訊'],
+  // 2026-11-07 優惠頁 FAQ：Shopify 後台用語不對顧客顯示
+  ['internal Shopify admin wording', 'Shopify 官方後台'],
+  ['internal Shopify admin wording', '組合（Combinations）'],
+  ['untranslated Shopify admin label', 'One use per customer'],
+  // 第三欄限定路徑：條款頁（店主已核准的法律文字）、/welcome 與管理後台仍使用這個詞，
+  // 改為全站封鎖前要先處理這些頁面。
+  ['internal Shopify product name', 'Shopify Checkout', 'src/pages/promotion/'],
+  ['internal Shopify product name', 'Shopify 結帳頁', 'src/pages/promotion/'],
   ['bundled mock identity', 'demo@example.com'],
   ['bundled mock identity', 'test@gmail.com'],
   ['bundled mock identity', 'user@test.com'],
@@ -104,7 +112,8 @@ async function collectFiles(target) {
     const absolutePath = path.join(target, entry.name);
     if (entry.isDirectory()) {
       files.push(...await collectFiles(absolutePath));
-    } else if (checkedExtensions.has(path.extname(entry.name))) {
+    } else if (checkedExtensions.has(path.extname(entry.name)) && !/\.test\.tsx?$/.test(entry.name)) {
+      // 測試檔不會出貨，且需要用 Shopify 原始英文資料當測試輸入。
       files.push(absolutePath);
     }
   }
@@ -128,9 +137,11 @@ for (const file of files) {
   let content = await readFile(file, 'utf8');
   // Allow official company email domain
   content = content.replace(/Company@lucissi\.com/gi, '');
-  for (const [label, needle] of forbiddenContent) {
+  const relativePath = path.relative(projectRoot, file);
+  for (const [label, needle, onlyUnder] of forbiddenContent) {
+    if (onlyUnder && !relativePath.startsWith(onlyUnder)) continue;
     if (content.toLowerCase().includes(needle.toLowerCase())) {
-      failures.push(`${path.relative(projectRoot, file)}: ${label} (${needle})`);
+      failures.push(`${relativePath}: ${label} (${needle})`);
     }
   }
 }
