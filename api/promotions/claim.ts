@@ -3,6 +3,7 @@ import { getSupabaseAdminClient } from '../_lib/supabase-admin.js';
 import { fetchShopifyPromotionByCode } from '../shopify/discounts.js';
 import { createClient } from '@supabase/supabase-js';
 import { isMemberPerkCode } from '../_lib/member-perk-code.js';
+import { isPublicPromotionCode } from '../../src/domain/promotionPresentation.js';
 
 interface ClaimRequestBody {
   code?: unknown;
@@ -113,6 +114,15 @@ export async function POST(request: Request): Promise<Response> {
         message: '這是 LUCISSI 會員專屬代碼，請直接在購物車輸入使用',
         code: 'PERK_CODE_NOT_CLAIMABLE',
       }, { status: 400, headers: corsHeaders });
+    }
+
+    // 必須在兩個查證來源之前擋下：Shopify 查不到時會改查 Supabase，而隱藏代碼在那裡可能仍是啟用狀態
+    if (!isPublicPromotionCode(code)) {
+      return jsonResponse({
+        success: false,
+        message: '這張優惠券目前無法領取',
+        code: 'PROMOTION_NOT_CLAIMABLE',
+      }, { status: 403, headers: corsHeaders });
     }
 
     // 3. 一律以代碼向 Shopify 查證權威折扣資料；若 Shopify 服務暫時無法連線，則向 Supabase promotions 主表進行備援查證

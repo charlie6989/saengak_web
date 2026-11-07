@@ -31,7 +31,7 @@ import { POST, OPTIONS } from '../api/promotions/claim.js';
 
 const mockPromotion: ShopifyPromotion = {
   id: 'gid://shopify/DiscountCodeNode/999',
-  code: 'SAVE15',
+  code: 'WELCOME100',
   title: 'VIP 專屬回饋',
   subtitle: '質感選品全品項 85 折',
   description: 'Shopify 官方活動，結帳時直接折抵。',
@@ -137,7 +137,7 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
           Origin: 'https://saengak.com.tw',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code: 'SAVE15' }),
+        body: JSON.stringify({ code: 'WELCOME100' }),
       });
 
       const response = await POST(request);
@@ -170,6 +170,33 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
     });
   });
 
+  describe('隱藏代碼', () => {
+    it.each(['SAVE15', 'special30'])('%s 在查 Shopify 與 Supabase 之前就被拒絕', async (code) => {
+      const userFrom = vi.fn();
+      mocks.createClient.mockReturnValue({
+        auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'member-123' } }, error: null }) },
+        from: userFrom,
+      });
+      const admin = createAdminClientMock({
+        promotionUpsertResult: { data: { id: 'promo-1' }, error: null },
+        couponInsertResult: { data: { id: 'coupon-1' }, error: null },
+      });
+      mocks.getSupabaseAdminClient.mockReturnValue(admin);
+
+      const response = await POST(new Request('http://localhost/api/promotions/claim', {
+        method: 'POST',
+        headers: { Origin: 'https://lucissicare.com', Authorization: 'Bearer token', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      }));
+
+      expect(response.status).toBe(403);
+      expect((await response.json() as { code: string }).code).toBe('PROMOTION_NOT_CLAIMABLE');
+      expect(mocks.fetchShopifyPromotionByCode).not.toHaveBeenCalled();
+      expect(userFrom).not.toHaveBeenCalled();
+      expect(admin.__mocks.couponsInsert).not.toHaveBeenCalled();
+    });
+  });
+
   describe('4. 成功領取流程', () => {
     it('查證成功、promotions upsert 成功、user_coupons insert 成功時回傳 200 success: true，且正確傳遞代碼與 upsert payload', async () => {
       mocks.fetchShopifyPromotionByCode.mockResolvedValue(mockPromotion);
@@ -181,7 +208,7 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
             id: 'coupon-uuid-1',
             user_id: 'member-123',
             promotion_id: 'promo-uuid-1',
-            coupon_code: 'SAVE15',
+            coupon_code: 'WELCOME100',
             status: 'available',
             claimed_at: '2026-09-04T00:00:00Z',
             promotion: mockPromotion,
@@ -198,7 +225,7 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
           'Content-Type': 'application/json',
           Authorization: 'Bearer valid-member-token',
         },
-        body: JSON.stringify({ code: '  save15  ' }), // 故意帶入小寫與空白，驗證正規化
+        body: JSON.stringify({ code: '  welcome100  ' }), // 故意帶入小寫與空白，驗證正規化
       });
 
       const response = await POST(request);
@@ -208,12 +235,12 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
       expect(data.coupon.id).toBe('coupon-uuid-1');
 
       // 呼叫 Shopify 查詢函式時應已 trim + toUpperCase
-      expect(mocks.fetchShopifyPromotionByCode).toHaveBeenCalledWith('SAVE15');
+      expect(mocks.fetchShopifyPromotionByCode).toHaveBeenCalledWith('WELCOME100');
 
       // promotions upsert payload 內容應完全來自 Shopify 權威資料，且用 onConflict: 'code'
       expect(adminMock.__mocks.promotionsUpsert).toHaveBeenCalledWith(
         expect.objectContaining({
-          code: 'SAVE15',
+          code: 'WELCOME100',
           title: 'VIP 專屬回饋',
           category: 'discount',
           discount_type: 'percentage',
@@ -228,7 +255,7 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
       expect(adminMock.__mocks.couponsInsert).toHaveBeenCalledWith({
         user_id: 'member-123',
         promotion_id: 'promo-uuid-1',
-        coupon_code: 'SAVE15',
+        coupon_code: 'WELCOME100',
         status: 'available',
       });
     });
@@ -246,7 +273,7 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
             id: 'coupon-uuid-existing',
             user_id: 'member-123',
             promotion_id: 'promo-uuid-1',
-            coupon_code: 'SAVE15',
+            coupon_code: 'WELCOME100',
             status: 'available',
           },
           error: null,
@@ -261,7 +288,7 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
           'Content-Type': 'application/json',
           Authorization: 'Bearer valid-member-token',
         },
-        body: JSON.stringify({ code: 'SAVE15' }),
+        body: JSON.stringify({ code: 'WELCOME100' }),
       });
 
       const response = await POST(request);
@@ -285,7 +312,7 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
           id: 'coupon-uuid-userclient',
           user_id: 'member-123',
           promotion_id: 'promo-uuid-fallback',
-          coupon_code: 'SAVE15',
+          coupon_code: 'WELCOME100',
           status: 'available',
         },
         error: null,
@@ -314,7 +341,7 @@ describe('LUCISSI CARE 會員領券歸戶 API 測試 (api/promotions/claim.ts)',
           'Content-Type': 'application/json',
           Authorization: 'Bearer valid-member-token',
         },
-        body: JSON.stringify({ code: 'SAVE15' }),
+        body: JSON.stringify({ code: 'WELCOME100' }),
       });
 
       const response = await POST(request);

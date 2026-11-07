@@ -186,6 +186,11 @@ export async function claimPromotionCoupon(
   userId: string,
   promotion: Promotion,
 ): Promise<ClaimCouponResult> {
+  // API 拒絕後下方會走 Supabase 直接歸戶，隱藏代碼要在所有路徑之前擋下
+  if (!isPublicPromotionCode(promotion.code)) {
+    return { success: false, message: '這張優惠券目前無法領取' };
+  }
+
   if (!userId) {
     return { success: false, message: '請先登入會員以領取優惠券' };
   }

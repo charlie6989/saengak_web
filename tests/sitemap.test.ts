@@ -1,9 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { GET, renderSitemap, STATIC_PATHS } from '../api/sitemap.js';
+import { fetchSitemapProducts, renderSitemap, STATIC_PATHS } from '../src/domain/sitemap';
 
 afterEach(() => vi.unstubAllGlobals());
 
+const config = { domain: 'shop.example', apiVersion: '2026-07', token: 'public-token' };
 const page = (nodes: unknown[], pageInfo: unknown = { hasNextPage: false, endCursor: null }) =>
   new Response(JSON.stringify({ data: { products: { nodes, pageInfo } } }), { status: 200 });
 
@@ -24,34 +25,28 @@ describe('sitemap', () => {
     }
   });
 
-  it('follows Storefront pagination and returns cacheable XML', async () => {
+  it('follows Storefront pagination', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(page([{ id: 'gid://shopify/Product/1' }], { hasNextPage: true, endCursor: 'next' }))
       .mockResolvedValueOnce(page([{ id: 'gid://shopify/Product/2' }]));
     vi.stubGlobal('fetch', fetchMock);
 
-    const response = await GET();
-    const xml = await response.text();
+    const products = await fetchSitemapProducts(config);
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(JSON.parse(fetchMock.mock.calls[1][1].body).variables.after).toBe('next');
-    expect(response.headers.get('content-type')).toContain('application/xml');
-    expect(response.headers.get('cache-control')).toContain('s-maxage=3600');
-    expect(xml).toContain('/product/1<');
-    expect(xml).toContain('/product/2<');
+    expect(products.map((product) => product.id)).toEqual(['gid://shopify/Product/1', 'gid://shopify/Product/2']);
   });
 
-  it('still serves the static pages with a short cache when Shopify fails', async () => {
+  it('throws when Shopify fails, so the build can warn and fall back to static pages', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('{}', { status: 502 })));
-    const response = await GET();
-    expect(response.status).toBe(200);
-    expect(response.headers.get('cache-control')).toContain('s-maxage=60');
-    expect(await response.text()).toContain('<loc>https://lucissicare.com/products</loc>');
+    await expect(fetchSitemapProducts(config)).rejects.toThrow('502');
+    expect(renderSitemap([])).toContain('<loc>https://lucissicare.com/products</loc>');
   });
 
-  it('is rewritten before the SPA catch-all, with no static file shadowing it', () => {
-    const { rewrites } = JSON.parse(readFileSync('vercel.json', 'utf8')) as { rewrites: { source: string; destination: string }[] };
-    expect(rewrites[0]).toEqual({ source: '/sitemap.xml', destination: '/api/sitemap' });
+  it('is served from the build output, with no rewrite or static file shadowing it', () => {
+    const { rewrites } = JSON.parse(readFileSync('vercel.json', 'utf8')) as { rewrites: { source: string }[] };
+    expect(rewrites.map((rewrite) => rewrite.source)).not.toContain('/sitemap.xml');
     expect(() => readFileSync('public/sitemap.xml')).toThrow();
     expect(readFileSync('public/robots.txt', 'utf8')).toContain('Sitemap: https://lucissicare.com/sitemap.xml');
   });

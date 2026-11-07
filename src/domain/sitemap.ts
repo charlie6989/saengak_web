@@ -1,13 +1,12 @@
-import { SHOPIFY_API_VERSION, SHOPIFY_STOREFRONT_PUBLIC_TOKEN, SHOPIFY_STORE_DOMAIN } from './_lib/shopify-config.js';
-
 /**
- * /sitemap.xml（vercel.json rewrite 到這裡）：固定頁面加上 Storefront 可見的商品。
- * Shopify 暫時失敗時仍回傳固定頁面，不讓整份 sitemap 變成錯誤頁。
+ * /sitemap.xml 由 vite build 產生（vite.config.ts 的 sitemapPlugin），商品清單在每次部署時更新。
+ * 不用 Vercel Function：Hobby 方案的 12 個函式額度已滿。
  */
 
 const SITE_URL = 'https://lucissicare.com';
 const PAGE_SIZE = 250;
 const MAX_PAGES = 4;
+const REQUEST_TIMEOUT_MS = 10_000;
 
 export const STATIC_PATHS = [
   '/',
@@ -29,6 +28,12 @@ export interface SitemapProduct {
   updatedAt?: string;
 }
 
+export interface StorefrontConfig {
+  domain: string;
+  apiVersion: string;
+  token: string;
+}
+
 interface ProductsPage {
   data?: {
     products?: {
@@ -37,6 +42,8 @@ interface ProductsPage {
     };
   };
 }
+
+const QUERY = 'query SitemapProducts($first: Int!, $after: String) { products(first: $first, after: $after) { nodes { id updatedAt } pageInfo { hasNextPage endCursor } } }';
 
 const escapeXml = (value: string): string =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
@@ -60,42 +67,27 @@ ${[...staticUrls, ...productUrls].join('\n')}
 `;
 }
 
-async function fetchAllProducts(): Promise<SitemapProduct[]> {
+/** 讀取 Storefront 可見的所有商品。任何一頁失敗就 throw，由呼叫端決定如何退回。 */
+export async function fetchSitemapProducts({ domain, apiVersion, token }: StorefrontConfig): Promise<SitemapProduct[]> {
   const products: SitemapProduct[] = [];
   let cursor: string | null = null;
   for (let page = 0; page < MAX_PAGES; page++) {
-    const response = await fetch(`https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`, {
+    const response: Response = await fetch(`https://${domain}/api/${apiVersion}/graphql.json`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_PUBLIC_TOKEN,
+        'X-Shopify-Storefront-Access-Token': token,
       },
-      body: JSON.stringify({
-        query: 'query SitemapProducts($first: Int!, $after: String) { products(first: $first, after: $after) { nodes { id updatedAt } pageInfo { hasNextPage endCursor } } }',
-        variables: { first: PAGE_SIZE, after: cursor },
-      }),
+      body: JSON.stringify({ query: QUERY, variables: { first: PAGE_SIZE, after: cursor } }),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
-    if (!response.ok) throw new Error('SITEMAP_PRODUCTS_UNAVAILABLE');
+    if (!response.ok) throw new Error(`Storefront responded ${response.status}`);
     const body = await response.json() as ProductsPage;
     const connection = body.data?.products;
-    if (!connection?.nodes) throw new Error('SITEMAP_PRODUCTS_UNAVAILABLE');
+    if (!connection?.nodes) throw new Error('Storefront returned no products');
     products.push(...connection.nodes);
     if (!connection.pageInfo?.hasNextPage || !connection.pageInfo.endCursor) break;
     cursor = connection.pageInfo.endCursor;
   }
   return products;
-}
-
-export async function GET(): Promise<Response> {
-  const products = await fetchAllProducts().catch(() => null);
-  return new Response(renderSitemap(products ?? []), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/xml; charset=utf-8',
-      // 失敗時短暫快取，讓下一次爬取能拿回完整商品清單
-      'Cache-Control': products
-        ? 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400'
-        : 'public, max-age=0, s-maxage=60',
-    },
-  });
 }
