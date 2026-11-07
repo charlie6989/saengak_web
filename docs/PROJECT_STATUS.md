@@ -4,7 +4,7 @@
 
 - 檢查範圍：typecheck、Vitest 73 檔／719 項、build、`verify:content`、`verify:production`（24 項全過）；以 headless Chrome 開正式站 sitemap 全部 38 個網址加 15 個額外路由（桌機 1366px、手機 375px，共 81 次），記錄 console 錯誤、失敗請求、破圖、橫向捲動、h1 與 meta；Storefront 395 張商品圖逐一 HEAD；手機慢速 4G 量 LCP／CLS；Supabase 安全與效能 advisors；OAuth 起始導向。
 - 正式站原有結果：無 JavaScript 錯誤、無橫向捲動、每頁都有 meta description；兩張 Shopify CDN 圖片偶發 503，重抓 200。
-- 修正（程式碼，本分支）：
+- 修正（程式碼，PR #94）：
   - 首頁輪播只有第一張用 h1，其餘改 h2；登入、註冊、忘記密碼、重設密碼頁標題由 h2 改 h1。
   - `/product`（無商品編號）原本永遠停在「正在載入商品資料」，改導向 `/products`；找不到的商品頁改為 `noindex, nofollow`。
   - 版面跳動：商品主圖預留 1:1 空間並加 `srcset`（手機抓 600–900px）；商品列表、常見問題、LUCISSI Talk、文章頁的外層加 `flow-root`，避免 `mt-24` 穿透到 body 讓整頁下移；頁面切換時的 Suspense 佔位由英文「Loading...」改為同色滿版空白。本機量測商品頁 CLS 0.314→0、列表 0.395→0、常見問題與 Talk 0.118→0。
@@ -12,6 +12,8 @@
 - 修正（正式環境，已生效）：
   - Shopify「Saengak 益生菌私密舒緩凝膠」說明中失效的 `desc_04` 圖片（CDN 404）已從後台移除並儲存，後台回讀剩 `desc_05`、`desc_06`。Storefront 快取更新前仍可能讀到舊說明。
   - Supabase migration `20261107180107_revoke_anon_get_admin_profiles`：收回 anon 執行 `get_admin_profiles()` 的權限（函式內本來就檢查 admin），回讀 anon=false、authenticated=true。
+- 已上線並驗證（PR #94 合併為 `b8b3e3c`，部署 `dpl_CUFXbf3Kcx8fzxTSuKbAFRYejXrq` READY）：`verify:production` 24 項全過；`/assets/*` 回 `max-age=31536000, immutable`、`/images/*` 回 `max-age=86400`。重新爬正式站 81 次頁面載入：0 個 console 錯誤、失敗請求、破圖、橫向捲動，每頁剛好 1 個 h1。Storefront 商品圖 394 張全部 200（凝膠說明的失效圖已不在）。手機 CLS：商品頁、列表、FAQ、Talk、首頁皆為 0。LCP：一般 4G（9 Mbps、60 ms）首頁 1.5 秒、列表 2.3 秒、商品頁 1.8 秒；極慢網路（1.6 Mbps、150 ms）仍約 8–10 秒，主因是 SPA 要先下載約 165 KB（gzip）JS 再呼叫商品 API，屬架構限制，未在這次處理。`/product` 導向 `/products`，`/product/999` 為 `noindex, nofollow`。
+- 會員信件：正式 Supabase Auth 使用 Resend SMTP（`noreply@auth.saengak.com.tw`，顯示名稱 LUCISSI CARE），先前已實寄並送達；寄件網域仍是 saengak.com.tw，不影響寄送。
 - 已確認不需修改：`claim_guest_orders` 需登入且只認領已驗證 Email；其餘 advisors 為 RLS 寫法與未用索引等規模優化，資料量小不影響上線。Google、Facebook OAuth 都能導向各自登入頁（實際登入未測）。
 - 需店主處理（程式無法代做）：6 件 Saengak 保養品與 1 件內褲售完需補貨；Shopify 寄件信箱待到 `company@` 收件匣點驗證信；#1011 TapPay 請款待 11/08 08:30 後確認；Supabase「外洩密碼保護」需付費方案才能開；Facebook 登入若 App 仍在開發模式，一般顧客無法登入，需到 Meta 開發者後台確認；Shopify「退貨與取消規則」與法律聲明未設定；政策文字未經律師審閱。
 
