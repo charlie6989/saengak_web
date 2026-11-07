@@ -9,7 +9,7 @@ const dataUses = [
   ['網站運作資料', '瀏覽器可能儲存購物車或登入狀態；主機與服務供應商也可能留下必要的安全與錯誤紀錄。'],
 ];
 
-// OWNER-REVIEW：本頁文字待店主與法務確認；個資保存期間尚未載明，確認前不得自行補上。
+// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字；個資保存期間尚未載明，確認前不得自行補上。
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-stone-50 text-gray-800">

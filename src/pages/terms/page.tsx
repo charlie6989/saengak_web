@@ -3,7 +3,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { siteContent } from '../../content/site';
 
-// OWNER-REVIEW：本頁文字待店主與法務確認；退換貨與付款條件確認前不得自行補上。
+// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字；退換貨與付款條件確認前不得自行補上。
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-stone-50 text-gray-800">
