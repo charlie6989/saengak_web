@@ -12,7 +12,7 @@ export type FreeShippingGap =
 
 /**
  * 商品頁價格下方的免運提示：購物車小計加上這次要加入的金額，還差多少達到免運門檻。
- * 實際運費仍以 Shopify 結帳頁計算為準。
+ * 實際運費仍以結帳頁計算為準。
  */
 export function computeFreeShippingGap(cartSubtotal: number, addAmount: number, threshold: number): FreeShippingGap {
   if (cartSubtotal >= threshold) return { status: 'already-free', remaining: 0 };
@@ -41,7 +41,7 @@ export interface CartTotalsEstimate {
 
 /**
  * 購物車的預估金額：免運資格以折扣後小計判斷，與結帳頁的運費規則一致。
- * 只是預估，最終運費與應付金額以 Shopify 結帳頁為準。
+ * 只是預估，最終運費與應付金額以結帳頁為準。
  */
 export function estimateCartTotals({
   subtotal,
