@@ -1,5 +1,11 @@
 # 項目狀態
 
+## 優惠頁 FAQ 顧客用語（2026-11-07，PR 待店主核准，尚未合併、尚未部署）
+
+- 程式碼：`/promotion` 前三題 FAQ 與「結帳自動套用折抵」步驟卡移除 Shopify 後台用語；規則內容未變更。`verify:content` 新增封鎖詞，`Shopify Checkout`、`Shopify 結帳頁` 只封鎖 `src/pages/promotion/`，並略過 `*.test.ts(x)`。
+- 已驗證（本機）：typecheck、Vitest 72 檔／702 項、build、verify:content（172 檔）、verify:supabase、npm audit 通過；新規則在舊文案上確實失敗。瀏覽器開啟本機 `/promotion` 讀取新文案，畫面無 Shopify、後台字樣。本機沒有 `.env.local`，優惠卡資料未載入，未檢查有資料時的卡片。
+- 待處理：`Shopify Checkout` 仍出現在 `/terms`（店主已核准的法律文字）與 `/welcome`；`Shopify 結帳頁` 仍出現在購物車免運提示；Google／Facebook 登入錯誤訊息含「Supabase 後台」。這些頁面不在本次範圍，也未修改。
+
 ## 上線前程式修正（2026-11-07，#80 已合併並部署，`5e910a9`）
 
 **已上線的程式變更**
