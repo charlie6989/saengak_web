@@ -131,7 +131,7 @@ describe('createShopifyCheckout guest requests', () => {
     mockFetchResponse(200, { checkoutUrl, orderTrackingLinked: false });
 
     await expect(createShopifyCheckout(lines, defaultInvoicePreference))
-      .rejects.toThrow('無法把 Shopify 訂單綁定到會員帳號');
+      .rejects.toThrow('無法把訂單綁定到會員帳號');
   });
 
   it('surfaces the API error code on guest failures', async () => {

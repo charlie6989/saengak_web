@@ -270,7 +270,7 @@ export async function submitProductReview(
   payload: SubmitReviewPayload
 ): Promise<{ data: ProductReview | null; error: Error | null }> {
   if (!isSupabaseConfigured) {
-    return { data: null, error: new Error('Supabase 服務尚未設定，無法提交評價') };
+    return { data: null, error: new Error('會員服務尚未設定，無法提交評價') };
   }
 
   // 前端商業規則基本驗證
@@ -367,7 +367,7 @@ export async function submitProductQuestion(
   payload: SubmitQuestionPayload
 ): Promise<{ data: ProductQuestion | null; error: Error | null }> {
   if (!isSupabaseConfigured) {
-    return { data: null, error: new Error('Supabase 服務尚未設定，無法提交提問') };
+    return { data: null, error: new Error('會員服務尚未設定，無法提交提問') };
   }
 
   if (!payload.user_id || !payload.shopify_product_id) {

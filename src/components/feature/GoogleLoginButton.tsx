@@ -59,9 +59,9 @@ export default function GoogleLoginButton({
       setLoading(false);
       let errorMsg = err?.message || 'Google 登入失敗';
       if (errorMsg.includes('provider is not enabled') || errorMsg.includes('Unsupported provider')) {
-        errorMsg = 'Google 登入尚未啟用：Supabase 後台尚未配置 Google Client ID 與 Secret';
+        errorMsg = '此登入方式暫時無法使用，請稍後再試或改用 Email 登入。';
       }
-      onError?.(err instanceof Error ? err : new Error(errorMsg));
+      onError?.(new Error(errorMsg));
     }
   };
 

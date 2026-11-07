@@ -556,7 +556,7 @@ export default function CartSidebar() {
               {selectedCouponCode && discountCalculation.amount > 0 && shippingWarning.willLoseFreeShipping && (
                 <div className="flex items-start gap-1.5 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 mt-1">
                   <i className="ri-error-warning-line mt-0.5 shrink-0"></i>
-                  <span>套用此折扣後金額將低於免運門檻，還差 {formatTwd(shippingWarning.amountStillNeeded)} 才能維持免運，實際運費以 Shopify 結帳頁計算結果為準。</span>
+                  <span>套用此折扣後金額將低於免運門檻，還差 {formatTwd(shippingWarning.amountStillNeeded)} 才能維持免運，實際運費以結帳頁計算結果為準。</span>
                 </div>
               )}
               <div className="flex items-center justify-between text-xs text-gray-600" data-testid="cart-estimated-shipping">
