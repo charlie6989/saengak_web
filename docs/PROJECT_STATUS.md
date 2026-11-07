@@ -1,10 +1,20 @@
 # 項目狀態
 
+## 退換貨規則與資料保存期間（2026-11-07，店主已核可內容；網站改動在 PR #90，未部署）
+
+- 店主決定：比照 LUCISSI：收到商品的次日起 7 日內可退貨，退回運費由公司負擔，瑕疵、寄錯或缺件的來回運費由公司負擔，不提供直接換貨，收到退貨或解除通知的次日起 15 日內退款。只有密封護理品（濕巾、凝膠、慕斯、噴霧與其組合）拆除衛生密封後不適用 7 日解除權，內著不列入。資料保存期間比照 LUCISSI，不列固定年限。這些文字未經律師審閱。
+- 程式碼：改寫 `/return-policy`，更新 FAQ、條款與隱私權頁；`src/domain/returnPolicy.ts` 以品名判斷密封護理品，商品頁與購物車顯示事前告知。
+- 店主已核可：ATM 與貨到付款由客服確認帳戶後匯款退款（LUCISSI 頁面只寫信用卡）；除毛刀不列入拆封排除。
+- 已驗證（本機）：typecheck、Vitest 73 檔／719 項、build、verify:content 通過。瀏覽器連正式 Storefront：濕巾商品頁與購物車顯示告知，內著與除毛刀不顯示；`/return-policy`、`/privacy` 內容正確，375px 無橫向捲動。
+- 已驗證（Shopify 正式，11/07）：退貨與退款、運送、服務條款、聯絡資訊四份政策已發布，內容與網站一致；後台與公開 `/policies/` 頁回讀到相同文字。運送政策的 NT$146、滿 NT$1,500 免運、3 至 5 個工作天已對照 Shopify 運費設定。結帳頁尾「條款及政策」已列出退款、運送、隱私、服務條款與聯絡（開到結帳頁檢查，未送出訂單）。
+- 未驗證或未處理：PR #90 合併前，正式網站仍是舊退貨文字，商品頁與購物車還沒有拆封告知；Shopify 隱私權政策仍是自動範本，與網站 `/privacy` 內容不同；Shopify「退貨與取消規則」（預設規則）與法律聲明未設定。
+
 ## 客服信箱統一為 service@lucissi.com（2026-11-07，店主要求）
 
 - 依據：GoDaddy 後台 `service@lucissi.com` 是 `company@lucissi.com` 的別名，信進同一個信箱；LUCISSI 已用它寄信。未寄測試信實測收信。
 - 程式碼（未提交、未部署）：`src/content/site.ts`、`/welcome`、後台設定預設值與測試改用 service@；`verify:content` 封鎖 `company@lucissi.com`、`service@saengak.com.tw`。退換貨與條款頁只換信箱，文字不變。
 - 正式環境（已生效）：Shopify 商店電子郵件改為 service@；Supabase `site_settings.contact_email` 由 `service@saengak.com.tw` 改為 service@ 並回讀（目前只有管理後台讀取此欄位）。
+- 已上線：PR #89 合併部署為 `88ad4b2`（Vercel READY、main CI 通過）。正式站 40 個 JS 檔查得到 service@，查無 `Company@lucissi.com` 與舊社群文案；`/sitemap.xml` 共 38 筆，不含測試商品。未以瀏覽器開啟正式站頁面。
 - 歷史文件中的 `company@lucissi.com` 是當時紀錄，未修改；街口與 TapPay 申請資料的聯絡信箱也未變更。
 
 ## Shopify 與 ShipAny 設定變更（2026-11-07，店主核准，正式環境已生效）
@@ -43,7 +53,7 @@
 **新發現，先前文件未記錄**
 
 - 結帳頁與訂單信都是英文：Shopify 預設語言為英文，沒有發布繁體中文；訂單確認信預覽主旨為 `Order #9999 confirmed`。
-- Shopify 的退貨、運送、服務條款、聯絡資訊政策都未設定（聯絡資訊標示為必要），結帳頁尾只有隱私權政策。
+- Shopify 的退貨、運送、服務條款、聯絡資訊政策當時都未設定（聯絡資訊標示為必要），結帳頁尾只有隱私權政策。11/07 已填寫，見本文件開頭。
 - 商店聯絡信箱是個人 Gmail、沒有電話；顧客通知由 `shopifyemail.com` 寄出。Shopify 商店地址與公司登記地址不同；ShipAny 的寄件地址是登記的汐止地址（見上節）。
 - SAVE15、SPECIAL30 在網站隱藏，但 Shopify 仍為使用中，折扣對所有顧客開放。
 - 測試訂單 #1004–#1007 在後台仍是已付款、未出貨；#1006、#1007 已確認為 test=true，#1004、#1005 只依顧客名稱判斷。

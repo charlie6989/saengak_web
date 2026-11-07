@@ -3,7 +3,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { siteContent } from '../../content/site';
 
-// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字；退換貨與付款條件確認前不得自行補上。
+// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字與退換貨規則；付款條件確認前不得自行補上。
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-stone-50 text-gray-800">
@@ -44,7 +44,7 @@ export default function TermsPage() {
 
           <section className="rounded-2xl bg-white p-7 shadow-xs">
             <h2 className="text-2xl font-semibold">退換貨與個人資料</h2>
-            <p className="mt-4 leading-7">消費者權益依適用法令及交易條款辦理。個人衛生用品是否屬合理例外，須依商品性質、密封狀態、事前告知與主管機關規範判斷，不能僅以「已拆封」一概排除。</p>
+            <p className="mt-4 leading-7">消費者權益依適用法令及交易條款辦理。收到商品的次日起 7 日內可依退換貨說明申請退貨；因衛生考量而密封的個人衛生用品，已拆除衛生密封且購買前已明確告知時，不適用 7 日解除權。</p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link to="/return-policy" className="rounded-md border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-blush">退換貨說明</Link>
               <Link to="/privacy" className="rounded-md border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-blush">隱私權政策</Link>

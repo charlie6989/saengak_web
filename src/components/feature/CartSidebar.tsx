@@ -39,6 +39,7 @@ import SignedOutCheckoutActions, {
   isGuestCheckoutAvailable,
   type SignedOutCheckoutMode,
 } from './SignedOutCheckoutActions';
+import { isSealedCareProduct, SEALED_CARE_CART_NOTICE } from '../../domain/returnPolicy';
 
 export default function CartSidebar() {
   const [checkoutMessage, setCheckoutMessage] = useState('');
@@ -894,6 +895,13 @@ export default function CartSidebar() {
                 </p>
               )}
             </div>
+
+            {items.some((item) => isSealedCareProduct(item.name)) && (
+              <p className="text-xs leading-5 text-gray-600" data-testid="sealed-care-cart-notice">
+                {SEALED_CARE_CART_NOTICE}
+                <a href="/return-policy" className="ml-1 text-brand underline underline-offset-2">退換貨說明</a>
+              </p>
+            )}
 
             {/* Action Buttons */}
             {/* 訪客模式的訊息顯示在訪客送出按鈕旁（SignedOutCheckoutActions），避免手機上捲出可視範圍 */}

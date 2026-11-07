@@ -9,7 +9,7 @@ const dataUses = [
   ['網站運作資料', '瀏覽器可能儲存購物車或登入狀態；主機與服務供應商也可能留下必要的安全與錯誤紀錄。'],
 ];
 
-// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字；個資保存期間尚未載明，確認前不得自行補上。
+// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字；保存期間比照 LUCISSI，未列固定年限，要改成具體年限須先經店主確認。
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-stone-50 text-gray-800">
@@ -48,6 +48,11 @@ export default function Privacy() {
           <h2 className="text-2xl font-semibold">與 LUCISSI 的會員資格互認</h2>
           <p className="leading-7">LUCISSI CARE 與 LUCISSI 官網（lucissi.com）同屬{siteContent.legalName}（統一編號 {siteContent.taxId}）。為了提供兩站會員的首單禮遇，當您在其中一站申請領取時，該站會以您已驗證的 Email 向另一站確認「是否為已驗證 Email 的會員」，只取得是或否的結果，不交換姓名、地址、電話或訂單資料。</p>
           <p className="leading-7">這項確認只在您主動領取禮遇時進行，不會用於寄送行銷訊息；若日後要用於行銷，會另外徵求您的同意。</p>
+        </section>
+
+        <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
+          <h2 className="text-2xl font-semibold">資料保存期間</h2>
+          <p className="leading-7">資料保存期間依帳號使用、交易履行、客服處理、使用者請求及適用法令而定。</p>
         </section>
 
         <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
