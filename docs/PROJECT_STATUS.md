@@ -2,7 +2,7 @@
 
 ## 優惠頁 FAQ 顧客用語（2026-11-07，#85 店主已核准，已合併並部署，`812ebba`）
 
-- 程式碼：`/promotion` 前三題 FAQ 與「結帳自動套用折抵」步驟卡移除 Shopify 後台用語；規則內容未變更。`verify:content` 新增封鎖詞，`Shopify Checkout`、`Shopify 結帳頁` 只封鎖 `src/pages/promotion/`，並略過 `*.test.ts(x)`。
+- 程式碼：`/promotion` 前三題 FAQ 與「結帳自動套用折抵」步驟卡移除 Shopify 後台用語；規則內容未變更。`verify:content` 新增封鎖詞，`Shopify Checkout` 只封鎖 `src/pages/promotion/`，並略過 `*.test.ts(x)`。
 - 已驗證（本機）：typecheck、Vitest 72 檔／702 項、build、verify:content（172 檔）、verify:supabase、npm audit 通過；新規則在舊文案上確實失敗。瀏覽器開啟本機 `/promotion` 讀取新文案，畫面無 Shopify、後台字樣。本機沒有 `.env.local`，優惠卡資料未載入，未檢查有資料時的卡片。
 - 已驗證（正式站）：`main` CI 通過，Vercel Production 部署 `158abea` 完成。從 `lucissicare.com/promotion` 的入口抓取 51 個 JS 檔，新 FAQ 文案在優惠頁 chunk 內，`Shopify 官方後台`、`One use per customer`、`組合（Combinations）`、`Supabase 後台`、`Shopify 結帳頁計算結果` 都查無結果。未以瀏覽器開啟正式站頁面。
 - 其他頁面的相同用語由 #86 處理，見下方。
@@ -38,10 +38,11 @@
 - 程式碼：`/welcome`、購物車、Google／Facebook 登入錯誤、結帳錯誤訊息、FAQ、會員資料、訂單查詢、發票載具驗證與評價／提問錯誤訊息不再提 Shopify、TapPay、Supabase、光貿與後台設定；規則內容未變更。購物車顯示 API 英文訊息時，提到 Shopify／Storefront 的改為「建立結帳失敗 (狀態碼)，請稍後再試。」，其他訊息照舊顯示。
 - 登入按鈕修正：原本只要錯誤是 `Error` 就回傳原始訊息，對應好的中文永遠不會顯示；改為一律回傳對應後的訊息。
 - `/welcome` 仍可到達：登入、註冊、Email 驗證後導向，也列在 `/sitemap` 頁，所以一併修改。
-- `verify:content` 新增 16 條全站封鎖句段，舊文案會失敗。未加第三欄路徑，也未放寬 `Shopify Checkout`：條款與管理後台仍使用。
+- `verify:content` 新增全站封鎖句段，舊文案會失敗；`Shopify 結帳頁` 由 #88 改為全站封鎖。`Shopify Checkout` 仍只封鎖優惠頁：條款與管理後台還在使用。
 - 已驗證（本機）：typecheck、Vitest 72 檔／704 項、build、verify:content。瀏覽器開本機站，確認 `/welcome` 提示、FAQ 兩題、Google／Facebook 登入錯誤、會員資料標籤、購物車免運提示、兩種結帳失敗訊息、訪客訂單查詢提示。登入狀態、優惠券、後端錯誤與訪客開關都是瀏覽器內模擬，未對正式服務寫入，也未建立訂單。
+- 已驗證（Vercel 預覽 `saengak-web-d2ux`，提交 `9454b93`）：`/faq` 顯示新文案、畫面沒有 Shopify；40 個 JS 檔中找得到抽查的 12 句新文案，16 句舊文案都不存在。
+- 已驗證（正式站 `158abea`，瀏覽器）：`/faq` 兩題顯示新文案，畫面沒有 Shopify、TapPay、Supabase；40 個 JS 檔中找得到抽查的 12 句新文案，18 句舊文案都不存在。預覽與正式站都未操作登入或結帳。
 - 只有單元測試：結帳商店不符與不安全網址。未實際觸發：其餘結帳錯誤、評價／提問「會員服務尚未設定」、`facebookAuth` 的兩則訊息、載具 Email 驗證（選單已無此選項）。
-- 與 #85 的關係：兩者已先後合併。購物車的 `Shopify 結帳頁` 目前用較長句段封鎖；要改全站封鎖，須先改 `src/domain/shipping.ts` 註解。
 - 仍待店主（核准 #85、#86 不含這兩項）：條款頁四句提到 Shopify 是否保留（`src/pages/terms/page.tsx`）；商品頁「結帳由 Shopify 安全處理」是否保留。這兩處未修改。
 
 ## 正式發票開關（2026-11-07）

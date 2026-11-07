@@ -72,10 +72,10 @@ const forbiddenContent = [
   ['internal Shopify admin wording', 'Shopify 官方後台'],
   ['internal Shopify admin wording', '組合（Combinations）'],
   ['untranslated Shopify admin label', 'One use per customer'],
-  // 第三欄限定路徑：條款頁（店主已核准的法律文字）、/welcome 與管理後台仍使用這個詞，
-  // 改為全站封鎖前要先處理這些頁面。
+  // 第三欄限定路徑：條款頁（店主已核准的法律文字）與管理後台仍使用 Shopify Checkout，
+  // tests/admin-portal.test.tsx 也要求後台顯示，所以不能全站封鎖。
   ['internal Shopify product name', 'Shopify Checkout', 'src/pages/promotion/'],
-  ['internal Shopify product name', 'Shopify 結帳頁', 'src/pages/promotion/'],
+  ['internal Shopify product name', 'Shopify 結帳頁'],
   ['bundled mock identity', 'demo@example.com'],
   ['bundled mock identity', 'test@gmail.com'],
   ['bundled mock identity', 'user@test.com'],
@@ -92,7 +92,6 @@ const forbiddenContent = [
   ['internal service wording', 'Supabase 服務尚未設定，無法提交'],
   ['internal service wording', 'Online Store 與 TapPay'],
   ['internal service wording', 'Shopify 商店尚未解鎖'],
-  ['internal service wording', 'Shopify 結帳頁計算結果'],
   ['internal service wording', '把 Shopify 訂單'],
   ['internal service wording', 'Shopify 訂單與物流'],
   ['internal service wording', 'Shopify 訂單當下'],
