@@ -22,7 +22,9 @@
 
 **尚未驗證**：Sentry 實際收到伺服器事件（需部署且正式環境有 DSN，本輪未送出測試事件）；已登入會員領取隱藏代碼的完整流程（單元測試涵蓋）；Search Console 收錄。Supabase Edge Functions 不在本次回報範圍內。
 
-**待店主**：Shopify 折扣資料、SAVE15／SPECIAL30 的去留、資料保存期間；首頁「超值組合」仍有 3 件售完商品（這次只處理本季精選與 `/best-rated`）；`/promotion` FAQ 仍有「Shopify 官方後台」等內部用語。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
+**首頁「超值組合」（#84，`e6e576d`，正式站已確認）**：區塊只放有貨商品。三個組合都售完，所以目前標題是「日常私密護理」、沒有分頁，顯示濕巾與 MEDION 凝膠；補貨後自動恢復「超值組合」與分頁（這個狀態只有單元測試）。商品本身未下架，仍可從商品頁與搜尋找到。
+
+**待店主**：Shopify 折扣資料、SAVE15／SPECIAL30 的去留、資料保存期間；三個 SAENGAK 組合與另外三個單品的補貨；`/promotion` FAQ 仍有「Shopify 官方後台」等內部用語。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
 
 ## 正式發票開關（2026-11-07）
 
