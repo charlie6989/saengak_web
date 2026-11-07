@@ -1,10 +1,18 @@
 # 項目狀態
 
+## 付款方式與貨到付款標準（2026-11-07，分支 `claude/cod-standard`）
+
+- 正式設定（Shopify 後台，已回讀結帳頁）：PayPal、LINE Pay（含 TapPay 內的開關）、街口已停用；保留 TapPay 信用卡、Tappay ATM、貨到付款。LINE Pay 與街口依 11/06、10/22 的紀錄判斷，TapPay 後台未登入查看。
+- 文件：貨到付款標準寫入 `docs/INVOICE_STANDARD.md`（依 ShipAny 10/16、10/22、10/28 書面回覆，使用者採用），操作步驟寫入 `docs/SHOPIFY_ADMIN_RUNBOOK.md`。FAQ 改列實際付款方式。
+- 已查看：Flow「COD 宅配送達後自動標記已付款」作用中，條件為 DELIVERED、Cash on Delivery (COD)、PENDING、運送方式「標準」，尚未執行過；免運訂單 #1007 的運送方式也叫「標準」。
+- 未驗證：沒有真實貨到付款訂單；ShipAny 後台未登入查看（最後讀取 10/22）；實際付款方式名稱；開票時點待會計確認。LUCISSI 改為此標準的 PR #105 尚未合併，也還沒安裝 Flow。
+
 ## 電子發票與 LUCISSI 統一（2026-11-07，分支 `claude/unify-amego-invoice`）
 
 - 程式碼：`buildAmegoInvoicePayload` 改為 LUCISSI 標準（個人發票一律光貿會員載具、`PrintMark`、`RandomNumber`、`DetailVat`、`BuyerName`、`MainRemark`）；金額對不上不再補猜測行；統編改用可被 5 整除規則；結帳選單移除重複的 Email 載具選項。標準見 `docs/INVOICE_STANDARD.md`。
-- 正式狀態：第一筆真實訂單 #1011（NT$277）的發票工作於 2026-11-07 改為 `manual_review` 暫緩，避免用舊方法開出空載具發票；尚未開立（`attempts=0`、`mutation_accepted=false`）。新程式部署後要改回 `pending` 才會開立。
-- 已驗證：單元測試涵蓋 #1011 的組態。未驗證：尚未向光貿實際開立；公司發票類別兩站不一致，需沙盒實測；Edge Function `amego-invoice-dispatch` 尚未重新部署。
+- 正式狀態：第一筆真實訂單 #1011（NT$277）的發票工作先暫緩，新程式部署後改回 `pending`。2026-11-07 09:33 排程送出，光貿受理並配號，09:39 寄出開立通知，發票日期 2026/11/07、金額 277 與訂單相符。
+- 系統狀態（2026-11-07 10:16 讀取）：工作仍是 `provider_pending`、`provider_status=1`，`order_invoices` 沒有資料，會員頁看不到發票，要等下一次每日排程回查。
+- 已驗證：單元測試涵蓋 #1011 的組態；光貿開立通知信。未驗證：回查到 `invoice_status=99`、財政部平台上傳、發票明細（品項、稅額、載具）；公司發票類別兩站不一致，需沙盒實測；Edge Function `amego-invoice-dispatch` 尚未重新部署。
 
 ## Footer LINE QR code（2026-11-07，分支 `claude/footer-line-qr`）
 
