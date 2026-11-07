@@ -28,7 +28,7 @@ export function GuestOrderNotice() {
     >
       <p className="font-semibold text-stone-900">若以訪客身分結帳，可以這樣查詢訂單：</p>
       <ul className="mt-2 list-disc space-y-1 pl-5">
-        <li>請查看 Shopify 寄出的訂單確認信，點信中的「訂單狀態」連結，即可查看付款、出貨與物流進度。</li>
+        <li>請查看訂單確認信，點信中的「訂單狀態」連結，即可查看付款、出貨與物流進度。</li>
         <li>以結帳時填寫的同一個 Email 註冊並完成 Email 驗證，登入後即可在會員中心「我的訂單」看到這筆訂單。</li>
       </ul>
       <p className="mt-3">

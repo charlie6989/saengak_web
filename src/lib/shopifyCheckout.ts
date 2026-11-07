@@ -88,7 +88,7 @@ export function getShopifyCheckoutErrorMessage(
     data.code === 'SHOPIFY_STOREFRONT_LOCKED' ||
     /online store channel is locked/i.test(diagnosticText)
   ) {
-    return 'Shopify 商店尚未解鎖，暫時無法進入 TapPay 結帳。請先在 Shopify 啟用 Online Store。';
+    return '結帳服務暫時無法使用，請稍後再試。';
   }
 
   if (data.code && guestCheckoutErrorMessages[data.code]) {
@@ -113,14 +113,17 @@ export function getShopifyCheckoutErrorMessage(
     data.code === 'MEMBER_ORDER_LINK_UNAVAILABLE' ||
     data.code === 'MEMBER_ORDER_LINK_FAILED'
   ) {
-    return '目前無法把 Shopify 訂單綁定到會員帳號，已停止結帳。請稍後再試。';
+    return '目前無法把訂單綁定到會員帳號，已停止結帳。請稍後再試。';
   }
 
   if (data.code === 'INVOICE_PREFERENCE_PERSISTENCE_FAILED') {
     return '目前無法安全保存發票資料，已停止結帳。請稍後再試。';
   }
 
-  return details[0] || data.error || `建立 Shopify 購物車失敗 (${status})`;
+  // API 的 error 與 Shopify 回傳的 details 是英文診斷文字，提到服務名稱的不直接給顧客看。
+  const serverMessage = details[0] || data.error;
+  if (serverMessage && !/shopify|storefront/i.test(serverMessage)) return serverMessage;
+  return `建立結帳失敗 (${status})，請稍後再試。`;
 }
 
 export function assertMemberOrderTracking(
@@ -128,17 +131,17 @@ export function assertMemberOrderTracking(
   hasMemberSession: boolean,
 ): void {
   if (hasMemberSession && data.orderTrackingLinked !== true) {
-    throw new Error('目前無法把 Shopify 訂單綁定到會員帳號，已停止結帳。請稍後再試。');
+    throw new Error('目前無法把訂單綁定到會員帳號，已停止結帳。請稍後再試。');
   }
 }
 
 export function validateShopifyCheckoutUrl(rawCheckoutUrl: string): string {
   const checkoutUrl = new URL(rawCheckoutUrl);
   if (checkoutUrl.protocol !== 'https:') {
-    throw new Error('Shopify 回傳了不安全的結帳網址');
+    throw new Error('系統回傳了不安全的結帳網址');
   }
   if (checkoutUrl.hostname.toLowerCase() !== LUCISSI_CARE_SHOPIFY_DOMAIN) {
-    throw new Error('Shopify 結帳商店不符，已停止導向以保護訂單');
+    throw new Error('結帳商店不符，已停止導向以保護訂單');
   }
   return checkoutUrl.toString();
 }
@@ -174,7 +177,7 @@ export async function createShopifyCheckout(
   guest?: GuestCheckoutDetails,
 ): Promise<{ checkoutUrl: string; invalidDiscountCodes: string[]; checkoutKind: 'member' | 'guest' }> {
   if (!isShopifyCheckoutConfigured) {
-    throw new Error('Shopify checkout 尚未設定');
+    throw new Error('結帳服務尚未設定，暫時無法結帳。');
   }
 
   const isGuest = Boolean(guest);
@@ -225,7 +228,7 @@ export async function createShopifyCheckout(
   }
 
   if (!data.checkoutUrl) {
-    throw new Error('Shopify 未回傳 checkoutUrl');
+    throw new Error('無法取得結帳網址，請稍後再試。');
   }
 
   // 訪客訂單在結帳時不會綁定會員（orderTrackingLinked 為 false），只檢查會員結帳。

@@ -84,6 +84,24 @@ const forbiddenContent = [
   ['bundled live secret prefix', 'sk_live_'],
   ['bundled Shopify admin token prefix', 'shpat_'],
   ['bundled Supabase secret prefix', 'sb_secret_'],
+  // 2026-11-07 顧客文字：不提內部服務與後台設定。只列完整句段，因為條款、隱私權與管理後台
+  // 仍可使用服務名稱。後台服務錯誤訊息（reviews-qa 的管理函式）不在封鎖範圍。
+  ['internal service wording', 'Supabase 後台'],
+  ['internal service wording', '環境變數或 Supabase'],
+  ['internal service wording', 'Meta for Developers'],
+  ['internal service wording', 'Supabase 服務尚未設定，無法提交'],
+  ['internal service wording', 'Online Store 與 TapPay'],
+  ['internal service wording', 'Shopify 商店尚未解鎖'],
+  ['internal service wording', 'Shopify 結帳頁計算結果'],
+  ['internal service wording', '把 Shopify 訂單'],
+  ['internal service wording', 'Shopify 訂單與物流'],
+  ['internal service wording', 'Shopify 訂單當下'],
+  ['internal service wording', 'Shopify 寄出'],
+  ['internal service wording', 'Shopify 配送規格'],
+  ['internal service wording', '建立 Shopify 購物車失敗'],
+  ['internal service wording', 'Shopify 未回傳'],
+  ['internal service wording', 'Shopify 回傳了'],
+  ['internal service wording', '光貿 Email 載具'],
 ];
 
 async function collectFiles(target) {

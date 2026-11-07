@@ -1001,7 +1001,7 @@ export default function ProfilePage() {
                           台灣地址標準填寫格式
                         </span>
                         <span className="text-[11px] text-brand bg-blush/60 px-2 py-0.5 rounded-sm">
-                          結帳時自動對齊 Shopify 配送規格
+                          結帳時自動對齊配送規格
                         </span>
                       </div>
 

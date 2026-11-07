@@ -173,14 +173,14 @@ export async function triggerFacebookLogin(options?: {
 }> {
   if (!isSupabaseConfigured) {
     return {
-      error: new Error('會員系統尚未綁定雲端資料庫，現階段暫無法登入'),
+      error: new Error('會員系統正在連線，現階段暫無法登入'),
     };
   }
 
   // 1. 若環境尚未配置 Facebook App ID，先行攔截避免觸發後端 400 錯誤跳轉
   if (!FACEBOOK_APP_ID) {
     const message =
-      'Facebook 登入功能尚未啟用：系統尚未配置 Meta Facebook App ID。請在 Meta for Developers 建立應用程式並將 App ID 填入環境設定中。';
+      '此登入方式暫時無法使用，請稍後再試或改用 Email 登入。';
     return { error: new Error(message) };
   }
 

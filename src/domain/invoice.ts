@@ -68,7 +68,7 @@ export function validateInvoicePreference(preference: InvoicePreference): string
     return '手機條碼格式應為 / 開頭加 7 碼英數符號。';
   }
   if (preference.carrier === 'amego-email' && !emailPattern.test(carrierId)) {
-    return '請輸入有效的光貿 Email 載具。';
+    return '請輸入有效的載具 Email。';
   }
   if (preference.carrier === 'donation' && !donationCodePattern.test(carrierId)) {
     return '捐贈碼需為 3–7 碼數字。';

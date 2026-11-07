@@ -13,7 +13,7 @@ describe('Shopify checkout safeguards', () => {
 
     expect(() => validateShopifyCheckoutUrl(
       'https://zy6dge-rn.myshopify.com/checkouts/cn/legacy',
-    )).toThrow('Shopify 結帳商店不符');
+    )).toThrow('結帳商店不符');
   });
 
   it('rejects insecure checkout URLs', () => {
@@ -26,7 +26,22 @@ describe('Shopify checkout safeguards', () => {
     expect(getShopifyCheckoutErrorMessage({
       error: 'Shopify GraphQL request failed',
       details: ['Online Store channel is locked.'],
-    }, 502)).toContain('Shopify 商店尚未解鎖');
+    }, 502)).toBe('結帳服務暫時無法使用，請稍後再試。');
+  });
+
+  it('does not show API messages that name the checkout service', () => {
+    expect(getShopifyCheckoutErrorMessage({ error: 'Shopify rejected the cart' }, 422))
+      .toBe('建立結帳失敗 (422)，請稍後再試。');
+    expect(getShopifyCheckoutErrorMessage({
+      error: 'Shopify GraphQL request failed',
+      details: ['Shopify Storefront error'],
+    }, 502)).toBe('建立結帳失敗 (502)，請稍後再試。');
+    expect(getShopifyCheckoutErrorMessage({}, 500)).toBe('建立結帳失敗 (500)，請稍後再試。');
+  });
+
+  it('keeps server messages that do not name a service', () => {
+    expect(getShopifyCheckoutErrorMessage({ error: '全站維護中，暫停受理購物車結帳' }, 503))
+      .toBe('全站維護中，暫停受理購物車結帳');
   });
 
   it('explains why checkout requires a member session', () => {
@@ -47,7 +62,7 @@ describe('Shopify checkout safeguards', () => {
     expect(() => assertMemberOrderTracking({
       checkoutUrl: 'https://gh2xgs-zf.myshopify.com/checkouts/cn/example',
       orderTrackingLinked: false,
-    }, true)).toThrow('無法把 Shopify 訂單綁定到會員帳號');
+    }, true)).toThrow('無法把訂單綁定到會員帳號');
 
     expect(() => assertMemberOrderTracking({
       checkoutUrl: 'https://gh2xgs-zf.myshopify.com/checkouts/cn/example',

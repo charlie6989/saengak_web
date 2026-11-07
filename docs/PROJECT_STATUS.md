@@ -32,6 +32,17 @@
 
 **待店主**：Shopify 折扣資料、SAVE15／SPECIAL30 的去留、資料保存期間；三個 SAENGAK 組合與另外三個單品的補貨；`/promotion` FAQ 仍有「Shopify 官方後台」等內部用語。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
 
+## 顧客文字移除內部服務用語（2026-11-07，分支 `claude/remove-internal-service-wording`，PR 待店主核准，尚未合併、尚未部署）
+
+- 程式碼：`/welcome`、購物車、Google／Facebook 登入錯誤、結帳錯誤訊息、FAQ、會員資料、訂單查詢、發票載具驗證與評價／提問錯誤訊息不再提 Shopify、TapPay、Supabase、光貿與後台設定；規則內容未變更。購物車顯示 API 英文訊息時，提到 Shopify／Storefront 的改為「建立結帳失敗 (狀態碼)，請稍後再試。」，其他訊息照舊顯示。
+- 登入按鈕修正：原本只要錯誤是 `Error` 就回傳原始訊息，對應好的中文永遠不會顯示；改為一律回傳對應後的訊息。
+- `/welcome` 仍可到達：登入、註冊、Email 驗證後導向，也列在 `/sitemap` 頁，所以一併修改。
+- `verify:content` 新增 16 條全站封鎖句段，舊文案會失敗。未加第三欄路徑，也未放寬 `Shopify Checkout`：條款與管理後台仍使用。
+- 已驗證（本機）：typecheck、Vitest 72 檔／704 項、build、verify:content。瀏覽器開本機站，確認 `/welcome` 提示、FAQ 兩題、Google／Facebook 登入錯誤、會員資料標籤、購物車免運提示、兩種結帳失敗訊息、訪客訂單查詢提示。登入狀態、優惠券、後端錯誤與訪客開關都是瀏覽器內模擬，未對正式服務寫入，也未建立訂單。
+- 只有單元測試：結帳商店不符與不安全網址。未實際觸發：其餘結帳錯誤、評價／提問「會員服務尚未設定」、`facebookAuth` 的兩則訊息、載具 Email 驗證（選單已無此選項）。
+- 與 #85 的關係：#85 尚未合併；本分支與其合併無衝突，合併後 verify:content 通過。購物車的 `Shopify 結帳頁` 目前用較長句段封鎖；#85 合併後，要改全站封鎖還須先改 `src/domain/shipping.ts` 註解。
+- 待店主：條款頁四句提到 Shopify 是否保留（`src/pages/terms/page.tsx`）；商品頁「結帳由 Shopify 安全處理」是否保留。這兩處未修改。
+
 ## 正式發票開關（2026-11-07）
 
 - `api/invoice/guangmao.ts` 只有在 `AmegoInvoiceReleaseEnabled=true` 時才派送發票；此時若 `AmegoIssuerNote` 為空，視同憑證不完整並拒絕派送。#1011 已成功送出，代表這兩項在當時都有設定。

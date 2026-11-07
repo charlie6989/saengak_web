@@ -38,7 +38,7 @@ export default function FacebookLoginButton({
     if (!isFacebookAuthConfigured) {
       onError?.(
         new Error(
-          'Facebook 登入功能設定中：尚未在環境變數或 Supabase 配置 Meta App ID 與 Secret'
+          '此登入方式暫時無法使用，請稍後再試或改用 Email 登入。'
         )
       );
       return;
@@ -62,9 +62,9 @@ export default function FacebookLoginButton({
         errorMsg.includes('Unsupported provider')
       ) {
         errorMsg =
-          'Facebook 登入尚未啟用：Supabase 後台尚未啟用 Facebook 驗證提供者，請先在 Supabase 填入 Facebook App ID 與 App Secret';
+          '此登入方式暫時無法使用，請稍後再試或改用 Email 登入。';
       }
-      onError?.(err instanceof Error ? err : new Error(errorMsg));
+      onError?.(new Error(errorMsg));
     } finally {
       setLoading(false);
     }

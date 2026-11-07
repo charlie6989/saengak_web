@@ -8,6 +8,7 @@
 - 伺服器失敗回報一律走 `api/_lib/server-monitoring.ts`，只能傳穩定代碼，不可傳 Error message、資料庫 details 或 payload。DSN 讀 `SENTRY_DSN`，沒有時沿用 `VITE_PUBLIC_SENTRY_DSN`。
 - `/sitemap.xml` 由 `vite build` 產生（`src/domain/sitemap.ts`），商品清單在每次部署時更新；讀不到 Shopify 時只列固定頁面並在建置 log 警告。不要加 `public/sitemap.xml`。Vercel Hobby 上限 12 個函式（`api/` 加 `middleware.js`），目前已滿，`tests/vercel-function-limit.test.ts` 會擋下超額。
 - 隱私權與條款頁的現行文字由店主於 2026-11-07 核准（未經律師審閱的紀錄）。`OWNER-REVIEW` 註記標示仍待決定的內容，不可自行補上保存期間、退款天數或電話。
+- 顧客文字不提內部服務與後台設定；例外是隱私權頁的服務商揭露、條款頁（店主核准的法律文字）與 `src/pages/admin/`。`scripts/verify-public-content.mjs` 只封鎖完整句段，新增文案仍要自行避開。
 
 ## 商品內容恢復與分類呈現（2026-10-25）
 
