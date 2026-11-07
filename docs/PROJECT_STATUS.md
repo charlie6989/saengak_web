@@ -1,8 +1,8 @@
 # 項目狀態
 
-## 上線前程式修正（2026-11-07，PR 審查中，尚未部署）
+## 上線前程式修正（2026-11-07，#80 已合併並部署，`5e910a9`）
 
-**程式已修改（本機驗證，正式站仍是舊版）**
+**已上線的程式變更**
 
 - 404 改為繁中頁面，含導覽與 noindex。
 - `/promotion`：不再使用 Shopify 英文 summary；`SAVE15`、`SPECIAL30` 由 `src/domain/promotionPresentation.ts` 隱藏，領券 API 與前端都會拒絕；`FREESHIP` 的標題與副標由網站依實際門檻覆寫；移除「限時」與「長期有效」的矛盾文字。規則同時套用於 API、Supabase 備援與預設清單。
@@ -18,9 +18,11 @@
 
 **已驗證（Vercel 預覽部署 `c3aa677`）**：部署成功；`/sitemap.xml` 回傳 XML，含 12 個固定頁與 28 個商品；`/api/shopify/discounts` 回 200，只有 WELCOME100 與 FREESHIP；404 為繁中且 noindex；商品頁只有一個 canonical，JSON-LD 正確；375px 購物車顯示預估運費 NT$146、預估總計 NT$166，無水平捲動。
 
-**尚未驗證**：正式站部署；Sentry 實際收到伺服器事件（需部署且正式環境有 DSN，本輪未送出測試事件）；已登入會員領取隱藏代碼的完整流程（單元測試涵蓋）；Search Console 收錄。Supabase Edge Functions 不在本次回報範圍內。
+**已驗證（正式站 `5e910a9`）**：main CI 通過；`/sitemap.xml` 回 XML，含 28 個商品；`/api/shopify/discounts` 來源為 `shopify_admin_api`，只有 WELCOME100 與 FREESHIP；`/promotion` 無隱藏代碼與英文 summary；`/privacy`、`/terms` 顯示 2026年11月7日；404 為繁中且 noindex；首頁本季精選沒有售完商品，footer 有 LINE QR code，無水平捲動；發票排程端點未授權回 401。
 
-**待店主**：Shopify 折扣資料、SAVE15／SPECIAL30 的去留、資料保存期間，詳見 PR 說明。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
+**尚未驗證**：Sentry 實際收到伺服器事件（需部署且正式環境有 DSN，本輪未送出測試事件）；已登入會員領取隱藏代碼的完整流程（單元測試涵蓋）；Search Console 收錄。Supabase Edge Functions 不在本次回報範圍內。
+
+**待店主**：Shopify 折扣資料、SAVE15／SPECIAL30 的去留、資料保存期間；首頁「超值組合」仍有 3 件售完商品（這次只處理本季精選與 `/best-rated`）；`/promotion` FAQ 仍有「Shopify 官方後台」等內部用語。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
 
 ## 正式發票開關（2026-11-07）
 
@@ -38,7 +40,7 @@
 
 - 程式碼：`buildAmegoInvoicePayload` 改為 LUCISSI 標準（個人發票一律光貿會員載具、`PrintMark`、`RandomNumber`、`DetailVat`、`BuyerName`、`MainRemark`）；金額對不上不再補猜測行；統編改用可被 5 整除規則；結帳選單移除重複的 Email 載具選項。標準見 `docs/INVOICE_STANDARD.md`。
 - 正式狀態：第一筆真實訂單 #1011（NT$277）的發票工作先暫緩，新程式部署後改回 `pending`。2026-11-07 09:33 排程送出，光貿受理並配號，09:39 寄出開立通知，發票日期 2026/11/07、金額 277 與訂單相符。
-- 系統狀態（2026-11-07 10:16 讀取）：工作仍是 `provider_pending`、`provider_status=1`，`order_invoices` 沒有資料，會員頁看不到發票，要等下一次每日排程回查。
+- 系統狀態（2026-11-07 10:54 讀取）：工作仍是 `provider_pending`、`provider_status=1`，`order_invoices` 沒有資料，會員頁看不到發票，要等下一次每日排程回查。
 - 已驗證：單元測試涵蓋 #1011 的組態；光貿開立通知信。未驗證：回查到 `invoice_status=99`、財政部平台上傳、發票明細（品項、稅額、載具）；公司發票類別兩站不一致，需沙盒實測；Edge Function `amego-invoice-dispatch` 尚未重新部署。
 
 ## Footer LINE QR code（2026-11-07，分支 `claude/footer-line-qr`）
