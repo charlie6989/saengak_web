@@ -6,6 +6,12 @@ export const FACEBOOK_APP_ID =
 
 export const isFacebookAuthConfigured = Boolean(FACEBOOK_APP_ID);
 
+// 2026-11-08 查核：Meta App 2493428007846346 仍在開發模式，非管理員打開授權頁會看到「App not active」，
+// 一般顧客無法用 Facebook 登入。App 切成正式模式（Live）後，在 Vercel 設定 VITE_FACEBOOK_LOGIN_ENABLED=true 再重新部署即可顯示。
+export function isFacebookLoginEnabled(): boolean {
+  return import.meta.env.VITE_FACEBOOK_LOGIN_ENABLED === 'true';
+}
+
 declare global {
   interface Window {
     FB?: {

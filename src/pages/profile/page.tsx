@@ -24,6 +24,7 @@ import {
   parseTaiwanAddress,
 } from '../../lib/taiwanDistricts';
 import LucissiMemberPerkCard from '../../components/feature/LucissiMemberPerkCard';
+import { isFacebookLoginEnabled } from '../../lib/facebookAuth';
 
 interface UserProfile {
   id: string;
@@ -1120,7 +1121,8 @@ export default function ProfilePage() {
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Facebook 綁定卡片 */}
+                  {/* Facebook 綁定卡片：Meta App 未上線前只對已綁定的會員顯示狀態，不提供綁定按鈕 */}
+                  {(isFacebookLoginEnabled() || isFacebookLinked) && (
                   <div className="p-4 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-xl shrink-0">
@@ -1152,6 +1154,7 @@ export default function ProfilePage() {
                       </button>
                     )}
                   </div>
+                  )}
 
                   {/* Google 狀態卡片 */}
                   <div className="p-4 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-between">

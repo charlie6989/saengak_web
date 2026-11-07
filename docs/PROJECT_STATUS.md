@@ -15,7 +15,12 @@
 - 已上線並驗證（PR #94 合併為 `b8b3e3c`，部署 `dpl_CUFXbf3Kcx8fzxTSuKbAFRYejXrq` READY）：`verify:production` 24 項全過；`/assets/*` 回 `max-age=31536000, immutable`、`/images/*` 回 `max-age=86400`。重新爬正式站 81 次頁面載入：0 個 console 錯誤、失敗請求、破圖、橫向捲動，每頁剛好 1 個 h1。Storefront 商品圖 394 張全部 200（凝膠說明的失效圖已不在）。手機 CLS：商品頁、列表、FAQ、Talk、首頁皆為 0。LCP：一般 4G（9 Mbps、60 ms）首頁 1.5 秒、列表 2.3 秒、商品頁 1.8 秒；極慢網路（1.6 Mbps、150 ms）仍約 8–10 秒，主因是 SPA 要先下載約 165 KB（gzip）JS 再呼叫商品 API，屬架構限制，未在這次處理。`/product` 導向 `/products`，`/product/999` 為 `noindex, nofollow`。
 - 會員信件：正式 Supabase Auth 使用 Resend SMTP（`noreply@auth.saengak.com.tw`，顯示名稱 LUCISSI CARE），先前已實寄並送達；寄件網域仍是 saengak.com.tw，不影響寄送。
 - 已確認不需修改：`claim_guest_orders` 需登入且只認領已驗證 Email；其餘 advisors 為 RLS 寫法與未用索引等規模優化，資料量小不影響上線。Google、Facebook OAuth 都能導向各自登入頁（實際登入未測）。
-- 需店主處理（程式無法代做）：6 件 Saengak 保養品與 1 件內褲售完需補貨；Shopify 寄件信箱待到 `company@` 收件匣點驗證信；#1011 TapPay 請款待 11/08 08:30 後確認；Supabase「外洩密碼保護」需付費方案才能開；Facebook 登入若 App 仍在開發模式，一般顧客無法登入，需到 Meta 開發者後台確認；Shopify「退貨與取消規則」與法律聲明未設定；政策文字未經律師審閱。
+- 11/08 追加處理：
+  - Facebook 登入：用非管理員的 Facebook 帳號打開 App 2493428007846346 的授權頁，顯示「App not active」，代表 Meta App 仍在開發模式，一般顧客無法用 Facebook 登入（此 Chrome 的 Meta 開發者帳號不是該 App 管理員，無法切換模式）。程式改為預設隱藏 Facebook 登入／註冊按鈕與會員中心的綁定按鈕（已綁定的會員仍顯示狀態），Google 與 Email 登入不受影響。App 切成 Live 後，在 Vercel 設定 `VITE_FACEBOOK_LOGIN_ENABLED=true` 並重新部署即可恢復。
+  - Shopify「退貨與取消規則」：退貨期限只能選 14／30／90 天、無限制或不接受，沒有 7 天，設定任何一個都會與已核可的 7 日規則矛盾，因此維持關閉，以已發布的退貨與退款政策文字為準。取消規則也維持關閉。
+  - Shopify「法律聲明」：已發布，內容只用聯絡資訊政策中已核可的公司名稱、統編、登記地址、Email 與 LINE，未新增其他條文；公開 `/policies/legal-notice` 回讀 200。
+  - Shopify 寄件信箱：02:35 已重新寄出驗證信，`company@lucissi.com` 收件匣（Spark）已收到「請驗證您的電子郵件地址」，連結 24 小時內有效，需店主點信中的「驗證電子郵件」按鈕。
+- 需店主處理（程式無法代做）：6 件 Saengak 保養品與 1 件內褲售完需補貨；Shopify 寄件信箱待點 11/08 02:35 的驗證信；#1011 TapPay 請款待 11/08 08:30 後確認；Supabase「外洩密碼保護」需付費方案才能開；Facebook 登入要由 Meta App 管理員切成 Live 後才能開放；政策文字未經律師審閱。
 
 ## 退換貨規則與資料保存期間（2026-11-07，店主已核可內容；PR #90 已上線）
 
