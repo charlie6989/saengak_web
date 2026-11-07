@@ -94,7 +94,7 @@ export default function Community() {
           excerpt: article.excerpt || article.contentHtml?.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...',
           category: article.blog?.title || (article.tags && article.tags.length > 0 ? article.tags[0] : '精彩文章'),
           author: article.author || 'LUCISSI CARE 編輯團隊',
-          date: new Date(article.publishedAt).toLocaleDateString(),
+          date: new Date(article.publishedAt).toLocaleDateString('zh-TW'),
           readTime: `${estimateReadingMinutes(article.contentHtml || article.excerpt || '')} 分鐘`,
           image: editorialImage(article.handle, article.image?.url),
           tags: article.tags || [],
@@ -143,8 +143,8 @@ export default function Community() {
         image="/images/lucissi-v5/community-hero.webp"
         alt="三位成年女性在自在的小聚中交流彼此的日常心得"
         eyebrow="LUCISSI CARE · COMMUNITY"
-        title="健康知識分享社群"
-        description="專業的私密護理知識、使用心得與健康觀念分享，讓妳在社群中獲得支持與啟發"
+        title="LUCISSI Talk"
+        description="私密護理、貼身穿著與生理期的日常文章，由 LUCISSI CARE 編輯團隊整理。"
       />
 
       <main className="page-content bg-[#F7F6F3]">
@@ -360,10 +360,10 @@ export default function Community() {
         <section className="py-12 md:py-16 px-4" style={{ backgroundColor: '#ECE8E2' }}>
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6">
-              加入我們的健康社群
+              加入 LUCISSI CARE 會員
             </h2>
             <p className="text-sm md:text-base md:leading-6 lg:text-lg lg:leading-7 text-gray-600 mb-6 md:mb-8 leading-relaxed px-4">
-              加入 LUCISSI CARE 會員，掌握最新護理專欄、專屬優惠與個人化貼心購物體驗。
+              加入會員後，可以領取會員優惠、收藏商品，並查詢訂單與物流。
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -391,24 +391,24 @@ export default function Community() {
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#ECE8E2' }}>
                   <i className="ri-mail-line text-xl" style={{ color: '#5B3D48' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">專屬會員禮遇</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">隨時掌握專屬優惠、新品首發資訊與品牌最新動態。</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">會員優惠</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">領取會員優惠券，符合條件的訂單可於結帳時使用。</p>
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#ECE8E2' }}>
                   <i className="ri-user-heart-line text-xl" style={{ color: '#5B3D48' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">安全隱私保障</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">以最嚴格的加密標準保護您的個人資料與收藏清單。</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">個人資料保護</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">您的個人資料與收藏清單依隱私權政策處理。</p>
               </div>
 
               <div className="bg-white p-5 md:p-6 border border-gray-200 rounded-lg">
                 <div className="w-12 h-12 flex items-center justify-center rounded-lg mb-4" style={{ backgroundColor: '#ECE8E2' }}>
                   <i className="ri-vip-crown-line text-xl" style={{ color: '#5B3D48' }}></i>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">即時訂單查詢</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">登入會員中心即可隨時輕鬆查詢物流配送與購買紀錄。</p>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">訂單查詢</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">登入會員中心即可查詢物流配送與購買紀錄。</p>
               </div>
             </div>
           </div>

@@ -6,6 +6,7 @@ import { isFirstSignIn } from '../../lib/memberWelcome';
 import { mockAuthState } from '../../mocks/userData';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
+import { siteContent } from '../../content/site';
 
 export default function WelcomePage() {
   const navigate = useNavigate();
@@ -146,7 +147,7 @@ export default function WelcomePage() {
                       <i className="ri-customer-service-2-line text-2xl text-purple-600"></i>
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">客服信箱</h3>
-                    <p className="text-sm text-gray-600">Company@lucissi.com</p>
+                    <p className="text-sm text-gray-600">{siteContent.companyEmail}</p>
                   </div>
                 </div>
               </div>

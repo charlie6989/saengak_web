@@ -25,6 +25,23 @@ describe('sitemap', () => {
     }
   });
 
+  it('lists the article index, not URLs that only redirect', () => {
+    expect(STATIC_PATHS).toContain('/community');
+    expect(STATIC_PATHS).not.toContain('/blog');
+    expect(STATIC_PATHS).not.toContain('/brand-story');
+  });
+
+  it('leaves out internal test products, as the storefront does', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(page([
+      { id: 'gid://shopify/Product/1', title: '金流驗收測試－請勿購買' },
+      { id: 'gid://shopify/Product/2', title: '絨面收納包', tags: ['隨身收納'] },
+    ])));
+
+    const products = await fetchSitemapProducts(config);
+
+    expect(products.map((product) => product.id)).toEqual(['gid://shopify/Product/2']);
+  });
+
   it('follows Storefront pagination', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(page([{ id: 'gid://shopify/Product/1' }], { hasNextPage: true, endCursor: 'next' }))

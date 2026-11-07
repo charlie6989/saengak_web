@@ -230,7 +230,7 @@ export default function BlogArticle() {
 
   const readMinutes = estimateReadingMinutes(article.contentHtml || article.excerpt || '');
   const displayDate = article.publishedAt
-    ? new Date(article.publishedAt).toLocaleDateString()
+    ? new Date(article.publishedAt).toLocaleDateString('zh-TW')
     : '2026/9/1';
   const categoryName = article.blog?.title || (article.tags && article.tags.length > 0 ? article.tags[0] : '專欄文章');
   const coverImage = editorialImage(article.handle, article.image?.url, 'hero');
@@ -271,7 +271,7 @@ export default function BlogArticle() {
             </button>
             <i className="ri-arrow-right-s-line text-gray-400"></i>
             <button onClick={() => navigate('/community')} className="cursor-pointer hover:text-brand transition-colors">
-              健康知識分享
+              LUCISSI Talk
             </button>
             <i className="ri-arrow-right-s-line text-gray-400"></i>
             <span className="text-gray-900 font-medium truncate max-w-[200px] sm:max-w-md">{article.title}</span>
@@ -549,7 +549,7 @@ export default function BlogArticle() {
               className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-brand transition-colors cursor-pointer bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-xs hover:shadow-sm"
             >
               <i className="ri-arrow-left-line mr-2 text-base"></i>
-              返回健康知識社群
+              返回 LUCISSI Talk
             </button>
             <button
               onClick={() => navigate('/')}

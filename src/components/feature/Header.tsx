@@ -579,7 +579,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
                 </Link>
 
                 <Link
-                  to="/brand-story"
+                  to="/about"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block w-full text-left px-6 py-4 text-lg font-semibold text-gray-800 hover:bg-gray-50 transition-colors duration-200"
                 >

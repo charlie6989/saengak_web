@@ -21,7 +21,7 @@ const DEFAULT_SETTINGS: OperationalSettings = {
   defaultShippingFee: DEFAULT_SHIPPING_FEE,
   lowStockThreshold: 5,
   maintenanceMode: false,
-  contactEmail: 'service@saengak.com.tw',
+  contactEmail: 'service@lucissi.com',
   supportPhone: '尚待營運確認',
   allowProductQa: true,
   lineOaUrl: siteContent.lineAddFriendUrl,

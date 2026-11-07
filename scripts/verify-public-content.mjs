@@ -38,6 +38,12 @@ const forbiddenContent = [
   ['unsupported 1-on-1 consultation claim', '1對1諮詢'],
   ['unsupported 1-on-1 consultation claim', '一對一諮詢'],
   ['unsupported testimonial claim', '用戶真實分享'],
+  ['retired support email', 'company@lucissi.com'],
+  ['retired support email', 'service@saengak.com.tw'],
+  ['unsupported security claim', '最嚴格的加密標準'],
+  ['unsupported community claim', '健康知識分享社群'],
+  ['unsupported community claim', '加入我們的健康'],
+  ['unsupported community claim', '健康知識社群'],
   ['internal pending-status copy', '正式社群帳號確認中'],
   ['internal pending-status copy', '發布前審閱中'],
   ['internal pending-status copy', '正式客服管道公告後'],
@@ -134,8 +140,8 @@ const failures = [];
 
 for (const file of files) {
   let content = await readFile(file, 'utf8');
-  // Allow official company email domain
-  content = content.replace(/Company@lucissi\.com/gi, '');
+  // Allow the official support email
+  content = content.replace(/service@lucissi\.com/gi, '');
   const relativePath = path.relative(projectRoot, file);
   for (const [label, needle, onlyUnder] of forbiddenContent) {
     if (onlyUnder && !relativePath.startsWith(onlyUnder)) continue;
