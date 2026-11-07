@@ -87,7 +87,7 @@ const routes: RouteObject[] = [
   },
   {
     path: '/blog',
-    element: <BlogPage />,
+    element: <Navigate to="/community" replace />,
   },
   {
     path: '/blog/:handle',

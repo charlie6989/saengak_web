@@ -1,5 +1,67 @@
 # 項目狀態
 
+## 客服信箱統一為 service@lucissi.com（2026-11-07，店主要求）
+
+- 依據：GoDaddy 後台 `service@lucissi.com` 是 `company@lucissi.com` 的別名，信進同一個信箱；LUCISSI 已用它寄信。未寄測試信實測收信。
+- 程式碼（未提交、未部署）：`src/content/site.ts`、`/welcome`、後台設定預設值與測試改用 service@；`verify:content` 封鎖 `company@lucissi.com`、`service@saengak.com.tw`。退換貨與條款頁只換信箱，文字不變。
+- 正式環境（已生效）：Shopify 商店電子郵件改為 service@；Supabase `site_settings.contact_email` 由 `service@saengak.com.tw` 改為 service@ 並回讀（目前只有管理後台讀取此欄位）。
+- 歷史文件中的 `company@lucissi.com` 是當時紀錄，未修改；街口與 TapPay 申請資料的聯絡信箱也未變更。
+
+## Shopify 與 ShipAny 設定變更（2026-11-07，店主核准，正式環境已生效）
+
+- Shopify `gh2xgs-zf`：預設語言由英文改為繁體中文；商店電子郵件改為 `service@lucissi.com`（見下節）；結帳的運送電話改為必填；`金流驗收測試－請勿購買` 改為草稿；測試訂單 #1004–#1007（皆 test=true）已封存，未取消或退款。
+- ShipAny：CARE 測試草稿 #1003–#1007 已取消，比對依據是參考編號中的 Shopify 訂單 ID；LUCISSI 的草稿未動。
+- 已驗證：結帳頁為繁體中文、電話無「選填」；訂單確認信預覽主旨為「訂單 #9999 已確認」；Storefront 語言為 `ZH_TW`，查不到測試商品；訂單 JSON 回讀 #1004–#1007 都已封存；正式站首頁與 `/api/shopify/discounts` 正常。未建立真實訂單，尚未實收中文信件。
+- 未完成：寄件信箱驗證需店主點驗證信（見下節）；寄件網域驗證與 DMARC 未設定，顧客信件仍由 `shopifyemail.com` 備份地址寄出。#1003（test=true）與 #1002（test=false，NT$46，來源為 SAENGAK Order Sync）在 Shopify 仍未封存，待店主判斷。
+- 折扣：SAVE15、SPECIAL30 已在 Shopify 停用（使用次數皆 0，會員領取 0 筆）。Supabase `promotions` 兩筆仍是 `is_active=true`，由 `HIDDEN_PROMOTION_CODES` 擋下，網站不顯示也不能領取，所以清單保留。
+- 商店預設語言改為繁中後，後台通知範本的預設文字也變成繁中；如新增語言或市場，要重新確認結帳語言。
+
+## 內容與 sitemap 修正（2026-11-07，本機，未提交、未部署）
+
+- 程式碼：`/sitemap.xml` 排除內部驗收商品（判斷規則移到 `src/domain/testProducts.ts`，與前台共用），固定頁改列 `/community`，移除只會轉址的 `/brand-story`、`/blog`。`/blog` 改導向 `/community`；手機選單與網站地圖頁改連 `/about`。
+- 文案：`/community` 與文章頁改用「LUCISSI Talk」，移除「健康知識分享社群」「最嚴格的加密標準」與沒有對應功能的會員說明；文章日期固定以 zh-TW 顯示（原本在英文瀏覽器的手機版會顯示錯誤）。`verify:content` 新增這些封鎖句段。
+- 已驗證（本機）：typecheck、Vitest 72 檔／706 項、build、verify:supabase、npm audit 通過；build 產出的 sitemap 共 38 筆、不含測試商品。瀏覽器確認 `/blog` 轉到 `/community`、`/brand-story` 轉到 `/about`、`/blog/:handle` 正常，375px 無橫向捲動。
+- 未驗證：本機沒有 `.env.local`，`/community` 顯示的是備用文章，未連 Shopify。正式站 sitemap 要部署後才會更新。
+
+## 服務現況補查（2026-11-07，唯讀）
+
+- TapPay（信件）：11/06 收到正式開通核准；月提領額度 50 萬、撥款 5 天；LINE Pay 已回覆補件，等待審核。提高額度與 NT$36,750 對帳的詢問，信中未見回覆。Shopify 11/07 04:40 的通知確認 LINE Pay、街口已停用。後台撥款明細未查看。
+- 光貿（信件）：#1011 開立通知為發票 HV14744580、2026/11/07、NT$277，代表 11–12 月字軌已可使用；11/01 收到光貿開給公司的發票。到期日與帳務後台未查看。
+- ShipAny（信件）：API 系統對接服務已續訂至 11/30。物流服務點列表於 11/07 開始試用，11/21 起收費，取消期限 11/20。運費帳戶額度未查看。
+- Shopify Flow：「COD 宅配送達後自動標記已付款」作用中、近期未執行，最後編輯 10/20。「Recover abandoned checkout」也是作用中。
+- Vercel：Production 為 `257d212`、READY；Production 環境有 `SENTRY_DSN` 與 `VITE_PUBLIC_SENTRY_DSN`（只讀名稱，未讀值）。
+- 光貿 API（11/07，店主提供 App Key，只查 `/json/invoice_query`、`/json/track_all`，金鑰未存檔）：#1011 為 HV14744580、C0401、`invoice_status=99`（光貿文件定義為上傳財政部的狀態「完成」）、NT$277，商品與運費三行相符，載具為 Email。11–12 月字軌 HV 使用中，自動配號，剩約 19,320 張；09–10 月 FT 還剩 7,701 張未用完。2027 年 1–2 月字軌目前查無資料。服務到期日與帳務 API 查不到，後台店主目前無法登入。
+- Sentry：正式站前端程式含 Sentry DSN，CSP 也允許送出，所以回報是開著的；店主不確定有在使用，帳號歸屬未確認。
+- ShipAny 後台（11/07，唯讀）：可用額度 NT$0，11/07 11:08 有一筆 NT$500 增值等待批准。#1011 為已草擬、未交運，黑貓常溫、上門取件、預估運費 NT$98；寄件地址是公司登記的汐止地址；包裹資料帶入 2×2×2 公分、0.05 公斤，非 COD。CARE 舊測試單 #1003–#1007 在 ShipAny 仍是已草擬。貨到付款紀錄為空。物流服務點列表 NT$398／月，11/21 自動續期，當月有收費運單可豁免；API Pro 11/30 自動續期。
+- TapPay 後台（11/07，唯讀）：帳號已開通；正式 MGID 1 組（`charlieliu0809_00005_spfy_backup`，含 Direct Pay 3D、ATM、Apple Pay），與 Shopify 商家設定相符，正式收單商家 3 筆。#1011 交易狀態為「已授權」、尚未請款，NT$277，3D 驗證通過，預計 11/07 18:00 請款；查核時（約 12:40）尚未到請款時間。實際請款結果與入帳未驗證，後台未操作請款、退款或寄送報表。
+- Search Console：目前的 Google 帳號對 `https://lucissicare.com/` 沒有權限，收錄狀況未知。Sentry 未登入，事件未查看；30 天內信箱沒有 Sentry 通知信，這不能證明回報正常。
+
+## 上線前盤點（2026-11-07，唯讀，未變更任何正式設定）
+
+本輪讀取 Shopify 後台、Storefront API、正式 Supabase、正式站頁面與結帳頁。為查看結帳頁建立過一個購物車，未輸入資料、未下單。ShipAny、光貿、TapPay 後台需要登入，Gmail 連接器權限不足，這些服務的現況本輪未確認。
+
+**新發現，先前文件未記錄**
+
+- 結帳頁與訂單信都是英文：Shopify 預設語言為英文，沒有發布繁體中文；訂單確認信預覽主旨為 `Order #9999 confirmed`。
+- Shopify 的退貨、運送、服務條款、聯絡資訊政策都未設定（聯絡資訊標示為必要），結帳頁尾只有隱私權政策。
+- 商店聯絡信箱是個人 Gmail、沒有電話；顧客通知由 `shopifyemail.com` 寄出。Shopify 商店地址與公司登記地址不同；ShipAny 的寄件地址是登記的汐止地址（見上節）。
+- SAVE15、SPECIAL30 在網站隱藏，但 Shopify 仍為使用中，折扣對所有顧客開放。
+- 測試訂單 #1004–#1007 在後台仍是已付款、未出貨；#1006、#1007 已確認為 test=true，#1004、#1005 只依顧客名稱判斷。
+- waaship 仍安裝（過去 30 天無活動），與「僅用光貿」的決定不一致。
+- `金流驗收測試－請勿購買` 仍上架。前台顯示找不到該商品，但 `/sitemap.xml` 有列出。
+- 16 件內著的商品內容欄位查無材質與產地文字（`care_specs` 都是空的）；圖片未逐張檢查。
+- 6 件內著標籤含「抗菌內褲」，其中 3 件另含「性感內褲」。8 件商品的 SEO 標題自 10/19 快照後被清空，來源未查。
+- 新商品「絨面收納包」沒有副標、重點與 SEO；`products-snapshot.json` 停在 10/19（27 件，目前 28 件）。
+- 運送電話在 Shopify 結帳為選填（網站購物車另有電話欄位）；#1011 顯示重量 0.0 kg。
+- repository 沒有 SAENGAK、MEDION 的化粧品產品登錄與 PIF 完成紀錄，這不代表尚未辦理。
+
+**正式狀態回讀**
+
+- Supabase：`guest_checkout_enabled=false`、運費 146、免運 1500、`cod_invoice_policy.enabled=false`；`order_fulfillments` 0 筆、`order_invoices` 0 筆。
+- #1011：已付款、未出貨。發票工作為 `provider_pending`、`provider_status=1`，已有發票號碼，等下一次每日排程回查。
+- 售完 7 件：舒緩凝膠、潔淨慕斯、修護精華噴霧、三個 SAENGAK 組合、舒適純棉透氣內褲。另有 10 件部分規格售完。
+- 結帳頁付款方式：TapPay 信用卡、Tappay ATM、COD。`npm run verify:production` 本輪有執行，輸出只查看結尾部分，那部分都通過。
+
 ## 優惠頁 FAQ 顧客用語（2026-11-07，#85 店主已核准，已合併並部署，`812ebba`）
 
 - 程式碼：`/promotion` 前三題 FAQ 與「結帳自動套用折抵」步驟卡移除 Shopify 後台用語；規則內容未變更。`verify:content` 新增封鎖詞，`Shopify Checkout` 只封鎖 `src/pages/promotion/`，並略過 `*.test.ts(x)`。

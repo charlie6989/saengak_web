@@ -30,9 +30,9 @@ const SitemapPage = () => {
       links: [
         { name: '首頁', url: '/', description: '探索 LUCISSI CARE 精選產品和最新優惠活動' },
         { name: '產品搜尋', url: '/search', description: '搜尋和瀏覽所有女性護理產品' },
-        { name: '社群', url: '/community', description: '加入我們的健康知識社群' },
+        { name: 'LUCISSI Talk', url: '/community', description: '閱讀私密護理與貼身穿著的日常文章' },
         { name: '促銷活動', url: '/promotion', description: '查看最新優惠和促銷活動' },
-        { name: '品牌故事', url: '/brand-story', description: '了解 LUCISSI CARE 的品牌理念' },
+        { name: '關於我們', url: '/about', description: '了解 LUCISSI CARE 的品牌理念' },
       ]
     },
     {

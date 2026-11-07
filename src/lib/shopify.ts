@@ -2,6 +2,7 @@ import { createStorefrontApiClient, type StorefrontApiClient } from '@shopify/st
 import { normalizeSizeChart, type SizeChart } from '../domain/sizeChart';
 import { captureExceptionSafe } from './sentry';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from './brandOwnership';
+import { hasTestProductMarker } from '../domain/testProducts';
 
 /**
  * Shopify Storefront GraphQL API Client
@@ -396,8 +397,6 @@ export function formatShopifyProduct(node: any): ShopifyProduct {
   };
 }
 
-const TEST_PRODUCT_PATTERN = /驗收測試|請勿購買|測試商品|payment\s*test|test\s*product/i;
-
 // 權威決策：全站嚴格僅展示 SAENGAK 核心私密保養商品，排除其他非相關商品
 export const CORE_SAENGAK_KEYWORDS = [
   '深層修護私密清潔露',
@@ -423,8 +422,7 @@ export function isFeaturedShopifyProduct(product: ShopifyProduct): boolean {
 }
 
 export function isPublicShopifyProduct(product: ShopifyProduct): boolean {
-  const searchable = [product.title, product.name, product.handle, product.vendor, ...(product.tags || [])].join(' ').toLowerCase();
-  return !TEST_PRODUCT_PATTERN.test(searchable);
+  return !hasTestProductMarker([product.title, product.name, product.handle, product.vendor, ...(product.tags || [])]);
 }
 
 

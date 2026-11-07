@@ -3,6 +3,8 @@
  * 不用 Vercel Function：Hobby 方案的 12 個函式額度已滿。
  */
 
+import { hasTestProductMarker } from './testProducts';
+
 const SITE_URL = 'https://lucissicare.com';
 const PAGE_SIZE = 250;
 const MAX_PAGES = 4;
@@ -14,8 +16,7 @@ export const STATIC_PATHS = [
   '/best-rated',
   '/promotion',
   '/about',
-  '/brand-story',
-  '/blog',
+  '/community',
   '/faq',
   '/customer-service',
   '/return-policy',
@@ -26,6 +27,10 @@ export const STATIC_PATHS = [
 export interface SitemapProduct {
   id: string;
   updatedAt?: string;
+  title?: string;
+  handle?: string;
+  vendor?: string;
+  tags?: string[];
 }
 
 export interface StorefrontConfig {
@@ -43,7 +48,7 @@ interface ProductsPage {
   };
 }
 
-const QUERY = 'query SitemapProducts($first: Int!, $after: String) { products(first: $first, after: $after) { nodes { id updatedAt } pageInfo { hasNextPage endCursor } } }';
+const QUERY = 'query SitemapProducts($first: Int!, $after: String) { products(first: $first, after: $after) { nodes { id updatedAt title handle vendor tags } pageInfo { hasNextPage endCursor } } }';
 
 const escapeXml = (value: string): string =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
@@ -67,7 +72,10 @@ ${[...staticUrls, ...productUrls].join('\n')}
 `;
 }
 
-/** 讀取 Storefront 可見的所有商品。任何一頁失敗就 throw，由呼叫端決定如何退回。 */
+const isTestProduct = ({ title, handle, vendor, tags }: SitemapProduct): boolean =>
+  hasTestProductMarker([title, handle, vendor, ...(tags ?? [])]);
+
+/** 讀取 Storefront 可見且對顧客公開的商品（與前台相同，排除內部驗收商品）。任何一頁失敗就 throw，由呼叫端決定如何退回。 */
 export async function fetchSitemapProducts({ domain, apiVersion, token }: StorefrontConfig): Promise<SitemapProduct[]> {
   const products: SitemapProduct[] = [];
   let cursor: string | null = null;
@@ -85,7 +93,7 @@ export async function fetchSitemapProducts({ domain, apiVersion, token }: Storef
     const body = await response.json() as ProductsPage;
     const connection = body.data?.products;
     if (!connection?.nodes) throw new Error('Storefront returned no products');
-    products.push(...connection.nodes);
+    products.push(...connection.nodes.filter((product) => !isTestProduct(product)));
     if (!connection.pageInfo?.hasNextPage || !connection.pageInfo.endCursor) break;
     cursor = connection.pageInfo.endCursor;
   }
