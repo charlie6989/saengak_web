@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import ProductCard, {
   sanitizeProductTitle,
   extractSingleSentenceDescription,
@@ -129,7 +129,14 @@ describe('LUCISSI CARE 官網修改檢查清單單元測試', () => {
   });
 
   describe('六、Facebook 登入按鈕與帳號綁定元件檢驗', () => {
+    it('Meta App 未上線（未設定開關）時不顯示 Facebook 登入按鈕', () => {
+      vi.stubEnv('VITE_FACEBOOK_LOGIN_ENABLED', '');
+      expect(renderToStaticMarkup(<FacebookLoginButton text="signin_with" />)).toBe('');
+      vi.unstubAllEnvs();
+    });
+
     it('FacebookLoginButton 能正常渲染各模式文案與 Meta 官方識別圖示', () => {
+      vi.stubEnv('VITE_FACEBOOK_LOGIN_ENABLED', 'true');
       const htmlSignIn = renderToStaticMarkup(<FacebookLoginButton text="signin_with" />);
       expect(htmlSignIn).toContain('使用 Facebook 帳號登入');
       expect(htmlSignIn).toContain('ri-facebook-circle-fill');
@@ -139,6 +146,7 @@ describe('LUCISSI CARE 官網修改檢查清單單元測試', () => {
 
       const htmlContinue = renderToStaticMarkup(<FacebookLoginButton text="continue_with" />);
       expect(htmlContinue).toContain('使用 Facebook 繼續');
+      vi.unstubAllEnvs();
     });
 
     it('註冊頁與登入頁皆包含 Facebook 快速登入/註冊入口', () => {

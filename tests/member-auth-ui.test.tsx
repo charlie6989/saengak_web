@@ -21,6 +21,13 @@ function passwordInput(html: string) {
 }
 
 describe('member auth UI safeguards', () => {
+  it('hides Facebook login until the Meta app is live', () => {
+    const html = renderAuthModal('login');
+
+    expect(html).not.toContain('Facebook');
+    expect(html).toContain('Google');
+  });
+
   it('does not reject existing short passwords in login mode', () => {
     const input = passwordInput(renderAuthModal('login'));
 

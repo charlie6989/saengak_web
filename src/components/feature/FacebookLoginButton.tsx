@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { isSupabaseConfigured } from '../../lib/supabase';
-import { triggerFacebookLogin, isFacebookAuthConfigured } from '../../lib/facebookAuth';
+import { triggerFacebookLogin, isFacebookAuthConfigured, isFacebookLoginEnabled } from '../../lib/facebookAuth';
 
 interface FacebookLoginButtonProps {
   text?: 'continue_with' | 'signin_with' | 'signup_with';
@@ -16,6 +16,9 @@ export default function FacebookLoginButton({
   onError,
 }: FacebookLoginButtonProps) {
   const [loading, setLoading] = useState(false);
+
+  // Meta App 尚未切成正式模式前不顯示，避免顧客點了只看到「App not active」
+  if (!isFacebookLoginEnabled()) return null;
 
   const getButtonText = () => {
     switch (text) {
