@@ -16,7 +16,9 @@
 
 **已驗證（本機）**：Vitest、build、verify:content、verify:supabase、typecheck、npm audit（0 vulnerabilities）通過；1440px 與 375px 瀏覽器檢查 404、`/promotion`、`/`、`/best-rated`、`/privacy`、`/faq`、`/terms`、商品頁與購物車，無水平捲動。瀏覽器測試使用正式站公開的 Storefront 與 Supabase 讀取設定；`/api/shopify/discounts` 本機無 Admin 憑證，該頁實際走 Supabase 備援路徑，API 路徑由單元測試涵蓋。JSON-LD 在相同 script-src 規則下未被阻擋。
 
-**尚未驗證**：Sentry 實際收到伺服器事件（需部署且正式環境有 DSN，本輪未送出測試事件）；正式站的 `/sitemap.xml`；Search Console 收錄。Supabase Edge Functions 不在本次回報範圍內。
+**已驗證（Vercel 預覽部署 `c3aa677`）**：部署成功；`/sitemap.xml` 回傳 XML，含 12 個固定頁與 28 個商品；`/api/shopify/discounts` 回 200，只有 WELCOME100 與 FREESHIP；404 為繁中且 noindex；商品頁只有一個 canonical，JSON-LD 正確；375px 購物車顯示預估運費 NT$146、預估總計 NT$166，無水平捲動。
+
+**尚未驗證**：正式站部署；Sentry 實際收到伺服器事件（需部署且正式環境有 DSN，本輪未送出測試事件）；已登入會員領取隱藏代碼的完整流程（單元測試涵蓋）；Search Console 收錄。Supabase Edge Functions 不在本次回報範圍內。
 
 **待店主**：Shopify 折扣資料、法律文字核准與「最後更新」日期、SAVE15／SPECIAL30 的去留，詳見 PR 說明。本次沒有變更 Shopify、Supabase 正式資料、Vercel 設定或 TapPay。
 
