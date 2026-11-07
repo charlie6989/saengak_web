@@ -136,9 +136,9 @@ export default function LoginPage() {
       <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8" style={{ paddingTop: '120px' }}>
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
               現有會員登入
-            </h2>
+            </h1>
             <p className="text-gray-600">
               歡迎回來！請登入您的帳號
             </p>

@@ -197,7 +197,7 @@ export default function BlogArticle() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+      <div className="flow-root min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
         <Header />
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <div className="inline-block animate-spin h-10 w-10 border-4 border-brand border-t-transparent rounded-full mb-4"></div>
@@ -210,7 +210,7 @@ export default function BlogArticle() {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+      <div className="flow-root min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
         <Header />
         <div className="max-w-4xl mx-auto px-6 py-24 text-center">
           <i className="ri-file-warning-line text-6xl text-gray-300 mb-4 inline-block"></i>
@@ -236,7 +236,7 @@ export default function BlogArticle() {
   const coverImage = editorialImage(article.handle, article.image?.url, 'hero');
 
   return (
-    <div className="min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+    <div className="flow-root min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
       {/* 頂部閱讀進度條 */}
       <div
         className="fixed top-0 left-0 h-1 bg-brand z-50 transition-all duration-150 ease-out"

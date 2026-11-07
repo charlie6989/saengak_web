@@ -128,7 +128,7 @@ export default function FAQPage() {
   });
 
   return (
-    <div className="min-h-screen bg-ivory" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+    <div className="flow-root min-h-screen bg-ivory" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
       <Header />
       
       <EditorialHero

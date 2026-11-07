@@ -58,8 +58,9 @@ const routes: RouteObject[] = [
     element: <SearchPage />,
   },
   {
+    // 沒有商品編號的 /product 沒有內容可顯示，導向全部商品
     path: '/product',
-    element: <ProductPage />,
+    element: <Navigate to="/products" replace />,
   },
   // 示範商品頁含範例評價與認證字樣，只在本機開發環境開放，正式站回傳 404
   ...(ProductPreviewPage

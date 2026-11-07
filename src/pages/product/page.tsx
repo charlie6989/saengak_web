@@ -28,6 +28,7 @@ import { computeFreeShippingGap, DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPI
 import SizeChartTable from '../../components/feature/SizeChartTable';
 import type { SizeChart } from '../../domain/sizeChart';
 import { siteContent } from '../../content/site';
+import { NOINDEX_ROBOTS } from '../../lib/pageTitle';
 import { isSealedCareProduct, SEALED_CARE_NOTICE } from '../../domain/returnPolicy';
 
 interface Product {
@@ -425,8 +426,19 @@ export default function ProductPage() {
       loadReviewsAndQA(resolvedId);
       loadRatingsMap();
       loadSiteSettings();
+    } else {
+      // 沒有可解析的商品編號時直接顯示「找不到該商品」，不要停在載入中
+      setProduct(null);
+      setLoading(false);
     }
   }, [resolvedId]);
+
+  // 找不到商品時不讓搜尋引擎收錄這個網址
+  useEffect(() => {
+    if (!loading && !product) {
+      document.querySelector('meta[name="robots"]')?.setAttribute('content', NOINDEX_ROBOTS);
+    }
+  }, [loading, product]);
 
   /** --------------------------------------------------------------------
    *  Computed: Active Variant, Price, Stock & Options List, Reviews Stats
@@ -1129,13 +1141,19 @@ export default function ProductPage() {
                     transform: isDragging ? `translateX(${dragOffset * 0.4}px)` : 'none'
                   }}
                 >
+                  {/* 商品主圖幾乎都是 1:1，先保留正方形空間，避免圖片載入後把下方內容往下推（CLS） */}
                   <img
                     src={shopifyImageUrl(activeImage, 1200)}
+                    srcSet={[600, 900, 1200].map((w) => `${shopifyImageUrl(activeImage, w)} ${w}w`).join(', ')}
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    width={1200}
+                    height={1200}
+                    fetchPriority="high"
                     alt={product.name}
                     onError={hideBrokenImage}
                     data-testid="product-main-image"
                     draggable={false}
-                    className={`block w-full h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl ${isAllSoldOut ? 'opacity-75 grayscale-30' : ''}`}
+                    className={`block w-full aspect-square h-auto object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-[1.01] rounded-xl ${isAllSoldOut ? 'opacity-75 grayscale-30' : ''}`}
                   />
                 </div>
 

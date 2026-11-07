@@ -547,7 +547,8 @@ export default function Search() {
   };
 
   return (
-    <div className="min-h-screen bg-ivory" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
+    // flow-root：讓主圖的 mt-24 留在這個容器內，不要穿透到 body，否則載入時整頁會被往下推（CLS）
+    <div className="flow-root min-h-screen bg-ivory" style={{ fontFamily: "Noto Sans TC, sans-serif" }}>
       <Header />
 
       {/* 選品主圖使用柔和底色；手機將文案移到圖片下方，保留產品全貌。 */}
@@ -973,8 +974,9 @@ export default function Search() {
             )}
           </AnimatePresence>
 
+          {/* 載入中先佔滿一個畫面高，避免頁尾先出現、商品載入後又被往下推（CLS） */}
           {loading && (
-            <div className="text-center py-16">
+            <div className="text-center py-16 min-h-screen">
               <div className="inline-block animate-spin h-8 w-8 border-b-2 border-brand rounded-full"></div>
               <p className="mt-4 text-sm sm:text-base text-gray-600">載入商品中...</p>
             </div>

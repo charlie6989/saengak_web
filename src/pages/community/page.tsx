@@ -134,7 +134,7 @@ export default function Community() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F6F3]">
+    <div className="flow-root min-h-screen bg-[#F7F6F3]">
       <Header />
 
       {/* Hero Section - 手機版優化 */}
