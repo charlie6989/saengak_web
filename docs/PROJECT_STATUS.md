@@ -7,7 +7,7 @@
 - 搜尋與分類：濕巾 4、內褲 14、凝膠 5、MEDION 1、saengak 7、亂碼 0（顯示空狀態）；私密保養 9、舒適內搭 17、生理期照護 5；排序程式為價格升降並把售完排最後；整輪無 JavaScript 錯誤。
 - 優惠：`/api/shopify/discounts` 回 WELCOME100、FREESHIP（皆 active、滿 1,500、每人一次），與 `/promotion` 文字一致。Supabase `promotions` 的 SAVE15、SPECIAL30（Shopify 已停用且過期）原仍為 `is_active=true` 可被公開讀取，已以 migration `20261108073443_deactivate_retired_promotions` 改為 false 並回讀。
 - 資料庫安全：public 15 張表全開 RLS；以公開金鑰讀 profiles、orders、order_items、order_invoices、order_fulfillments、user_coupons、user_favorites、shopify_checkout_links、partner_member_perks 皆 permission denied，user_social_accounts 0 筆；`get_admin_profiles`、`claim_guest_orders` 對 anon 皆 permission denied。
-- 會員與訂單資料：11 位會員皆有 profile；#1011 已付款且有發票。#1006（NT$826）、#1007（NT$2,720）是 8 月 TapPay 測試模式訂單，資料庫顯示已付款未出貨、發票工作標為 SHOPIFY_TEST_ORDER，會出現在後台訂單與營收統計，店主 11/08 同意後已在 Shopify 取消（退款選「稍後」即不退款、不重新入庫、不通知顧客，員工備註註明測試訂單；兩筆原本就已封存）。Shopify 顯示已取消／無需出貨，網站 `orders` 經 webhook 同步為 `cancelled`。ShipAny 內這兩筆的草稿未處理。
+- 會員與訂單資料：11 位會員皆有 profile；#1011 已付款且有發票。#1006（NT$826）、#1007（NT$2,720）是 8 月 TapPay 測試模式訂單，資料庫顯示已付款未出貨、發票工作標為 SHOPIFY_TEST_ORDER，會出現在後台訂單與營收統計，店主 11/08 同意後已在 Shopify 取消（退款選「稍後」即不退款、不重新入庫、不通知顧客，員工備註註明測試訂單；兩筆原本就已封存）。Shopify 顯示已取消／無需出貨，網站 `orders` 經 webhook 同步為 `cancelled`。ShipAny 回讀（11/08）：這兩筆（Shopify ID 8330730242115、8339114950723）已自動同步為「訂單取消」，不需另外刪除；CARE 在 ShipAny 只剩 #1011 為「已草擬」待出貨。
 - 會員頁保護：未登入開 `/admin`、`/admin/orders`、`/admin/members` 只顯示管理員登入；`/profile`、`/welcome` 轉到 `/login`。
 - 修正（程式碼，本分支）：`/admin`、`/profile`、`/forgot-password`、`/reset-password` 改為 noindex；商品 JSON-LD 在規格價格不同時改用 AggregateOffer（lowPrice／highPrice），避免只標最低價而與頁面預設售價不一致（例：慕斯 321／645）。
 - 未處理：商品頁的 og:title／og:image 由前端設定，LINE／Facebook 分享預覽仍只顯示網站名稱，需伺服器端產生 meta 才能修正。
