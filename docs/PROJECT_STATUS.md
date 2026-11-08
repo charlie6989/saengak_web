@@ -4,7 +4,13 @@
 
 - 現況（11/08 以 facebookexternalhit、line-poker UA 實測正式站）：商品頁分享預覽早已正確（商品名稱、說明、主圖）；`/blog/:handle` 文章頁有 Facebook／LINE 分享按鈕，但爬蟲拿到的是網站預設標題與圖片。
 - 程式：`middleware.js` 對連結預覽爬蟲的 `/blog/<handle>` 也改寫到 `api/share/product.ts?article=<handle>`（Vercel Hobby 函式數量已滿 12，文章與商品共用同一個函式）。函式以 Storefront 取前 50 篇文章比對 handle，只接受帶公開標籤的文章，標題／說明優先用 SEO 欄位，否則用文章標題與摘要，並套用與網站相同的舊店名改寫（抽成 `src/domain/storefrontCopy.ts` 共用）。圖片用網站文章卡片的編輯圖，另存 1200×630 JPG（`public/images/lucissi-v5/share-*.jpg`，部分平台不支援 WebP）；沒有編輯圖時用 Shopify 文章圖。
-- 驗證：本機 typecheck、lint、Vitest 729 項、build 通過；正式站爬蟲回應待部署後實測。
+- 驗證：本機 typecheck、lint、Vitest 729 項、build 通過；PR #106 預覽部署的 `/api/share/product?article=how-we-review-products-and-content` 回傳正確文章標題（已改寫為 LUCISSI CARE 編輯團隊）、摘要與 share-standards.jpg；正式站待合併後實測。
+
+## Meta 與 Shopify 寄件網域現況（2026-11-08 晚間，唯讀查核）
+
+- Meta 商家驗證：Business portfolio「Lucissi」顯示 BUYYUI CLOTHING LIMITED COMPANY 於 2026-11-08 驗證通過（Verified）。App「LUCISSI」Required actions 為空，Publish 頁顯示「All required app settings are complete」。
+- App Review：送審頁五個步驟（Verification、App settings、Allowed usage、Data handling、Reviewer instructions）皆已完成，審查說明沿用先前內容；正式站 `/login?fblogin=1` 確認會顯示「使用 Facebook 登入」按鈕。**尚未按「Submit for review」**，等店主明確同意後送出；審核通過後再發布 App，並開啟 CARE `VITE_FACEBOOK_LOGIN_ENABLED=true` 與 LUCISSI `VITE_SUPABASE_FACEBOOK_ENABLED=true`。
+- Shopify 寄件網域：`service@lucissi.com` 的網域驗證仍是「需要設定」，Shopify 目前以 shopifyemail.com 備用地址寄出。手動設定需在 GoDaddy 的 lucissi.com DNS 新增 6 筆 CNAME（`mailerm5s`、`m5s._domainkey`、`m5s2._domainkey`、`mailer6h3`、`pdk1._domainkey.mailer6h3`、`pdk2._domainkey.mailer6h3`，值見 Shopify 設定頁），11/08 以 1.1.1.1 查詢皆不存在。lucissi.com 現有 DMARC `p=reject`、SPF `include:secureserver.net -all`，所以未驗證前不應讓 Shopify 直接以 lucissi.com 寄信；新增 CNAME 只會加上 Shopify 的 DKIM，不影響 GoDaddy 信箱。尚未變更 DNS。
 
 ## 上線前第二輪全面檢查（2026-11-08 下午：會員、資料庫、商品頁、搜尋、價格）
 
