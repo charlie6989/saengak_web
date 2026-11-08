@@ -2,7 +2,7 @@
 -- 1. site_settings.store_pickup_enabled：上線開關，預設 false（不覆寫既有值）。
 -- 2. site_settings.pickup_shipping_fee：超商取貨運費，店主決定 NT$60。
 -- 3. private.shipany_api_tokens：ShipAny merchant token。refresh token 每次使用都會輪替且只能用一次，
---    必須保存最新一組；只允許 service_role 透過 RPC 讀寫，前台與會員都讀不到。
+--    必須保存最新一組；token 由 API 以 AES-256-GCM 加密後才寫入（欄位存密文），只允許 service_role 透過 RPC 讀寫。
 begin;
 
 insert into public.site_settings (key, value, is_public, description)
@@ -15,7 +15,7 @@ create table if not exists private.shipany_api_tokens (
   id smallint primary key default 1 check (id = 1),
   access_token text,
   access_expires_at timestamptz,
-  refresh_token text not null check (length(refresh_token) between 1 and 4096),
+  refresh_token text not null check (length(refresh_token) between 1 and 8192),
   updated_at timestamptz not null default now()
 );
 
@@ -50,7 +50,7 @@ as $$
 declare
   v_rows integer;
 begin
-  if p_refresh_token is null or length(p_refresh_token) not between 1 and 4096 then
+  if p_refresh_token is null or length(p_refresh_token) not between 1 and 8192 then
     raise exception 'SHIPANY_REFRESH_TOKEN_INVALID';
   end if;
 
