@@ -59,7 +59,7 @@ interface ProductSeoSource extends ProductMetaSource {
   vendor?: string;
   productType?: string;
   availableForSale?: boolean;
-  variants?: { availableForSale?: boolean; sku?: string }[];
+  variants?: { availableForSale?: boolean; sku?: string; price?: number }[];
 }
 
 /** 商品的標準網址一律用數字 ID，避免 gid 或 handle 網址被當成重複頁面。無法解析時回傳 undefined。 */
@@ -93,14 +93,40 @@ export function buildProductJsonLd(product: ProductSeoSource): Record<string, un
     ...(brand ? { brand: { '@type': 'Brand', name: brand } } : {}),
     // 多規格商品的 SKU 各不相同，商品層級不標示單一 SKU
     ...(skus.length === 1 ? { sku: skus[0] } : {}),
-    offers: {
-      '@type': 'Offer',
+    offers: buildOffers(product, url),
+  };
+}
+
+/**
+ * 各規格同價時標示單一 Offer；規格價格不同時改用 AggregateOffer 的最低／最高價，
+ * 避免結構化資料只寫最低價、與商品頁預設規格的售價不一致。
+ */
+function buildOffers(product: ProductSeoSource, url: string): Record<string, unknown> {
+  const availability = isProductSoldOut(product) ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock';
+  const prices = (product.variants ?? [])
+    .map((variant) => variant.price)
+    .filter((price): price is number => typeof price === 'number' && price > 0);
+  const low = prices.length ? Math.min(...prices) : product.price;
+  const high = prices.length ? Math.max(...prices) : product.price;
+  if (high > low) {
+    return {
+      '@type': 'AggregateOffer',
       url,
-      price: product.price,
+      lowPrice: low,
+      highPrice: high,
+      offerCount: prices.length,
       priceCurrency: 'TWD',
-      availability: isProductSoldOut(product) ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+      availability,
       itemCondition: 'https://schema.org/NewCondition',
-    },
+    };
+  }
+  return {
+    '@type': 'Offer',
+    url,
+    price: low,
+    priceCurrency: 'TWD',
+    availability,
+    itemCondition: 'https://schema.org/NewCondition',
   };
 }
 

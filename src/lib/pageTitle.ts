@@ -26,8 +26,14 @@ const ROUTE_TITLES: Array<[RegExp, string]> = [
   [/^\/admin(\/|$)/, '管理後台'],
 ];
 
-// 登入流程中的過渡頁不應被搜尋引擎收錄
-const NOINDEX_PATHS: RegExp[] = [/^\/welcome$/, /^\/auth\/confirm$/];
+// 登入流程中的過渡頁、會員中心、密碼重設與管理後台不應被搜尋引擎收錄
+const NOINDEX_PATHS: RegExp[] = [
+  /^\/welcome$/,
+  /^\/auth\/confirm$/,
+  /^\/profile$/,
+  /^\/(forgot-password|reset-password)$/,
+  /^\/admin(\/|$)/,
+];
 export const DEFAULT_ROBOTS = 'index, follow';
 export const NOINDEX_ROBOTS = 'noindex, nofollow';
 
