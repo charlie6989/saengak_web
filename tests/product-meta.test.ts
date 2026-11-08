@@ -88,6 +88,23 @@ describe('product page SEO', () => {
     expect(jsonLd.offers).toMatchObject({ price: 680, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' });
   });
 
+  it('uses a price range when variant prices differ', () => {
+    const jsonLd = buildProductJsonLd({
+      ...product,
+      price: 321,
+      variants: [{ sku: 'A', price: 645, availableForSale: true }, { sku: 'B', price: 321, availableForSale: true }],
+    })!;
+    expect(jsonLd.offers).toMatchObject({ '@type': 'AggregateOffer', lowPrice: 321, highPrice: 645, offerCount: 2, priceCurrency: 'TWD' });
+  });
+
+  it('keeps a single offer when all variants share one price', () => {
+    const jsonLd = buildProductJsonLd({
+      ...product,
+      variants: [{ sku: 'A', price: 680 }, { sku: 'B', price: 680 }],
+    })!;
+    expect(jsonLd.offers).toMatchObject({ '@type': 'Offer', price: 680 });
+  });
+
   it('reports sold-out products as out of stock', () => {
     const jsonLd = buildProductJsonLd({ ...product, availableForSale: false })!;
     expect((jsonLd.offers as { availability: string }).availability).toBe('https://schema.org/OutOfStock');

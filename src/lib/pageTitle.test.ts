@@ -15,6 +15,11 @@ describe('page titles', () => {
   it('keeps login-flow pages out of search indexes', () => {
     expect(robotsForPath('/welcome')).toBe(NOINDEX_ROBOTS);
     expect(robotsForPath('/auth/confirm')).toBe(NOINDEX_ROBOTS);
+    expect(robotsForPath('/admin')).toBe(NOINDEX_ROBOTS);
+    expect(robotsForPath('/admin/orders')).toBe(NOINDEX_ROBOTS);
+    expect(robotsForPath('/reset-password')).toBe(NOINDEX_ROBOTS);
+    expect(robotsForPath('/forgot-password')).toBe(NOINDEX_ROBOTS);
+    expect(robotsForPath('/profile')).toBe(NOINDEX_ROBOTS);
     expect(robotsForPath('/products')).toBe('index, follow');
   });
 

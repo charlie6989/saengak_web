@@ -1,5 +1,17 @@
 # 項目狀態
 
+## 上線前第二輪全面檢查（2026-11-08 下午：會員、資料庫、商品頁、搜尋、價格）
+
+- 價格：Storefront 27 件商品逐一比對，商品頁顯示的售價、劃線原價、「現省」金額都與 Shopify 預設規格一致；切換規格（冰絲無痕中腰 薄荷綠／M）價格正確改為 NT$75；購物車兩件商品小計 NT$274、預估運費 NT$146、「再消費 NT$1,226 免運」計算正確；售完商品按鈕為「此規格已售完」且不能加入購物車。
+- 價格資料需店主確認（未修改）：冰絲無痕中腰三角褲「薄荷綠／M」NT$75（其他 NT$54）、純棉高腰舒適內褲「雪紗白／L」NT$86（其他 NT$66）、純棉高腰防漏生理褲「極雅黑／L」NT$73（其他 NT$69），疑似輸入錯誤；雲朵純棉中腰三角褲、側邊細帶純棉三角褲的原價等於售價（NT$109），網站不顯示劃線價，但 Shopify 資料可清掉原價。
+- 搜尋與分類：濕巾 4、內褲 14、凝膠 5、MEDION 1、saengak 7、亂碼 0（顯示空狀態）；私密保養 9、舒適內搭 17、生理期照護 5；排序程式為價格升降並把售完排最後；整輪無 JavaScript 錯誤。
+- 優惠：`/api/shopify/discounts` 回 WELCOME100、FREESHIP（皆 active、滿 1,500、每人一次），與 `/promotion` 文字一致。Supabase `promotions` 的 SAVE15、SPECIAL30（Shopify 已停用且過期）原仍為 `is_active=true` 可被公開讀取，已以 migration `20261108073443_deactivate_retired_promotions` 改為 false 並回讀。
+- 資料庫安全：public 15 張表全開 RLS；以公開金鑰讀 profiles、orders、order_items、order_invoices、order_fulfillments、user_coupons、user_favorites、shopify_checkout_links、partner_member_perks 皆 permission denied，user_social_accounts 0 筆；`get_admin_profiles`、`claim_guest_orders` 對 anon 皆 permission denied。
+- 會員與訂單資料：11 位會員皆有 profile；#1011 已付款且有發票。#1006（NT$826）、#1007（NT$2,720）是 8 月 TapPay 測試模式訂單，資料庫顯示已付款未出貨、發票工作標為 SHOPIFY_TEST_ORDER，會出現在後台訂單與營收統計，是否在 Shopify 取消／封存由店主決定。
+- 會員頁保護：未登入開 `/admin`、`/admin/orders`、`/admin/members` 只顯示管理員登入；`/profile`、`/welcome` 轉到 `/login`。
+- 修正（程式碼，本分支）：`/admin`、`/profile`、`/forgot-password`、`/reset-password` 改為 noindex；商品 JSON-LD 在規格價格不同時改用 AggregateOffer（lowPrice／highPrice），避免只標最低價而與頁面預設售價不一致（例：慕斯 321／645）。
+- 未處理：商品頁的 og:title／og:image 由前端設定，LINE／Facebook 分享預覽仍只顯示網站名稱，需伺服器端產生 meta 才能修正。
+
 ## 上線前全站檢查（2026-11-08，店主要求「徹底檢查並修復到上線狀態」）
 
 - 檢查範圍：typecheck、Vitest 73 檔／719 項、build、`verify:content`、`verify:production`（24 項全過）；以 headless Chrome 開正式站 sitemap 全部 38 個網址加 15 個額外路由（桌機 1366px、手機 375px，共 81 次），記錄 console 錯誤、失敗請求、破圖、橫向捲動、h1 與 meta；Storefront 395 張商品圖逐一 HEAD；手機慢速 4G 量 LCP／CLS；Supabase 安全與效能 advisors；OAuth 起始導向。
