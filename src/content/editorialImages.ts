@@ -9,3 +9,9 @@ export function editorialImage(handle?: string, supplied?: string | null, placem
   const prefix = placement === 'hero' ? 'article' : 'thumb';
   return image ? `/images/lucissi-v5/${prefix}-${image}.webp` : supplied || `/images/lucissi-v5/${prefix}-standards.webp`;
 }
+
+/** 社群分享預覽用的 1200×630 JPG（部分平台不支援 WebP）；沒有對應主題時回傳 undefined。 */
+export function editorialShareImage(handle?: string): string | undefined {
+  const image = handle ? covers[handle] : undefined;
+  return image ? `/images/lucissi-v5/share-${image}.jpg` : undefined;
+}
