@@ -8,7 +8,9 @@
 - PR #108 已合併（892c98f）。
 - **正式開啟（2026-11-09 00:04 台北時間）**：店主要求「合併並驗收」後，將正式 Supabase `site_settings.guest_checkout_enabled` 改為 true 並回讀。回復方式：改回 false（只停止新的訪客結帳，既有訂單與 webhook 照常處理）。
 - 正式站驗收（自動化、未登入的乾淨瀏覽器）：API 不帶驗證回 400 `TURNSTILE_TOKEN_REQUIRED`、帶假 token 回 403 `TURNSTILE_VERIFICATION_FAILED`，代表開關已生效且伺服器驗證有作用；Vercel Production 有 `VITE_PUBLIC_GUEST_CHECKOUT_TURNSTILE_SITE_KEY` 與 `TURNSTILE_SECRET_KEY`。iPhone 13 模擬與 1366×900 桌機：購物車顯示「訪客結帳」與「登入結帳（使用會員優惠）」，展開後顯示會員優惠提示、Email 欄（自動聚焦）、Cloudflare「Verify you are human」；空 Email 送出顯示「請輸入有效的 Email…」，未完成驗證送出顯示「請先完成安全驗證，再進行訪客結帳。」，手機上送出按鈕在可視範圍內。
-- 未驗證：Cloudflare 真人驗證（自動化不可代為完成）之後的步驟——進入 Shopify 結帳、付款、確認信、發票、以同 Email 註冊後認領訂單，需店主用手機（未登入或無痕視窗）實測。Supabase 隔離驗收分支 `guest-checkout-acceptance`（2026-10-16 建立）仍在運作，每小時約 US$0.013。
+- 真人驗證排查（11/09 00:15–00:35）：店主先用 iPhone Safari 無痕視窗測試，Cloudflare 一直停在「Verifying…」，00:20 先將開關改回 false。Cloudflare Turnstile 後台（widget `LUCISSI CARE guest checkout`，site key 與正式站一致，Managed、3 個 hostname）顯示 24 小時內 lucissicare.com 發出 24 次挑戰、0 次通過：Electron 16（內建瀏覽器自動化）、HeadlessChrome 2（自動化測試）、Mobile Safari 6（店主無痕視窗），全判定為 bot。hostname 設定正常，原先懷疑 10/16 驗收後未加回 lucissicare.com 不成立。推測原因是 iOS 17 起 Safari 無痕模式預設開啟「進階追蹤與指紋保護」，會讓 Turnstile 卡住。00:25 開關改回 true。
+- **正式站真人驗收通過**：店主用 iPhone 一般模式（非無痕）完成 Cloudflare 驗證，按「以訪客身分前往結帳」後看到 Shopify 結帳頁；資料庫回讀新增一筆 `shopify_checkout_links`（checkout_kind=guest、無 user_id、建立於 2026-11-08 16:35 UTC），證實正式站 Turnstile 伺服器驗證、購物車建立與訪客連結寫入皆正常。未付款，故尚未形成訂單。
+- 未驗證：正式站訪客實際付款後的訂單同步、確認信、發票開立與以同 Email 註冊後認領（10/16 在隔離環境以測試卡通過，正式站未付款實測）。已知限制：Safari 無痕模式的顧客可能卡在驗證，可考慮在驗證旁加提示（改用一般模式或登入結帳）。
 
 ## 專欄文章分享預覽（2026-11-08，PR #106 已合併上線）
 
