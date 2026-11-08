@@ -183,42 +183,45 @@ export function carrierFromLocationType(value: unknown): PickupCarrier | undefin
   return undefined;
 }
 
-const FIELD_CANDIDATES = {
-  code: ['code', 'store_code', 'storeCode', 'store_id', 'storeId', 'location_code', 'locationCode', 'point_code', 'pointCode', 'id'],
-  name: ['name', 'store_name', 'storeName', 'location_name', 'locationName', 'title'],
-  address: ['address', 'full_address', 'fullAddress', 'address_line', 'addressLine', 'addr'],
-  city: ['city', 'county'],
-  district: ['district', 'area', 'town'],
-  type: ['type', 'location_type', 'locationType', 'brand', 'store_type', 'storeType', 'category'],
-  storage: ['storage_types', 'storageTypes', 'storage_type', 'storageType'],
-} as const;
+/**
+ * 每家超商固定由一家物流商配送：同一間門市在不同物流商的門市代碼不同，寫進訂單的代碼必須與實際出貨的物流商一致。
+ * 依店主 2026-11-07 給 ShipAny 的規劃：全家走全家店到店，7-11 與萊爾富走順豐（尚待 ShipAny 確認匹配規則）。
+ */
+export const PREFERRED_COURIER: Record<PickupCarrier, string> = {
+  familymart: 'FamilyMart',
+  'seven-eleven': 'SfExpressV2',
+  hilife: 'SfExpressV2',
+};
 
-function pick(record: Record<string, unknown>, keys: readonly string[]): unknown {
-  for (const key of keys) {
-    const value = record[key];
-    if (value !== undefined && value !== null && value !== '') return value;
+const toText = (value: unknown): string | undefined => {
+  if (typeof value === 'string') {
+    // 門市資料的數字多為全形（例如「２１６巷」），轉半形方便搜尋與顯示。
+    const normalized = value.normalize('NFKC').replace(/\s+/g, ' ').trim();
+    return normalized || undefined;
   }
-  return undefined;
-}
-
-function pickText(record: Record<string, unknown>, keys: readonly string[]): string | undefined {
-  const value = pick(record, keys);
-  if (typeof value === 'string') return value;
   if (typeof value === 'number' && Number.isFinite(value)) return String(value);
-  if (isRecord(value)) {
-    // 地址可能是物件（例如 { zh_tw: '...' }）：取第一個字串值。
-    const first = Object.values(value).find((item) => typeof item === 'string');
-    return typeof first === 'string' ? first : undefined;
-  }
   return undefined;
+};
+
+/** ShipAny 門市地址：addr.lns_cht／addr.lns 第一行；去掉開頭的郵遞區號。 */
+function addressOf(record: Record<string, unknown>): { address?: string; city?: string; district?: string } {
+  const addr = isRecord(record.addr) ? record.addr : undefined;
+  if (!addr) return { address: toText(record.addr) };
+  const firstLine = (lines: unknown) => (Array.isArray(lines) ? lines.map(toText).find(Boolean) : undefined);
+  const line = firstLine(addr.lns_cht) ?? firstLine(addr.lns);
+  const city = toText(addr.city);
+  const district = toText(addr.distr);
+  const fallback = [city, district, toText(addr.st), toText(addr.st_no)].filter(Boolean).join('');
+  const address = (line ?? fallback)?.replace(/^\d{3,6}\s*/, '') || undefined;
+  return { address, city, district };
 }
 
-/** 商品為常溫：門市有標示貯存類型時，只保留支援常溫的門市。 */
+/** 商品為常溫：門市有標示貯存類型時，只保留支援常溫（Normal）的門市。 */
 function supportsAmbient(record: Record<string, unknown>): boolean {
-  const storage = pick(record, FIELD_CANDIDATES.storage);
-  if (storage === undefined) return true;
+  const storage = record.supported_storage_types;
+  if (storage === undefined || storage === null) return true;
   const values = Array.isArray(storage) ? storage : [storage];
-  return values.some((item) => typeof item === 'string' && /normal|ambient|room|常溫/i.test(item));
+  return values.some((item) => typeof item === 'string' && /normal|ambient|常溫/i.test(item));
 }
 
 function locationArray(file: unknown): unknown[] {
@@ -236,25 +239,28 @@ function locationArray(file: unknown): unknown[] {
 }
 
 /**
- * 把一家物流商的門市資料檔轉成 PickupPoint。
- * 門市自身有類型欄位時依類型判斷超商；沒有時，若該物流商只啟用一種超商，就全部歸到那一種。
+ * 把一家物流商的門市資料檔轉成 PickupPoint（ShipAny 2026-11 實際格式）：
+ * code、name_cht／name、detail_loc_typ（例如「Family Mart (SF Express)」）、addr.lns_cht、
+ * is_active、is_delivery、supported_storage_types。
+ * 只保留：營業中、可收件、支援常溫、自取點類型已在 ShipAny 啟用，且該超商指定由這家物流商配送的門市。
  */
 export function normalizeLocationFile(source: LocationSource, file: unknown): ShipAnyPickupPoint[] {
-  const enabledCarriers = [...new Set(source.enabledTypes.map(carrierFromLocationType).filter(isPickupCarrier))];
-  const fallbackCarrier = enabledCarriers.length === 1 ? enabledCarriers[0] : undefined;
+  const enabledTypes = new Set(source.enabledTypes);
   const points: ShipAnyPickupPoint[] = [];
   for (const item of locationArray(file)) {
-    if (!isRecord(item) || !supportsAmbient(item)) continue;
-    const typeCarrier = carrierFromLocationType(pickText(item, FIELD_CANDIDATES.type));
-    const carrier = typeCarrier ?? fallbackCarrier;
-    if (!carrier || (enabledCarriers.length > 0 && !enabledCarriers.includes(carrier))) continue;
+    if (!isRecord(item) || item.is_active === false || item.is_delivery === false || !supportsAmbient(item)) continue;
+    const locationType = toText(item.detail_loc_typ);
+    if (enabledTypes.size > 0 && (!locationType || !enabledTypes.has(locationType))) continue;
+    const carrier = carrierFromLocationType(locationType);
+    if (!carrier || PREFERRED_COURIER[carrier] !== source.courierApiType) continue;
+    const { address, city, district } = addressOf(item);
     const point = parsePickupPoint({
       carrier,
-      code: pickText(item, FIELD_CANDIDATES.code)?.trim(),
-      name: pickText(item, FIELD_CANDIDATES.name),
-      address: pickText(item, FIELD_CANDIDATES.address),
-      city: pickText(item, FIELD_CANDIDATES.city),
-      district: pickText(item, FIELD_CANDIDATES.district),
+      code: toText(item.code),
+      name: toText(item.name_cht) ?? toText(item.name),
+      address,
+      city,
+      district,
     });
     if (point) points.push({ ...point, courier: source.courierApiType });
   }
@@ -321,7 +327,7 @@ async function buildIndex(deps: PickupPointDeps): Promise<PickupIndex> {
     if (file === undefined) continue;
     for (const point of normalizeLocationFile(source, file)) {
       const list = index.get(point.carrier) ?? [];
-      // 同一超商的門市可能出現在兩家物流商（例如 7-11 由黑貓與順豐都可配送），保留先出現的一筆。
+      // 每家超商只取指定物流商的門市（見 PREFERRED_COURIER），同一代碼只保留一筆。
       if (!list.some((existing) => existing.code === point.code)) list.push(point);
       index.set(point.carrier, list);
     }
@@ -358,7 +364,7 @@ export async function diagnoseShipAnyLocations(deps: PickupPointDeps): Promise<L
     const typeValues = new Set<string>();
     for (const record of records.slice(0, 5000)) {
       if (!isRecord(record)) continue;
-      const value = pickText(record, FIELD_CANDIDATES.type);
+      const value = toText(record.detail_loc_typ);
       if (value) typeValues.add(value);
       if (typeValues.size >= 15) break;
     }

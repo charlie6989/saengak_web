@@ -35,61 +35,96 @@ function memoryTokenStore(initial: Awaited<ReturnType<TokenStore['read']>> = nul
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
+/** 與 ShipAny 2026-11 門市資料檔相同結構的門市。 */
+function shipAnyStore(overrides: Record<string, unknown> = {}) {
+  return {
+    uid: 'uid-1',
+    courier_id: 'courier-1',
+    code: '002816',
+    api_code: '',
+    is_active: true,
+    name: '全家板橋板農店',
+    name_cht: '全家板橋板農店',
+    typ: 'Convenience Store',
+    detail_loc_typ: 'Family Mart',
+    addr: {
+      distr: '板橋區',
+      lns: ['新北市板橋區文化路一段２１６巷３１號'],
+      lns_cht: ['新北市板橋區文化路一段２１６巷３１號'],
+      city: '新北市',
+      cnty: 'TWN',
+    },
+    is_pickup: false,
+    is_delivery: true,
+    supported_storage_types: ['Normal'],
+    ...overrides,
+  };
+}
+
 const familySource: LocationSource = {
   courierUid: 'fm-uid',
   courierApiType: 'FamilyMart',
   url: 'https://locations.example.com/familymart.json',
-  enabledTypes: ['FamilyMart'],
+  enabledTypes: ['Family Mart'],
+};
+const sfSource: LocationSource = {
+  courierUid: 'sf-uid',
+  courierApiType: 'SfExpressV2',
+  url: 'https://locations.example.com/sf.json',
+  enabledTypes: ['Family Mart (SF Express)', 'Hi-Life (SF Express)', '7-Eleven (SF Express)'],
 };
 
 describe('carrierFromLocationType', () => {
-  it('recognises the three convenience store chains', () => {
-    expect(carrierFromLocationType('FamilyMart')).toBe('familymart');
-    expect(carrierFromLocationType('全家便利店')).toBe('familymart');
-    expect(carrierFromLocationType('7-ELEVEN')).toBe('seven-eleven');
-    expect(carrierFromLocationType('seven_eleven')).toBe('seven-eleven');
-    expect(carrierFromLocationType('Hi-Life')).toBe('hilife');
-    expect(carrierFromLocationType('萊爾富便利店')).toBe('hilife');
-    expect(carrierFromLocationType('黑貓營業所')).toBeUndefined();
+  it('recognises the location types ShipAny uses', () => {
+    expect(carrierFromLocationType('Family Mart')).toBe('familymart');
+    expect(carrierFromLocationType('Family Mart (SF Express)')).toBe('familymart');
+    expect(carrierFromLocationType('7-Eleven (SF Express)')).toBe('seven-eleven');
+    expect(carrierFromLocationType('7-Eleven (Yamato)')).toBe('seven-eleven');
+    expect(carrierFromLocationType('Hi-Life (SF Express)')).toBe('hilife');
+    expect(carrierFromLocationType('Yamato Store')).toBeUndefined();
   });
 });
 
 describe('normalizeLocationFile', () => {
-  it('reads a plain array and assigns the only enabled chain', () => {
-    const points = normalizeLocationFile(familySource, [
-      { store_id: 'F001234', store_name: '全家台北民生店', address: '台北市松山區民生東路四段1號', city: '台北市', district: '松山區' },
-      { store_id: 'bad code!', store_name: '格式錯誤', address: '某處' },
-      { store_id: 'F009999', store_name: '', address: '缺名稱' },
-    ]);
-    expect(points).toEqual([
+  it('reads the ShipAny store format and converts full-width digits', () => {
+    expect(normalizeLocationFile(familySource, [shipAnyStore()])).toEqual([
       {
         carrier: 'familymart',
-        code: 'F001234',
-        name: '全家台北民生店',
-        address: '台北市松山區民生東路四段1號',
-        city: '台北市',
-        district: '松山區',
+        code: '002816',
+        name: '全家板橋板農店',
+        address: '新北市板橋區文化路一段216巷31號',
+        city: '新北市',
+        district: '板橋區',
         courier: 'FamilyMart',
       },
     ]);
   });
 
-  it('splits a multi-chain file by each store type and skips disabled chains and chilled-only stores', () => {
-    const sfSource: LocationSource = { ...familySource, courierApiType: 'SfExpress', enabledTypes: ['7-ELEVEN', 'Hi-Life'] };
-    const points = normalizeLocationFile(sfSource, {
-      data: {
-        locations: [
-          { code: '123456', name: '7-11 民生門市', address: '台北市民生東路1號', type: '7-ELEVEN' },
-          { code: 'H1234', name: '萊爾富民生店', address: '台北市民生東路2號', type: 'Hi-Life' },
-          { code: 'F7777', name: '全家某店', address: '台北市某路', type: 'FamilyMart' },
-          { code: '654321', name: '7-11 冷凍專門', address: '台北市某路3號', type: '7-ELEVEN', storage_types: ['Frozen'] },
-        ],
-      },
-    });
-    expect(points.map((point) => [point.carrier, point.code])).toEqual([
-      ['seven-eleven', '123456'],
-      ['hilife', 'H1234'],
+  it('skips closed, non-receiving, chilled-only and malformed stores', () => {
+    const points = normalizeLocationFile(familySource, [
+      shipAnyStore({ code: '000001', is_active: false }),
+      shipAnyStore({ code: '000002', is_delivery: false }),
+      shipAnyStore({ code: '000003', supported_storage_types: ['Frozen'] }),
+      shipAnyStore({ code: 'bad code!' }),
+      shipAnyStore({ code: '000005', name: '', name_cht: '' }),
+      shipAnyStore({ code: '000006', addr: { lns_cht: ['970花蓮縣花蓮市中福路161號'], city: '花蓮縣', distr: '花蓮市' } }),
     ]);
+    expect(points.map((point) => [point.code, point.address])).toEqual([['000006', '花蓮縣花蓮市中福路161號']]);
+  });
+
+  it('keeps only the chains this courier is assigned to ship', () => {
+    const file = [
+      shipAnyStore({ code: '10003', name_cht: '全家延吉店', detail_loc_typ: 'Family Mart (SF Express)' }),
+      shipAnyStore({ code: '20001', name_cht: '萊爾富民生店', detail_loc_typ: 'Hi-Life (SF Express)' }),
+      shipAnyStore({ code: '30001', name_cht: '7-11 民生門市', detail_loc_typ: '7-Eleven (SF Express)' }),
+    ];
+    // 全家指定走全家店到店，所以順豐檔案裡的全家門市不收；7-11 與萊爾富走順豐。
+    expect(normalizeLocationFile(sfSource, file).map((point) => [point.carrier, point.code])).toEqual([
+      ['hilife', '20001'],
+      ['seven-eleven', '30001'],
+    ]);
+    // 物流商沒有啟用的自取點類型一律略過。
+    expect(normalizeLocationFile({ ...sfSource, enabledTypes: ['Hi-Life (SF Express)'] }, file).map((point) => point.code)).toEqual(['20001']);
   });
 });
 
@@ -142,13 +177,13 @@ describe('pickup point index', () => {
                 courier_uid: 'fm-uid',
                 courier_api_type: 'FamilyMart',
                 url: 'https://locations.example.com/familymart.json',
-                detail_location_types: { FamilyMart: { enabled: true } },
+                detail_location_types: { 'Family Mart': { enabled: true } },
               },
               {
                 courier_uid: 'tcat-uid',
-                courier_api_type: 'TCat',
-                url: 'https://locations.example.com/tcat.json',
-                detail_location_types: { 'TCat Office': { enabled: true }, '7-ELEVEN': { enabled: false } },
+                courier_api_type: 'Yamato',
+                url: 'https://locations.example.com/yamato.json',
+                detail_location_types: { 'Yamato Store': { enabled: true }, '7-Eleven (Yamato)': { enabled: false } },
               },
             ],
           },
@@ -156,9 +191,9 @@ describe('pickup point index', () => {
         });
       }
       if (url.endsWith('familymart.json')) {
-        return json([{ store_id: 'F001234', store_name: '全家台北民生店', address: '台北市松山區民生東路四段1號' }]);
+        return json([shipAnyStore()]);
       }
-      return json([{ code: 'T1', name: '黑貓營業所', address: '台北市某路', type: 'TCat Office' }]);
+      return json([shipAnyStore({ code: '118040', name_cht: '中福營業所', detail_loc_typ: 'Yamato Store' })]);
     });
   }
 
@@ -171,8 +206,8 @@ describe('pickup point index', () => {
     expect([...index.keys()]).toEqual(['familymart']);
     await loadPickupIndex(deps);
     expect(transport).toHaveBeenCalledTimes(3);
-    await expect(findShipAnyPickupPoint(deps, 'familymart', 'F001234')).resolves.toMatchObject({ name: '全家台北民生店' });
-    await expect(findShipAnyPickupPoint(deps, 'familymart', 'F999999')).resolves.toBeUndefined();
+    await expect(findShipAnyPickupPoint(deps, 'familymart', '002816')).resolves.toMatchObject({ name: '全家板橋板農店' });
+    await expect(findShipAnyPickupPoint(deps, 'familymart', '999999')).resolves.toBeUndefined();
   });
 });
 
@@ -202,16 +237,16 @@ describe('handlePickupPointSearch', () => {
   it('returns matching stores without courier internals', async () => {
     setMemorySiteSetting('store_pickup_enabled', true);
     const transport = vi.fn(async (url: string) => url.endsWith('/v3/courier-service-point-locations')
-      ? json({ data: { locations: [{ courier_uid: 'fm', courier_api_type: 'FamilyMart', url: 'https://locations.example.com/fm.json', detail_location_types: { FamilyMart: { enabled: true } } }] } })
+      ? json({ data: { locations: [{ courier_uid: 'fm', courier_api_type: 'FamilyMart', url: 'https://locations.example.com/fm.json', detail_location_types: { 'Family Mart': { enabled: true } } }] } })
       : json([
-        { store_id: 'F001234', store_name: '全家台北民生店', address: '台北市松山區民生東路四段1號' },
-        { store_id: 'F005678', store_name: '全家高雄中正店', address: '高雄市苓雅區中正一路1號' },
+        shipAnyStore(),
+        shipAnyStore({ code: '005678', name_cht: '全家高雄中正店', addr: { lns_cht: ['高雄市苓雅區中正一路1號'], city: '高雄市', distr: '苓雅區' } }),
       ]));
     const deps = { env: ENV, tokenStore: memoryTokenStore(validTokens), transport, now: () => NOW };
-    const response = await handlePickupPointSearch(new Request('https://lucissicare.com/api/pickup-points?carrier=familymart&q=民生'), cors, deps);
+    const response = await handlePickupPointSearch(new Request('https://lucissicare.com/api/pickup-points?carrier=familymart&q=' + encodeURIComponent('板橋 216巷')), cors, deps);
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
-      points: [{ carrier: 'familymart', code: 'F001234', name: '全家台北民生店', address: '台北市松山區民生東路四段1號' }],
+      points: [{ carrier: 'familymart', code: '002816', name: '全家板橋板農店', address: '新北市板橋區文化路一段216巷31號', city: '新北市', district: '板橋區' }],
     });
   });
 
@@ -273,8 +308,8 @@ describe('admin diagnosis', () => {
 
   it('describes each store file for an admin without exposing tokens', async () => {
     const transport = vi.fn(async (url: string) => url.endsWith('/v3/courier-service-point-locations')
-      ? json({ data: { locations: [{ courier_uid: 'fm', courier_api_type: 'FamilyMart', url: 'https://locations.example.com/fm.json', detail_location_types: { FamilyMart: { enabled: true } } }] } })
-      : json({ stores: [{ store_id: 'F001234', store_name: '全家台北民生店', address: '台北市松山區民生東路四段1號', type: 'FamilyMart' }] }));
+      ? json({ data: { locations: [{ courier_uid: 'fm', courier_api_type: 'FamilyMart', url: 'https://locations.example.com/fm.json', detail_location_types: { 'Family Mart': { enabled: true } } }] } })
+      : json([shipAnyStore()]));
     const deps = { env: ENV, tokenStore: memoryTokenStore(validTokens), transport, now: () => NOW };
     const response = await handlePickupPointSearch(
       new Request('https://lucissicare.com/api/pickup-points?diagnose=1'), cors, deps, async () => true,
@@ -284,11 +319,10 @@ describe('admin diagnosis', () => {
     expect(body.sources[0]).toMatchObject({
       courierApiType: 'FamilyMart',
       urlHost: 'locations.example.com',
-      shape: 'object',
-      topLevelKeys: ['stores'],
+      shape: 'array',
+      topLevelKeys: [],
       recordCount: 1,
-      sampleRecordKeys: ['store_id', 'store_name', 'address', 'type'],
-      typeValues: ['FamilyMart'],
+      typeValues: ['Family Mart'],
       normalizedByCarrier: { familymart: 1 },
     });
     expect(JSON.stringify(body)).not.toContain('stored-access');
