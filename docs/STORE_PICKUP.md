@@ -42,10 +42,18 @@ CARE 專用 token 第一次連線成功（已輪替並加密保存）。ShipAny 
 
 每筆欄位：`code`、`name_cht`、`detail_loc_typ`、`addr.lns_cht`／`addr.city`／`addr.distr`、`is_active`、`is_delivery`、`supported_storage_types`、重量與尺寸限制（例如順豐超商 5 kg、三邊和 105 cm）。地址數字多為全形，解析時轉半形。**同一間門市在不同物流商的代碼不同**（例如順豐的全家延吉店為 `10003`，全家店到店的板農店為 `002816`），所以每家超商固定由一家物流商配送（`PREFERRED_COURIER`）：全家→全家店到店、7-11→順豐、萊爾富→順豐（依店主 11/07 給 ShipAny 的規劃）。黑貓的 7-11 門市不採用。
 
+PR #112 部署後正式站再次診斷（2026-11-09），解析出的可選門市：
+
+| 超商 | 物流商 | 門市數 |
+| --- | --- | --- |
+| 全家 | 全家店到店 | 4,431 |
+| 7-11 | 順豐 | 7,052 |
+| 萊爾富 | 順豐 | 1,604 |
+
 ## 尚未確認（依賴外部回覆）
 
 1. **ShipAny 匯入如何辨識門市**：店主 2026-11-07 已來信詢問（討論串「LUCISSI：確認台灣 Shopify App／黑貓沙盒運單與追蹤回寫測試」），2026-11-09 尚未回覆。信中以 LUCISSI 商店 j97kr5-7b 名義詢問，CARE（gh2xgs-zf）同帳號。
-2. **門市資料檔格式**：`normalizeLocationFile` 以常見欄位名稱寬鬆解析，取得金鑰後需以實際檔案確認欄位與自取點類型名稱，並補測試。
+2. ~~門市資料檔格式~~：已依 2026-11-09 實際檔案調整解析器並補測試（PR #112）。
 3. **同一超商由哪家物流商出貨**：7-11 由黑貓與順豐都可配送；目前同代碼只保留先出現的一筆，`_pickup_courier` 記錄來源，需與 ShipAny 進階物流匹配規則一致。
 4. **顧客在結帳頁改掉地址**：Shopify 結帳頁無法鎖定地址，只能提示；需確認 ShipAny 收到被改過的地址時如何處理。
 
@@ -53,7 +61,7 @@ CARE 專用 token 第一次連線成功（已輪替並加密保存）。ShipAny 
 
 1. ~~店主在 ShipAny 後台建立 CARE 專用 token，設定 Vercel Production：`SHIPANY_CLIENT_KEY`、`SHIPANY_MERCHANT_TOKEN`、`SHIPANY_REFRESH_TOKEN`~~（2026-11-09 完成，`saengak-web-d2ux` 三項皆為 sensitive）。CARE 不可與 LUCISSI 共用同一組 token：兩站都會輪替 refresh token，共用會互相使對方失效。第一次使用後 token 以 AES-256-GCM 加密存在 `private.shipany_api_tokens` 並自動輪替；更換 Client Key 或 token 時需先刪除該資料列。
 2. ~~套用 migration~~（2026-11-09 已套用正式 Supabase，版本 `20261108174448`；回讀開關 false、運費 60、token 表 0 筆，anon／authenticated 無法呼叫兩個 RPC）。
-3. 以實際門市資料檔調整並測試 `normalizeLocationFile`。
+3. ~~以實際門市資料檔調整並測試 `normalizeLocationFile`~~（PR #112 完成）。
 4. 依 ShipAny 回覆調整寫入格式。
 5. Shopify 新增超商取貨運費（NT$60、門檻免運），名稱需符合 ShipAny 進階物流匹配規則；確認「貨到付款」付款方式對超商取貨可用。
 6. 取貨付款的收款確認：送到門市不代表已付款。ShipAny 文件寫明服務點的 `order/delivered` 代表顧客已取件；收款與撥款需在 ShipAny「貨到付款紀錄」對帳，確認後才在 Shopify 標記已付款並開發票（不可沿用黑貓「送達即付款」的 Flow）。
