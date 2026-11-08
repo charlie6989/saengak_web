@@ -1,5 +1,12 @@
 # 項目狀態
 
+## 訪客結帳營運決策（2026-11-09）
+
+- 店主決定：訪客 Email 長期保存（不設自動刪除期限）；沒有載具的個人發票照常開立並寄到顧客 Email；客服以 Email 查詢訪客訂單。
+- 程式查核：無載具個人發票本來就開到光貿會員載具（`amego.ts` 不會留空載具），未填通知 Email 時，資料庫以訂單 Email 補上（`20261022000000_cod_collection_invoicing.sql`）；資料庫沒有刪除 `private.guest_order_contacts` 的排程。客服查詢走 Shopify 後台訂單搜尋 Email，網站後台不顯示訪客 Email。
+- 本次變更：隱私權政策新增「訪客結帳資料」用途、訪客 Email 長期保存（可請求刪除，法定紀錄除外）與無載具發票寄送說明，隱私頁「最後更新」改為 2026-11-09（其他政策頁日期不變）。typecheck、Vitest 729 項、verify:content 通過，本機預覽 `/privacy` 文字正確、無主控台錯誤。
+- 尚未完成：正式開關 `guest_checkout_enabled` 仍為 false；手機與正式站真人訪客結帳驗收未做；政策文字仍待律師審閱。Supabase 隔離驗收分支 `guest-checkout-acceptance`（2026-10-16 建立）仍在運作，每小時約 US$0.013。
+
 ## 專欄文章分享預覽（2026-11-08，PR #106 已合併上線）
 
 - 現況（11/08 以 facebookexternalhit、line-poker UA 實測正式站）：商品頁分享預覽早已正確（商品名稱、說明、主圖）；`/blog/:handle` 文章頁有 Facebook／LINE 分享按鈕，但爬蟲拿到的是網站預設標題與圖片。
