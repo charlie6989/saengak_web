@@ -3,7 +3,7 @@
 ## 上線前第二輪全面檢查（2026-11-08 下午：會員、資料庫、商品頁、搜尋、價格）
 
 - 價格：Storefront 27 件商品逐一比對，商品頁顯示的售價、劃線原價、「現省」金額都與 Shopify 預設規格一致；切換規格（冰絲無痕中腰 薄荷綠／M）價格正確改為 NT$75；購物車兩件商品小計 NT$274、預估運費 NT$146、「再消費 NT$1,226 免運」計算正確；售完商品按鈕為「此規格已售完」且不能加入購物車。
-- 價格資料需店主確認（未修改）：冰絲無痕中腰三角褲「薄荷綠／M」NT$75（其他 NT$54）、純棉高腰舒適內褲「雪紗白／L」NT$86（其他 NT$66）、純棉高腰防漏生理褲「極雅黑／L」NT$73（其他 NT$69），疑似輸入錯誤；雲朵純棉中腰三角褲、側邊細帶純棉三角褲的原價等於售價（NT$109），網站不顯示劃線價，但 Shopify 資料可清掉原價。
+- 規格價格（店主同意「改成一致」後已在 Shopify 修改並回讀）：冰絲無痕中腰三角褲 薄荷綠／M、薄荷綠／XL、雪霧藍／M、雪霧藍／XL 由 NT$75 改 NT$54；純棉高腰舒適內褲 雪紗白／L、藍白花／XL 由 NT$86 改 NT$66；純棉高腰防漏生理褲 極雅黑／L 由 NT$73 改 NT$69。Storefront 回讀三件商品各規格同價，正式站商品頁顯示 54／66／69 與劃線原價 100／120／120。只有慕斯兩種容量（160 ml NT$645、30 ml NT$321）維持不同價。另外，雲朵純棉中腰三角褲、側邊細帶純棉三角褲的原價等於售價（NT$109），網站不顯示劃線價，但 Shopify 資料可清掉原價。
 - 搜尋與分類：濕巾 4、內褲 14、凝膠 5、MEDION 1、saengak 7、亂碼 0（顯示空狀態）；私密保養 9、舒適內搭 17、生理期照護 5；排序程式為價格升降並把售完排最後；整輪無 JavaScript 錯誤。
 - 優惠：`/api/shopify/discounts` 回 WELCOME100、FREESHIP（皆 active、滿 1,500、每人一次），與 `/promotion` 文字一致。Supabase `promotions` 的 SAVE15、SPECIAL30（Shopify 已停用且過期）原仍為 `is_active=true` 可被公開讀取，已以 migration `20261108073443_deactivate_retired_promotions` 改為 false 並回讀。
 - 資料庫安全：public 15 張表全開 RLS；以公開金鑰讀 profiles、orders、order_items、order_invoices、order_fulfillments、user_coupons、user_favorites、shopify_checkout_links、partner_member_perks 皆 permission denied，user_social_accounts 0 筆；`get_admin_profiles`、`claim_guest_orders` 對 anon 皆 permission denied。
