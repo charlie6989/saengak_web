@@ -54,7 +54,7 @@
 1. 真人驗證 Preview 已另部署 `dpl_HY7KGcAykeeTqqrSKpofn6xE6uDb`，alias `saengak-web-d2ux-guest-acceptance.vercel.app`；使用真實 widget key／secret，Cloudflare whitelist 與 server hostname 都限定此 alias，仍連隔離 DB。20:27 使用者手機截圖顯示 Cloudflare 成功；當時 Email 空白，前端正確阻擋送出。20:29 桌機同站真實 widget 成功後，輸入測試 Email 並點訪客結帳，進入 Shopify Checkout（NT$166），DB 新增 anonymous guest link，證實伺服器 hostname/action 驗證成功。未再次付款。手機填 Email 後導向仍待使用者確認；最終正式網域 smoke 與真人 token 重放尚未另測。先前 300030 不代表所有真人都失敗。
 2. 同 Email 驗證後認領已通過（手機登入與 DB correct_owner=true）；桌機前端、會員優惠及完整真人結帳流程待驗收；取消／退款及發票作廢已完成回讀。重複事件與認領競態／他人資料隔離已有 pgTAP，尚不等同全部外部服務驗收。
 3. TapPay 仍為測試模式。正式光貿 seller／key／release 設定與正式寄信仍需核對；不能把官方公開 sandbox 配置用於正式。
-4. 營運仍需確定訪客 Email 保存／刪除期間、個人無載具發票處理及客服訪客訂單流程，並更新隱私頁與清理策略。不可擅自設定保存期限。
+4. 營運決策（店主 2026-11-09 確認）：訪客 Email **長期保存、不設自動刪除期限**（仍可依個資請求刪除，法定交易與發票紀錄除外）；**無載具個人發票照常開立，開到光貿會員載具並寄通知到顧客 Email**（程式已如此：未填通知 Email 時以訂單 Email 補上）；**客服以 Email 查詢訪客訂單**（Shopify 後台訂單搜尋 Email；網站後台不顯示訪客 Email，因其存在 `private.guest_order_contacts`）。資料庫沒有刪除訪客 Email 的排程，與長期保存一致。隱私權政策已依此更新（分支 `claude/guest-checkout-decisions`）；政策文字仍待律師審閱。
 5. 上述完成才設定正式 `guest_checkout_enabled=true`，回讀手機／桌機。回復方式為 false，僅停止新訪客 checkout，既有 webhook 照常處理。本輪最後查核正式 guest 訂單／contacts／links 皆 0。
 
 ## 暫時資源與清理

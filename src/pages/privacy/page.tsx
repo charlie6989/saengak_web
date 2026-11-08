@@ -6,16 +6,17 @@ import { siteContent } from '../../content/site';
 const dataUses = [
   ['帳號與會員資料', '電子郵件、姓名及您主動填寫的會員資料，用於登入、帳號安全與會員功能。'],
   ['購物與訂單資料', '購物車、商品、收件與訂單狀態，依結帳畫面所示方式處理。'],
+  ['訪客結帳資料', '以訪客身分結帳時填寫的 Email，用於訂單確認、電子發票通知、客服查詢訂單，以及您日後以同一 Email 註冊並完成驗證時，將訂單併入會員帳號。'],
   ['網站運作資料', '瀏覽器可能儲存購物車或登入狀態；主機與服務供應商也可能留下必要的安全與錯誤紀錄。'],
 ];
 
-// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字；保存期間比照 LUCISSI，未列固定年限，要改成具體年限須先經店主確認。
+// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字；2026-11-09 店主決定訪客 Email 不設保存期限（長期保存，仍可依請求刪除，法定交易與發票紀錄除外）、無載具個人發票開立後寄到顧客 Email、客服以 Email 查詢訪客訂單。其餘保存期間比照 LUCISSI，未列固定年限；政策文字仍待律師審閱。
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-stone-50 text-gray-800">
       <Header />
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
-        <p className="mb-3 text-sm font-medium tracking-wide text-brand">最後更新：{siteContent.contentReviewedAt}</p>
+        <p className="mb-3 text-sm font-medium tracking-wide text-brand">最後更新：{siteContent.privacyUpdatedAt}</p>
         <h1 className="mb-10 text-4xl font-bold text-gray-950">隱私權政策</h1>
         <section className="space-y-4 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">資料控管者</h2>
@@ -40,7 +41,7 @@ export default function Privacy() {
         <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">服務供應商與資料安全</h2>
           <p className="leading-7">網站使用或可能使用 Vercel（網站託管）、Supabase（會員、訂單與受限發票處理資料）、Shopify（商品、購物車與結帳）、TapPay（付款）、ShipAny 與其承運商（配送、收件與追蹤），以及 Amego 光貿（電子發票、統編、載具、捐贈與通知）。各服務只依完成交易、配送、法定發票及安全維運所需範圍處理資料。</p>
-          <p className="leading-7">ShipAny 及承運商可能處理收件人姓名、電話與地址；Amego 可能處理買受人名稱、統一編號、通知 Email、載具或捐贈碼。發票暫存資料位於瀏覽器不可直接讀寫的後端，完成開立或作廢後會清除工作佇列中的敏感請求內容；依法必須保存的訂單與發票紀錄則依適用法令辦理。</p>
+          <p className="leading-7">ShipAny 及承運商可能處理收件人姓名、電話與地址；Amego 可能處理買受人名稱、統一編號、通知 Email、載具或捐贈碼；個人發票未指定手機條碼或捐贈時，會開立至光貿會員載具，並將發票通知寄到您的 Email。發票暫存資料位於瀏覽器不可直接讀寫的後端，完成開立或作廢後會清除工作佇列中的敏感請求內容；依法必須保存的訂單與發票紀錄則依適用法令辦理。</p>
           <p className="leading-7">會員與訂單資料已設定帳號隔離規則；但任何網路服務都無法保證絕對安全，請勿在非官方管道提供密碼、卡號或驗證碼。</p>
         </section>
 
@@ -53,6 +54,7 @@ export default function Privacy() {
         <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">資料保存期間</h2>
           <p className="leading-7">資料保存期間依帳號使用、交易履行、客服處理、使用者請求及適用法令而定。</p>
+          <p className="leading-7">訪客結帳時填寫的 Email 會與訂單紀錄一併長期保存，不設自動刪除期限，以便日後查詢訂單、提供客服及寄送發票相關通知。您可依下方方式請求刪除；依法必須保存的交易與發票紀錄除外。</p>
         </section>
 
         <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
