@@ -9,7 +9,7 @@
 ## Meta 與 Shopify 寄件網域現況（2026-11-08 晚間更新）
 
 - Meta 商家驗證：Business portfolio「Lucissi」顯示 BUYYUI CLOTHING LIMITED COMPANY 於 2026-11-08 驗證通過（Verified）。App「LUCISSI」Required actions 為空，Publish 頁顯示「All required app settings are complete」。
-- App Review：送審頁五個步驟（Verification、App settings、Allowed usage、Data handling、Reviewer instructions）皆已完成；店主 11/08 同意送審。按下「Submit for review」後 Meta 要求勾選同意 Meta Platform Terms 與 Developer Policies，該勾選需店主本人確認，**截至此紀錄尚未送出**。送審且通過後再發布 App，並開啟 CARE `VITE_FACEBOOK_LOGIN_ENABLED=true` 與 LUCISSI `VITE_SUPABASE_FACEBOOK_ENABLED=true` 後重新部署。
+- App Review：送審頁五個步驟（Verification、App settings、Allowed usage、Data handling、Reviewer instructions）皆已完成；店主 11/08 同意送審並確認勾選 Meta Platform Terms 與 Developer Policies，已於 2026-11-08 送出。App Review 頁狀態為「Review in progress」（Meta 表示多數 20 天內審完），申請項目為 `email`、`public_profile`。審核通過後再發布 App（目前仍 Unpublished），並開啟 CARE `VITE_FACEBOOK_LOGIN_ENABLED=true` 與 LUCISSI `VITE_SUPABASE_FACEBOOK_ENABLED=true` 後重新部署。
 - Shopify 寄件網域：店主 11/08 同意後，已在 GoDaddy 的 lucissi.com DNS 新增 6 筆 CNAME（`mailerm5s`、`m5s._domainkey`、`m5s2._domainkey`、`mailer6h3`、`pdk1._domainkey.mailer6h3`、`pdk2._domainkey.mailer6h3`，指向 Shopify 設定頁列出的 `*.email.myshopify.com`）。GoDaddy 權威伺服器與 1.1.1.1、8.8.8.8 皆查得到；Shopify 設定頁按「我已更新 DNS 記錄」後 6 筆皆顯示綠勾，但總狀態仍為「需要設定」，通知頁仍說明以 shopifyemail.com 備用地址寄出，待 Shopify 更新總狀態（最長可能 48 小時）後再確認。既有 DMARC `p=reject`、SPF `include:secureserver.net -all` 未變更。DNS 另有一筆既有 `mailer55r` CNAME 指向另一個 `*.email.myshopify.com`（推測為較早的 Shopify 設定），未動。
 
 ## 上線前第二輪全面檢查（2026-11-08 下午：會員、資料庫、商品頁、搜尋、價格）
