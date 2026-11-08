@@ -40,6 +40,9 @@ import SignedOutCheckoutActions, {
   type SignedOutCheckoutMode,
 } from './SignedOutCheckoutActions';
 import { isSealedCareProduct, SEALED_CARE_CART_NOTICE } from '../../domain/returnPolicy';
+import { DEFAULT_PICKUP_SHIPPING_FEE, type DeliveryMethod, type PickupPoint } from '../../domain/pickupPoints';
+import { fetchStorePickupSettings, loadDeliverySelection, saveDeliverySelection } from '../../lib/pickupPoints';
+import PickupPointSelector from './PickupPointSelector';
 
 export default function CartSidebar() {
   const [checkoutMessage, setCheckoutMessage] = useState('');
@@ -59,6 +62,9 @@ export default function CartSidebar() {
   const [manualCouponInput, setManualCouponInput] = useState<string>('');
   const [shippingSettings, setShippingSettings] = useState({ freeShippingThreshold: DEFAULT_FREE_SHIPPING_THRESHOLD, defaultShippingFee: DEFAULT_SHIPPING_FEE });
   const [guestCheckoutEnabled, setGuestCheckoutEnabled] = useState(false);
+  const [storePickup, setStorePickup] = useState({ enabled: false, shippingFee: DEFAULT_PICKUP_SHIPPING_FEE });
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() => loadDeliverySelection().method);
+  const [pickupPoint, setPickupPoint] = useState<PickupPoint | null>(() => loadDeliverySelection().pickupPoint);
   const [signedOutMode, setSignedOutMode] = useState<SignedOutCheckoutMode>('member');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestCaptchaToken, setGuestCaptchaToken] = useState('');
@@ -114,6 +120,20 @@ export default function CartSidebar() {
     }
   }, [isCartOpen, user?.id]);
 
+  // 讀取超商取貨開關與運費（site_settings.store_pickup_enabled、pickup_shipping_fee，公開設定）
+  useEffect(() => {
+    if (isCartOpen) {
+      void fetchStorePickupSettings().then(setStorePickup);
+    }
+  }, [isCartOpen]);
+
+  useEffect(() => {
+    saveDeliverySelection({ method: deliveryMethod, pickupPoint });
+  }, [deliveryMethod, pickupPoint]);
+
+  // 開關關閉時一律宅配；購物車只在開關開啟時顯示配送方式
+  const isPickupSelected = storePickup.enabled && deliveryMethod === 'pickup';
+
   // 未登入時讀取訪客結帳開關（site_settings.guest_checkout_enabled，公開設定）
   useEffect(() => {
     if (isCartOpen && !isAuthLoading && !user) {
@@ -159,7 +179,7 @@ export default function CartSidebar() {
     subtotal: totalPrice,
     discountAmount: discountCalculation.amount,
     freeShippingThreshold: shippingSettings.freeShippingThreshold,
-    shippingFee: shippingSettings.defaultShippingFee,
+    shippingFee: isPickupSelected ? storePickup.shippingFee : shippingSettings.defaultShippingFee,
     hasFreeShippingCoupon: activeCoupon?.promotion?.discount_type === 'free_shipping' && discountCalculation.isEligible,
   });
   const amountToFreeShipping = cartEstimate.amountToFreeShipping;
@@ -239,7 +259,13 @@ export default function CartSidebar() {
       
       // 訪客不可使用會員優惠，不送折扣碼
       const discountCodes = !guest && selectedCouponCode.trim() ? [selectedCouponCode.trim()] : undefined;
-      const result = await createShopifyCheckout(shopifyLines, invoicePreference, discountCodes, guest);
+      const result = await createShopifyCheckout(
+        shopifyLines,
+        invoicePreference,
+        discountCodes,
+        guest,
+        { pickupPoint: isPickupSelected ? pickupPoint : null },
+      );
       if (result.invalidDiscountCodes.length > 0) {
         setSelectedCouponCode('');
         setCheckoutMessage(
@@ -257,6 +283,13 @@ export default function CartSidebar() {
         setGuestCaptchaResetKey((key) => key + 1);
       }
       const code = err instanceof ShopifyCheckoutError ? err.code : undefined;
+      if (code === 'STORE_PICKUP_DISABLED') {
+        setStorePickup((current) => ({ ...current, enabled: false }));
+        setDeliveryMethod('home');
+      }
+      if (code === 'PICKUP_POINT_INVALID') {
+        setPickupPoint(null);
+      }
       if (guest && code && GUEST_CHECKOUT_DISABLED_ERROR_CODES.has(code)) {
         // 後台已關閉訪客結帳或驗證服務不可用：收起訪客選項，只留會員結帳
         setGuestCheckoutEnabled(false);
@@ -287,6 +320,11 @@ export default function CartSidebar() {
     if (invoiceError) {
       setCheckoutMessage(invoiceError);
       setIsInvoiceOpen(true);
+      return;
+    }
+
+    if (isPickupSelected && !pickupPoint) {
+      setCheckoutMessage('請先選擇取貨門市，或改選宅配。');
       return;
     }
 
@@ -323,6 +361,11 @@ export default function CartSidebar() {
     if (invoiceError) {
       setCheckoutMessage(invoiceError);
       setIsInvoiceOpen(true);
+      return;
+    }
+
+    if (isPickupSelected && !pickupPoint) {
+      setCheckoutMessage('請先選擇取貨門市，或改選宅配。');
       return;
     }
 
@@ -730,6 +773,17 @@ export default function CartSidebar() {
                 </div>
               )}
             </div>
+            )}
+
+            {storePickup.enabled && (
+              <PickupPointSelector
+                method={deliveryMethod}
+                pickupPoint={pickupPoint}
+                homeShippingFee={shippingSettings.defaultShippingFee}
+                pickupShippingFee={storePickup.shippingFee}
+                onMethodChange={setDeliveryMethod}
+                onPickupPointChange={setPickupPoint}
+              />
             )}
 
             {/* Invoice Form */}

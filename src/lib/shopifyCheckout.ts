@@ -1,5 +1,6 @@
 import type { ShopifyCheckoutLine } from '../domain/algorithms';
 import type { InvoicePreference } from '../domain/invoice';
+import type { PickupPoint } from '../domain/pickupPoints';
 import { isSupabaseConfigured, supabase } from './supabase';
 
 export const LUCISSI_CARE_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
@@ -66,6 +67,9 @@ const guestCheckoutErrorMessages: Record<string, string> = {
   GUEST_EMAIL_REQUIRED: '請輸入有效的 Email，訂單確認信會寄到這個信箱。',
   GUEST_ORDER_LINK_UNAVAILABLE: '目前無法建立訪客訂單紀錄，已停止結帳。請稍後再試，或改用會員結帳。',
   GUEST_ORDER_LINK_FAILED: '目前無法建立訪客訂單紀錄，已停止結帳。請稍後再試，或改用會員結帳。',
+  STORE_PICKUP_DISABLED: '超商取貨目前暫停服務，請改選宅配後再結帳。',
+  PICKUP_POINT_INVALID: '找不到您選的取貨門市，請重新選擇門市後再結帳。',
+  PICKUP_POINTS_UNAVAILABLE: '門市清單暫時無法確認，請稍後再試，或改選宅配。',
 };
 
 function collectDetailText(value: unknown): string[] {
@@ -175,6 +179,7 @@ export async function createShopifyCheckout(
   invoicePreference: InvoicePreference,
   discountCodes?: string[],
   guest?: GuestCheckoutDetails,
+  delivery?: { pickupPoint?: Pick<PickupPoint, 'carrier' | 'code'> | null },
 ): Promise<{ checkoutUrl: string; invalidDiscountCodes: string[]; checkoutKind: 'member' | 'guest' }> {
   if (!isShopifyCheckoutConfigured) {
     throw new Error('結帳服務尚未設定，暫時無法結帳。');
@@ -200,17 +205,23 @@ export async function createShopifyCheckout(
     headers.Authorization = `Bearer ${sessionData.session.access_token}`;
   }
 
+  // 只送超商與門市代碼；名稱與地址由伺服器依門市清單填入。
+  const pickupPoint = delivery?.pickupPoint
+    ? { pickupPoint: { carrier: delivery.pickupPoint.carrier, code: delivery.pickupPoint.code } }
+    : {};
   const requestBody = guest
     ? {
         lines,
         invoicePreference,
         guestEmail: guest.email.trim(),
         turnstileToken: guest.turnstileToken,
+        ...pickupPoint,
       }
     : {
         lines,
         invoicePreference,
         ...(discountCodes && discountCodes.length > 0 ? { discountCodes } : {}),
+        ...pickupPoint,
       };
 
   const response = await fetch(

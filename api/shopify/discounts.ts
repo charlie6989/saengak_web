@@ -2,6 +2,7 @@ import { isMemberPerkCode, isMemberPerkTitle } from '../_lib/member-perk-code.js
 import { jsonResponse, isOriginAllowed } from '../_lib/security.js';
 import { SHOPIFY_STORE_DOMAIN, SHOPIFY_ADMIN_API_VERSION } from '../_lib/shopify-config.js';
 import { getSiteSetting } from '../_lib/supabase-admin.js';
+import { handlePickupPointSearch } from '../_lib/pickup-points-handler.js';
 import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../src/domain/shipping.js';
 import {
   applyPromotionCopy,
@@ -476,6 +477,11 @@ export async function GET(request: Request): Promise<Response> {
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
+
+  // 超商取貨門市搜尋共用此函式（Vercel Hobby 函式數量已滿），由 vercel.json 將 /api/pickup-points 改寫至此。
+  if (new URL(request.url).searchParams.get('resource') === 'pickup-points') {
+    return handlePickupPointSearch(request, corsHeaders);
+  }
 
   try {
     const domain = SHOPIFY_STORE_DOMAIN || 'gh2xgs-zf.myshopify.com';

@@ -19,6 +19,14 @@ import {
   verifyTurnstileToken,
 } from './_lib/turnstile.js';
 import { createClient, type User } from '@supabase/supabase-js';
+import {
+  formatPickupAddressLine,
+  formatPickupCompanyLine,
+  isPickupCarrier,
+  isValidPickupCode,
+} from '../src/domain/pickupPoints.js';
+import { findShipAnyPickupPoint, type ShipAnyPickupPoint } from './_lib/shipany-pickup-points.js';
+import { isStorePickupEnabled, pickupPointDepsFromEnvironment } from './_lib/pickup-points-handler.js';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const mobileBarcodePattern = /^\/[0-9A-Z+\-.]{7}$/;
@@ -76,6 +84,8 @@ interface CreateCartRequestBody {
   discountCodes?: unknown;
   guestEmail?: unknown;
   turnstileToken?: unknown;
+  /** 超商取貨：只收超商與門市代碼，名稱與地址一律以伺服器的門市清單為準。 */
+  pickupPoint?: unknown;
 }
 
 function parseDiscountCodes(value: unknown): string[] | undefined {
@@ -275,6 +285,42 @@ export async function POST(request: Request): Promise<Response> {
       }
     }
 
+    // 超商取貨：開關開啟且門市代碼存在於 ShipAny 門市清單才接受，避免寫入偽造或已關閉的門市。
+    let pickupPoint: ShipAnyPickupPoint | undefined;
+    if (body.pickupPoint !== undefined && body.pickupPoint !== null) {
+      const requested = body.pickupPoint as { carrier?: unknown; code?: unknown };
+      if (typeof requested !== 'object' || !isPickupCarrier(requested.carrier) || !isValidPickupCode(requested.code)) {
+        return jsonResponse({
+          error: 'Choose a valid pickup store',
+          code: 'PICKUP_POINT_INVALID',
+        }, { status: 400, headers: corsHeaders });
+      }
+      if (!(await isStorePickupEnabled())) {
+        return jsonResponse({
+          error: 'Store pickup is not available',
+          code: 'STORE_PICKUP_DISABLED',
+        }, { status: 400, headers: corsHeaders });
+      }
+      const pickupUnavailable = () => jsonResponse({
+        error: 'Store list is unavailable',
+        code: 'PICKUP_POINTS_UNAVAILABLE',
+      }, { status: 503, headers: corsHeaders });
+      const pickupDeps = pickupPointDepsFromEnvironment();
+      if (!pickupDeps) return pickupUnavailable();
+      try {
+        pickupPoint = await findShipAnyPickupPoint(pickupDeps, requested.carrier, requested.code);
+      } catch (pickupError) {
+        console.error('結帳時門市清單讀取失敗:', pickupError instanceof Error ? pickupError.message : 'unknown');
+        return pickupUnavailable();
+      }
+      if (!pickupPoint) {
+        return jsonResponse({
+          error: 'Choose a valid pickup store',
+          code: 'PICKUP_POINT_INVALID',
+        }, { status: 400, headers: corsHeaders });
+      }
+    }
+
     const hasSensitiveInvoicePreference = invoicePreference.kind === 'company' ||
       Boolean(invoicePreference.notificationEmail) ||
       (invoicePreference.kind === 'personal' && invoicePreference.carrier !== 'none');
@@ -436,16 +482,29 @@ export async function POST(request: Request): Promise<Response> {
         (typeof member.phone === 'string' ? member.phone : '');
     }
 
-    const addressComponents = parseTaiwanAddress(memberAddress);
+    // 超商取貨時改預填門市地址：第一行為「[門市代碼] 門市地址」（ShipAny 服務點地址格式），公司欄位為超商與門市名稱。
+    const addressComponents = parseTaiwanAddress(pickupPoint ? pickupPoint.address : memberAddress);
     const shopifyAddress = toShopifyMailingAddress(addressComponents, {
       name: memberName,
       phone: memberPhone,
     });
+    if (pickupPoint) {
+      shopifyAddress.address1 = formatPickupAddressLine(pickupPoint);
+      attributes.push(
+        { key: '_delivery_method', value: 'pickup' },
+        { key: '_pickup_carrier', value: pickupPoint.carrier },
+        { key: '_pickup_code', value: pickupPoint.code },
+        { key: '_pickup_name', value: pickupPoint.name },
+        { key: '_pickup_address', value: pickupPoint.address },
+        { key: '_pickup_courier', value: pickupPoint.courier },
+      );
+    }
+    const pickupCompany = pickupPoint ? formatPickupCompanyLine(pickupPoint) : undefined;
 
-    if (shopifyAddress.province) attributes.push({ key: '_shipping_province', value: shopifyAddress.province });
-    if (shopifyAddress.city) attributes.push({ key: '_shipping_city', value: shopifyAddress.city });
-    if (shopifyAddress.zip) attributes.push({ key: '_shipping_zip', value: shopifyAddress.zip });
-    if (shopifyAddress.address1) attributes.push({ key: '_shipping_address1', value: shopifyAddress.address1 });
+    if (!pickupPoint && shopifyAddress.province) attributes.push({ key: '_shipping_province', value: shopifyAddress.province });
+    if (!pickupPoint && shopifyAddress.city) attributes.push({ key: '_shipping_city', value: shopifyAddress.city });
+    if (!pickupPoint && shopifyAddress.zip) attributes.push({ key: '_shipping_zip', value: shopifyAddress.zip });
+    if (!pickupPoint && shopifyAddress.address1) attributes.push({ key: '_shipping_address1', value: shopifyAddress.address1 });
     if (shopifyAddress.firstName) attributes.push({ key: '_shipping_first_name', value: shopifyAddress.firstName });
     if (shopifyAddress.lastName) attributes.push({ key: '_shipping_last_name', value: shopifyAddress.lastName });
     if (shopifyAddress.phone) attributes.push({ key: '_shipping_phone', value: shopifyAddress.phone });
@@ -469,6 +528,7 @@ export async function POST(request: Request): Promise<Response> {
             province: shopifyAddress.province,
             zip: shopifyAddress.zip,
             country: 'TW',
+            ...(pickupCompany ? { company: pickupCompany } : {}),
             ...(shopifyAddress.firstName ? { firstName: shopifyAddress.firstName } : {}),
             ...(shopifyAddress.lastName ? { lastName: shopifyAddress.lastName } : {}),
             ...(shopifyAddress.phone ? { phone: shopifyAddress.phone } : {}),

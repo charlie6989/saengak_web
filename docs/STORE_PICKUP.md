@@ -1,0 +1,54 @@
+# 超商取貨（全家、7-11、萊爾富）
+
+更新：2026-11-09。狀態：**程式已完成第一版、正式開關關閉**；等 ShipAny 回覆門市寫入格式、店主建立 API 金鑰後才能接真實門市資料。
+
+## 店主決定（2026-11-09）
+
+- 開放全家、7-11、萊爾富門市取件。
+- 運費 NT$60，達全站免運門檻免運（門檻存在 `site_settings.free_shipping_threshold`，目前為 NT$1,500，不是 1,499）。
+- 同時提供取貨付款；顧客在結帳頁的付款方式選「貨到付款」。
+
+## 為什麼要自己做選店畫面
+
+ShipAny「物流服務點列表」的選店畫面是裝在 Shopify 佈景主題上的元件（ShipAny 後台寫明「需要在已發佈的佈景主題上啟用」）。本站是自建前台，購物車直接用 Storefront API 建立結帳，不經過佈景主題，所以顧客看不到 ShipAny 的選店畫面。因此由本站顯示門市清單，並把選好的門市寫進 Shopify 結帳。
+
+## 程式架構
+
+| 部分 | 位置 | 說明 |
+| --- | --- | --- |
+| 共用規則 | `src/domain/pickupPoints.ts` | 超商種類、門市格式檢查、地址格式、關鍵字搜尋 |
+| ShipAny 門市資料 | `api/_lib/shipany-pickup-points.ts` | 取得各物流商門市資料檔、轉換格式、快取 24 小時、token 輪替 |
+| 門市搜尋 API | `GET /api/pickup-points?carrier=&q=` | 經 `vercel.json` 改寫到 `api/shopify/discounts.ts?resource=pickup-points`（Hobby 函式數量已滿）；開關關閉時回 404 |
+| 建立結帳 | `api/create-shopify-cart.ts` | 收 `pickupPoint: { carrier, code }`，以門市清單確認後預填收件地址並寫入 attributes |
+| 前台 | `src/components/feature/PickupPointSelector.tsx`、`src/lib/pickupPoints.ts` | 購物車「配送方式」：宅配到府／超商取貨，選超商、搜尋、選門市；選擇存在 localStorage |
+| 資料庫 | `supabase/migrations/20261109090000_store_pickup_foundation.sql` | 開關 `store_pickup_enabled`（false）、運費 `pickup_shipping_fee`（60）、`private.shipany_api_tokens` 與兩個只限 service role 的 RPC |
+
+寫入 Shopify 的內容（格式待 ShipAny 確認，只需改 `formatPickupAddressLine` 與 `api/create-shopify-cart.ts` 一處）：
+
+- 收件地址第一行：`[門市代碼] 門市地址`（依 ShipAny API 文件 `AddressInput.address_line` 的服務點格式）。
+- 公司欄位：超商與門市名稱，例如「全家台北民生店」。
+- cart attributes：`_delivery_method=pickup`、`_pickup_carrier`、`_pickup_code`、`_pickup_name`、`_pickup_address`、`_pickup_courier`。
+- 伺服器只採信前台送來的超商與門市代碼，名稱與地址以門市清單為準；門市不存在回 `PICKUP_POINT_INVALID`。
+
+## 尚未確認（依賴外部回覆）
+
+1. **ShipAny 匯入如何辨識門市**：店主 2026-11-07 已來信詢問（討論串「LUCISSI：確認台灣 Shopify App／黑貓沙盒運單與追蹤回寫測試」），2026-11-09 尚未回覆。信中以 LUCISSI 商店 j97kr5-7b 名義詢問，CARE（gh2xgs-zf）同帳號。
+2. **門市資料檔格式**：`normalizeLocationFile` 以常見欄位名稱寬鬆解析，取得金鑰後需以實際檔案確認欄位與自取點類型名稱，並補測試。
+3. **同一超商由哪家物流商出貨**：7-11 由黑貓與順豐都可配送；目前同代碼只保留先出現的一筆，`_pickup_courier` 記錄來源，需與 ShipAny 進階物流匹配規則一致。
+4. **顧客在結帳頁改掉地址**：Shopify 結帳頁無法鎖定地址，只能提示；需確認 ShipAny 收到被改過的地址時如何處理。
+
+## 開啟前步驟
+
+1. 店主在 ShipAny 後台「開發者 → API 密鑰」建立金鑰，自行在 Vercel Production 設定：`SHIPANY_CLIENT_KEY`、`SHIPANY_MERCHANT_TOKEN`、`SHIPANY_REFRESH_TOKEN`（第一次使用後 token 存在資料庫並自動輪替）。
+2. 套用 migration `20261109090000_store_pickup_foundation.sql` 到正式 Supabase。
+3. 以實際門市資料檔調整並測試 `normalizeLocationFile`。
+4. 依 ShipAny 回覆調整寫入格式。
+5. Shopify 新增超商取貨運費（NT$60、門檻免運），名稱需符合 ShipAny 進階物流匹配規則；確認「貨到付款」付款方式對超商取貨可用。
+6. 取貨付款的收款確認：送到門市不代表已付款。ShipAny 文件寫明服務點的 `order/delivered` 代表顧客已取件；收款與撥款需在 ShipAny「貨到付款紀錄」對帳，確認後才在 Shopify 標記已付款並開發票（不可沿用黑貓「送達即付款」的 Flow）。
+7. 用一筆真實訂單驗收：門市、運費、代收金額、ShipAny 運單、取件通知、付款與發票。
+8. 最後才把 `site_settings.store_pickup_enabled` 改為 true；回復方式為改回 false。
+
+## 驗證紀錄
+
+- 2026-11-09：typecheck、Vitest 76 檔／757 項、verify:content、build 通過。新增 `tests/store-pickup-api.test.ts`（門市資料解析、token 輪替、快取、搜尋 API）、`tests/create-shopify-cart-pickup.test.ts`（預填門市地址、開關關閉、偽造門市、門市清單不可用）、`tests/store-pickup-ui.test.tsx`。資料庫測試 `supabase/tests/database/store_pickup.test.sql` 已撰寫，本機未執行。
+- 本機預覽（模擬開關開啟與門市搜尋結果，iPhone 13 尺寸）：選超商取貨後預估運費變為 NT$60，搜尋「民生」列出門市，選定後顯示門市與「更換」，選擇保存在 localStorage，無頁面錯誤。未連 ShipAny、未建立結帳。
