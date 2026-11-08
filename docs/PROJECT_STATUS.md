@@ -30,6 +30,10 @@
   - 新共用 App：店主同意後建立 Meta App「LUCISSI」（ID `1415921654939372`，Facebook Login 用途，權限 `email`、`public_profile`），已設定兩站 Supabase callback（`tmqzkagkrzhioftvwbqo`、`dhktmpcvtoxcicqkwgpn`）、App domains、隱私權／條款／資料刪除網址（lucissicare.com）、Shopping 類別與品牌圖示。Meta 規定這兩個權限需商家驗證與 App Review 才能發布。
   - 商家驗證：建立商家帳號 Lucissi（ID `1153770094183727`，商家 Email `service@lucissi.com`），以公開紀錄 BUYYUI CLOTHING LIMITED COMPANY（統編、汐止地址相符）送審，身分證件由負責人本人上傳；Meta 顯示約 2 個工作天。
   - 尚未完成：App Review（資料處理問卷待店主確認答案、允許用途說明與操作錄影、審核員說明）、兩站 Supabase 改用新 App（App Secret 需店主親自貼上）、App 發布後才打開 CARE `VITE_FACEBOOK_LOGIN_ENABLED` 與 LUCISSI `VITE_SUPABASE_FACEBOOK_ENABLED`。
+  - 11/08 下午進度：資料處理問卷已依店主確認填寫（處理者 Supabase〔日本、南韓、美國〕、Vercel〔美國〕、Shopify〔加拿大、美國〕；負責單位 BUYYUI CLOTHING LIMITED COMPANY，台灣；過去 12 個月無國安調取；政策選「以上皆無」）。店主同意後已勾選 email、public_profile 的允許用途。App 加上 Website 平台 `https://lucissicare.com/`，審核員說明已填（測試網址 `/login?fblogin=1`）。尚未送審，商家驗證仍在審核中。
+  - 兩站 Supabase Facebook 設定已改用新 App（App ID 由 Claude 填入，App Secret 由店主親自貼上並儲存）；`/auth/v1/authorize?provider=facebook` 回讀兩站都是 `client_id=1415921654939372`。
+  - PR #100 已上線（`4dad5da`）：正式站 `/login` 無 Facebook 按鈕，`/login?fblogin=1` 顯示按鈕，點擊後轉到 Facebook 並帶新 App ID。尚未以真實帳號完成整個登入流程（新 App 仍在開發模式，只有管理員可登入）。
+  - 11/08 13:30 實測（新 App 開發模式，管理員帳號）：兩站第一次貼的 App Secret 都不正確，Facebook 回「Error validating client secret」；店主重新貼上後，CARE `/login?fblogin=1` 與 LUCISSI Supabase `/authorize?provider=facebook` 都登入成功，資料庫新增新 App 的 facebook identity，連到原有會員（未建立新帳號），會員名稱有值。正式開放仍需商家驗證通過、送出 App Review、發布 App，之後才設定 CARE `VITE_FACEBOOK_LOGIN_ENABLED=true` 與 LUCISSI `VITE_SUPABASE_FACEBOOK_ENABLED=true`。
   - 程式：CARE 的 Facebook 登入改為一律走 Supabase 標準 OAuth 轉址（原本的 JS SDK 會被 CSP 擋下並退回同一路徑），與 LUCISSI 一致；按鈕仍預設隱藏。
 - 需店主處理（程式無法代做）：6 件 Saengak 保養品與 1 件內褲售完需補貨；Supabase「外洩密碼保護」需付費方案才能開；Facebook 登入要由 Meta App 管理員切成 Live 後才能開放；政策文字未經律師審閱。
 
