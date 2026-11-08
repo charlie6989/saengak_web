@@ -56,6 +56,10 @@
     ],
     "rewrites": [
         {
+            "source": "/api/pickup-points",
+            "destination": "/api/shopify/discounts?resource=pickup-points"
+        },
+        {
             "source": "/((?!api/|assets/).*)",
             "destination": "/index.html"
         }
