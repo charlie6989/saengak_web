@@ -30,6 +30,18 @@ ShipAny「物流服務點列表」的選店畫面是裝在 Shopify 佈景主題�
 - cart attributes：`_delivery_method=pickup`、`_pickup_carrier`、`_pickup_code`、`_pickup_name`、`_pickup_address`、`_pickup_courier`。
 - 伺服器只採信前台送來的超商與門市代碼，名稱與地址以門市清單為準；門市不存在回 `PICKUP_POINT_INVALID`。
 
+## 實際門市資料（2026-11-09 管理員診斷）
+
+CARE 專用 token 第一次連線成功（已輪替並加密保存）。ShipAny 回傳三家物流商的門市資料檔（`courier-service-point-locations.shipany.io`，JSON 陣列）：
+
+| 物流商 | 已啟用自取點類型 | 門市筆數 |
+| --- | --- | --- |
+| SfExpressV2（順豐） | Family Mart (SF Express)、Hi-Life (SF Express)、7-Eleven (SF Express) | 13,087 |
+| Yamato（黑貓） | Yamato Store、7-Eleven (Yamato) | 7,160 |
+| FamilyMart（全家店到店） | Family Mart | 4,431 |
+
+每筆欄位：`code`、`name_cht`、`detail_loc_typ`、`addr.lns_cht`／`addr.city`／`addr.distr`、`is_active`、`is_delivery`、`supported_storage_types`、重量與尺寸限制（例如順豐超商 5 kg、三邊和 105 cm）。地址數字多為全形，解析時轉半形。**同一間門市在不同物流商的代碼不同**（例如順豐的全家延吉店為 `10003`，全家店到店的板農店為 `002816`），所以每家超商固定由一家物流商配送（`PREFERRED_COURIER`）：全家→全家店到店、7-11→順豐、萊爾富→順豐（依店主 11/07 給 ShipAny 的規劃）。黑貓的 7-11 門市不採用。
+
 ## 尚未確認（依賴外部回覆）
 
 1. **ShipAny 匯入如何辨識門市**：店主 2026-11-07 已來信詢問（討論串「LUCISSI：確認台灣 Shopify App／黑貓沙盒運單與追蹤回寫測試」），2026-11-09 尚未回覆。信中以 LUCISSI 商店 j97kr5-7b 名義詢問，CARE（gh2xgs-zf）同帳號。

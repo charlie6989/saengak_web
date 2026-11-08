@@ -85,7 +85,7 @@ export function describePickupPoint(point: Pick<PickupPoint, 'carrier' | 'name' 
   return `${formatPickupCompanyLine(point)}（${point.code}）`;
 }
 
-const normalizeForSearch = (value: string) => value.toLowerCase().replace(/臺/g, '台').replace(/\s+/g, '');
+const normalizeForSearch = (value: string) => value.normalize('NFKC').toLowerCase().replace(/臺/g, '台').replace(/\s+/g, '');
 
 /**
  * 以關鍵字搜尋門市：名稱、地址、門市代碼都比對；多個關鍵字以空白分隔，全部符合才算。
