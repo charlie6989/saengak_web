@@ -8,8 +8,13 @@ export const isFacebookAuthConfigured = Boolean(FACEBOOK_APP_ID);
 
 // 2026-11-08 查核：Meta App 2493428007846346 仍在開發模式，非管理員打開授權頁會看到「App not active」，
 // 一般顧客無法用 Facebook 登入。App 切成正式模式（Live）後，在 Vercel 設定 VITE_FACEBOOK_LOGIN_ENABLED=true 再重新部署即可顯示。
-export function isFacebookLoginEnabled(): boolean {
-  return import.meta.env.VITE_FACEBOOK_LOGIN_ENABLED === 'true';
+// Meta App Review 期間：只有網址帶 `?fblogin=1` 的頁面顯示 Facebook 按鈕，供審核員測試；一般顧客看不到。
+export const FACEBOOK_REVIEW_QUERY_PARAM = 'fblogin';
+
+export function isFacebookLoginEnabled(search?: string): boolean {
+  if (import.meta.env.VITE_FACEBOOK_LOGIN_ENABLED === 'true') return true;
+  const query = search ?? (typeof window !== 'undefined' ? window.location.search : '');
+  return new URLSearchParams(query).get(FACEBOOK_REVIEW_QUERY_PARAM) === '1';
 }
 
 declare global {
@@ -190,57 +195,8 @@ export async function triggerFacebookLogin(options?: {
     return { error: new Error(message) };
   }
 
-  const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
-
-  // 2. 嘗試使用 Facebook JavaScript SDK 彈窗登入（Meta 要求必須在 HTTPS 安全環境，非 HTTPS 自動降級為標準 OAuth 重定向）
-  if (isHttps) {
-    try {
-      await loadFacebookSDK();
-
-      if (window.FB) {
-        return new Promise((resolve) => {
-          window.FB!.login(
-            async (response) => {
-              if (response.status === 'connected' && response.authResponse) {
-                try {
-                  const token = response.authResponse.accessToken;
-                  const { data, error } = await supabase.auth.signInWithIdToken({
-                    provider: 'facebook',
-                    token,
-                  });
-
-                  if (error) {
-                    // 若 signInWithIdToken 不支援則退回標準 OAuth
-                    throw error;
-                  }
-
-                  if (data.user) {
-                    await syncFacebookProfile(data.user);
-                  }
-
-                  resolve({ user: data.user, session: data.session, error: null });
-                } catch (tokenErr: any) {
-                  console.warn('Facebook IdToken 登入失敗，嘗試標準 OAuth:', tokenErr);
-                  // 轉為標準 OAuth 跳轉
-                  fallbackOAuth(options?.redirectTo).then(resolve);
-                }
-              } else {
-                resolve({
-                  error: new Error('已取消 Facebook 登入授權'),
-                });
-              }
-            },
-            { scope: 'public_profile,email' }
-          );
-        });
-      }
-    } catch (sdkErr) {
-      console.warn('載入 Facebook SDK 失敗，退回標準 OAuth:', sdkErr);
-    }
-  } else {
-    console.info('檢測到非 HTTPS 環境（例如本地端 HTTP 開發），自動降級使用 Supabase 標準 OAuth 重定向流程');
-  }
-
+  // 一律走 Supabase 標準 OAuth 轉址（與 LUCISSI 相同）。原本的 Facebook JS SDK 彈窗會被網站 CSP 擋下，
+  // 且 Supabase 不支援以 Facebook access token 呼叫 signInWithIdToken，最後都會退回這條路徑。
   return fallbackOAuth(options?.redirectTo);
 }
 

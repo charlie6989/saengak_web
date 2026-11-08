@@ -24,6 +24,13 @@
 - 11/08 11:10 店主登入 TapPay 後回讀：#1011（`D20261107Fgp9KV`）狀態「已請款」，是否請款過「是」，交易歷史為 11/07 04:07 授權成功、11/07 18:24 請款成功。凌晨 01:20 看到的「未請款」是後台尚未更新。入帳與撥款日未查。
 - 11/08 11:15 Shopify 寄件信箱已驗證：以店主核准的全螢幕控制在 Spark 對驗證信按鈕「複製連結」，確認網址為 `gh2xgs-zf.myshopify.com/admin/sender_emails/verify` 後在 Chrome 開啟；通知設定頁不再顯示「未驗證」。寄件網域驗證（DNS）與 DMARC 仍為「需要設定」，未設定前 Shopify 以 `shopifyemail.com` 備用地址寄出，不影響寄送。
 - 11/08 售完商品行為（正式站唯讀檢查）：7 件售完商品（Saengak 慕斯、噴霧、凝膠、3 組套組、舒適純棉透氣內褲）在商品頁顯示「此規格已售完」且按鈕為 disabled，嘗試加入購物車不會改變購物車；商品卡有「已售完」圖層。售完商品不會被下單，網站可在補貨前上線；是否補貨或改為隱藏由店主決定。
+- 11/08 信箱與 Facebook 登入（店主要求與 LUCISSI 確認）：
+  - 信箱：LUCISSI 主站程式（`charlie6989/LUCISSI_website` main）客服信箱也是 `service@lucissi.com`；GoDaddy 中它是 `company@lucissi.com` 的別名，實際收信已由 Shopify 驗證信證實。兩站一致，不需修改。
+  - 舊 Facebook App：CARE 用 `2493428007846346`、LUCISSI 用 `1439919964902052`，以非管理員帳號打開授權頁都顯示「App not active」，兩者都未上線；本機 Meta 開發者帳號不是這兩個 App 的管理員。
+  - 新共用 App：店主同意後建立 Meta App「LUCISSI」（ID `1415921654939372`，Facebook Login 用途，權限 `email`、`public_profile`），已設定兩站 Supabase callback（`tmqzkagkrzhioftvwbqo`、`dhktmpcvtoxcicqkwgpn`）、App domains、隱私權／條款／資料刪除網址（lucissicare.com）、Shopping 類別與品牌圖示。Meta 規定這兩個權限需商家驗證與 App Review 才能發布。
+  - 商家驗證：建立商家帳號 Lucissi（ID `1153770094183727`，商家 Email `service@lucissi.com`），以公開紀錄 BUYYUI CLOTHING LIMITED COMPANY（統編、汐止地址相符）送審，身分證件由負責人本人上傳；Meta 顯示約 2 個工作天。
+  - 尚未完成：App Review（資料處理問卷待店主確認答案、允許用途說明與操作錄影、審核員說明）、兩站 Supabase 改用新 App（App Secret 需店主親自貼上）、App 發布後才打開 CARE `VITE_FACEBOOK_LOGIN_ENABLED` 與 LUCISSI `VITE_SUPABASE_FACEBOOK_ENABLED`。
+  - 程式：CARE 的 Facebook 登入改為一律走 Supabase 標準 OAuth 轉址（原本的 JS SDK 會被 CSP 擋下並退回同一路徑），與 LUCISSI 一致；按鈕仍預設隱藏。
 - 需店主處理（程式無法代做）：6 件 Saengak 保養品與 1 件內褲售完需補貨；Supabase「外洩密碼保護」需付費方案才能開；Facebook 登入要由 Meta App 管理員切成 Live 後才能開放；政策文字未經律師審閱。
 
 ## 退換貨規則與資料保存期間（2026-11-07，店主已核可內容；PR #90 已上線）
