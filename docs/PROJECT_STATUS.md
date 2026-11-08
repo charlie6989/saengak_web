@@ -5,7 +5,10 @@
 - 店主決定：訪客 Email 長期保存（不設自動刪除期限）；沒有載具的個人發票照常開立並寄到顧客 Email；客服以 Email 查詢訪客訂單。
 - 程式查核：無載具個人發票本來就開到光貿會員載具（`amego.ts` 不會留空載具），未填通知 Email 時，資料庫以訂單 Email 補上（`20261022000000_cod_collection_invoicing.sql`）；資料庫沒有刪除 `private.guest_order_contacts` 的排程。客服查詢走 Shopify 後台訂單搜尋 Email，網站後台不顯示訪客 Email。
 - 本次變更：隱私權政策新增「訪客結帳資料」用途、訪客 Email 長期保存（可請求刪除，法定紀錄除外）與無載具發票寄送說明，隱私頁「最後更新」改為 2026-11-09（其他政策頁日期不變）。typecheck、Vitest 729 項、verify:content 通過，本機預覽 `/privacy` 文字正確、無主控台錯誤。
-- 尚未完成：正式開關 `guest_checkout_enabled` 仍為 false；手機與正式站真人訪客結帳驗收未做；政策文字仍待律師審閱。Supabase 隔離驗收分支 `guest-checkout-acceptance`（2026-10-16 建立）仍在運作，每小時約 US$0.013。
+- PR #108 已合併（892c98f）。
+- **正式開啟（2026-11-09 00:04 台北時間）**：店主要求「合併並驗收」後，將正式 Supabase `site_settings.guest_checkout_enabled` 改為 true 並回讀。回復方式：改回 false（只停止新的訪客結帳，既有訂單與 webhook 照常處理）。
+- 正式站驗收（自動化、未登入的乾淨瀏覽器）：API 不帶驗證回 400 `TURNSTILE_TOKEN_REQUIRED`、帶假 token 回 403 `TURNSTILE_VERIFICATION_FAILED`，代表開關已生效且伺服器驗證有作用；Vercel Production 有 `VITE_PUBLIC_GUEST_CHECKOUT_TURNSTILE_SITE_KEY` 與 `TURNSTILE_SECRET_KEY`。iPhone 13 模擬與 1366×900 桌機：購物車顯示「訪客結帳」與「登入結帳（使用會員優惠）」，展開後顯示會員優惠提示、Email 欄（自動聚焦）、Cloudflare「Verify you are human」；空 Email 送出顯示「請輸入有效的 Email…」，未完成驗證送出顯示「請先完成安全驗證，再進行訪客結帳。」，手機上送出按鈕在可視範圍內。
+- 未驗證：Cloudflare 真人驗證（自動化不可代為完成）之後的步驟——進入 Shopify 結帳、付款、確認信、發票、以同 Email 註冊後認領訂單，需店主用手機（未登入或無痕視窗）實測。Supabase 隔離驗收分支 `guest-checkout-acceptance`（2026-10-16 建立）仍在運作，每小時約 US$0.013。
 
 ## 專欄文章分享預覽（2026-11-08，PR #106 已合併上線）
 
