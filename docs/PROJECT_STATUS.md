@@ -1,5 +1,11 @@
 # 項目狀態
 
+## 專欄文章分享預覽（2026-11-08，分支 `claude/article-share-preview`）
+
+- 現況（11/08 以 facebookexternalhit、line-poker UA 實測正式站）：商品頁分享預覽早已正確（商品名稱、說明、主圖）；`/blog/:handle` 文章頁有 Facebook／LINE 分享按鈕，但爬蟲拿到的是網站預設標題與圖片。
+- 程式：`middleware.js` 對連結預覽爬蟲的 `/blog/<handle>` 也改寫到 `api/share/product.ts?article=<handle>`（Vercel Hobby 函式數量已滿 12，文章與商品共用同一個函式）。函式以 Storefront 取前 50 篇文章比對 handle，只接受帶公開標籤的文章，標題／說明優先用 SEO 欄位，否則用文章標題與摘要，並套用與網站相同的舊店名改寫（抽成 `src/domain/storefrontCopy.ts` 共用）。圖片用網站文章卡片的編輯圖，另存 1200×630 JPG（`public/images/lucissi-v5/share-*.jpg`，部分平台不支援 WebP）；沒有編輯圖時用 Shopify 文章圖。
+- 驗證：本機 typecheck、lint、Vitest 729 項、build 通過；正式站爬蟲回應待部署後實測。
+
 ## 上線前第二輪全面檢查（2026-11-08 下午：會員、資料庫、商品頁、搜尋、價格）
 
 - 價格：Storefront 27 件商品逐一比對，商品頁顯示的售價、劃線原價、「現省」金額都與 Shopify 預設規格一致；切換規格（冰絲無痕中腰 薄荷綠／M）價格正確改為 NT$75；購物車兩件商品小計 NT$274、預估運費 NT$146、「再消費 NT$1,226 免運」計算正確；售完商品按鈕為「此規格已售完」且不能加入購物車。

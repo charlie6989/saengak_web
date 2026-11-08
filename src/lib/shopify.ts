@@ -3,6 +3,7 @@ import { normalizeSizeChart, type SizeChart } from '../domain/sizeChart';
 import { captureExceptionSafe } from './sentry';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from './brandOwnership';
 import { hasTestProductMarker } from '../domain/testProducts';
+import { hasPublicArticleTag, normalizeLegacyStorefrontCopy } from '../domain/storefrontCopy';
 
 /**
  * Shopify Storefront GraphQL API Client
@@ -146,33 +147,6 @@ export interface ShopifyArticle {
   blog?: { handle: string; title?: string } | null;
   author?: string;
   tags?: string[];
-}
-
-const LEGACY_STOREFRONT_NAME = 'SAENGAK';
-const CURRENT_STOREFRONT_NAME = 'LUCISSI CARE';
-const LEGACY_STOREFRONT_COPY_REPLACEMENTS = [
-  [`${LEGACY_STOREFRONT_NAME} 韓國質感生活選品`, `${CURRENT_STOREFRONT_NAME} 韓國質感生活選品`],
-  [`${LEGACY_STOREFRONT_NAME} 質感生活選品`, `${CURRENT_STOREFRONT_NAME} 質感生活選品`],
-  [`${LEGACY_STOREFRONT_NAME} 編輯團隊`, `${CURRENT_STOREFRONT_NAME} 編輯團隊`],
-  [`${LEGACY_STOREFRONT_NAME} 官方客服`, `${CURRENT_STOREFRONT_NAME} 官方客服`],
-  [`${LEGACY_STOREFRONT_NAME} 商店開立`, `${CURRENT_STOREFRONT_NAME} 商店開立`],
-  [`${LEGACY_STOREFRONT_NAME} 品牌編輯標準`, `${CURRENT_STOREFRONT_NAME} 品牌編輯標準`],
-  [`${LEGACY_STOREFRONT_NAME} 會員`, `${CURRENT_STOREFRONT_NAME} 會員`],
-  [`${LEGACY_STOREFRONT_NAME} Shopify`, `${CURRENT_STOREFRONT_NAME} Shopify`],
-  [`${LEGACY_STOREFRONT_NAME} Talk`, 'LUCISSI Talk'],
-  [`${LEGACY_STOREFRONT_NAME} 的編輯守則`, `${CURRENT_STOREFRONT_NAME} 的編輯守則`],
-  [`${LEGACY_STOREFRONT_NAME} 堅持`, `${CURRENT_STOREFRONT_NAME} 堅持`],
-  [`${LEGACY_STOREFRONT_NAME} 期待成為`, `${CURRENT_STOREFRONT_NAME} 期待成為`],
-  [`${LEGACY_STOREFRONT_NAME} 現階段`, `${CURRENT_STOREFRONT_NAME} 現階段`],
-] as const;
-
-function normalizeLegacyStorefrontCopy(value: unknown): string {
-  if (typeof value !== 'string') return '';
-
-  return LEGACY_STOREFRONT_COPY_REPLACEMENTS.reduce(
-    (normalized, [legacyText, currentText]) => normalized.replaceAll(legacyText, currentText),
-    value,
-  );
 }
 
 /**
@@ -427,7 +401,7 @@ export function isPublicShopifyProduct(product: ShopifyProduct): boolean {
 
 
 export function isPublicShopifyArticle(article: ShopifyArticle): boolean {
-  return (article.tags || []).some((tag) => /^(saengak|lucissi care|公開|public)$/i.test(tag.trim()));
+  return hasPublicArticleTag(article.tags);
 }
 
 const PRODUCT_FRAGMENT = `
