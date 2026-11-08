@@ -21,6 +21,13 @@ function passwordInput(html: string) {
 }
 
 describe('member auth UI safeguards', () => {
+  it('shows Facebook login for Meta reviewers only with ?fblogin=1', async () => {
+    const { isFacebookLoginEnabled } = await import('../src/lib/facebookAuth');
+    expect(isFacebookLoginEnabled('')).toBe(false);
+    expect(isFacebookLoginEnabled('?fblogin=0')).toBe(false);
+    expect(isFacebookLoginEnabled('?fblogin=1')).toBe(true);
+  });
+
   it('hides Facebook login until the Meta app is live', () => {
     const html = renderAuthModal('login');
 
