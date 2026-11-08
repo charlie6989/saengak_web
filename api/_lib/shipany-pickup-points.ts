@@ -15,6 +15,7 @@
  *   refresh token 每次使用都會輪替且只能用一次，輪替後的最新一組存在 private.shipany_api_tokens。
  * - SHIPANY_API_BASE_URL（選填）：預設 https://open-tw.shipany.io（與 LUCISSI 讀取器相同）。
  */
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
 import {
   isPickupCarrier,
   isValidPickupCode,
@@ -270,7 +271,7 @@ export function resetPickupPointCache(): void {
   inflight = null;
 }
 
-async function buildIndex(deps: PickupPointDeps): Promise<PickupIndex> {
+async function fetchLocationSources(deps: PickupPointDeps): Promise<LocationSource[]> {
   const env = deps.env ?? process.env;
   const transport = deps.transport ?? fetch;
   const accessToken = await getShipAnyAccessToken(deps);
@@ -288,28 +289,36 @@ async function buildIndex(deps: PickupPointDeps): Promise<PickupIndex> {
   }
   if (listResponse.status === 403) fail('NOT_SUBSCRIBED_OR_FORBIDDEN');
   if (!listResponse.ok) fail(`LIST_${listResponse.status}`);
-  const sources = parseLocationSources(await readJson(listResponse, MAX_LIST_BYTES));
+  return parseLocationSources(await readJson(listResponse, MAX_LIST_BYTES));
+}
 
+async function fetchLocationFile(deps: PickupPointDeps, source: LocationSource): Promise<{ status: number; file?: unknown }> {
+  const transport = deps.transport ?? fetch;
+  let fileResponse: Response;
+  try {
+    fileResponse = await transport(source.url, {
+      method: 'GET',
+      redirect: 'follow',
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS * 2),
+      headers: { Accept: 'application/json' },
+    });
+  } catch {
+    return { status: 0 };
+  }
+  if (!fileResponse.ok) return { status: fileResponse.status };
+  try {
+    return { status: fileResponse.status, file: await readJson(fileResponse, MAX_LOCATION_FILE_BYTES) };
+  } catch {
+    return { status: -1 };
+  }
+}
+
+async function buildIndex(deps: PickupPointDeps): Promise<PickupIndex> {
+  const sources = await fetchLocationSources(deps);
   const index: PickupIndex = new Map();
   for (const source of sources) {
-    let fileResponse: Response;
-    try {
-      fileResponse = await transport(source.url, {
-        method: 'GET',
-        redirect: 'follow',
-        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS * 2),
-        headers: { Accept: 'application/json' },
-      });
-    } catch {
-      continue;
-    }
-    if (!fileResponse.ok) continue;
-    let file: unknown;
-    try {
-      file = await readJson(fileResponse, MAX_LOCATION_FILE_BYTES);
-    } catch {
-      continue;
-    }
+    const { file } = await fetchLocationFile(deps, source);
+    if (file === undefined) continue;
     for (const point of normalizeLocationFile(source, file)) {
       const list = index.get(point.carrier) ?? [];
       // 同一超商的門市可能出現在兩家物流商（例如 7-11 由黑貓與順豐都可配送），保留先出現的一筆。
@@ -319,6 +328,59 @@ async function buildIndex(deps: PickupPointDeps): Promise<PickupIndex> {
   }
   if (index.size === 0) fail('NO_LOCATIONS');
   return index;
+}
+
+export interface LocationFileDiagnosis {
+  courierApiType: string;
+  enabledTypes: string[];
+  urlHost: string;
+  status: number;
+  shape: string;
+  topLevelKeys: string[];
+  recordCount: number;
+  sampleRecordKeys: string[];
+  sampleRecords: unknown[];
+  typeValues: string[];
+  normalizedByCarrier: Record<string, number>;
+}
+
+/**
+ * 管理員診斷：列出各物流商門市資料檔的結構與解析結果，用來依實際格式調整 normalizeLocationFile。
+ * 門市資料為公開資訊；不回傳任何 token 或金鑰。
+ */
+export async function diagnoseShipAnyLocations(deps: PickupPointDeps): Promise<LocationFileDiagnosis[]> {
+  const sources = await fetchLocationSources(deps);
+  const results: LocationFileDiagnosis[] = [];
+  for (const source of sources) {
+    const { status, file } = await fetchLocationFile(deps, source);
+    const records = file === undefined ? [] : locationArray(file);
+    const firstRecord = records.find(isRecord);
+    const typeValues = new Set<string>();
+    for (const record of records.slice(0, 5000)) {
+      if (!isRecord(record)) continue;
+      const value = pickText(record, FIELD_CANDIDATES.type);
+      if (value) typeValues.add(value);
+      if (typeValues.size >= 15) break;
+    }
+    const normalizedByCarrier: Record<string, number> = {};
+    for (const point of file === undefined ? [] : normalizeLocationFile(source, file)) {
+      normalizedByCarrier[point.carrier] = (normalizedByCarrier[point.carrier] ?? 0) + 1;
+    }
+    results.push({
+      courierApiType: source.courierApiType,
+      enabledTypes: source.enabledTypes,
+      urlHost: new URL(source.url).host,
+      status,
+      shape: file === undefined ? 'unavailable' : Array.isArray(file) ? 'array' : typeof file,
+      topLevelKeys: isRecord(file) ? Object.keys(file).slice(0, 20) : [],
+      recordCount: records.length,
+      sampleRecordKeys: firstRecord ? Object.keys(firstRecord).slice(0, 40) : [],
+      sampleRecords: records.slice(0, 2),
+      typeValues: [...typeValues],
+      normalizedByCarrier,
+    });
+  }
+  return results;
 }
 
 /** 取得門市索引；成功結果快取 24 小時，同時進行的請求共用一次下載。 */
@@ -358,28 +420,67 @@ export async function findShipAnyPickupPoint(
   return index.get(carrier)?.find((point) => point.code === code);
 }
 
-/** 以 Supabase service role 的 RPC 存取 private.shipany_api_tokens。 */
-export function supabaseTokenStore(db: {
-  rpc: (fn: string, args?: Record<string, unknown>) => PromiseLike<{ data: unknown; error: unknown }>;
-}): TokenStore {
+const TOKEN_CIPHER_PREFIX = 'v1';
+
+function tokenKey(secret: string): Buffer {
+  return createHash('sha256').update(`lucissi-care:shipany-token:${secret}`).digest();
+}
+
+/** AES-256-GCM 加密 token；資料庫只存密文。金鑰由 SHIPANY_CLIENT_KEY 衍生，與 LUCISSI 相同做法。 */
+export function sealToken(secret: string, value: string): string {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv('aes-256-gcm', tokenKey(secret), iv);
+  const encrypted = Buffer.concat([cipher.update(value, 'utf8'), cipher.final()]);
+  return [TOKEN_CIPHER_PREFIX, iv.toString('base64'), cipher.getAuthTag().toString('base64'), encrypted.toString('base64')].join(':');
+}
+
+export function openToken(secret: string, sealed: string): string {
+  const [prefix, iv, tag, data] = sealed.split(':');
+  if (prefix !== TOKEN_CIPHER_PREFIX || !iv || !tag || !data) return fail('TOKEN_STORE_UNREADABLE');
+  try {
+    const decipher = createDecipheriv('aes-256-gcm', tokenKey(secret), Buffer.from(iv, 'base64'));
+    decipher.setAuthTag(Buffer.from(tag, 'base64'));
+    return Buffer.concat([decipher.update(Buffer.from(data, 'base64')), decipher.final()]).toString('utf8');
+  } catch {
+    return fail('TOKEN_STORE_UNREADABLE');
+  }
+}
+
+/**
+ * 以 Supabase service role 的 RPC 存取 private.shipany_api_tokens，token 加密保存。
+ * 輪替時以「上次讀到的密文」作為條件，避免兩個請求同時輪替互相覆蓋。
+ * 若更換 Client Key 或 token，需先清除 private.shipany_api_tokens 的資料列再重新部署。
+ */
+export function supabaseTokenStore(
+  db: { rpc: (fn: string, args?: Record<string, unknown>) => PromiseLike<{ data: unknown; error: unknown }> },
+  secret: string,
+): TokenStore {
+  let lastRead: { refreshPlain: string; refreshSealed: string } | null = null;
   return {
     async read() {
       const { data, error } = await db.rpc('get_shipany_api_tokens');
       if (error) fail('TOKEN_STORE_UNAVAILABLE');
       const row = Array.isArray(data) ? data[0] : data;
       if (!isRecord(row) || typeof row.refresh_token !== 'string') return null;
+      const refreshToken = openToken(secret, row.refresh_token);
+      lastRead = { refreshPlain: refreshToken, refreshSealed: row.refresh_token };
       return {
-        accessToken: typeof row.access_token === 'string' ? row.access_token : null,
+        accessToken: typeof row.access_token === 'string' ? openToken(secret, row.access_token) : null,
         accessExpiresAt: typeof row.access_expires_at === 'string' ? row.access_expires_at : null,
-        refreshToken: row.refresh_token,
+        refreshToken,
       };
     },
     async rotate(previousRefresh, accessToken, accessExpiresAt, refreshToken) {
+      let previousSealed: string | null = null;
+      if (previousRefresh !== null) {
+        if (lastRead?.refreshPlain !== previousRefresh) return false;
+        previousSealed = lastRead.refreshSealed;
+      }
       const { data, error } = await db.rpc('rotate_shipany_api_tokens', {
-        p_previous_refresh: previousRefresh,
-        p_access_token: accessToken,
+        p_previous_refresh: previousSealed,
+        p_access_token: sealToken(secret, accessToken),
         p_access_expires_at: accessExpiresAt,
-        p_refresh_token: refreshToken,
+        p_refresh_token: sealToken(secret, refreshToken),
       });
       if (error) fail('TOKEN_STORE_UNAVAILABLE');
       return data === true;

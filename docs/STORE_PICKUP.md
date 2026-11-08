@@ -21,7 +21,7 @@ ShipAny「物流服務點列表」的選店畫面是裝在 Shopify 佈景主題�
 | 門市搜尋 API | `GET /api/pickup-points?carrier=&q=` | 經 `vercel.json` 改寫到 `api/shopify/discounts.ts?resource=pickup-points`（Hobby 函式數量已滿）；開關關閉時回 404 |
 | 建立結帳 | `api/create-shopify-cart.ts` | 收 `pickupPoint: { carrier, code }`，以門市清單確認後預填收件地址並寫入 attributes |
 | 前台 | `src/components/feature/PickupPointSelector.tsx`、`src/lib/pickupPoints.ts` | 購物車「配送方式」：宅配到府／超商取貨，選超商、搜尋、選門市；選擇存在 localStorage |
-| 資料庫 | `supabase/migrations/20261109090000_store_pickup_foundation.sql` | 開關 `store_pickup_enabled`（false）、運費 `pickup_shipping_fee`（60）、`private.shipany_api_tokens` 與兩個只限 service role 的 RPC |
+| 資料庫 | `supabase/migrations/20261108174448_store_pickup_foundation.sql` | 開關 `store_pickup_enabled`（false）、運費 `pickup_shipping_fee`（60）、`private.shipany_api_tokens` 與兩個只限 service role 的 RPC |
 
 寫入 Shopify 的內容（格式待 ShipAny 確認，只需改 `formatPickupAddressLine` 與 `api/create-shopify-cart.ts` 一處）：
 
@@ -39,14 +39,18 @@ ShipAny「物流服務點列表」的選店畫面是裝在 Shopify 佈景主題�
 
 ## 開啟前步驟
 
-1. 店主在 ShipAny 後台「開發者 → API 密鑰」建立金鑰，自行在 Vercel Production 設定：`SHIPANY_CLIENT_KEY`、`SHIPANY_MERCHANT_TOKEN`、`SHIPANY_REFRESH_TOKEN`（第一次使用後 token 存在資料庫並自動輪替）。
-2. 套用 migration `20261109090000_store_pickup_foundation.sql` 到正式 Supabase。
+1. ~~店主在 ShipAny 後台建立 CARE 專用 token，設定 Vercel Production：`SHIPANY_CLIENT_KEY`、`SHIPANY_MERCHANT_TOKEN`、`SHIPANY_REFRESH_TOKEN`~~（2026-11-09 完成，`saengak-web-d2ux` 三項皆為 sensitive）。CARE 不可與 LUCISSI 共用同一組 token：兩站都會輪替 refresh token，共用會互相使對方失效。第一次使用後 token 以 AES-256-GCM 加密存在 `private.shipany_api_tokens` 並自動輪替；更換 Client Key 或 token 時需先刪除該資料列。
+2. ~~套用 migration~~（2026-11-09 已套用正式 Supabase，版本 `20261108174448`；回讀開關 false、運費 60、token 表 0 筆，anon／authenticated 無法呼叫兩個 RPC）。
 3. 以實際門市資料檔調整並測試 `normalizeLocationFile`。
 4. 依 ShipAny 回覆調整寫入格式。
 5. Shopify 新增超商取貨運費（NT$60、門檻免運），名稱需符合 ShipAny 進階物流匹配規則；確認「貨到付款」付款方式對超商取貨可用。
 6. 取貨付款的收款確認：送到門市不代表已付款。ShipAny 文件寫明服務點的 `order/delivered` 代表顧客已取件；收款與撥款需在 ShipAny「貨到付款紀錄」對帳，確認後才在 Shopify 標記已付款並開發票（不可沿用黑貓「送達即付款」的 Flow）。
 7. 用一筆真實訂單驗收：門市、運費、代收金額、ShipAny 運單、取件通知、付款與發票。
 8. 最後才把 `site_settings.store_pickup_enabled` 改為 true；回復方式為改回 false。
+
+## 管理員診斷
+
+`GET /api/pickup-points?diagnose=1`，帶管理員的 Supabase 登入 token（`Authorization: Bearer`）。不受開關限制，回傳各物流商門市資料檔的網域、結構、筆數、前兩筆範例、類型值與解析結果；不含 token。非管理員回 403。
 
 ## 驗證紀錄
 

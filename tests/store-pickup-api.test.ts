@@ -5,7 +5,10 @@ import {
   getShipAnyAccessToken,
   loadPickupIndex,
   normalizeLocationFile,
+  openToken,
   resetPickupPointCache,
+  sealToken,
+  supabaseTokenStore,
   type LocationSource,
   type TokenStore,
 } from '../api/_lib/shipany-pickup-points.js';
@@ -218,5 +221,76 @@ describe('handlePickupPointSearch', () => {
     const response = await handlePickupPointSearch(new Request('https://lucissicare.com/api/pickup-points?carrier=familymart&q=民生'), cors, deps);
     expect(response.status).toBe(503);
     expect(await response.json()).toMatchObject({ code: 'PICKUP_POINTS_UNAVAILABLE' });
+  });
+});
+
+describe('encrypted token store', () => {
+  it('round-trips tokens and never stores them in plain text', () => {
+    const sealed = sealToken('client-key', 'secret-refresh');
+    expect(sealed).not.toContain('secret-refresh');
+    expect(sealed).not.toBe(sealToken('client-key', 'secret-refresh'));
+    expect(openToken('client-key', sealed)).toBe('secret-refresh');
+    expect(() => openToken('other-key', sealed)).toThrow('SHIPANY_PICKUP_TOKEN_STORE_UNREADABLE');
+  });
+
+  it('rotates using the exact ciphertext it read', async () => {
+    let row: Record<string, unknown> | null = null;
+    const db = {
+      rpc: vi.fn(async (fn: string, args?: Record<string, unknown>) => {
+        if (fn === 'get_shipany_api_tokens') return { data: row ? [row] : [], error: null };
+        const previous = args?.p_previous_refresh;
+        const allowed = previous === null ? row === null : row?.refresh_token === previous;
+        if (allowed) row = { access_token: args?.p_access_token, access_expires_at: args?.p_access_expires_at, refresh_token: args?.p_refresh_token };
+        return { data: allowed, error: null };
+      }),
+    };
+    const store = supabaseTokenStore(db, 'client-key');
+    await expect(store.read()).resolves.toBeNull();
+    await expect(store.rotate(null, 'access-1', '2026-11-09T06:00:00.000Z', 'refresh-1')).resolves.toBe(true);
+    expect(JSON.stringify(row)).not.toContain('refresh-1');
+    await expect(store.read()).resolves.toEqual({ accessToken: 'access-1', accessExpiresAt: '2026-11-09T06:00:00.000Z', refreshToken: 'refresh-1' });
+    await expect(store.rotate('refresh-1', 'access-2', '2026-11-09T10:00:00.000Z', 'refresh-2')).resolves.toBe(true);
+    await expect(store.rotate('refresh-1', 'access-x', '2026-11-09T10:00:00.000Z', 'refresh-x')).resolves.toBe(false);
+  });
+});
+
+describe('admin diagnosis', () => {
+  const cors = { 'Access-Control-Allow-Origin': 'https://lucissicare.com' };
+  const validTokens = { accessToken: 'stored-access', accessExpiresAt: '2026-11-09T05:00:00Z', refreshToken: 'stored-refresh' };
+
+  beforeEach(() => {
+    resetMemoryDatabase();
+    resetPickupPointCache();
+  });
+
+  it('refuses anyone who is not an admin, even when the switch is off', async () => {
+    const response = await handlePickupPointSearch(
+      new Request('https://lucissicare.com/api/pickup-points?diagnose=1'), cors, null, async () => false,
+    );
+    expect(response.status).toBe(403);
+    expect(response.headers.get('Cache-Control')).toContain('no-store');
+  });
+
+  it('describes each store file for an admin without exposing tokens', async () => {
+    const transport = vi.fn(async (url: string) => url.endsWith('/v3/courier-service-point-locations')
+      ? json({ data: { locations: [{ courier_uid: 'fm', courier_api_type: 'FamilyMart', url: 'https://locations.example.com/fm.json', detail_location_types: { FamilyMart: { enabled: true } } }] } })
+      : json({ stores: [{ store_id: 'F001234', store_name: '全家台北民生店', address: '台北市松山區民生東路四段1號', type: 'FamilyMart' }] }));
+    const deps = { env: ENV, tokenStore: memoryTokenStore(validTokens), transport, now: () => NOW };
+    const response = await handlePickupPointSearch(
+      new Request('https://lucissicare.com/api/pickup-points?diagnose=1'), cors, deps, async () => true,
+    );
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.sources[0]).toMatchObject({
+      courierApiType: 'FamilyMart',
+      urlHost: 'locations.example.com',
+      shape: 'object',
+      topLevelKeys: ['stores'],
+      recordCount: 1,
+      sampleRecordKeys: ['store_id', 'store_name', 'address', 'type'],
+      typeValues: ['FamilyMart'],
+      normalizedByCarrier: { familymart: 1 },
+    });
+    expect(JSON.stringify(body)).not.toContain('stored-access');
   });
 });

@@ -50,6 +50,7 @@ describe('建立結帳：超商取貨門市', () => {
     capturedVariables = null;
     process.env.SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_ANON_KEY = 'test-publishable-key';
+    process.env.SHIPANY_CLIENT_KEY = 'test-client-key';
     mocks.createClient.mockReturnValue({
       auth: {
         getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'member-123', email: 'member@example.com' } }, error: null }),
