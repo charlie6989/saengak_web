@@ -24,6 +24,7 @@ import { applyMetaDescription, applyProductSeo, productMetaDescription, productP
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
 import { shopifyImageUrl } from '../../lib/shopifyImage';
 import { fetchShippingSettings } from '../../lib/promotions';
+import { fetchStorePickupSettings, type StorePickupSettings } from '../../lib/pickupPoints';
 import { computeFreeShippingGap, DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
 import SizeChartTable from '../../components/feature/SizeChartTable';
 import type { SizeChart } from '../../domain/sizeChart';
@@ -135,11 +136,17 @@ export default function ProductPage() {
     defaultShippingFee: DEFAULT_SHIPPING_FEE,
   });
 
+  // 超商取貨開關與運費（site_settings.store_pickup_enabled、pickup_shipping_fee）；關閉或讀取失敗時只顯示宅配運費
+  const [storePickup, setStorePickup] = useState<StorePickupSettings | null>(null);
+
   // 免運門檻與運費以 Supabase site_settings 為準，讀取失敗時沿用程式預設值
   useEffect(() => {
     let cancelled = false;
     fetchShippingSettings().then((settings) => {
       if (!cancelled) setShippingSettings(settings);
+    });
+    fetchStorePickupSettings().then((settings) => {
+      if (!cancelled) setStorePickup(settings);
     });
     return () => {
       cancelled = true;
@@ -1252,7 +1259,10 @@ export default function ProductPage() {
                     <>加入後即達 {formatTwd(shippingSettings.freeShippingThreshold)} 免運</>
                   ) : (
                     <>
-                      運費 {formatTwd(shippingSettings.defaultShippingFee)}，滿 {formatTwd(shippingSettings.freeShippingThreshold)} 免運；加入後還差{' '}
+                      {storePickup?.enabled
+                        ? <>宅配運費 {formatTwd(shippingSettings.defaultShippingFee)}（超商取貨 {formatTwd(storePickup.shippingFee)}）</>
+                        : <>運費 {formatTwd(shippingSettings.defaultShippingFee)}</>}
+                      ，滿 {formatTwd(shippingSettings.freeShippingThreshold)} 免運；加入後還差{' '}
                       <strong className="font-semibold text-brand">{formatTwd(freeShippingGap.remaining)}</strong>
                     </>
                   )}
