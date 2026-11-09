@@ -68,12 +68,10 @@ const forbiddenContent = [
   ['hardcoded product card tagline', '專利植萃溫和淨膚'],
   ['hardcoded product card tagline', '溫和淨化異味'],
   ['hardcoded product card tagline', '益生菌精華深層導入'],
-  // 2026-10-17 物流比照 LUCISSI：只提供黑貓宅急便常溫宅配，超商取貨開通前不得宣稱
-  ['unsupported convenience-store pickup claim', '超商 / 宅配'],
-  ['unsupported convenience-store pickup claim', '超商與宅配'],
-  ['unsupported convenience-store pickup claim', '超商門市'],
-  ['unsupported convenience-store pickup claim', '宅配或超商取貨'],
-  ['unsupported convenience-store pickup claim', '超商取貨簡訊'],
+  // 2026-11-09 店主同意開放超商取貨（全家、7-ELEVEN、萊爾富），移除 10/17「開通前不得宣稱超商取貨」的封鎖詞；
+  // 仍封鎖已不存在的物流說法。
+  ['outdated home-delivery-only claim', '目前不提供超商取貨'],
+  ['outdated home-delivery-only claim', '黑貓宅配貨到付款（收件時付款給物流人員）'],
   // 2026-11-07 優惠頁 FAQ：Shopify 後台用語不對顧客顯示
   ['internal Shopify admin wording', 'Shopify 官方後台'],
   ['internal Shopify admin wording', '組合（Combinations）'],
