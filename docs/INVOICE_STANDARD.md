@@ -41,4 +41,6 @@ CARE 另有 PR #73 的自動比對流程，維持關閉（`cod_invoice_policy.en
 3. **開立頻率：** CARE 每天一次 Vercel 排程，LUCISSI 每 10 分鐘 pg_cron。CARE 第一張發票送出約 6 分鐘後光貿就寄出開立通知，但系統要到隔天排程才回查，這段期間會員頁看不到發票。
 4. **未開票警示：** LUCISSI 有 `paidWithoutInvoice` 健康檢查，CARE 沒有。
 5. **開票前查詢：** CARE 開票前先查光貿並有防重複機制，LUCISSI 沒有。這點應由 LUCISSI 改為跟 CARE 一致。
-6. **作廢與折讓：** 兩站都沒有正式操作流程，也都沒有正式驗證過。
+6. **作廢與折讓：** 兩站都沒有正式操作流程。CARE 作廢已於 2026-11-09 實際走過一次（見下方紀錄）；折讓仍未驗證，LUCISSI 兩者皆未驗證。
+
+**CARE 作廢實測（2026-11-09，店主要求）：** 店主自購測試單 #1011（TapPay 實刷 NT$277，發票 HV14744580）在 Shopify 取消並退款至原卡後，`orders/cancelled` webhook 把發票工作改為 `void_review`（operation=void），沒有另建折讓工作。依店主指示以 `select public.approve_amego_invoice_void('<Shopify 訂單 GID>')` 核准（status → `void_pending`），再於 Vercel Cron Jobs 頁手動 Run `/api/invoice/guangmao`：第一次送出 f0501 後光貿回 provider_status=1（處理中，工作為 `provider_pending`）；約 6 分鐘後再 Run，回讀 provider_status=99、作廢時間 11:00:01（台灣），工作 `voided`、`order_invoices.status=voided`。注意 Run 時若工作的 `next_attempt_at` 尚未到，該次不會處理。同期間其他可執行工作只有這一筆（另兩筆 #1006／#1007 為 `manual_review` 不會被取走），所以手動 Run 沒有影響其他訂單。
