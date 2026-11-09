@@ -12,7 +12,7 @@ import {
   type LocationSource,
   type TokenStore,
 } from '../api/_lib/shipany-pickup-points.js';
-import { handlePickupPointSearch } from '../api/_lib/pickup-points-handler.js';
+import { handlePickupPointSearch, isStorePickupEnabled } from '../api/_lib/pickup-points-handler.js';
 import { resetMemoryDatabase, setMemorySiteSetting } from '../api/_lib/supabase-admin.js';
 
 const NOW = Date.parse('2026-11-09T02:00:00Z');
@@ -224,6 +224,16 @@ describe('handlePickupPointSearch', () => {
     const response = await handlePickupPointSearch(new Request('https://lucissicare.com/api/pickup-points?carrier=familymart&q=民生'), cors, null);
     expect(response.status).toBe(404);
     expect(await response.json()).toMatchObject({ code: 'STORE_PICKUP_DISABLED' });
+  });
+
+  it('turns on only for a Vercel preview deployment with the preview flag', async () => {
+    await expect(isStorePickupEnabled({ VERCEL_ENV: 'preview', VITE_STORE_PICKUP_PREVIEW_ENABLED: 'true' })).resolves.toBe(true);
+    await expect(isStorePickupEnabled({ VERCEL_ENV: 'production', VITE_STORE_PICKUP_PREVIEW_ENABLED: 'true' })).resolves.toBe(false);
+    await expect(isStorePickupEnabled({ VERCEL_ENV: 'preview' })).resolves.toBe(false);
+    await expect(isStorePickupEnabled({ VERCEL_ENV: 'preview', VITE_STORE_PICKUP_PREVIEW_ENABLED: 'false' })).resolves.toBe(false);
+    await expect(isStorePickupEnabled({})).resolves.toBe(false);
+    setMemorySiteSetting('store_pickup_enabled', true);
+    await expect(isStorePickupEnabled({ VERCEL_ENV: 'production' })).resolves.toBe(true);
   });
 
   it('rejects an unknown chain or an empty keyword', async () => {

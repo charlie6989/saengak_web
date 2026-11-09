@@ -11,6 +11,22 @@ export const PICKUP_CARRIER_LABELS: Record<PickupCarrier, string> = {
   hilife: '萊爾富',
 };
 
+/**
+ * 預覽環境專用的超商取貨開關，讓店主能在不開正式開關的情況下測試完整結帳。
+ * 只有同時符合兩個條件才算開啟：Vercel 環境變數 VITE_STORE_PICKUP_PREVIEW_ENABLED 為 'true'（只設在 Preview），
+ * 而且執行位置是預覽部署（伺服器看 VERCEL_ENV === 'preview'；瀏覽器看網址是 *.vercel.app）。
+ * 正式網域 lucissicare.com 與 Production 部署永遠不會因為這個設定而開啟。
+ */
+export const STORE_PICKUP_PREVIEW_FLAG = 'VITE_STORE_PICKUP_PREVIEW_ENABLED';
+
+export function isStorePickupPreviewOverride(flag: string | undefined, runsOnPreview: boolean): boolean {
+  return runsOnPreview && flag?.trim() === 'true';
+}
+
+export function isVercelPreviewHostname(hostname: string): boolean {
+  return /\.vercel\.app$/i.test(hostname.trim());
+}
+
 /** 超商取貨運費的程式預設值（正式值可存在 site_settings.pickup_shipping_fee）。 */
 export const DEFAULT_PICKUP_SHIPPING_FEE = 60;
 

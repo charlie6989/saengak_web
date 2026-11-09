@@ -29,7 +29,12 @@ import {
   searchPickupPoints,
   type PickupPoint,
 } from '../src/domain/pickupPoints';
-import { fetchStorePickupSettings, searchPickupPoints as searchApi, PickupSearchError } from '../src/lib/pickupPoints';
+import {
+  fetchStorePickupSettings,
+  isStorePickupPreviewEnabled,
+  searchPickupPoints as searchApi,
+  PickupSearchError,
+} from '../src/lib/pickupPoints';
 import { createShopifyCheckout, getShopifyCheckoutErrorMessage } from '../src/lib/shopifyCheckout';
 import { defaultInvoicePreference } from '../src/domain/invoice';
 
@@ -109,6 +114,14 @@ describe('PickupPointSelector', () => {
 describe('store pickup client', () => {
   it('reads the switch and fee from public site settings', async () => {
     await expect(fetchStorePickupSettings()).resolves.toEqual({ enabled: true, shippingFee: 60 });
+  });
+
+  it('applies the preview switch only on a vercel.app preview address', () => {
+    expect(isStorePickupPreviewEnabled('true', 'saengak-web-d2ux-git-x.vercel.app')).toBe(true);
+    expect(isStorePickupPreviewEnabled('true', 'lucissicare.com')).toBe(false);
+    expect(isStorePickupPreviewEnabled('true', 'www.lucissicare.com')).toBe(false);
+    expect(isStorePickupPreviewEnabled(undefined, 'saengak-web-d2ux-git-x.vercel.app')).toBe(false);
+    expect(isStorePickupPreviewEnabled('false', 'saengak-web-d2ux-git-x.vercel.app')).toBe(false);
   });
 
   it('searches through the store API and drops malformed rows', async () => {
