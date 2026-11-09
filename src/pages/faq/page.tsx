@@ -6,6 +6,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { siteContent } from '../../content/site';
 import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
+import { DEFAULT_PICKUP_SHIPPING_FEE } from '../../domain/pickupPoints';
 import { fetchShippingSettings } from '../../lib/promotions';
 
 interface FAQItem {
@@ -67,19 +68,19 @@ export default function FAQPage() {
       id: '5',
       category: 'shipping',
       question: '配送需要多長時間？',
-      answer: '以黑貓宅急便常溫宅配寄送，付款完成後（貨到付款為訂單成立後）約 3 至 5 個工作天送達指定地址（不含例假日與國定假日），結帳頁會顯示相同的預估時間。目前不提供超商取貨。若遇特殊節日或偏遠離島地區，配送時間可能依物流狀況略有調整。'
+      answer: '提供黑貓宅急便常溫宅配（寄送至台灣地址），以及超商取貨（可選全家、7-ELEVEN、萊爾富門市）。付款完成後（貨到付款為訂單成立後）約 3 至 5 個工作天送達指定地址或取貨門市（不含例假日與國定假日），結帳頁會顯示相同的預估時間。超商取貨到店後會通知取件，請於期限內取件；收件人姓名須與取件時出示的證件相同。若遇特殊節日或偏遠離島地區，配送時間可能依物流狀況略有調整。'
     },
     {
       id: '6',
       category: 'shipping',
       question: '配送費用如何計算？',
-      answer: `台灣宅配運費 NT$${shipping.defaultShippingFee.toLocaleString('en-US')}，訂單滿 NT$${shipping.freeShippingThreshold.toLocaleString('en-US')} 免運；實際金額以結帳頁面顯示為準。`
+      answer: `台灣宅配運費 NT$${shipping.defaultShippingFee.toLocaleString('en-US')}、超商取貨運費 NT$${DEFAULT_PICKUP_SHIPPING_FEE.toLocaleString('en-US')}，訂單滿 NT$${shipping.freeShippingThreshold.toLocaleString('en-US')} 免運；實際金額以結帳頁面顯示為準。`
     },
     {
       id: '7',
       category: 'payment',
       question: '支援哪些付款方式？',
-      answer: '目前提供信用卡、ATM 轉帳，以及黑貓宅配貨到付款（收件時付款給物流人員）。實際可用的付款方式以結帳頁為準。'
+      answer: '目前提供信用卡、ATM 轉帳，以及貨到付款：宅配於收件時付款給物流人員；超商取貨於門市取件時付款。實際可用的付款方式以結帳頁為準。'
     },
     {
       id: '8',
