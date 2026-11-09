@@ -7,7 +7,12 @@
 - 結果：Shopify 目前沒有未取消的訂單；網站資料庫唯一一張已開發票已作廢。#1006、#1007 的發票工作維持 `manual_review`（SHOPIFY_TEST_ORDER，從未開票）。
 - 同日：Shopify 貨到付款說明改為宅配／超商通用文字（店主同意）；超商取貨網站流程暫開開關測到選店為止，結帳被 Turnstile 擋下，開關已關回（見 [STORE_PICKUP.md](STORE_PICKUP.md)）。
 
-## 超商取貨第一版（2026-11-09，開關關閉）
+## 超商取貨正式開放（2026-11-09 12:54）
+
+- 店主決定「改文字再開」：PR #118（FAQ、商品頁標籤、內容檢查）合併部署、Shopify 運送政策改寫並回讀，之後把 `store_pickup_enabled` 改為 true。正式站回讀：門市搜尋 API 200、購物車出現超商取貨、商品頁標籤「黑貓宅配・超商取貨」。細節與待盯事項見 [STORE_PICKUP.md](STORE_PICKUP.md)。
+- 待盯：首筆真實超商單的 DELIVERED 時點；ShipAny 儲值；商品頁價格旁運費說明是否加註超商 NT$60（店主未決）。
+
+## 超商取貨第一版（2026-11-09，開放前紀錄）
 
 - 店主決定開放全家、7-11、萊爾富，運費 NT$60、達免運門檻免運（目前門檻 NT$1,500），同時提供取貨付款。
 - 程式已完成選店畫面、門市搜尋 API、建立結帳時寫入門市與 ShipAny token 輪替，全部在 `site_settings.store_pickup_enabled`（預設 false）後面，正式站顧客看不到。細節、未確認事項與開啟步驟見 [STORE_PICKUP.md](STORE_PICKUP.md)。
