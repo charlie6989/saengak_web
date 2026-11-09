@@ -1,6 +1,8 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import {
   DEFAULT_PICKUP_SHIPPING_FEE,
+  isStorePickupPreviewOverride,
+  isVercelPreviewHostname,
   parsePickupPoint,
   type DeliveryMethod,
   type PickupCarrier,
@@ -14,26 +16,35 @@ export interface StorePickupSettings {
 
 const DISABLED: StorePickupSettings = { enabled: false, shippingFee: DEFAULT_PICKUP_SHIPPING_FEE };
 
+/** 預覽部署（*.vercel.app）且建置時設定 VITE_STORE_PICKUP_PREVIEW_ENABLED=true 才為 true；正式網域永遠 false。 */
+export function isStorePickupPreviewEnabled(
+  flag: string | undefined = import.meta.env.VITE_STORE_PICKUP_PREVIEW_ENABLED,
+  hostname: string = typeof window === 'undefined' ? '' : window.location.hostname,
+): boolean {
+  return isStorePickupPreviewOverride(flag, isVercelPreviewHostname(hostname));
+}
+
 /**
  * 讀取公開設定 site_settings.store_pickup_enabled、pickup_shipping_fee；讀取失敗一律視為關閉。
+ * 預覽部署可用 isStorePickupPreviewEnabled 開啟（見 src/domain/pickupPoints.ts）。
  * 建立結帳時伺服器會再檢查一次開關並以門市清單確認門市。
  */
-export async function fetchStorePickupSettings(): Promise<StorePickupSettings> {
-  if (!isSupabaseConfigured) return DISABLED;
+export async function fetchStorePickupSettings(previewEnabled: boolean = isStorePickupPreviewEnabled()): Promise<StorePickupSettings> {
+  if (!isSupabaseConfigured) return previewEnabled ? { ...DISABLED, enabled: true } : DISABLED;
   try {
     const { data, error } = await supabase
       .from('site_settings')
       .select('key, value')
       .in('key', ['store_pickup_enabled', 'pickup_shipping_fee']);
-    if (error || !Array.isArray(data)) return DISABLED;
+    if (error || !Array.isArray(data)) return previewEnabled ? { ...DISABLED, enabled: true } : DISABLED;
     const values = Object.fromEntries(data.map((row: { key: string; value: unknown }) => [row.key, row.value]));
     const fee = values.pickup_shipping_fee;
     return {
-      enabled: values.store_pickup_enabled === true,
+      enabled: previewEnabled || values.store_pickup_enabled === true,
       shippingFee: typeof fee === 'number' && Number.isFinite(fee) && fee >= 0 ? fee : DEFAULT_PICKUP_SHIPPING_FEE,
     };
   } catch {
-    return DISABLED;
+    return previewEnabled ? { ...DISABLED, enabled: true } : DISABLED;
   }
 }
 

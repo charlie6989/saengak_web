@@ -7,7 +7,12 @@
  * 管理員診斷：GET /api/pickup-points?diagnose=1，帶管理員的 Supabase 登入 token（Authorization: Bearer）。
  * 不受開關限制，回傳各物流商門市資料檔的結構與解析結果，用來依實際格式調整解析器；不含任何金鑰。
  */
-import { isPickupCarrier, type PickupPoint } from '../../src/domain/pickupPoints.js';
+import {
+  STORE_PICKUP_PREVIEW_FLAG,
+  isPickupCarrier,
+  isStorePickupPreviewOverride,
+  type PickupPoint,
+} from '../../src/domain/pickupPoints.js';
 import { jsonResponse } from './security.js';
 import { getSiteSetting, getSupabaseAdminClient } from './supabase-admin.js';
 import { diagnoseShipAnyLocations, searchShipAnyPickupPoints, supabaseTokenStore, type PickupPointDeps } from './shipany-pickup-points.js';
@@ -56,7 +61,12 @@ async function handleDiagnosis(
   }
 }
 
-export async function isStorePickupEnabled(): Promise<boolean> {
+/**
+ * 正式開關 site_settings.store_pickup_enabled；另外在 Vercel Preview 部署且設定
+ * VITE_STORE_PICKUP_PREVIEW_ENABLED=true 時視為開啟（供店主在預覽網址測試，正式站不受影響）。
+ */
+export async function isStorePickupEnabled(env: Record<string, string | undefined> = process.env): Promise<boolean> {
+  if (isStorePickupPreviewOverride(env[STORE_PICKUP_PREVIEW_FLAG], env.VERCEL_ENV === 'preview')) return true;
   return (await getSiteSetting<boolean>('store_pickup_enabled')) === true;
 }
 
