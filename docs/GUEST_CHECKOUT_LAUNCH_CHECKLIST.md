@@ -1,5 +1,9 @@
 # 訪客結帳上線查核
 
+## 正式開啟（2026-11-09）
+
+- 店主確認營運規則後要求驗收；正式 `guest_checkout_enabled` 已改為 true（00:04 台北時間）。正式站 API 與手機／桌機介面檢查通過，細節見 `PROJECT_STATUS.md`「訪客結帳營運決策（2026-11-09）」。店主 iPhone 一般模式真人驗證通過並進入 Shopify 結帳頁，資料庫新增訪客結帳連結；Safari 無痕模式會卡在 Cloudflare 驗證（後台判定為 bot）。正式站實際付款後的訂單、確認信、發票與認領未實測。
+
 ## 最新正式服務查核（2026-10-17）
 
 - **正式寄信已送達**：Supabase Auth 配置回讀 SMTP `smtp.resend.com:465`／`resend`、寄件地址 `noreply@auth.saengak.com.tw`，site_url `https://lucissicare.com`，正式回跳白名單及 Email 驗證均正確。只將 sender name 從 SAENGAK 改為 LUCISSI CARE，回讀其餘 SMTP 與 Auth 配置不變。向 `company@lucissi.com` 發送正式驗證信 HTTP 200；Resend `01a145c3-72b7-7ee8-b487-3e1470c5414a` 顯示正確寄件者及 01:30 Delivered。正式 Auth 新增的測試帳號已由使用者點信完成驗證；使用者確認成功回到正式站，DB 回讀 verified_accounts=1、last_sign_in_at=2026-10-17 01:33:40（Asia/Taipei）。沒有新增訂單／付款。
