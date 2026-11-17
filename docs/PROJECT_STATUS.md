@@ -1,16 +1,29 @@
 # 項目狀態
 
-## 上線前全面盤點、SEO 與物流金流比照 LUCISSI（2026-11-17，分支 `claude/pre-launch-review-seo-0c8078`，[PR #121](https://github.com/charlie6989/saengak_web/pull/121) 已開，未合併、未部署正式站）
+## 物流與金流正式切換（2026-11-17，店主同意依清單順序執行）
+
+已完成並回讀（正式）：
+- Supabase：`20261117124456_order_refusal_blocks.sql`（先以強制回滾交易實測 10 項）、`20261117125105_align_shipping_fees_with_lucissi.sql`（超商 69、順豐宅配 130）。
+- [PR #121](https://github.com/charlie6989/saengak_web/pull/121) 合併 main `6ea1d2b`，Vercel 正式部署 READY；lucissicare.com 主要頁面 200、`/blog` 轉址、未知路徑 404、sitemap 正常。
+- Shopify 運費：黑貓宅配 146、順豐宅配 130（新增）、7-11／全家／萊爾富取貨 69，滿 1,500 免運，運送時間 1 至 2 個工作日。
+- Shipy：取貨地址隱藏「黑貓宅配」「順豐宅配」。Storefront 購物車實測：住址只見兩種宅配，各超商門市只見自己的 69，滿額免運。
+- Shopify Flow：COD 宅配 Flow 條件改「黑貓宅配」。三個超商 COD Flow 仍啟用（超商仍經 ShipAny 出貨，改綠界時再停用）。
+- ShipAny CARE 設定檔：新增「宅配（順豐）」規則（包括「順豐宅配」→ 順豐台灣），運費試算確認順豐台灣可送貨上門。黑貓規則維持無條件備援。
+
+尚未執行：SiteGiant／綠界 C2C、停用 TapPay ATM、Shopify 運送與隱私權政策改寫、確認 SAENGAK Order Sync 的 `write_orders`。
+尚未驗證：真實結帳的預選運費（需真人通過 Turnstile）、第一筆順豐宅配訂單的 ShipAny 草稿、停權流程的真實訂單。步驟與細節見 [物流與金流上線清單](LOGISTICS_PAYMENTS_PLAN.md)。
+
+## 上線前全面盤點、SEO 與物流金流比照 LUCISSI（2026-11-17，分支 `claude/pre-launch-review-seo-0c8078`，[PR #121](https://github.com/charlie6989/saengak_web/pull/121) 已於 2026-11-17 合併部署，正式切換結果見上一節）
 
 店主要求「徹底檢視上線前欠缺的部分、徹底處理 SEO、所有金流物流比照 LUCISSI website」。
 
-**物流與金流（程式已完成，正式設定待切換）**：店主選定超商完全比照（NT$69、SiteGiant 開綠界 C2C）、「標準」改名「黑貓宅配」並新增「順豐宅配」NT$130、停用 ATM 並加 2 次拒收停權、出貨時效改 1 個工作天內出貨／1–2 個工作天送達。程式、migration 與正式切換的 9 個步驟見 [物流與金流上線清單](LOGISTICS_PAYMENTS_PLAN.md) 最新一節。已驗證（本機）：Vitest 78 檔／808 項、build、verify:content、verify:supabase；Vite 開發站手機寬度確認購物車可選順豐／黑貓、預估運費 130→146、選擇會記住、無橫向捲動（本機沒有 Supabase，超商面板與 FAQ 超商文字只有單元測試）。
+**物流與金流（程式已完成；正式切換進度見上一節）**：店主選定超商完全比照（NT$69、SiteGiant 開綠界 C2C）、「標準」改名「黑貓宅配」並新增「順豐宅配」NT$130、停用 ATM 並加 2 次拒收停權、出貨時效改 1 個工作天內出貨／1–2 個工作天送達。程式、migration 與正式切換的 9 個步驟見 [物流與金流上線清單](LOGISTICS_PAYMENTS_PLAN.md) 最新一節。已驗證（本機）：Vitest 78 檔／808 項、build、verify:content、verify:supabase；Vite 開發站手機寬度確認購物車可選順豐／黑貓、預估運費 130→146、選擇會記住、無橫向捲動（本機沒有 Supabase，超商面板與 FAQ 超商文字只有單元測試）。
 
 **SEO**：見下一節。結構化資料運費已改為最便宜的宅配（NT$130，比照 LUCISSI）；robots.txt 不擋 `/api/`（Google 算繪頁面要呼叫），只擋 `/admin`、`/profile`、`/auth/`。
 
 **上線前仍欠缺（依影響排序；狀態取自既有紀錄，本輪未登入各後台重新回讀）**
 
-1. 本分支的正式切換：預覽部署驗證 middleware（Node.js middleware 載入、轉址順序、延遲）→ 合併部署 → 物流金流 9 個步驟（Shopify 運費、Shipy、Flow、ShipAny 規則、SiteGiant 綠界、停用 ATM、政策文字、`write_orders`）。
+1. 物流金流切換剩餘步驟（11/17 已完成部署、Shopify 運費、Shipy、宅配 Flow、ShipAny 規則）：SiteGiant 綠界、停用 ATM、政策文字、`write_orders`。
 2. 真實訂單端到端都還沒有：訪客實付後的同步／確認信／發票／認領；首筆黑貓 COD 送達→已付款→開票；首筆超商（切換後為綠界）取件、代收與追蹤號回寫。#1011 已取消退款，目前沒有有效的真實訂單。
 3. Search Console：目前 Google 帳號沒有 `lucissicare.com` 權限，收錄狀況未知；需以 DNS TXT 驗證網域、提交 sitemap，再匯入 Bing。網站沒有任何分析工具（LUCISSI 有 GA4／Meta Pixel／PostHog，是否比照待決定，需同步改 CSP 與隱私權文字）。
 4. Facebook 登入：Meta App Review 11/08 送審（約 20 天），通過後發布 App 並設定 `VITE_FACEBOOK_LOGIN_ENABLED=true` 重新部署。
@@ -27,7 +40,7 @@
 - 程式碼：`middleware.js` 改成 `middleware.ts`，為每個網頁寫入路由 head、結構化資料（Organization／WebSite、Product＋BreadcrumbList、BlogPosting），以及給爬蟲的隱藏文字；未知路由、查無商品或文章回 404；canonical 308 轉址。`vercel.json` 新增 `/blog`、`/brand-story`、`/terms-of-service`、`/product`、`/search` 的永久轉址，站內連結改用 `/products`。商品／文章卡片改成連結；FAQ 收合時答案仍在 DOM；sitemap 加入文章；新增 `favicon.ico`、preconnect、`lang="zh-Hant-TW"`、首頁標題，robots.txt 擋 `/auth/`（原本也擋 `/api/`，合併後移除）。
 - 已驗證（本機）：Vitest 77 檔／795 項、typecheck、build、verify:content（131 檔）通過。另把 `dist/index.html` 當殼層、以唯讀 Storefront 公開資料跑 middleware：商品、文章、分類頁 200，查無商品、文章、路由 404。Vite 開發站實測換頁時 canonical 只有一個、JSON-LD 會換掉、FAQ 答案收合時仍在 DOM、卡片連結與收藏按鈕都正常。
 - 已驗證（Vercel 預覽 `saengak-web-d2ux`，提交 `3ca72fa`，2026-11-17，以 23 小時分享連結讀取）：middleware 正常載入。`/`、`/products`、`/faq`、`/about`、商品、文章 200（約 0.3–0.9 秒）；`/no-such-page`、`/product/999999999`、`/blog/no-such-article` 404；`/blog`→`/community`、`/search`、`/product`→`/products`、`/brand-story`→`/about`、`/terms-of-service`→`/terms`、結尾斜線皆 308。以 Googlebot UA 取 HTML：每頁 title、description、canonical（`https://lucissicare.com/...`）正確；首頁 Organization＋WebSite；商品頁 Product（價格、InStock、運費 130、退貨政策、5 張圖）＋BreadcrumbList；文章 BlogPosting＋BreadcrumbList；`/products` HTML 內有 27 個商品連結；sitemap 44 個網址；robots.txt 只擋 `/admin`、`/profile`、`/auth/`；`/admin` 回 `x-robots-tag: noindex`。Chrome 開商品頁無主控台錯誤，購物車顯示順豐宅配 NT$130（預設）／黑貓宅配 NT$146 及超商取貨。
-- 預覽讀的是正式 Supabase：超商運費仍顯示 NT$60（`20261117000100` 尚未套用），屬預期；合併後若未同時改 Shopify 運費名稱，購物車會顯示「黑貓宅配／順豐宅配」而結帳頁仍是「標準」，所以要與正式切換一起上。
+- 預覽讀的是正式 Supabase：超商運費仍顯示 NT$60（當時運費 migration 尚未套用，11/17 已以版本 `20261117125105` 套用），屬預期；合併後若未同時改 Shopify 運費名稱，購物車會顯示「黑貓宅配／順豐宅配」而結帳頁仍是「標準」，所以要與正式切換一起上。
 - 未驗證：結帳頁依名稱預選運費（預覽網址不在 Turnstile 白名單，且 Shopify 運費尚未改名）；`/blog/` 會先 308 到 `/blog` 再 308 到 `/community`（兩跳，不影響收錄，可之後合併成一跳）。
 
 ## 測試訂單清理與發票作廢（2026-11-09，店主要求「測試訂單都取消，有發票也作廢」）
