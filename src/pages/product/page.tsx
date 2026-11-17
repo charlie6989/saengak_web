@@ -20,12 +20,13 @@ import { fetchPublishedReviews, fetchProductQA, submitProductQuestion } from '..
 import type { ProductReview, ProductQuestion } from '../../types/reviews-qa';
 import { captureExceptionSafe } from '../../lib/sentry';
 import { formatTwd, pickInitialVariant } from '../../domain/algorithms';
-import { applyMetaDescription, applyProductSeo, productMetaDescription, productPageTitle } from '../../lib/productMeta';
+import { applyProductSeo } from '../../lib/productMeta';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
 import { shopifyImageUrl } from '../../lib/shopifyImage';
 import { fetchShippingSettings } from '../../lib/promotions';
 import { fetchStorePickupSettings, type StorePickupSettings } from '../../lib/pickupPoints';
 import { computeFreeShippingGap, DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
+import { cheapestHomeFee, resolveShippingMethods } from '../../domain/shippingMethods';
 import SizeChartTable from '../../components/feature/SizeChartTable';
 import type { SizeChart } from '../../domain/sizeChart';
 import { siteContent } from '../../content/site';
@@ -108,16 +109,11 @@ export default function ProductPage() {
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
 
-  // 分頁標題與 meta description：優先使用 Shopify 的 SEO 標題／說明，沒填時退回商品名稱與說明摘要；離開商品頁時還原
+  // 分頁標題、meta description、canonical 與 JSON-LD：優先使用 Shopify 的 SEO 標題／說明，與伺服器產生的 head 相同。
+  // 換頁時由 ScrollToTop 依新路由重設，這裡只在離開時移除商品的 JSON-LD。
   useEffect(() => {
     if (!product?.name) return;
-    document.title = productPageTitle(product);
-    const restoreDescription = applyMetaDescription(productMetaDescription(product));
-    const removeProductSeo = applyProductSeo(product);
-    return () => {
-      restoreDescription();
-      removeProductSeo();
-    };
+    return applyProductSeo(product);
   }, [product]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -152,6 +148,12 @@ export default function ProductPage() {
       cancelled = true;
     };
   }, []);
+
+  // 宅配最低運費（黑貓宅配、順豐宅配取低者，比照 LUCISSI 的配送方式）
+  const lowestHomeFee = cheapestHomeFee(resolveShippingMethods({
+    defaultShippingFee: shippingSettings.defaultShippingFee,
+    sfHomeShippingFee: storePickup?.sfHomeShippingFee,
+  }));
 
   // 尺寸指南彈窗：Esc 關閉
   useEffect(() => {
@@ -1260,8 +1262,8 @@ export default function ProductPage() {
                   ) : (
                     <>
                       {storePickup?.enabled
-                        ? <>宅配運費 {formatTwd(shippingSettings.defaultShippingFee)}（超商取貨 {formatTwd(storePickup.shippingFee)}）</>
-                        : <>運費 {formatTwd(shippingSettings.defaultShippingFee)}</>}
+                        ? <>宅配運費 {formatTwd(lowestHomeFee)} 起（超商取貨 {formatTwd(storePickup.shippingFee)}）</>
+                        : <>宅配運費 {formatTwd(lowestHomeFee)} 起</>}
                       ，滿 {formatTwd(shippingSettings.freeShippingThreshold)} 免運；加入後還差{' '}
                       <strong className="font-semibold text-brand">{formatTwd(freeShippingGap.remaining)}</strong>
                     </>
@@ -1417,7 +1419,7 @@ export default function ProductPage() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-truck-line text-eucalyptus" aria-hidden="true"></i>
-                  <span>黑貓宅配・超商取貨</span>
+                  <span>{storePickup?.enabled === false ? '台灣宅配' : '宅配・超商取貨'}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-refresh-line text-eucalyptus" aria-hidden="true"></i>

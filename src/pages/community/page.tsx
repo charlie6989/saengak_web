@@ -2,7 +2,7 @@ import EditorialHero from '../../components/feature/EditorialHero';
 import { editorialImage } from '../../content/editorialImages';
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { buildShopifyArticleUrl } from '../../lib/shopifyNavigation';
@@ -128,10 +128,7 @@ export default function Community() {
     navigate('/register');
   };
 
-  const handleArticleOpen = (article: any) => {
-    const handle = article.handle || article.id;
-    navigate(`/blog/${handle}`);
-  };
+  const articlePath = (article: any) => `/blog/${article.handle || article.id}`;
 
   return (
     <div className="flow-root min-h-screen bg-[#F7F6F3]">
@@ -209,7 +206,7 @@ export default function Community() {
                 {/* Featured Article - 手機版優化 */}
                 {filteredArticles.length > 0 && (
                   <div className="mb-8 md:mb-16">
-                    <div className="relative overflow-hidden rounded-lg cursor-pointer group" onClick={() => handleArticleOpen(filteredArticles[0])}>
+                    <Link to={articlePath(filteredArticles[0])} className="block relative overflow-hidden rounded-lg cursor-pointer group">
                       {/* 手機版使用 4:3 比例，平板以上使用 21:9 */}
                       <div className="aspect-4/3 md:aspect-video lg:aspect-21/9 overflow-hidden">
                         <img
@@ -247,7 +244,7 @@ export default function Community() {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 )}
 
@@ -270,8 +267,8 @@ export default function Community() {
                           hidden: { opacity: 0, y: 16 },
                           show: { opacity: 1, y: 0, transition: { duration: 0.2 } },
                         }}
-                        onClick={() => handleArticleOpen(article)}
                       >
+                        <Link to={articlePath(article)} className="block">
                         {/* 手機版使用 16:10 比例 */}
                         <div className="aspect-16/10 overflow-hidden">
                           <img
@@ -303,6 +300,8 @@ export default function Community() {
                                 key={index}
                                 className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-blush hover:text-brand transition-colors"
                                 onClick={(e) => {
+                                  // 標籤在文章連結內：只切換篩選，不開啟文章
+                                  e.preventDefault();
                                   e.stopPropagation();
                                   setSelectedTag(tag);
                                 }}
@@ -328,6 +327,7 @@ export default function Community() {
                             </div>
                           </div>
                         </div>
+                        </Link>
                       </motion.article>
                     ))}
                   </div>

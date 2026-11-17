@@ -44,7 +44,7 @@ describe('404 page', () => {
   });
 
   it('marks the page noindex', () => {
-    expect(render().setAttribute).toHaveBeenCalledWith('content', 'noindex, nofollow');
+    expect(render().setAttribute).toHaveBeenCalledWith('content', 'noindex,nofollow');
   });
 });
 

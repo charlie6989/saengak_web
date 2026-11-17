@@ -10,5 +10,5 @@ export const siteContent = {
   supportSafetyNotice: '為保護您的帳戶安全，請勿向任何人提供信用卡卡號、簡訊驗證碼或付款密碼。',
   contentReviewedAt: '2026年11月7日',
   // 隱私權政策 2026-11-09 依店主決定新增訪客結帳資料與保存說明；其他政策頁仍沿用 contentReviewedAt。
-  privacyUpdatedAt: '2026年11月9日',
+  privacyUpdatedAt: '2026年11月17日',
 } as const;

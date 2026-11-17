@@ -1,5 +1,21 @@
 # 項目記憶
 
+## 物流與金流比照 LUCISSI 的長期規則（2026-11-17）
+
+- 店主決定 CARE 的物流與金流一律比照 LUCISSI website（`LUCISSI_website` `config/brands/lucissi.manifest.json` 的 `shippingDisplay`、`purchaseBlock`）。LUCISSI 改了運費、方式或付款，CARE 要跟著改。
+- 配送方式、運費、Shopify 運費名稱、出貨時效與付款文字的單一來源是 `src/domain/shippingMethods.ts`；label 必須等於 Shopify 運費名稱（建立結帳時依名稱預選，ShipAny 規則、Shipy、Flow 也用完整名稱比對）。正式運費可由 `site_settings`（`default_shipping_fee`、`sf_home_shipping_fee`、`pickup_shipping_fee`、`free_shipping_threshold`）覆寫。
+- 付款只有信用卡（Visa、Mastercard、JCB）與貨到付款；不提供 ATM（`verify:content` 封鎖「ATM 轉帳」）。
+- 拒收停權：Shopify 訂單標籤「拒收」「未取件」累計 2 筆停止購買（`src/domain/purchaseBlock.ts`、`api/_lib/purchase-block.ts`）。CARE 另存訂單 Email，以便建立結帳時擋下；檢查放在訪客 Turnstile 驗證之後，查詢失敗時放行。拒收紀錄依訂單 `updated_at` 排序（`order_refusal_versions`），晚到或重送的舊快照不能新增或移除拒收，也不能觸發取消。Shopify 接受 `orderCancel` 只代表排入背景工作，所以先記 `cancel_pending`；要等訂單 webhook 帶 `cancelled_at` 才記 `cancelled`（不可被改回）。PR #121 Codex 審查意見，2026-11-17。
+- 超商取貨由 SiteGiant 開綠界 C2C 運單（店主 11-17 決定比照，正式切換步驟見 `docs/LOGISTICS_PAYMENTS_PLAN.md`）；門市清單仍取自 ShipAny。
+
+## SEO 架構的長期規則（2026-11-17）
+
+- 路由表在 `src/lib/seo.ts`（`seoForLocation`）：每個公開路由的標題、說明、robots、canonical。伺服器與瀏覽器共用；新增路由要登記，否則 middleware 回 404。不收錄：會員／登入／訂單查詢／後台為 `noindex,nofollow`；`/products` 帶 q、query、keyword、search、tag 為 `noindex,follow`。canonical 一律 `https://lucissicare.com`、無結尾斜線、去掉查詢字串，只保留 `/products` 的 `category`、`collection`。
+- `middleware.ts`（Node.js runtime）對所有訪客取本次部署的 `/index.html`，寫入 head、JSON-LD 與 #root 內的隱藏爬蟲文字（`api/_lib/document-head.ts`）；查無商品／文章／路由回 404，`/index.html`、結尾與重複斜線及只會轉址的舊網址回 308；任何失敗退回 `next()`。商品、文章、首頁結構化資料在 `src/lib/structuredData.ts`，商品頁與文章頁用同一組函式。運費宣告只改 `src/domain/structuredDataShipping.ts`。
+- middleware 的 import 鏈一律寫 `.js` 副檔名（與 `api/` 函式相同）。不新增 `api/` 函式（12 個已滿）。
+- 搜尋引擎爬蟲絕不能送到 `api/share/product.ts`（回 `X-Robots-Tag: noindex`）；只有社群預覽爬蟲改寫過去。所有 User-Agent 拿到同一份 HTML。殼層 `index.html` 刻意不放 canonical／og:url。
+- 文章：站內精選文章在 `src/content/curatedArticles.ts`；`publicArticleSet` 規定 Shopify 有公開文章時只用 Shopify 文章，否則用精選文章。網站、sitemap、middleware、分享預覽共用這個規則。2026-11-17 建置時 Shopify 已有 6 篇公開文章，所以精選文章的網址目前是 404。
+
 ## 上線前程式修正的長期規則（2026-11-07）
 
 - `scripts/verify-public-content.mjs` 的 `forbiddenContent` 可加第三欄路徑前綴，只檢查該路徑；測試檔不掃描。`Shopify Checkout` 只封鎖優惠頁，因為條款與管理後台仍使用，且 `tests/admin-portal.test.tsx` 要求後台顯示；`Shopify 結帳頁` 已全站封鎖。
@@ -9,7 +25,7 @@
 - Shopify 商店預設語言是繁體中文（2026-11-07 由英文改），結帳頁與顧客通知信的語言由此決定。商店聯絡信箱是 `service@lucissi.com`。
 - 退換貨規則比照 LUCISSI（2026-11-07 店主決定）。密封護理品的判斷在 `src/domain/returnPolicy.ts`，用品名比對；新增這類商品時要確認品名符合，告知才會顯示。
 - 伺服器失敗回報一律走 `api/_lib/server-monitoring.ts`，只能傳穩定代碼，不可傳 Error message、資料庫 details 或 payload。DSN 讀 `SENTRY_DSN`，沒有時沿用 `VITE_PUBLIC_SENTRY_DSN`。
-- `/sitemap.xml` 由 `vite build` 產生（`src/domain/sitemap.ts`），商品清單在每次部署時更新；讀不到 Shopify 時只列固定頁面並在建置 log 警告。不要加 `public/sitemap.xml`。Vercel Hobby 上限 12 個函式（`api/` 加 `middleware.js`），目前已滿，`tests/vercel-function-limit.test.ts` 會擋下超額。
+- `/sitemap.xml` 由 `vite build` 產生（`src/domain/sitemap.ts`），商品清單在每次部署時更新；讀不到 Shopify 時只列固定頁面並在建置 log 警告。不要加 `public/sitemap.xml`。Vercel Hobby 上限 12 個函式（`api/` 加 `middleware.ts`，2026-11-17 前為 `middleware.js`），目前已滿，`tests/vercel-function-limit.test.ts` 會擋下超額。
 - 隱私權與條款頁的現行文字由店主於 2026-11-07 核准（未經律師審閱）。`OWNER-REVIEW` 註記標示仍待決定的內容；不可自行補上具體保存年限或電話。
 - 顧客文字不提內部服務與後台設定；例外是隱私權頁的服務商揭露、條款頁（店主核准的法律文字）與 `src/pages/admin/`。`scripts/verify-public-content.mjs` 只封鎖完整句段，新增文案仍要自行避開。
 

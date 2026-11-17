@@ -42,7 +42,8 @@ function formatDiscountLabel(discountType: PromotionTerms['discount_type'], valu
 export function buildPromotionSubtitle(terms: PromotionTerms): string {
   const label = formatDiscountLabel(terms.discount_type, terms.discount_value);
   if (terms.discount_type === 'free_shipping') {
-    return terms.min_spend > 0 ? `黑貓宅配滿 ${twd(terms.min_spend)} ${label}` : `黑貓宅配${label}`;
+    // 免運適用所有配送方式（宅配與超商取貨），比照 LUCISSI。
+    return terms.min_spend > 0 ? `宅配與超商取貨滿 ${twd(terms.min_spend)} ${label}` : `宅配與超商取貨${label}`;
   }
   if (terms.min_spend > 0) return `滿 ${twd(terms.min_spend)} ${label}`;
   if (terms.min_quantity && terms.min_quantity > 0) return `滿 ${terms.min_quantity} 件${label}`;

@@ -8,13 +8,17 @@ import {
   type PickupCarrier,
   type PickupPoint,
 } from '../domain/pickupPoints';
+import { isHomeMethodId, type HomeMethodId } from '../domain/shippingMethods';
 
 export interface StorePickupSettings {
   enabled: boolean;
   shippingFee: number;
+  /** 順豐宅配運費（site_settings.sf_home_shipping_fee）；沒有設定時用程式預設值 */
+  sfHomeShippingFee?: number;
 }
 
 const DISABLED: StorePickupSettings = { enabled: false, shippingFee: DEFAULT_PICKUP_SHIPPING_FEE };
+const validFee = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
 /** 預覽部署（*.vercel.app）且建置時設定 VITE_STORE_PICKUP_PREVIEW_ENABLED=true 才為 true；正式網域永遠 false。 */
 export function isStorePickupPreviewEnabled(
@@ -25,7 +29,7 @@ export function isStorePickupPreviewEnabled(
 }
 
 /**
- * 讀取公開設定 site_settings.store_pickup_enabled、pickup_shipping_fee；讀取失敗一律視為關閉。
+ * 讀取公開設定 site_settings.store_pickup_enabled、pickup_shipping_fee、sf_home_shipping_fee；讀取失敗一律視為關閉。
  * 預覽部署可用 isStorePickupPreviewEnabled 開啟（見 src/domain/pickupPoints.ts）。
  * 建立結帳時伺服器會再檢查一次開關並以門市清單確認門市。
  */
@@ -35,13 +39,15 @@ export async function fetchStorePickupSettings(previewEnabled: boolean = isStore
     const { data, error } = await supabase
       .from('site_settings')
       .select('key, value')
-      .in('key', ['store_pickup_enabled', 'pickup_shipping_fee']);
+      .in('key', ['store_pickup_enabled', 'pickup_shipping_fee', 'sf_home_shipping_fee']);
     if (error || !Array.isArray(data)) return previewEnabled ? { ...DISABLED, enabled: true } : DISABLED;
     const values = Object.fromEntries(data.map((row: { key: string; value: unknown }) => [row.key, row.value]));
     const fee = values.pickup_shipping_fee;
+    const sfFee = values.sf_home_shipping_fee;
     return {
       enabled: previewEnabled || values.store_pickup_enabled === true,
-      shippingFee: typeof fee === 'number' && Number.isFinite(fee) && fee >= 0 ? fee : DEFAULT_PICKUP_SHIPPING_FEE,
+      shippingFee: validFee(fee) ? fee : DEFAULT_PICKUP_SHIPPING_FEE,
+      ...(validFee(sfFee) ? { sfHomeShippingFee: sfFee } : {}),
     };
   } catch {
     return previewEnabled ? { ...DISABLED, enabled: true } : DISABLED;
@@ -80,18 +86,24 @@ const STORAGE_KEY = 'cart.deliverySelection';
 export interface DeliverySelection {
   method: DeliveryMethod;
   pickupPoint: PickupPoint | null;
+  /** 宅配選黑貓宅配或順豐宅配；沒選過時為 null（預設最便宜的宅配） */
+  homeMethod: HomeMethodId | null;
 }
 
 /** 記住上次選的配送方式與門市，方便回頭結帳；讀取失敗就用宅配。 */
 export function loadDeliverySelection(): DeliverySelection {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { method: 'home', pickupPoint: null };
-    const parsed = JSON.parse(raw) as { method?: unknown; pickupPoint?: unknown };
+    if (!raw) return { method: 'home', pickupPoint: null, homeMethod: null };
+    const parsed = JSON.parse(raw) as { method?: unknown; pickupPoint?: unknown; homeMethod?: unknown };
     const pickupPoint = parsePickupPoint(parsed.pickupPoint) ?? null;
-    return { method: parsed.method === 'pickup' ? 'pickup' : 'home', pickupPoint };
+    return {
+      method: parsed.method === 'pickup' ? 'pickup' : 'home',
+      pickupPoint,
+      homeMethod: isHomeMethodId(parsed.homeMethod) ? parsed.homeMethod : null,
+    };
   } catch {
-    return { method: 'home', pickupPoint: null };
+    return { method: 'home', pickupPoint: null, homeMethod: null };
   }
 }
 

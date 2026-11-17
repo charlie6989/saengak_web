@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fetchSitemapProducts, renderSitemap, STATIC_PATHS } from '../src/domain/sitemap';
+import { fetchSitemapArticles, fetchSitemapProducts, renderSitemap, sitemapArticles, STATIC_PATHS } from '../src/domain/sitemap';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -29,6 +29,26 @@ describe('sitemap', () => {
     expect(STATIC_PATHS).toContain('/community');
     expect(STATIC_PATHS).not.toContain('/blog');
     expect(STATIC_PATHS).not.toContain('/brand-story');
+  });
+
+  it('lists the public Shopify articles, or the curated articles when there are none', async () => {
+    expect(renderSitemap([])).toContain('<loc>https://lucissicare.com/blog/daily-feminine-care-guide</loc><lastmod>2026-09-01T10:37:30Z</lastmod>');
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: { articles: { nodes: [
+      { handle: 'new-article', publishedAt: '2026-11-01T00:00:00Z', tags: ['公開'] },
+      { handle: 'draft-article', publishedAt: '2026-11-02T00:00:00Z', tags: ['草稿'] },
+      { handle: 'daily-feminine-care-guide', publishedAt: '2026-11-03T00:00:00Z', tags: ['public'] },
+    ] } } }))));
+    const articles = sitemapArticles(await fetchSitemapArticles(config));
+    const xml = renderSitemap([], articles);
+
+    expect(xml).toContain('<loc>https://lucissicare.com/blog/new-article</loc><lastmod>2026-11-01T00:00:00Z</lastmod>');
+    expect(xml).not.toContain('draft-article');
+    // 與網站相同：有公開的 Shopify 文章時，精選文章不列出；同 handle 以 Shopify 的日期為準
+    expect(xml).toContain('<loc>https://lucissicare.com/blog/daily-feminine-care-guide</loc><lastmod>2026-11-03T00:00:00Z</lastmod>');
+    expect(xml).not.toContain('how-we-review-products-and-content');
+    expect(renderSitemap([], sitemapArticles([]))).toContain('how-we-review-products-and-content');
+    expect(renderSitemap([], sitemapArticles(null))).toContain('how-we-review-products-and-content');
   });
 
   it('leaves out internal test products, as the storefront does', async () => {

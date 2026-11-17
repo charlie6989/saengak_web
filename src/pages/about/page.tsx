@@ -84,7 +84,7 @@ export default function AboutPage() {
                     <p className={eyebrow}>{String(index + 1).padStart(2, '0')} / {pillar.eyebrow}</p>
                     <h3 className="mt-3 text-2xl font-medium text-brand">{pillar.name}</h3>
                     <p className="mt-3 text-base leading-8">{pillar.description}</p>
-                    <Link to={`/search?category=${pillar.name}`} className={`${textLink} mt-4`}>探索{pillar.name} <span aria-hidden="true">↗</span></Link>
+                    <Link to={`/products?category=${pillar.name}`} className={`${textLink} mt-4`}>探索{pillar.name} <span aria-hidden="true">↗</span></Link>
                   </article>
                 ))}
               </div>
@@ -147,7 +147,7 @@ export default function AboutPage() {
             <p className="text-xs tracking-[0.18em] text-blush">A LITTLE CARE, EVERY DAY</p>
             <h2 id="shop-title" className="mt-5 text-3xl font-medium leading-snug text-white md:text-4xl md:leading-10">從今天，多留一點照顧給自己。</h2>
             <p className="mt-5 text-base leading-8 text-blush">從一件貼近日常的選品開始，找到屬於妳的舒適步調。</p>
-            <Link to="/search" className="mt-8 inline-flex min-h-12 items-center justify-center gap-6 bg-[#F7F6F3] px-8 py-3 text-sm font-medium text-brand transition-colors hover:bg-blush focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            <Link to="/products" className="mt-8 inline-flex min-h-12 items-center justify-center gap-6 bg-[#F7F6F3] px-8 py-3 text-sm font-medium text-brand transition-colors hover:bg-blush focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
               開始選購 <span aria-hidden="true">→</span>
             </Link>
           </div>

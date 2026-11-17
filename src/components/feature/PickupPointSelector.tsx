@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  PICKUP_CARRIERS,
   PICKUP_CARRIER_LABELS,
   describePickupPoint,
   type DeliveryMethod,
@@ -8,35 +7,60 @@ import {
   type PickupPoint,
 } from '../../domain/pickupPoints';
 import { PickupSearchError, searchPickupPoints } from '../../lib/pickupPoints';
+import {
+  formatTwd,
+  sortedHomeMethods,
+  type HomeMethodId,
+  type ShippingMethods,
+} from '../../domain/shippingMethods';
 
 const fontStyle = { fontFamily: 'Noto Sans TC, sans-serif' };
-const formatTwd = (value: number) => `NT$${value.toLocaleString('zh-TW')}`;
 
 interface PickupPointSelectorProps {
   method: DeliveryMethod;
   pickupPoint: PickupPoint | null;
-  homeShippingFee: number;
-  pickupShippingFee: number;
+  /** 目前可用的配送方式與運費（resolveShippingMethods）；pickupMethods 為空代表超商取貨未開放 */
+  shippingMethods: ShippingMethods;
+  homeMethod: HomeMethodId;
+  /** 已達免運：運費顯示刪除線與 NT$0 */
+  isFreeShipping?: boolean;
   onMethodChange: (method: DeliveryMethod) => void;
+  onHomeMethodChange: (method: HomeMethodId) => void;
   onPickupPointChange: (point: PickupPoint | null) => void;
   /** 測試用：注入搜尋函式 */
   search?: typeof searchPickupPoints;
 }
 
+function FeeLabel({ fee, isFree }: { fee: number; isFree: boolean }) {
+  if (!isFree) return <span>{formatTwd(fee)}</span>;
+  return (
+    <span>
+      <span className="mr-1 text-gray-400 line-through">{formatTwd(fee)}</span>
+      <span className="font-semibold text-brand">NT$0</span>
+    </span>
+  );
+}
+
 /**
- * 購物車的配送方式選擇：宅配到府，或到全家、7-11、萊爾富門市取件。
- * 只有 site_settings.store_pickup_enabled 為 true 時才會顯示；門市由 ShipAny 門市清單搜尋。
+ * 購物車的配送方式選擇（比照 LUCISSI）：宅配選黑貓宅配或順豐宅配；超商取貨選 7-11、全家、萊爾富門市。
+ * 超商取貨只有 site_settings.store_pickup_enabled 為 true 時才會出現；門市由 ShipAny 門市清單搜尋。
+ * 建立結帳時伺服器會依這裡的選擇預選同名的 Shopify 運費。
  */
 export default function PickupPointSelector({
   method,
   pickupPoint,
-  homeShippingFee,
-  pickupShippingFee,
+  shippingMethods,
+  homeMethod,
+  isFreeShipping = false,
   onMethodChange,
+  onHomeMethodChange,
   onPickupPointChange,
   search = searchPickupPoints,
 }: PickupPointSelectorProps) {
-  const [carrier, setCarrier] = useState<PickupCarrier>(pickupPoint?.carrier ?? 'familymart');
+  const pickupMethods = shippingMethods.pickupMethods;
+  const pickupAvailable = pickupMethods.length > 0;
+  const homeMethods = sortedHomeMethods(shippingMethods);
+  const [carrier, setCarrier] = useState<PickupCarrier>(pickupPoint?.carrier ?? pickupMethods[0]?.carrier ?? 'seven-eleven');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<PickupPoint[] | null>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -45,6 +69,11 @@ export default function PickupPointSelector({
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  const showingSelected = Boolean(pickupPoint && !isChanging);
+  const activeCarrier = showingSelected && pickupPoint ? pickupPoint.carrier : carrier;
+  const activePickup = pickupMethods.find((item) => item.carrier === activeCarrier) ?? pickupMethods[0];
+  const selectedHome = homeMethods.find((item) => item.id === homeMethod) ?? homeMethods[0];
 
   const runSearch = async () => {
     const keyword = query.trim();
@@ -63,7 +92,7 @@ export default function PickupPointSelector({
     } catch (error) {
       if ((error as Error)?.name === 'AbortError') return;
       setResults(null);
-      setSearchError(error instanceof PickupSearchError ? error.message : '門市清單暫時無法讀取，請稍後再試。');
+      setSearchError(error instanceof PickupSearchError ? error.message : '門市清單暫時無法讀取，請稍後再試或改選宅配。');
     } finally {
       if (abortRef.current === controller) setIsSearching(false);
     }
@@ -75,7 +104,7 @@ export default function PickupPointSelector({
     setResults(null);
   };
 
-  const methodButton = (value: DeliveryMethod, label: string, fee: number) => (
+  const methodButton = (value: DeliveryMethod, label: string, feeText: string) => (
     <button
       type="button"
       role="radio"
@@ -87,21 +116,56 @@ export default function PickupPointSelector({
       data-testid={`delivery-method-${value}`}
     >
       <span className="block">{label}</span>
-      <span className="block text-[11px] font-normal text-gray-500">運費 {formatTwd(fee)}，達免運門檻免運</span>
+      <span className="block text-[11px] font-normal text-gray-500">{feeText}</span>
     </button>
   );
+
+  const lowestHomeFee = homeMethods[0]?.fee ?? 0;
+  const lowestPickupFee = pickupAvailable ? Math.min(...pickupMethods.map((item) => item.fee)) : 0;
+  const feeHint = (fee: number, many: boolean) =>
+    isFreeShipping ? '已達免運門檻，運費 NT$0' : `運費 ${formatTwd(fee)}${many ? ' 起' : ''}，達免運門檻免運`;
 
   return (
     <div className="space-y-3 pt-4 pb-2 border-t border-gray-100" data-testid="delivery-method-section">
       <h3 className="text-sm font-bold text-gray-900" style={fontStyle}>配送方式</h3>
-      <div className="flex gap-2" role="radiogroup" aria-label="配送方式">
-        {methodButton('home', '宅配到府', homeShippingFee)}
-        {methodButton('pickup', '超商取貨', pickupShippingFee)}
-      </div>
+      {pickupAvailable && (
+        <div className="flex gap-2" role="radiogroup" aria-label="配送方式">
+          {methodButton('home', '宅配到府', feeHint(lowestHomeFee, homeMethods.length > 1 && homeMethods[0].fee !== homeMethods[homeMethods.length - 1].fee))}
+          {methodButton('pickup', '超商取貨', feeHint(lowestPickupFee, false))}
+        </div>
+      )}
 
-      {method === 'pickup' && (
+      {method === 'home' && (
+        <div className="space-y-2" data-testid="home-method-panel">
+          <div className="space-y-1.5" role="radiogroup" aria-label="宅配方式">
+            {homeMethods.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="radio"
+                aria-checked={selectedHome?.id === item.id}
+                onClick={() => onHomeMethodChange(item.id)}
+                className={`flex w-full min-h-[44px] items-center justify-between rounded-md border px-3 py-2 text-left text-sm ${
+                  selectedHome?.id === item.id ? 'border-brand bg-blush text-brand font-semibold' : 'border-gray-300 text-gray-700 hover:border-brand'
+                }`}
+                data-testid={`home-method-${item.id}`}
+              >
+                <span>{item.label}</span>
+                <FeeLabel fee={item.fee} isFree={isFreeShipping} />
+              </button>
+            ))}
+          </div>
+          {selectedHome && (
+            <p className="text-[11px] leading-5 text-gray-500">
+              結帳頁會預先選好「{selectedHome.label}」，也可以在結帳頁改選其他宅配。
+            </p>
+          )}
+        </div>
+      )}
+
+      {method === 'pickup' && pickupAvailable && (
         <div className="space-y-3 rounded-lg border border-gray-200 p-3" data-testid="pickup-point-panel">
-          {pickupPoint && !isChanging ? (
+          {showingSelected && pickupPoint ? (
             <div className="flex items-start justify-between gap-3" data-testid="pickup-point-selected">
               <div className="text-sm">
                 <p className="font-semibold text-gray-900">{describePickupPoint(pickupPoint)}</p>
@@ -121,22 +185,23 @@ export default function PickupPointSelector({
           ) : (
             <>
               <div className="flex gap-2" role="radiogroup" aria-label="超商">
-                {PICKUP_CARRIERS.map((value) => (
+                {pickupMethods.map((item) => (
                   <button
-                    key={value}
+                    key={item.carrier}
                     type="button"
                     role="radio"
-                    aria-checked={carrier === value}
+                    aria-checked={carrier === item.carrier}
                     onClick={() => {
-                      setCarrier(value);
+                      setCarrier(item.carrier);
                       setResults(null);
                       setSearchError('');
                     }}
-                    className={`flex-1 min-h-[44px] rounded-md border px-2 text-sm ${
-                      carrier === value ? 'border-brand bg-blush text-brand font-semibold' : 'border-gray-300 text-gray-700'
+                    className={`flex-1 min-h-[44px] rounded-md border px-2 py-1 text-sm ${
+                      carrier === item.carrier ? 'border-brand bg-blush text-brand font-semibold' : 'border-gray-300 text-gray-700'
                     }`}
                   >
-                    {PICKUP_CARRIER_LABELS[value]}
+                    <span className="block">{PICKUP_CARRIER_LABELS[item.carrier]}</span>
+                    <span className="block text-[11px] font-normal"><FeeLabel fee={item.fee} isFree={isFreeShipping} /></span>
                   </button>
                 ))}
               </div>
@@ -198,9 +263,12 @@ export default function PickupPointSelector({
               )}
             </>
           )}
-          <p className="text-[11px] leading-5 text-gray-500">
-            結帳頁的收件地址會自動帶入門市，請勿修改，以免無法配送。可在結帳頁選擇線上付款或取貨付款；收件人姓名須與取件時出示的證件相同。
-          </p>
+          {activePickup && (
+            <div className="space-y-1 text-[11px] leading-5 text-gray-500" data-testid="pickup-method-notes">
+              <p>由{activePickup.service}配送。取件時需出示與姓名相符的證件。{activePickup.sizeNote}。</p>
+              <p>前往結帳後，請選擇「{activePickup.label}」運送方式，地址會自動帶入，請勿修改。可在結帳頁選擇線上付款或取貨付款。</p>
+            </div>
+          )}
         </div>
       )}
     </div>

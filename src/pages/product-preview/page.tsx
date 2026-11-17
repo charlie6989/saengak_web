@@ -18,7 +18,7 @@ const SAMPLE_PRODUCT = {
     '嚴選天然植萃與專利益生菌微生態配方，維持 pH4.5~5.5 弱酸健康平衡',
     '堅持不添加 21 種有害化學成分與人工香精，敏弱肌膚也能安心使用',
     '水潤凝膠質地清爽好吸收，深層滋潤不黏膩',
-    '韓國原廠直營進口正品保證，享 7 天安心鑑賞期'
+    '韓國原廠直營進口正品保證，收到商品次日起 7 日內可退貨'
   ],
   options: [
     {
@@ -704,11 +704,11 @@ export default function ProductPreviewPage() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-truck-line text-brand"></i>
-                  <span>黑貓宅配・超商取貨</span>
+                  <span>宅配・超商取貨</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-refresh-line text-brand"></i>
-                  <span>7 天安心鑑賞期</span>
+                  <span>7 日內可退貨</span>
                 </div>
               </div>
             </div>

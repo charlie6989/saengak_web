@@ -15,7 +15,7 @@ function countFunctions(directory: string): number {
 
 describe('Vercel function limit', () => {
   it('stays within the Hobby plan, counting the Node.js middleware', () => {
-    const middleware = existsSync('middleware.js') ? 1 : 0;
+    const middleware = ['middleware.js', 'middleware.ts'].filter((file) => existsSync(file)).length;
     expect(countFunctions('api') + middleware).toBeLessThanOrEqual(HOBBY_FUNCTION_LIMIT);
   });
 });

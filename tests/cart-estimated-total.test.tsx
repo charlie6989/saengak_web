@@ -35,12 +35,12 @@ function renderCart(price: number) {
 }
 
 describe('cart estimated total', () => {
-  it('adds the NT$146 estimated shipping below the free-shipping threshold', () => {
+  it('adds the cheapest home rate (順豐宅配 NT$130) below the free-shipping threshold', () => {
     const html = renderCart(680);
     expect(html).toContain('預估運費');
-    expect(html).toMatch(/cart-estimated-shipping.*146/);
+    expect(html).toMatch(/cart-estimated-shipping.*130/);
     expect(html).toContain('預估總計');
-    expect(html).toMatch(/cart-estimated-total[^>]*>NT\$826/);
+    expect(html).toMatch(/cart-estimated-total[^>]*>NT\$810/);
     expect(html).toContain('運費與最終金額以結帳頁為準');
     expect(html).not.toContain('總結帳金額');
   });

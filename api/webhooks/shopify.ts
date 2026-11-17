@@ -11,6 +11,7 @@ import { nudgeCodCollection } from '../_lib/cod-collection-nudge.js';
  */
 
 import { readOrderForPerk, settleMemberPerkAfterOrder } from '../_lib/member-perk.js';
+import { enforcePurchaseBlock } from '../_lib/purchase-block.js';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { jsonResponse } from '../_lib/security.js';
 import { reportServerFailure, safeErrorCode } from '../_lib/server-monitoring.js';
@@ -209,6 +210,18 @@ async function handler(request: Request): Promise<Response> {
 
       if (process.env.COD_COLLECTION_ENABLED === 'true') {
         waitUntil(nudgeCodCollection(admin, parsedOrder.p_shopify_order_gid));
+      }
+
+      // 貨到付款拒收停權（比照 LUCISSI）：同步拒收標籤、取消停權後的新訂單；失敗不影響訂單同步
+      try {
+        const block = await enforcePurchaseBlock(admin as unknown as SupabaseRpcClient, payload);
+        if ('error' in block) {
+          await reportServerFailure({ area: 'shopify_webhook', failure: 'PURCHASE_BLOCK_SYNC_FAILED', level: 'warning', tags: { topic, webhook_id: webhookId } });
+        } else if (block.action === 'cancel_failed' || block.action === 'manual_review') {
+          await reportServerFailure({ area: 'shopify_webhook', failure: block.action === 'cancel_failed' ? 'BLOCKED_ORDER_CANCEL_FAILED' : 'BLOCKED_ORDER_NEEDS_REVIEW', level: 'warning', tags: { topic, webhook_id: webhookId } });
+        }
+      } catch (blockError) {
+        await reportServerFailure({ area: 'shopify_webhook', failure: 'PURCHASE_BLOCK_SYNC_FAILED', level: 'warning', tags: { topic, webhook_id: webhookId, error_code: safeErrorCode(blockError) } });
       }
 
       // LUCISSI 會員首單免運：第一筆付款訂單成立後結算（用掉或停用），失敗不影響訂單同步

@@ -322,9 +322,9 @@ describe('LUCISSI CARE Shopify 折扣轉換純函式測試 (api/shopify/discount
         },
       } as any);
       expect(result!.title).toBe('滿額免運');
-      expect(result!.subtitle).toBe('黑貓宅配滿 NT$ 1,500 免運費');
+      expect(result!.subtitle).toBe('宅配與超商取貨滿 NT$ 1,500 免運費');
       expect(result!.badge_text).toBe('滿額免運');
-      expect(JSON.stringify(result)).not.toMatch(/超商|1,499|初夏/);
+      expect(JSON.stringify(result)).not.toMatch(/1,499|初夏/);
     });
 
     it('未核准公開的折扣不能經網站領取', async () => {

@@ -1,6 +1,7 @@
 import type { ShopifyCheckoutLine } from '../domain/algorithms';
 import type { InvoicePreference } from '../domain/invoice';
 import type { PickupPoint } from '../domain/pickupPoints';
+import type { HomeMethodId } from '../domain/shippingMethods';
 import { isSupabaseConfigured, supabase } from './supabase';
 
 export const LUCISSI_CARE_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
@@ -53,6 +54,7 @@ const expectedCheckoutErrorCodes: ReadonlySet<string> = new Set([
   'TURNSTILE_TOKEN_REQUIRED',
   'TURNSTILE_VERIFICATION_FAILED',
   'GUEST_EMAIL_REQUIRED',
+  'PURCHASE_BLOCKED',
 ]);
 
 export function shouldReportCheckoutError(code: string | undefined): boolean {
@@ -70,6 +72,7 @@ const guestCheckoutErrorMessages: Record<string, string> = {
   STORE_PICKUP_DISABLED: '超商取貨目前暫停服務，請改選宅配後再結帳。',
   PICKUP_POINT_INVALID: '找不到您選的取貨門市，請重新選擇門市後再結帳。',
   PICKUP_POINTS_UNAVAILABLE: '門市清單暫時無法確認，請稍後再試，或改選宅配。',
+  PURCHASE_BLOCKED: '此帳號的貨到付款訂單已累計 2 次拒收或逾期未取件，已暫停購買。如有疑問請聯絡客服。',
 };
 
 function collectDetailText(value: unknown): string[] {
@@ -179,7 +182,7 @@ export async function createShopifyCheckout(
   invoicePreference: InvoicePreference,
   discountCodes?: string[],
   guest?: GuestCheckoutDetails,
-  delivery?: { pickupPoint?: Pick<PickupPoint, 'carrier' | 'code'> | null },
+  delivery?: { pickupPoint?: Pick<PickupPoint, 'carrier' | 'code'> | null; homeMethod?: HomeMethodId },
 ): Promise<{ checkoutUrl: string; invalidDiscountCodes: string[]; checkoutKind: 'member' | 'guest' }> {
   if (!isShopifyCheckoutConfigured) {
     throw new Error('結帳服務尚未設定，暫時無法結帳。');
@@ -206,9 +209,10 @@ export async function createShopifyCheckout(
   }
 
   // 只送超商與門市代碼；名稱與地址由伺服器依門市清單填入。
+  // 宅配則送顧客選的宅配方式（黑貓宅配／順豐宅配），伺服器據此預選結帳頁運費。
   const pickupPoint = delivery?.pickupPoint
     ? { pickupPoint: { carrier: delivery.pickupPoint.carrier, code: delivery.pickupPoint.code } }
-    : {};
+    : delivery?.homeMethod ? { homeMethod: delivery.homeMethod } : {};
   const requestBody = guest
     ? {
         lines,

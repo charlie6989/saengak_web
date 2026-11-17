@@ -170,8 +170,8 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
   };
 
   // 照護入口；舊分類網址（私密護理、貼身穿著、身體保養、輕盈運動…）也會標示對應入口為目前頁面
-  const productCategories = CARE_PILLARS.map((pillar) => ({ name: pillar.name, href: `/search?category=${pillar.name}` }));
-  const activeCategory = location.pathname === '/search'
+  const productCategories = CARE_PILLARS.map((pillar) => ({ name: pillar.name, href: `/products?category=${pillar.name}` }));
+  const activeCategory = location.pathname === '/products'
     ? resolveCategoryName(new URLSearchParams(location.search).get('category') || '')
     : '';
   const desktopNavClass = (active: boolean) =>
@@ -245,8 +245,8 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
                 style={{ gap: 'min(24px, 1.8vw)' }} // 七個項目，間距略收
               >
                 <Link
-                  to="/search?query=all"
-                  className={desktopNavClass(location.pathname === '/search' && !activeCategory)}
+                  to="/products"
+                  className={desktopNavClass(location.pathname === '/products' && !activeCategory)}
                   style={{ fontSize: 'min(16px, 1.11vw)' }}
                 >
                   全部商品
@@ -535,7 +535,7 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
             <nav className="py-6">
               {/* 全部商品 */}
               <Link
-                to="/search?query=all"
+                to="/products"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block w-full text-left px-6 py-4 text-lg font-semibold text-gray-800 hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100"
               >

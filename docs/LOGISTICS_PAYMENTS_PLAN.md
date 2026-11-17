@@ -1,5 +1,38 @@
 # 物流與金流上線清單（LUCISSI CARE）
 
+## 2026-11-17 物流與金流比照 LUCISSI（店主決定，程式已完成、正式切換待執行）
+
+店主要求「所有金流物流都需要比照 LUCISSI website」，並選定：超商取貨完全比照（NT$69、由 SiteGiant 開綠界 C2C 運單）、宅配改名「黑貓宅配」並新增「順豐宅配」、付款完全比照（停用 ATM、加 2 次拒收停權）、出貨時效比照（1 個工作天內出貨、1–2 個工作天送達）。依據：LUCISSI_website `origin/main` `d1f072d`（2026-11-13）的 `config/brands/lucissi.manifest.json`、`Lib/storefront/delivery-choice.ts`、`Lib/contracts/purchase-block.ts`、`Lib/docs/ECPAY_C2C_RUNBOOK.md` 與 `/shipping`、FAQ 文字。
+
+| 項目 | LUCISSI（2026-11-13） | CARE 切換前 | CARE 程式（本分支） |
+|---|---|---|---|
+| 宅配 | 黑貓宅配 NT$146、順豐宅配 NT$130 | 「標準」NT$146 | 兩種宅配，購物車可選，預設最便宜 |
+| 超商取貨 | 7-11取貨／全家取貨／萊爾富取貨 NT$69，SiteGiant 開綠界 C2C | NT$60，ShipAny（全家店到店、順豐） | NT$69，文字改綠界與尺寸限制；門市清單仍取自 ShipAny |
+| 免運 | 單筆滿 NT$1,500，任何配送方式 | 同 | 同 |
+| 預選運費 | 建立購物車後依名稱 `cartSelectedDeliveryOptionsUpdate` | 無（結帳頁預設最便宜＝超商） | 已移植（`preselectDeliveryOption`） |
+| 付款 | 信用卡（Visa／Mastercard／JCB）、貨到付款 | 信用卡、ATM、貨到付款 | 文字改為信用卡與貨到付款；ATM 須在 Shopify 停用 |
+| 拒收停權 | 累計 2 次「拒收／未取件」標籤停止購買 | 無 | 已移植，另以 Email 在結帳前檢查 |
+| 出貨時效 | 1 個工作天內出貨，出貨後約 1–2 個工作天送達 | 約 3 至 5 個工作天送達 | 已改 |
+
+程式位置：`src/domain/shippingMethods.ts`（方式、運費、名稱、時效與付款文字的單一來源）、`src/domain/purchaseBlock.ts`、`api/_lib/purchase-block.ts`、`api/create-shopify-cart.ts`、`src/components/feature/PickupPointSelector.tsx`。Migration：`20261117124456_order_refusal_blocks.sql`（隨時可套用）、`20261117000100_align_shipping_fees_with_lucissi.sql`（切換時套用）。
+
+### 正式切換步驟（同一次完成，避免網站與結帳頁運費不一致）
+
+1. 先套用 `20261117124456_order_refusal_blocks.sql`（新表與 RPC，不影響現有流程；webhook 遇到缺表只記警告不失敗）。**2026-11-17 已套用正式資料庫**（版本 `20261117124456`；套用前以強制回滾的交易實測 10 項：舊快照不改拒收、2 筆停權、Email 檢查、已取消不被改回、缺 updated_at 拒絕、anon 無權限；套用後回讀 4 個 RPC、RLS 開啟、兩表皆 0 筆）。
+2. 合併 PR、Vercel 部署完成後立即：
+   1. Shopify 運費（Domestic 台灣）：「標準」改名「黑貓宅配」；新增「順豐宅配」NT$130；「全家取貨」「7-11取貨」「萊爾富取貨」改 NT$69；全部維持滿 NT$1,500 免運，運送時間說明改 1–2 個工作天。
+   2. 套用 `20261117000100_align_shipping_fees_with_lucissi.sql`（`pickup_shipping_fee`=69、新增 `sf_home_shipping_fee`=130），回讀。
+   3. Shipy：取貨地址（含 `[`）要同時隱藏「黑貓宅配」「順豐宅配」（原規則只隱藏「標準」）；其餘規則不變。用 Storefront 購物車實測宅配只見兩種宅配、選某超商只見該超商。
+   4. Shopify Flow「COD 宅配送達後自動標記已付款」條件 `shippingLine.title` 由「標準」改「黑貓宅配」。三個超商 COD Flow 停用：超商改走綠界後 ShipAny 不會回寫 DELIVERED；比照 LUCISSI，順豐宅配與超商取貨的貨到付款在確認取件／送達後由客服手動標記已付款。
+   5. ShipAny CARE 物流設定檔 `shopify-gh2xgs-zf`：黑貓規則的平台運送方式改「黑貓宅配」，新增「順豐宅配」→ 順豐宅配規則；超商訂單改由 SiteGiant 出貨，ShipAny 的超商草稿不要確認（或移除超商規則）。
+   6. SiteGiant：CARE 頻道（43091）在 訂單處理 → 選擇快遞服務 → 綠界物流 → 安排發貨，比照 LUCISSI `ECPAY_C2C_RUNBOOK.md`；寄件人須為真實姓名。首筆需確認門市代碼、代收金額與追蹤號回寫 Shopify。
+   7. Shopify 付款：停用「Tappay ATM」，保留 TapPay 信用卡與貨到付款。
+   8. Shopify 政策：運送政策改寫（運費、時效、綠界與尺寸限制、付款、拒收停權）；隱私權政策同步網站 `/privacy` 新增的 SiteGiant、綠界科技。
+   9. 確認 Shopify App（SAENGAK Order Sync）有 `write_orders`，否則停權帳號的新訂單自動取消會記成 `cancel_failed`，需人工取消。送出取消後先記 `cancel_pending`，收到已取消的訂單 webhook 才改成 `cancelled`；切換後可查 `blocked_order_actions` 是否有長時間停在 `cancel_pending` 的訂單。
+3. 客服流程：貨到付款拒收或逾期未取件的訂單，在 Shopify 訂單加標籤「拒收」或「未取件」；移除標籤即撤回。
+
+尚未驗證：上述所有正式設定；CARE 在 SiteGiant 能否選綠界物流；首筆綠界超商單的門市、代收金額與追蹤號；預選運費在正式 Shopify（含 Shipy 隱藏規則）實際生效。
+
 > 2026-10-23 最新部署：PR #73 已合併 main `7362920`，Vercel READY、兩份 COD migration 及兩個相關 Edge function 已部署。新 COD／付款／UI／資料庫 policy 與光貿放行仍關閉，未新增物流 webhook 或 COD 排程，未做實單驗收。下方未部署敘述為當時紀錄；目前結果見 [驗收紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。
 
 > 2026-10-23：main Vite 修補與 CI 已恢復，PR #73 衝突及審查處理中、維持 Draft／新功能關閉。正式 guest=false、光貿 release=false、沒有新增實單；收款／同步／發票／通知／退款逐項證據與啟用阻擋見 [本輪驗收紀錄](RELEASE_ACCEPTANCE_2026-10-23.md)。
