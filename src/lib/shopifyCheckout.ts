@@ -54,6 +54,7 @@ const expectedCheckoutErrorCodes: ReadonlySet<string> = new Set([
   'TURNSTILE_TOKEN_REQUIRED',
   'TURNSTILE_VERIFICATION_FAILED',
   'GUEST_EMAIL_REQUIRED',
+  'PURCHASE_BLOCKED',
 ]);
 
 export function shouldReportCheckoutError(code: string | undefined): boolean {
@@ -71,6 +72,7 @@ const guestCheckoutErrorMessages: Record<string, string> = {
   STORE_PICKUP_DISABLED: '超商取貨目前暫停服務，請改選宅配後再結帳。',
   PICKUP_POINT_INVALID: '找不到您選的取貨門市，請重新選擇門市後再結帳。',
   PICKUP_POINTS_UNAVAILABLE: '門市清單暫時無法確認，請稍後再試，或改選宅配。',
+  PURCHASE_BLOCKED: '此帳號的貨到付款訂單已累計 2 次拒收或逾期未取件，已暫停購買。如有疑問請聯絡客服。',
 };
 
 function collectDetailText(value: unknown): string[] {
