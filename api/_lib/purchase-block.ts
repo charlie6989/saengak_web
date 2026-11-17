@@ -3,7 +3,7 @@
  * - 每個訂單 webhook：同步拒收標籤（依訂單 updated_at 丟掉晚到的舊快照），停權後的新訂單未付款送出取消、
  *   已付款或已出貨轉人工；看到停權後的訂單確實已取消時才記為已取消；
  * - 建立結帳前：以會員或訪客的 Email 查詢是否已停權。
- * 規則見 src/domain/purchaseBlock.ts。資料表與 RPC 見 supabase/migrations/20261117000000_order_refusal_blocks.sql。
+ * 規則見 src/domain/purchaseBlock.ts。資料表與 RPC 見 supabase/migrations/20261117124456_order_refusal_blocks.sql。
  */
 import { SHOPIFY_ADMIN_API_VERSION, SHOPIFY_STORE_DOMAIN } from './shopify-config.js';
 import { getShopifyAdminAccessToken } from '../shopify/discounts.js';

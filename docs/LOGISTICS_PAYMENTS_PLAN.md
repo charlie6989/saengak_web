@@ -14,11 +14,11 @@
 | 拒收停權 | 累計 2 次「拒收／未取件」標籤停止購買 | 無 | 已移植，另以 Email 在結帳前檢查 |
 | 出貨時效 | 1 個工作天內出貨，出貨後約 1–2 個工作天送達 | 約 3 至 5 個工作天送達 | 已改 |
 
-程式位置：`src/domain/shippingMethods.ts`（方式、運費、名稱、時效與付款文字的單一來源）、`src/domain/purchaseBlock.ts`、`api/_lib/purchase-block.ts`、`api/create-shopify-cart.ts`、`src/components/feature/PickupPointSelector.tsx`。Migration：`20261117000000_order_refusal_blocks.sql`（隨時可套用）、`20261117000100_align_shipping_fees_with_lucissi.sql`（切換時套用）。
+程式位置：`src/domain/shippingMethods.ts`（方式、運費、名稱、時效與付款文字的單一來源）、`src/domain/purchaseBlock.ts`、`api/_lib/purchase-block.ts`、`api/create-shopify-cart.ts`、`src/components/feature/PickupPointSelector.tsx`。Migration：`20261117124456_order_refusal_blocks.sql`（隨時可套用）、`20261117000100_align_shipping_fees_with_lucissi.sql`（切換時套用）。
 
 ### 正式切換步驟（同一次完成，避免網站與結帳頁運費不一致）
 
-1. 先套用 `20261117000000_order_refusal_blocks.sql`（新表與 RPC，不影響現有流程；webhook 遇到缺表只記警告不失敗）。
+1. 先套用 `20261117124456_order_refusal_blocks.sql`（新表與 RPC，不影響現有流程；webhook 遇到缺表只記警告不失敗）。**2026-11-17 已套用正式資料庫**（版本 `20261117124456`；套用前以強制回滾的交易實測 10 項：舊快照不改拒收、2 筆停權、Email 檢查、已取消不被改回、缺 updated_at 拒絕、anon 無權限；套用後回讀 4 個 RPC、RLS 開啟、兩表皆 0 筆）。
 2. 合併 PR、Vercel 部署完成後立即：
    1. Shopify 運費（Domestic 台灣）：「標準」改名「黑貓宅配」；新增「順豐宅配」NT$130；「全家取貨」「7-11取貨」「萊爾富取貨」改 NT$69；全部維持滿 NT$1,500 免運，運送時間說明改 1–2 個工作天。
    2. 套用 `20261117000100_align_shipping_fees_with_lucissi.sql`（`pickup_shipping_fee`=69、新增 `sf_home_shipping_fee`=130），回讀。
