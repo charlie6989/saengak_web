@@ -486,7 +486,7 @@ export default function PromotionPage() {
                               </span>
                               <button
                                 type="button"
-                                onClick={() => navigate('/search?query=all')}
+                                onClick={() => navigate('/products')}
                                 className="px-3.5 py-1.5 text-xs font-semibold text-white bg-brand hover:bg-brand-ink rounded-lg transition-colors cursor-pointer"
                               >
                                 前往逛逛
@@ -512,7 +512,7 @@ export default function PromotionPage() {
                               </span>
                               <button
                                 type="button"
-                                onClick={() => navigate('/search?query=all')}
+                                onClick={() => navigate('/products')}
                                 className="px-3.5 py-1.5 text-xs font-semibold text-white bg-brand hover:bg-brand-ink rounded-lg transition-colors cursor-pointer"
                               >
                                 前往逛逛
@@ -526,7 +526,7 @@ export default function PromotionPage() {
                               </span>
                               <button
                                 type="button"
-                                onClick={() => navigate('/search?query=all')}
+                                onClick={() => navigate('/products')}
                                 className="px-3.5 py-1.5 text-xs font-semibold text-white bg-brand hover:bg-brand-ink rounded-lg transition-colors cursor-pointer"
                               >
                                 前往逛逛

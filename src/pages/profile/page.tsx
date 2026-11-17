@@ -1597,7 +1597,7 @@ export default function ProfilePage() {
                               {isAvailable ? (
                                 <button
                                   type="button"
-                                  onClick={() => navigate('/search?query=all')}
+                                  onClick={() => navigate('/products')}
                                   className="px-3.5 py-1.5 bg-brand hover:bg-brand-ink text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
                                 >
                                   立即去使用

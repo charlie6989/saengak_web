@@ -20,7 +20,7 @@ import { fetchPublishedReviews, fetchProductQA, submitProductQuestion } from '..
 import type { ProductReview, ProductQuestion } from '../../types/reviews-qa';
 import { captureExceptionSafe } from '../../lib/sentry';
 import { formatTwd, pickInitialVariant } from '../../domain/algorithms';
-import { applyMetaDescription, applyProductSeo, productMetaDescription, productPageTitle } from '../../lib/productMeta';
+import { applyProductSeo } from '../../lib/productMeta';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from '../../lib/brandOwnership';
 import { shopifyImageUrl } from '../../lib/shopifyImage';
 import { fetchShippingSettings } from '../../lib/promotions';
@@ -108,16 +108,11 @@ export default function ProductPage() {
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
 
-  // 分頁標題與 meta description：優先使用 Shopify 的 SEO 標題／說明，沒填時退回商品名稱與說明摘要；離開商品頁時還原
+  // 分頁標題、meta description、canonical 與 JSON-LD：優先使用 Shopify 的 SEO 標題／說明，與伺服器產生的 head 相同。
+  // 換頁時由 ScrollToTop 依新路由重設，這裡只在離開時移除商品的 JSON-LD。
   useEffect(() => {
     if (!product?.name) return;
-    document.title = productPageTitle(product);
-    const restoreDescription = applyMetaDescription(productMetaDescription(product));
-    const removeProductSeo = applyProductSeo(product);
-    return () => {
-      restoreDescription();
-      removeProductSeo();
-    };
+    return applyProductSeo(product);
   }, [product]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);

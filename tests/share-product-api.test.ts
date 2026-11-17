@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GET, articleShareMeta, productShareMeta, renderShareHtml, summarize } from '../api/share/product.js';
-import middleware from '../middleware.js';
 
 const product = {
   title: 'Saengak 益生菌私密養膚濕巾',
@@ -41,7 +40,7 @@ describe('product share preview', () => {
   it('falls back to the site preview when the product is missing', () => {
     const meta = productShareMeta('1', null);
 
-    expect(meta.title).toBe('LUCISSI CARE｜LUCISSI 的日常照護系列');
+    expect(meta.title).toBe('LUCISSI CARE｜私密保養・舒適內搭・生理期照護');
     expect(meta.url).toBe('https://lucissicare.com/product/1');
     expect(meta.image.url).toBe('https://lucissicare.com/images/brand/og-image.png');
   });
@@ -74,7 +73,7 @@ describe('product share preview', () => {
 
     expect(fetchMock).not.toHaveBeenCalled();
     expect(response.status).toBe(200);
-    expect(await response.text()).toContain('LUCISSI CARE｜LUCISSI 的日常照護系列');
+    expect(await response.text()).toContain('LUCISSI CARE｜私密保養・舒適內搭・生理期照護');
   });
 
   it('keeps the site preview when shopify fails', async () => {
@@ -121,10 +120,21 @@ describe('article share preview', () => {
     expect(html).toContain('<meta property="og:type" content="article" />');
     expect(html).toContain('LUCISSI CARE 編輯團隊');
 
-    vi.stubGlobal('fetch', respond(['草稿']));
-    html = await (await GET(new Request(`https://lucissicare.com/api/share/product?article=${article.handle}`))).text();
-    expect(html).toContain('<meta property="og:title" content="LUCISSI CARE｜LUCISSI 的日常照護系列" />');
-    expect(html).toContain('og:url" content="https://lucissicare.com/blog/how-we-review-products-and-content"');
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: { articles: { nodes: [{ ...article, handle: 'draft-article', tags: ['草稿'] }] } } }))));
+    html = await (await GET(new Request('https://lucissicare.com/api/share/product?article=draft-article'))).text();
+    expect(html).toContain('<meta property="og:title" content="LUCISSI CARE｜私密保養・舒適內搭・生理期照護" />');
+    expect(html).toContain('og:url" content="https://lucissicare.com/blog/draft-article"');
+  });
+
+  it('previews the curated site articles when Shopify has no public article with that handle', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: { articles: { nodes: [] } } }))));
+    let html = await (await GET(new Request('https://lucissicare.com/api/share/product?article=daily-feminine-care-guide'))).text();
+    expect(html).toContain('<meta property="og:title" content="日常私密護理：先理解身體，再選擇產品｜LUCISSI CARE" />');
+    expect(html).toContain('share-care.jpg');
+
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network')));
+    html = await (await GET(new Request('https://lucissicare.com/api/share/product?article=daily-feminine-care-guide'))).text();
+    expect(html).toContain('<meta property="og:type" content="article" />');
   });
 
   it('never calls shopify for a malformed handle', async () => {
@@ -134,18 +144,6 @@ describe('article share preview', () => {
     const response = await GET(new Request('https://lucissicare.com/api/share/product?article=..%2Fadmin'));
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(await response.text()).toContain('LUCISSI CARE｜LUCISSI 的日常照護系列');
-  });
-});
-
-describe('share preview middleware', () => {
-  const rewriteTarget = (path: string, ua: string) =>
-    middleware(new Request(`https://lucissicare.com${path}`, { headers: { 'user-agent': ua } })).headers.get('x-middleware-rewrite');
-
-  it('rewrites link-preview bots for products and articles only', () => {
-    expect(rewriteTarget('/product/7819900551235', 'facebookexternalhit/1.1')).toBe('https://lucissicare.com/api/share/product?id=7819900551235');
-    expect(rewriteTarget('/blog/daily-feminine-care-guide', 'facebookexternalhit/1.1;line-poker/1.0')).toBe('https://lucissicare.com/api/share/product?article=daily-feminine-care-guide');
-    expect(rewriteTarget('/blog/daily-feminine-care-guide', 'Mozilla/5.0 Line/14.0')).toBeNull();
-    expect(rewriteTarget('/blog/Bad_Handle', 'facebookexternalhit/1.1')).toBeNull();
+    expect(await response.text()).toContain('LUCISSI CARE｜私密保養・舒適內搭・生理期照護');
   });
 });

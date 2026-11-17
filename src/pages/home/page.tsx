@@ -1,6 +1,6 @@
 import { editorialImage } from '../../content/editorialImages';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import HeroSection from './components/HeroSection';
@@ -15,7 +15,6 @@ import { getShopifyArticles } from '../../lib/shopify';
 const fallbackArticles = TALK_FALLBACK_ARTICLES;
 
 export default function Home() {
-  const navigate = useNavigate();
   const [articles, setArticles] = useState<any[]>([]);
 
   useEffect(() => {
@@ -151,14 +150,11 @@ export default function Home() {
                     <div className="inline-block animate-spin h-8 w-8 border-b-2 border-gray-900"></div>
                   </div>
                 ) : articles.map((article: any) => (
-                    <div
+                    <Link
                       key={article.id}
+                      to={`/blog/${article.handle || article.id}`}
                       className="bg-white shadow-xs border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:transform hover:scale-105 cursor-pointer flex flex-col h-full"
                       style={{ borderRadius: '16px' }}
-                      onClick={() => {
-                        const target = article.handle || article.id;
-                        navigate(`/blog/${target}`);
-                      }}
                     >
                       <div className="aspect-4/3 overflow-hidden">
                         <img
@@ -183,7 +179,7 @@ export default function Home() {
                           {new Date(article.publishedAt).toLocaleDateString()}
                         </p>
                       </div>
-                    </div>
+                    </Link>
                   ))}
               </div>
             </div>

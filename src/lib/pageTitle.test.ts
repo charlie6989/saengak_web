@@ -20,7 +20,7 @@ describe('page titles', () => {
     expect(robotsForPath('/reset-password')).toBe(NOINDEX_ROBOTS);
     expect(robotsForPath('/forgot-password')).toBe(NOINDEX_ROBOTS);
     expect(robotsForPath('/profile')).toBe(NOINDEX_ROBOTS);
-    expect(robotsForPath('/products')).toBe('index, follow');
+    expect(robotsForPath('/products')).toBe('index,follow');
   });
 
   it('formats dynamic titles with the brand suffix', () => {

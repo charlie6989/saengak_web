@@ -92,6 +92,31 @@
             ],
             "destination": "https://lucissicare.com/:path",
             "permanent": true
+        },
+        {
+            "source": "/blog",
+            "destination": "/community",
+            "permanent": true
+        },
+        {
+            "source": "/brand-story",
+            "destination": "/about",
+            "permanent": true
+        },
+        {
+            "source": "/terms-of-service",
+            "destination": "/terms",
+            "permanent": true
+        },
+        {
+            "source": "/product",
+            "destination": "/products",
+            "permanent": true
+        },
+        {
+            "source": "/search",
+            "destination": "/products",
+            "permanent": true
         }
     ],
     "git": {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
@@ -6,20 +6,6 @@ import Footer from '../../components/feature/Footer';
 const SitemapPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-
-  useEffect(() => {
-    
-    // SEO meta tags
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', '瀏覽 LUCISSI CARE 完整網站地圖，快速找到您需要的頁面和功能。包含產品分類、客戶服務、政策條款等所有重要連結，提供最佳的網站導航體驗。');
-    }
-    
-    const metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (metaKeywords) {
-      metaKeywords.setAttribute('content', '網站地圖, 導航, 頁面索引, 網站結構, 快速導航, LUCISSI CARE, 女性護理');
-    }
-  }, []);
 
   const siteStructure = [
     {
@@ -29,7 +15,7 @@ const SitemapPage = () => {
       bgColor: 'bg-blush',
       links: [
         { name: '首頁', url: '/', description: '探索 LUCISSI CARE 精選產品和最新優惠活動' },
-        { name: '產品搜尋', url: '/search', description: '搜尋和瀏覽所有女性護理產品' },
+        { name: '全部商品', url: '/products', description: '搜尋和瀏覽所有女性護理產品' },
         { name: 'LUCISSI Talk', url: '/community', description: '閱讀私密護理與貼身穿著的日常文章' },
         { name: '促銷活動', url: '/promotion', description: '查看最新優惠和促銷活動' },
         { name: '關於我們', url: '/about', description: '了解 LUCISSI CARE 的品牌理念' },
@@ -68,7 +54,6 @@ const SitemapPage = () => {
       links: [
         { name: '隱私權政策', url: '/privacy', description: '了解我們如何保護您的個人隱私' },
         { name: '使用條款', url: '/terms', description: '網站使用條款和服務規範' },
-        { name: '網路訂購商品條款', url: '/terms-of-service', description: '線上購物服務條款和保障' },
         { name: 'AdChoices', url: '/adchoices', description: '廣告選擇和個人化偏好設定' },
       ]
     },
