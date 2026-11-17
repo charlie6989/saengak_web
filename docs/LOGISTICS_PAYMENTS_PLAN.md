@@ -28,7 +28,7 @@
    6. SiteGiant：CARE 頻道（43091）在 訂單處理 → 選擇快遞服務 → 綠界物流 → 安排發貨，比照 LUCISSI `ECPAY_C2C_RUNBOOK.md`；寄件人須為真實姓名。首筆需確認門市代碼、代收金額與追蹤號回寫 Shopify。
    7. Shopify 付款：停用「Tappay ATM」，保留 TapPay 信用卡與貨到付款。
    8. Shopify 政策：運送政策改寫（運費、時效、綠界與尺寸限制、付款、拒收停權）；隱私權政策同步網站 `/privacy` 新增的 SiteGiant、綠界科技。
-   9. 確認 Shopify App（SAENGAK Order Sync）有 `write_orders`，否則停權帳號的新訂單自動取消會記成 `cancel_failed`，需人工取消。
+   9. 確認 Shopify App（SAENGAK Order Sync）有 `write_orders`，否則停權帳號的新訂單自動取消會記成 `cancel_failed`，需人工取消。送出取消後先記 `cancel_pending`，收到已取消的訂單 webhook 才改成 `cancelled`；切換後可查 `blocked_order_actions` 是否有長時間停在 `cancel_pending` 的訂單。
 3. 客服流程：貨到付款拒收或逾期未取件的訂單，在 Shopify 訂單加標籤「拒收」或「未取件」；移除標籤即撤回。
 
 尚未驗證：上述所有正式設定；CARE 在 SiteGiant 能否選綠界物流；首筆綠界超商單的門市、代收金額與追蹤號；預選運費在正式 Shopify（含 Shipy 隱藏規則）實際生效。

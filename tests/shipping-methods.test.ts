@@ -81,6 +81,7 @@ describe('COD refusal purchase block', () => {
   const order = (extra: Record<string, unknown>) => ({
     id: 555,
     created_at: '2026-11-10T00:00:00Z',
+    updated_at: '2026-11-10T00:05:00Z',
     financial_status: 'pending',
     fulfillment_status: null,
     customer: { id: 42, email: 'Buyer@Example.com' },
@@ -106,16 +107,54 @@ describe('COD refusal purchase block', () => {
     expect(blockedOrderAction(order({}), null)).toBe('none');
   });
 
-  it('syncs the tag with the lowercase email and records an automatic cancellation', async () => {
-    const rpc = vi.fn(async (name: string) => (name === 'sync_order_refusal'
-      ? { data: { refusals: 2, blockedSince }, error: null }
-      : { data: 'cancelled', error: null }));
+  const blockedRpc = (recordedAs: string, standing: Record<string, unknown> = { refusals: 2, blockedSince }) =>
+    vi.fn(async (name: string, _args: Record<string, unknown>) => (name === 'sync_order_refusal'
+      ? { data: standing, error: null }
+      : { data: recordedAs, error: null }));
+
+  it('syncs the tag with the order version and lowercase email, and records a submitted cancellation as pending', async () => {
+    const rpc = blockedRpc('cancel_pending');
     const cancel = vi.fn().mockResolvedValue(undefined);
-    await expect(enforcePurchaseBlock({ rpc }, order({}), { cancel })).resolves.toEqual({ action: 'cancelled' });
+    await expect(enforcePurchaseBlock({ rpc }, order({}), { cancel })).resolves.toEqual({ action: 'cancel_pending' });
     expect(rpc.mock.calls[0]).toEqual(['sync_order_refusal', {
-      p_order_id: 'gid://shopify/Order/555', p_customer_id: 'gid://shopify/Customer/42', p_refused: false, p_threshold: 2, p_customer_email: 'buyer@example.com',
+      p_order_id: 'gid://shopify/Order/555', p_customer_id: 'gid://shopify/Customer/42', p_refused: false, p_threshold: 2,
+      p_source_updated_at: '2026-11-10T00:05:00Z', p_customer_email: 'buyer@example.com',
     }]);
     expect(cancel).toHaveBeenCalledWith('gid://shopify/Order/555');
+    expect(rpc.mock.calls[1]?.[1]).toMatchObject({ p_action: 'cancel_pending' });
+  });
+
+  it('records cancelled only when a webhook shows the blocked order actually cancelled', async () => {
+    const rpc = blockedRpc('cancelled');
+    const cancel = vi.fn();
+    await expect(enforcePurchaseBlock({ rpc }, order({ cancelled_at: '2026-11-10T00:06:00Z' }), { cancel }))
+      .resolves.toEqual({ action: 'cancelled' });
+    expect(cancel).not.toHaveBeenCalled();
+    expect(rpc.mock.calls[1]?.[1]).toMatchObject({ p_order_id: 'gid://shopify/Order/555', p_action: 'cancelled' });
+
+    const unrelated = blockedRpc('cancelled', { refusals: 0, blockedSince: null });
+    await expect(enforcePurchaseBlock({ rpc: unrelated }, order({ cancelled_at: '2026-11-10T00:06:00Z' }))).resolves.toEqual({ action: 'none' });
+    expect(unrelated).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a confirmed cancellation when a later pending record is refused by the database', async () => {
+    await expect(enforcePurchaseBlock({ rpc: blockedRpc('cancelled') }, order({}), { cancel: vi.fn().mockResolvedValue(undefined) }))
+      .resolves.toEqual({ action: 'cancelled' });
+  });
+
+  it('ignores stale webhook snapshots without cancelling or recording', async () => {
+    const rpc = blockedRpc('cancel_pending', { refusals: 2, blockedSince, stale: true });
+    const cancel = vi.fn();
+    await expect(enforcePurchaseBlock({ rpc }, order({}), { cancel })).resolves.toEqual({ action: 'stale' });
+    expect(cancel).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports an error instead of syncing a snapshot without updated_at', async () => {
+    const rpc = blockedRpc('cancel_pending');
+    const result = await enforcePurchaseBlock({ rpc }, order({ updated_at: undefined }));
+    expect(result).toHaveProperty('error');
+    expect(rpc).not.toHaveBeenCalled();
   });
 
   it('records a failed cancellation instead of throwing', async () => {

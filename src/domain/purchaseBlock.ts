@@ -45,6 +45,25 @@ export function orderGid(orderValue: unknown): string | null {
   return /^[1-9]\d*$/.test(value) ? `gid://shopify/Order/${value}` : null;
 }
 
+/** webhook 快照的版本（Shopify 的 updated_at），用來丟掉晚到的舊快照；沒有或不合法時回傳 null。 */
+export function orderUpdatedAt(orderValue: unknown): string | null {
+  const raw = record(orderValue).updated_at;
+  return typeof raw === 'string' && Number.isFinite(Date.parse(raw)) ? raw : null;
+}
+
+/** 這筆訂單是停權開始之後才下的（不含被標拒收的那幾筆本身）。不看是否已取消。 */
+export function orderPlacedWhileBlocked(
+  orderValue: unknown,
+  blockedSince: string | null,
+  policy: PurchaseBlockPolicy = PURCHASE_BLOCK_POLICY,
+): boolean {
+  const order = record(orderValue);
+  if (!blockedSince || orderMarkedRefused(order, policy)) return false;
+  const created = Date.parse(String(order.created_at ?? ''));
+  const since = Date.parse(blockedSince);
+  return Number.isFinite(created) && Number.isFinite(since) && created > since;
+}
+
 /**
  * 只處理停權開始之後才下的訂單，不動被標拒收的那幾筆本身，也不動已取消或已出貨的訂單。
  * 不自動退款：未付款的取消，已付款的轉人工確認。
@@ -55,10 +74,7 @@ export function blockedOrderAction(
   policy: PurchaseBlockPolicy = PURCHASE_BLOCK_POLICY,
 ): BlockedOrderAction {
   const order = record(orderValue);
-  if (!blockedSince || order.cancelled_at || orderMarkedRefused(order, policy)) return 'none';
-  const created = Date.parse(String(order.created_at ?? ''));
-  const since = Date.parse(blockedSince);
-  if (!Number.isFinite(created) || !Number.isFinite(since) || created <= since) return 'none';
+  if (order.cancelled_at || !orderPlacedWhileBlocked(order, blockedSince, policy)) return 'none';
   const fulfillment = String(order.fulfillment_status ?? '').toLowerCase();
   if (fulfillment === 'fulfilled' || fulfillment === 'partial') return 'manual_review';
   const financial = String(order.financial_status ?? '').toLowerCase();

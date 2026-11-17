@@ -1,6 +1,7 @@
 /**
  * 貨到付款拒收停權的伺服器端（移植自 LUCISSI api/_lib/purchase-block.ts；2026-11-17 店主決定比照）。
- * - 每個訂單 webhook：同步拒收標籤，停權後的新訂單未付款自動取消、已付款或已出貨轉人工；
+ * - 每個訂單 webhook：同步拒收標籤（依訂單 updated_at 丟掉晚到的舊快照），停權後的新訂單未付款送出取消、
+ *   已付款或已出貨轉人工；看到停權後的訂單確實已取消時才記為已取消；
  * - 建立結帳前：以會員或訪客的 Email 查詢是否已停權。
  * 規則見 src/domain/purchaseBlock.ts。資料表與 RPC 見 supabase/migrations/20261117000000_order_refusal_blocks.sql。
  */
@@ -12,11 +13,13 @@ import {
   orderCustomerId,
   orderGid,
   orderMarkedRefused,
+  orderPlacedWhileBlocked,
+  orderUpdatedAt,
   type PurchaseBlockPolicy,
 } from '../../src/domain/purchaseBlock.js';
 
 type RpcClient = { rpc(name: string, args: Record<string, unknown>): PromiseLike<{ data: unknown; error: unknown }> };
-type Standing = { refusals: number; blockedSince: string | null };
+type Standing = { refusals: number; blockedSince: string | null; stale: boolean };
 
 export const PURCHASE_BLOCKED_MESSAGE = '此帳號的貨到付款訂單已累計 2 次拒收或逾期未取件，已暫停購買。如有疑問請聯絡客服。';
 
@@ -24,10 +27,13 @@ function standing(value: unknown): Standing {
   const data = value && typeof value === 'object' ? value as Record<string, unknown> : {};
   const blockedSince = typeof data.blockedSince === 'string' && Number.isFinite(Date.parse(data.blockedSince)) ? data.blockedSince : null;
   if (!Number.isSafeInteger(data.refusals) || Number(data.refusals) < 0) throw new Error('Invalid purchase block standing');
-  return { refusals: Number(data.refusals), blockedSince };
+  return { refusals: Number(data.refusals), blockedSince, stale: data.stale === true };
 }
 
-/** 以 Admin API 取消未付款訂單（需要 write_orders 權限）。這裡不重試。 */
+/**
+ * 以 Admin API 送出取消未付款訂單（需要 write_orders 權限）。這裡不重試。
+ * 成功只代表 Shopify 已排入背景取消工作，不代表已取消；確認要等訂單 webhook 帶 cancelled_at。
+ */
 export async function cancelBlockedOrder(orderId: string): Promise<void> {
   const clientId = process.env.SHOPIFY_APP_CLIENT_ID;
   const clientSecret = process.env.SHOPIFY_APP_CLIENT_SECRET;
@@ -71,35 +77,50 @@ export async function enforcePurchaseBlock(
   const customerId = orderCustomerId(order);
   const shopifyOrderId = orderGid(order);
   if (!customerId || !shopifyOrderId) return { action: 'none' };
+  const sourceUpdatedAt = orderUpdatedAt(order);
+  if (!sourceUpdatedAt) return { error: new Error('Order webhook has no updated_at.') };
   const synced = await db.rpc('sync_order_refusal', {
     p_order_id: shopifyOrderId,
     p_customer_id: customerId,
     p_refused: orderMarkedRefused(order, policy),
     p_threshold: policy.refusalThreshold,
+    p_source_updated_at: sourceUpdatedAt,
     p_customer_email: orderEmail(order),
   });
   if (synced.error) return { error: new Error('Unable to record order refusal.') };
   let current: Standing;
   try { current = standing(synced.data); } catch (error) { return { error: error as Error }; }
-  const action = blockedOrderAction(order, current.blockedSince, policy);
-  if (action === 'none') return { action };
-  let outcome: 'cancelled' | 'manual_review' | 'cancel_failed' = 'manual_review';
-  let detail = '已付款或已出貨的停權帳號訂單，需人工確認退款與處理';
-  if (action === 'cancel') {
-    try {
-      await (options.cancel ?? cancelBlockedOrder)(shopifyOrderId);
-      outcome = 'cancelled';
-      detail = '停權帳號的未付款訂單已自動取消';
-    } catch {
-      outcome = 'cancel_failed';
-      detail = '自動取消失敗，請確認 Admin 權限 write_orders 後人工取消';
+  // 舊快照：已有較新的版本處理過這筆訂單，不依舊資料取消或記錄
+  if (current.stale) return { action: 'stale' };
+  let outcome: 'cancel_pending' | 'cancelled' | 'manual_review' | 'cancel_failed';
+  let detail: string;
+  if (order.cancelled_at) {
+    // 停權後的訂單已確實取消（系統送出的取消完成，或客服、顧客自行取消）
+    if (!orderPlacedWhileBlocked(order, current.blockedSince, policy)) return { action: 'none' };
+    outcome = 'cancelled';
+    detail = '停權帳號的訂單已取消';
+  } else {
+    const action = blockedOrderAction(order, current.blockedSince, policy);
+    if (action === 'none') return { action };
+    outcome = 'manual_review';
+    detail = '已付款或已出貨的停權帳號訂單，需人工確認退款與處理';
+    if (action === 'cancel') {
+      try {
+        await (options.cancel ?? cancelBlockedOrder)(shopifyOrderId);
+        outcome = 'cancel_pending';
+        detail = '已送出取消，等待 Shopify 完成；之後的訂單更新若仍未取消會再送一次';
+      } catch {
+        outcome = 'cancel_failed';
+        detail = '自動取消失敗，請確認 Admin 權限 write_orders 後人工取消';
+      }
     }
   }
   const recorded = await db.rpc('record_blocked_order_action', {
     p_order_id: shopifyOrderId, p_customer_id: customerId, p_action: outcome, p_detail: detail,
   });
   if (recorded.error) return { error: new Error('Unable to record blocked order action.') };
-  return { action: outcome };
+  // 已確認取消的紀錄不會被改回，回傳資料庫實際保存的狀態
+  return { action: recorded.data === 'cancelled' ? 'cancelled' : outcome };
 }
 
 /** 建立結帳前查詢這個 Email 是否已停權。查詢失敗時放行（訂單 webhook 仍會取消停權帳號的新訂單）。 */
