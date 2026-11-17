@@ -1,11 +1,13 @@
 import EditorialHero from '../../components/feature/EditorialHero';
 import { editorialImage } from '../../content/editorialImages';
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import { formatTwd, estimateReadingMinutes, sortAvailableFirst } from '../../domain/algorithms';
-import { formatPageTitle } from '../../lib/pageTitle';
+import { NOINDEX_ROBOTS } from '../../lib/seo';
+import { replaceStructuredData, setPageMeta } from '../../lib/documentMeta';
+import { articleBreadcrumbs, articleMeta, breadcrumbJsonLd, buildArticleJsonLd } from '../../lib/structuredData';
 import { getShopifyArticles, getShopifyArticleByHandle, getShopifyProducts, type ShopifyArticle, type ShopifyProduct } from '../../lib/shopify';
 
 interface TocItem {
@@ -20,11 +22,19 @@ export default function BlogArticle() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [article, setArticle] = useState<ShopifyArticle | null>(null);
+  // 標題、說明、canonical 與 BlogPosting：與伺服器產生的 head 相同（src/lib/structuredData.ts）
   useEffect(() => {
-    if (article?.title) document.title = formatPageTitle(article.title);
-  }, [article?.title]);
+    if (!article?.title || !article.handle) return;
+    const meta = articleMeta(article);
+    setPageMeta({ title: meta.title, description: meta.description || undefined, canonicalUrl: meta.canonicalUrl });
+    return replaceStructuredData([buildArticleJsonLd(article), breadcrumbJsonLd(articleBreadcrumbs(article))]);
+  }, [article]);
   const [relatedArticles, setRelatedArticles] = useState<ShopifyArticle[]>([]);
   const [loading, setLoading] = useState(true);
+  // 找不到文章時不讓搜尋引擎收錄這個網址（伺服器同樣回 404）
+  useEffect(() => {
+    if (!loading && !article) setPageMeta({ robots: NOINDEX_ROBOTS });
+  }, [loading, article]);
   const [activeTocId, setActiveTocId] = useState<string>('');
   const [readingProgress, setReadingProgress] = useState(0);
 
@@ -38,7 +48,7 @@ export default function BlogArticle() {
       setLoading(true);
       try {
         const fetched = await getShopifyArticleByHandle(activeHandle);
-        if (isMounted && fetched) {
+        if (isMounted) {
           setArticle(fetched);
         }
 
@@ -216,12 +226,12 @@ export default function BlogArticle() {
           <i className="ri-file-warning-line text-6xl text-gray-300 mb-4 inline-block"></i>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">找不到該專欄文章</h2>
           <p className="text-gray-600 mb-8">此文章可能已被移動或尚未發布，請瀏覽其他精選文章。</p>
-          <button
-            onClick={() => navigate('/community')}
-            className="px-8 py-3 bg-brand text-white rounded-lg hover:opacity-90 transition-opacity cursor-pointer font-medium"
+          <Link
+            to="/community"
+            className="inline-block px-8 py-3 bg-brand text-white rounded-lg hover:opacity-90 transition-opacity cursor-pointer font-medium"
           >
             返回文章列表
-          </button>
+          </Link>
         </div>
         <Footer />
       </div>
@@ -265,14 +275,14 @@ export default function BlogArticle() {
       <main className="page-content bg-[#F7F6F3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
           {/* Breadcrumb Navigation */}
-          <nav className="flex items-center space-x-2 text-sm mb-10 text-gray-500">
-            <button onClick={() => navigate('/')} className="cursor-pointer hover:text-brand transition-colors">
+          <nav aria-label="路徑導覽" className="flex items-center space-x-2 text-sm mb-10 text-gray-500">
+            <Link to="/" className="cursor-pointer hover:text-brand transition-colors">
               首頁
-            </button>
+            </Link>
             <i className="ri-arrow-right-s-line text-gray-400"></i>
-            <button onClick={() => navigate('/community')} className="cursor-pointer hover:text-brand transition-colors">
+            <Link to="/community" className="cursor-pointer hover:text-brand transition-colors">
               LUCISSI Talk
-            </button>
+            </Link>
             <i className="ri-arrow-right-s-line text-gray-400"></i>
             <span className="text-gray-900 font-medium truncate max-w-[200px] sm:max-w-md">{article.title}</span>
           </nav>
@@ -474,10 +484,10 @@ export default function BlogArticle() {
                 </div>
                 <div className="space-y-3.5">
                   {recommendedProducts.map((product) => (
-                    <div
+                    <Link
                       key={product.id}
+                      to={`/product/${product.id.split('/').pop() || product.id}`}
                       className="cursor-pointer group flex items-center gap-3.5 p-2 rounded-xl hover:bg-gray-50 transition-colors"
-                      onClick={() => navigate(`/product/${product.id.split('/').pop() || product.id}`)}
                     >
                       <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-50 shrink-0">
                         <img
@@ -497,7 +507,7 @@ export default function BlogArticle() {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -514,10 +524,10 @@ export default function BlogArticle() {
                   </div>
                   <div className="space-y-4">
                     {relatedArticles.map((related) => (
-                      <article
+                      <Link
                         key={related.id}
+                        to={`/blog/${related.handle}`}
                         className="cursor-pointer group flex gap-3.5 items-center p-1.5 rounded-xl hover:bg-gray-50 transition-colors"
-                        onClick={() => navigate(`/blog/${related.handle}`)}
                       >
                         <div className="w-16 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                           <img
@@ -534,7 +544,7 @@ export default function BlogArticle() {
                             {related.title}
                           </h4>
                         </div>
-                      </article>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -544,20 +554,20 @@ export default function BlogArticle() {
 
           {/* 底部導覽與返回按鈕 */}
           <div className="flex items-center justify-between mt-14 pt-8 border-t border-gray-200">
-            <button
-              onClick={() => navigate('/community')}
+            <Link
+              to="/community"
               className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-brand transition-colors cursor-pointer bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-xs hover:shadow-sm"
             >
               <i className="ri-arrow-left-line mr-2 text-base"></i>
               返回 LUCISSI Talk
-            </button>
-            <button
-              onClick={() => navigate('/')}
+            </Link>
+            <Link
+              to="/"
               className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-brand transition-colors cursor-pointer bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-xs hover:shadow-sm"
             >
               回首頁探索目錄
               <i className="ri-arrow-right-line ml-2 text-base"></i>
-            </button>
+            </Link>
           </div>
         </div>
       </main>

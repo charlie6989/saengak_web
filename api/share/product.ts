@@ -1,18 +1,18 @@
 import { SHOPIFY_API_VERSION, SHOPIFY_STOREFRONT_PUBLIC_TOKEN, SHOPIFY_STORE_DOMAIN } from '../_lib/shopify-config.js';
 import { editorialShareImage } from '../../src/content/editorialImages.js';
 import { hasPublicArticleTag, normalizeLegacyStorefrontCopy } from '../../src/domain/storefrontCopy.js';
+import { publicArticleSet, type CuratedArticle } from '../../src/content/curatedArticles.js';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from '../../src/lib/seo.js';
 
 /**
  * 社群分享預覽（LINE、Facebook 等）專用：爬蟲不執行 JavaScript，只讀第一份 HTML 的 og 標籤，
  * 所以由 middleware 把爬蟲對 /product/:id（?id=）與 /blog/:handle（?article=）的請求改寫到這裡，
  * 回傳含名稱、說明與主圖的精簡 HTML。一般訪客不會經過這個函式。
  * （Vercel Hobby 方案的函式數量已滿，所以文章與商品共用這一個函式。）
+ * 搜尋引擎不會被送到這裡（回應帶 X-Robots-Tag: noindex）；它們讀 middleware 產生的完整頁面。
  */
 
-const SITE_URL = 'https://lucissicare.com';
-const SITE_NAME = 'LUCISSI CARE';
-const SITE_TITLE = 'LUCISSI CARE｜LUCISSI 的日常照護系列';
-const SITE_DESCRIPTION = 'LUCISSI CARE 是 LUCISSI 的日常照護系列：私密保養、舒適內搭與生理期照護，照顧貼近身體的每一天。';
+// 站名、首頁標題與說明與網站共用 src/lib/seo.ts
 const SITE_IMAGE = { url: `${SITE_URL}/images/brand/og-image.png`, width: 1200, height: 630, alt: SITE_NAME };
 const DESCRIPTION_MAX = 120;
 const PRODUCT_ID = /^\d{1,20}$/;
@@ -143,8 +143,19 @@ async function fetchArticle(handle: string): Promise<StorefrontArticle | null> {
     'query ShareArticles($first: Int!) { articles(first: $first) { nodes { title handle excerpt seo { title description } image { url width height altText } tags } } }',
     { first: 50 },
   );
-  const article = data?.articles?.nodes?.find((node) => node.handle === handle);
-  return article && hasPublicArticleTag(article.tags) ? article : null;
+  if (!data?.articles?.nodes) throw new Error('Storefront returned no articles');
+  return findPublicArticle(handle, data.articles.nodes.filter((node) => hasPublicArticleTag(node.tags)));
+}
+
+/** 與網站相同：有公開的 Shopify 文章時只用它們，否則（含讀取失敗 = null）用站內精選文章。 */
+function findPublicArticle(handle: string, shopifyPublicArticles: StorefrontArticle[] | null): StorefrontArticle | null {
+  const article = publicArticleSet(shopifyPublicArticles).find((item) => item.handle === handle);
+  if (!article) return null;
+  return 'contentHtml' in article ? curatedShareArticle(article) : article;
+}
+
+function curatedShareArticle(article: CuratedArticle): StorefrontArticle {
+  return { title: article.title, handle: article.handle, excerpt: article.excerpt, image: { url: article.image.url, altText: article.image.altText }, tags: article.tags };
 }
 
 export async function GET(request: Request): Promise<Response> {
@@ -156,7 +167,7 @@ export async function GET(request: Request): Promise<Response> {
   if (PRODUCT_ID.test(id)) {
     meta = productShareMeta(id, await fetchProduct(id).catch(() => null));
   } else if (ARTICLE_HANDLE.test(handle)) {
-    meta = articleShareMeta(handle, await fetchArticle(handle).catch(() => null));
+    meta = articleShareMeta(handle, await fetchArticle(handle).catch(() => findPublicArticle(handle, null)));
   }
   return new Response(renderShareHtml(meta), {
     status: 200,

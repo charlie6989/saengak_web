@@ -1,7 +1,7 @@
 import EditorialHero from '../../../components/feature/EditorialHero';
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getShopifyProducts } from '../../../lib/shopify';
 import { deriveCatalogSignals } from '../../../domain/algorithms';
 import { isBundleProduct, selectSolutionView, type SolutionTab } from '../../../domain/solutionSection';
@@ -35,7 +35,6 @@ interface Product {
 }
 
 export default function SolutionSection() {
-  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<SolutionTab>('bundles');
@@ -104,15 +103,7 @@ export default function SolutionSection() {
     return Math.round(((originalPrice - price) / originalPrice) * 100);
   };
 
-  const handleProductClick = (product: Product) => {
-    const numericId = product.id.replace('gid://shopify/Product/', '');
-    navigate(`/product/${numericId}`);
-  };
-
-  const handleViewProductClick = (e: React.MouseEvent, product: Product) => {
-    e.stopPropagation();
-    handleProductClick(product);
-  };
+  const productPath = (product: Product) => `/product/${product.id.replace('gid://shopify/Product/', '')}`;
 
   const view = selectSolutionView(products, activeTab);
 
@@ -127,7 +118,7 @@ export default function SolutionSection() {
       description="無痕、純棉與生理期內搭，每天貼近肌膚的選擇，回到自己的舒適感受。"
     >
       <div className="mt-7 flex flex-wrap gap-4">
-        <a href="/search?category=舒適內搭" className="bg-brand px-6 py-3 text-sm font-semibold text-white">探索舒適內搭</a>
+        <Link to="/products?category=舒適內搭" className="bg-brand px-6 py-3 text-sm font-semibold text-white">探索舒適內搭</Link>
         <a href="/community" className="border border-brand/30 px-6 py-3 text-sm font-semibold text-brand">了解更多</a>
       </div>
     </EditorialHero>
@@ -239,11 +230,11 @@ export default function SolutionSection() {
                     const discountRate = calculateDiscountRate(product.price, product.originalPrice);
 
                     return (
-                      <div
+                      <Link
                         key={product.id}
+                        to={productPath(product)}
                         className="group cursor-pointer bg-white rounded-xl overflow-hidden border border-gray-100/80 flex flex-col h-full hover:shadow-md transition-shadow"
                         data-product-shop
-                        onClick={() => handleProductClick(product)}
                       >
                         {/* Product Image - Standardized square (1:1) ratio */}
                         <div className="aspect-square bg-gray-50 overflow-hidden mb-3 relative flex items-center justify-center">
@@ -316,9 +307,12 @@ export default function SolutionSection() {
                             </div>
 
                             <button
+                              type="button"
+                              aria-label={`收藏 ${product.name}`}
                               onClick={(e) => {
+                                // 收藏按鈕在商品連結內，點擊時不導頁
+                                e.preventDefault();
                                 e.stopPropagation();
-                                // Handle wishlist logic here
                               }}
                               className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded-sm transition-colors cursor-pointer shrink-0"
                             >
@@ -349,11 +343,9 @@ export default function SolutionSection() {
                             </div>
                           </div>
 
-                          {/* View Product Button */}
-                          <button
-                            onClick={(e) => handleViewProductClick(e, product)}
-                            aria-label={`查看 ${product.name} 商品詳情`}
-                            className="add-to-cart-btn mt-auto cursor-pointer"
+                          {/* 查看商品（外觀為按鈕，整張卡片已是連結） */}
+                          <span
+                            className="add-to-cart-btn mt-auto cursor-pointer flex items-center justify-center"
                             style={{
                               backgroundColor: '#ECE8E2',
                               color: '#2A2725',
@@ -369,9 +361,9 @@ export default function SolutionSection() {
                             }}
                           >
                             {isBundleProduct(product) ? '查看特惠組合' : '查看商品'}
-                          </button>
+                          </span>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>

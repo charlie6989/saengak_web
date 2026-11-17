@@ -3,7 +3,9 @@
  * 不用 Vercel Function：Hobby 方案的 12 個函式額度已滿。
  */
 
-import { hasTestProductMarker } from './testProducts';
+import { hasTestProductMarker } from './testProducts.js';
+import { hasPublicArticleTag } from './storefrontCopy.js';
+import { publicArticleSet } from '../content/curatedArticles.js';
 
 const SITE_URL = 'https://lucissicare.com';
 const PAGE_SIZE = 250;
@@ -33,6 +35,11 @@ export interface SitemapProduct {
   tags?: string[];
 }
 
+export interface SitemapArticle {
+  handle: string;
+  publishedAt?: string;
+}
+
 export interface StorefrontConfig {
   domain: string;
   apiVersion: string;
@@ -55,19 +62,32 @@ const escapeXml = (value: string): string =>
 
 const numericProductId = (gid: string): string | undefined => gid.match(/^gid:\/\/shopify\/Product\/(\d{1,20})$/)?.[1];
 
-export function renderSitemap(products: SitemapProduct[]): string {
+const ARTICLE_HANDLE = /^[a-z0-9][a-z0-9-]{0,99}$/;
+const lastmodTag = (value?: string) =>
+  value && !Number.isNaN(Date.parse(value)) ? `<lastmod>${escapeXml(value)}</lastmod>` : '';
+
+/** 文章網址：與網站相同，有公開的 Shopify 文章時只列它們，否則（含讀取失敗）列站內精選文章。 */
+export function sitemapArticles(shopifyArticles: SitemapArticle[] | null = null): SitemapArticle[] {
+  const seen = new Set<string>();
+  return publicArticleSet(shopifyArticles).flatMap((article) => {
+    if (!ARTICLE_HANDLE.test(article.handle) || seen.has(article.handle)) return [];
+    seen.add(article.handle);
+    return [{ handle: article.handle, publishedAt: article.publishedAt }];
+  });
+}
+
+export function renderSitemap(products: SitemapProduct[], articles: SitemapArticle[] = sitemapArticles()): string {
   const staticUrls = STATIC_PATHS.map((path) => `  <url><loc>${escapeXml(`${SITE_URL}${path}`)}</loc></url>`);
   const productUrls = products.flatMap((product) => {
     const id = numericProductId(product.id);
     if (!id) return [];
-    const lastmod = product.updatedAt && !Number.isNaN(Date.parse(product.updatedAt))
-      ? `<lastmod>${escapeXml(product.updatedAt)}</lastmod>`
-      : '';
-    return [`  <url><loc>${SITE_URL}/product/${id}</loc>${lastmod}</url>`];
+    return [`  <url><loc>${SITE_URL}/product/${id}</loc>${lastmodTag(product.updatedAt)}</url>`];
   });
+  const articleUrls = articles.map((article) =>
+    `  <url><loc>${SITE_URL}/blog/${escapeXml(article.handle)}</loc>${lastmodTag(article.publishedAt)}</url>`);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticUrls, ...productUrls].join('\n')}
+${[...staticUrls, ...articleUrls, ...productUrls].join('\n')}
 </urlset>
 `;
 }
@@ -98,4 +118,26 @@ export async function fetchSitemapProducts({ domain, apiVersion, token }: Storef
     cursor = connection.pageInfo.endCursor;
   }
   return products;
+}
+
+const ARTICLES_QUERY = 'query SitemapArticles($first: Int!) { articles(first: $first) { nodes { handle publishedAt tags } } }';
+
+/** 讀取帶公開標籤的 Shopify 文章（與網站文章列表相同規則）。失敗時 throw，由呼叫端退回只列站內精選文章。 */
+export async function fetchSitemapArticles({ domain, apiVersion, token }: StorefrontConfig): Promise<SitemapArticle[]> {
+  const response = await fetch(`https://${domain}/api/${apiVersion}/graphql.json`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': token,
+    },
+    body: JSON.stringify({ query: ARTICLES_QUERY, variables: { first: PAGE_SIZE } }),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
+  if (!response.ok) throw new Error(`Storefront responded ${response.status}`);
+  const body = await response.json() as { data?: { articles?: { nodes?: Array<SitemapArticle & { tags?: string[] }> } } };
+  const nodes = body.data?.articles?.nodes;
+  if (!nodes) throw new Error('Storefront returned no articles');
+  return nodes
+    .filter((article) => hasPublicArticleTag(article.tags))
+    .map(({ handle, publishedAt }) => ({ handle, publishedAt }));
 }

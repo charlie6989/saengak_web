@@ -185,7 +185,10 @@ export default function FAQPage() {
               filteredItems.map((item) => (
                 <div key={item.id} className="bg-white border border-gray-200 overflow-hidden">
                   <button
+                    type="button"
                     onClick={() => toggleItem(item.id)}
+                    aria-expanded={Boolean(openItems[item.id])}
+                    aria-controls={`faq-answer-${item.id}`}
                     className="w-full px-6 py-5 text-left hover:bg-gray-50 transition-colors flex items-center justify-between"
                   >
                     <div className="flex items-center">
@@ -199,16 +202,19 @@ export default function FAQPage() {
                     }`}></i>
                   </button>
                   
-                  {openItems[item.id] && (
-                    <div className="px-6 py-6 border-t border-gray-200 bg-gray-50">
+                  {/* 收合時以 hidden 隱藏，答案仍在頁面原始內容中，搜尋引擎讀得到 */}
+                  <div
+                    id={`faq-answer-${item.id}`}
+                    hidden={!openItems[item.id]}
+                    className="px-6 py-6 border-t border-gray-200 bg-gray-50"
+                  >
                       <div className="flex items-start">
                         <div className="w-8 h-8 bg-green-100 text-green-600 flex items-center justify-center mr-4 font-bold text-sm shrink-0">
                           A
                         </div>
                         <div className="text-gray-700 leading-relaxed">{item.answer}</div>
                       </div>
-                    </div>
-                  )}
+                  </div>
                 </div>
               ))
             ) : (

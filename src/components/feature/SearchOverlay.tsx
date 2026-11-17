@@ -68,7 +68,7 @@ export default function SearchOverlay({ isOpen, onClose, initialQuery = "" }: Se
     const q = term.trim();
     if (q) setRecent(saveRecentSearch(q));
     onClose();
-    navigate(q ? `/search?q=${encodeURIComponent(q)}` : `/search`);
+    navigate(q ? `/products?q=${encodeURIComponent(q)}` : `/products`);
   };
 
   const handleSubmit = (e: React.FormEvent) => {

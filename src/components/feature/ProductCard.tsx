@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { resolveDisplayVendor } from '../../lib/brandOwnership';
 import { isProductSoldOut } from '../../domain/algorithms';
 import { shopifyImageUrl } from '../../lib/shopifyImage';
@@ -63,7 +63,6 @@ export function extractSingleSentenceDescription(product: Product): string {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const navigate = useNavigate();
   const [isWishlisted, setIsWishlisted] = useState(false);
   // 圖片載入失敗時不再換成圖庫照片，改為隱藏圖片、只留底色
   const [imageSrc, setImageSrc] = useState(shopifyImageUrl(product.image, 600));
@@ -80,26 +79,20 @@ export default function ProductCard({ product }: ProductCardProps) {
     return `NT$${twdPrice.toLocaleString()}`;
   };
 
-  const handleCardClick = () => {
-    // Extract the numeric ID from Shopify GID format
-    const numericId = typeof product.id === 'string' && product.id.includes('gid://shopify/Product/')
-      ? product.id.split('/').pop()
-      : product.id;
-    navigate(`/product/${numericId}`);
-  };
+  // 商品頁網址一律用數字 ID（Shopify GID 取最後一段）
+  const numericId = typeof product.id === 'string' && product.id.includes('gid://shopify/Product/')
+    ? product.id.split('/').pop()
+    : product.id;
 
+  // 卡片本身是商品連結；收藏按鈕在連結內，點擊時不觸發導頁
   const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     setIsWishlisted(!isWishlisted);
   };
 
-  const handleViewProduct = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    handleCardClick();
-  };
-
   return (
-    <div className="group cursor-pointer flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-100/80 hover:shadow-md transition-shadow" onClick={handleCardClick}>
+    <Link to={`/product/${numericId}`} className="group cursor-pointer flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-100/80 hover:shadow-md transition-shadow">
       {/* Product Image - Standardized square (1:1) ratio */}
       <div className="aspect-square bg-gray-50 overflow-hidden mb-3 relative flex items-center justify-center">
         {imageSrc && (
@@ -217,11 +210,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           </button>
         </div>
 
-        {/* 查看商品按鈕 - 固定在底部 */}
-        <button
-          onClick={handleViewProduct}
-          aria-label={`查看 ${product.name} 商品詳情`}
-          className="add-to-cart-btn mt-auto"
+        {/* 查看商品（外觀為按鈕，整張卡片已是連結）- 固定在底部 */}
+        <span
+          className="add-to-cart-btn mt-auto flex items-center justify-center"
           style={{
             backgroundColor: isSoldOut ? '#F7F6F3' : '#FFFFFF',
             color: isSoldOut ? '#5C5552' : '#5B3D48',
@@ -241,8 +232,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           }}
         >
           {isSoldOut ? '已售完・查看詳情' : '查看商品'}
-        </button>
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

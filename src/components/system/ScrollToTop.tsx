@@ -1,16 +1,19 @@
 
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { robotsForPath, titleForPath } from "../../lib/pageTitle";
+import { applyRouteSeo } from "../../lib/documentMeta";
 
 export default function ScrollToTop() {
   const { pathname, search, hash } = useLocation();
 
-  // 換頁時先設定固定標題（layout effect 先於頁面的 effect 執行，動態頁可再覆寫）
+  const initialRender = useRef(true);
+
+  // 換頁時依路由表（src/lib/seo.ts，與伺服器共用）設定標題、說明、robots 與 canonical。
+  // layout effect 先於頁面的 effect 執行，商品、文章與搜尋頁載入資料後可再覆寫。
   useLayoutEffect(() => {
-    document.title = titleForPath(pathname);
-    document.querySelector('meta[name="robots"]')?.setAttribute("content", robotsForPath(pathname));
-  }, [pathname]);
+    applyRouteSeo(pathname, search, { initial: initialRender.current });
+    initialRender.current = false;
+  }, [pathname, search]);
 
   useEffect(() => {
     // 禁用瀏覽器自動還原捲動位置

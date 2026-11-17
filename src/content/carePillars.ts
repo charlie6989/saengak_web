@@ -14,7 +14,7 @@ export type CarePillarId = 'intimate' | 'comfort' | 'period';
 
 export interface CarePillar {
   id: CarePillarId;
-  /** 導覽與分類網址使用的名稱（`/search?category=<name>`）。 */
+  /** 導覽與分類網址使用的名稱（`/products?category=<name>`）。 */
   name: string;
   eyebrow: string;
   title: string;
