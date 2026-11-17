@@ -1,6 +1,6 @@
 # 項目狀態
 
-## 上線前全面盤點、SEO 與物流金流比照 LUCISSI（2026-11-17，分支 `claude/pre-launch-review-seo-0c8078`，未推送、未部署）
+## 上線前全面盤點、SEO 與物流金流比照 LUCISSI（2026-11-17，分支 `claude/pre-launch-review-seo-0c8078`，[PR #121](https://github.com/charlie6989/saengak_web/pull/121) 已開，未合併、未部署正式站）
 
 店主要求「徹底檢視上線前欠缺的部分、徹底處理 SEO、所有金流物流比照 LUCISSI website」。
 
@@ -26,7 +26,9 @@
 
 - 程式碼：`middleware.js` 改成 `middleware.ts`，為每個網頁寫入路由 head、結構化資料（Organization／WebSite、Product＋BreadcrumbList、BlogPosting），以及給爬蟲的隱藏文字；未知路由、查無商品或文章回 404；canonical 308 轉址。`vercel.json` 新增 `/blog`、`/brand-story`、`/terms-of-service`、`/product`、`/search` 的永久轉址，站內連結改用 `/products`。商品／文章卡片改成連結；FAQ 收合時答案仍在 DOM；sitemap 加入文章；新增 `favicon.ico`、preconnect、`lang="zh-Hant-TW"`、首頁標題，robots.txt 擋 `/auth/`（原本也擋 `/api/`，合併後移除）。
 - 已驗證（本機）：Vitest 77 檔／795 項、typecheck、build、verify:content（131 檔）通過。另把 `dist/index.html` 當殼層、以唯讀 Storefront 公開資料跑 middleware：商品、文章、分類頁 200，查無商品、文章、路由 404。Vite 開發站實測換頁時 canonical 只有一個、JSON-LD 會換掉、FAQ 答案收合時仍在 DOM、卡片連結與收藏按鈕都正常。
-- 未確認：正式 Vercel 的 Node.js middleware 是否能照預期以 `.js` 副檔名載入 TypeScript（`api/` 函式已這樣使用，但 middleware 尚未在正式站驗證）、vercel.json 轉址與 middleware 的執行順序、實際延遲。需要預覽部署驗證。
+- 已驗證（Vercel 預覽 `saengak-web-d2ux`，提交 `3ca72fa`，2026-11-17，以 23 小時分享連結讀取）：middleware 正常載入。`/`、`/products`、`/faq`、`/about`、商品、文章 200（約 0.3–0.9 秒）；`/no-such-page`、`/product/999999999`、`/blog/no-such-article` 404；`/blog`→`/community`、`/search`、`/product`→`/products`、`/brand-story`→`/about`、`/terms-of-service`→`/terms`、結尾斜線皆 308。以 Googlebot UA 取 HTML：每頁 title、description、canonical（`https://lucissicare.com/...`）正確；首頁 Organization＋WebSite；商品頁 Product（價格、InStock、運費 130、退貨政策、5 張圖）＋BreadcrumbList；文章 BlogPosting＋BreadcrumbList；`/products` HTML 內有 27 個商品連結；sitemap 44 個網址；robots.txt 只擋 `/admin`、`/profile`、`/auth/`；`/admin` 回 `x-robots-tag: noindex`。Chrome 開商品頁無主控台錯誤，購物車顯示順豐宅配 NT$130（預設）／黑貓宅配 NT$146 及超商取貨。
+- 預覽讀的是正式 Supabase：超商運費仍顯示 NT$60（`20261117000100` 尚未套用），屬預期；合併後若未同時改 Shopify 運費名稱，購物車會顯示「黑貓宅配／順豐宅配」而結帳頁仍是「標準」，所以要與正式切換一起上。
+- 未驗證：結帳頁依名稱預選運費（預覽網址不在 Turnstile 白名單，且 Shopify 運費尚未改名）；`/blog/` 會先 308 到 `/blog` 再 308 到 `/community`（兩跳，不影響收錄，可之後合併成一跳）。
 
 ## 測試訂單清理與發票作廢（2026-11-09，店主要求「測試訂單都取消，有發票也作廢」）
 
