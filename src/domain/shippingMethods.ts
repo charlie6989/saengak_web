@@ -9,8 +9,8 @@
 // 「送達後標記已付款」Flow 也都以完整名稱比對。改名時要一起改這些地方（見 docs/STORE_PICKUP.md）。
 // 金額是結帳頁運費的副本，實際收費仍以結帳頁為準；正式值可由 site_settings 覆寫（見 resolveShippingMethods）。
 
-import { DEFAULT_PICKUP_SHIPPING_FEE, type PickupCarrier } from './pickupPoints';
-import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from './shipping';
+import { DEFAULT_PICKUP_SHIPPING_FEE, type PickupCarrier } from './pickupPoints.js';
+import { DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from './shipping.js';
 
 export type HomeMethodId = 'standard' | 'sf-home';
 

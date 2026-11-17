@@ -2,7 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /profile
-Disallow: /api/
 Disallow: /auth/
 
 Sitemap: https://lucissicare.com/sitemap.xml

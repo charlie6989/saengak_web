@@ -398,13 +398,13 @@ describe('product structured data', () => {
   };
   type Offers = { shippingDetails: { shippingRate: { value: number; currency: string }; shippingDestination: { addressCountry: string } }; hasMerchantReturnPolicy?: Record<string, unknown> };
 
-  it('states shipping to Taiwan: the home delivery fee below the free-shipping threshold, free from it', () => {
+  it('states shipping to Taiwan: the cheapest home delivery fee (順豐宅配 NT$130) below the free-shipping threshold, free from it', () => {
     const below = buildProductJsonLd(base)!.offers as Offers;
-    expect(below.shippingDetails.shippingRate).toEqual({ '@type': 'MonetaryAmount', value: DEFAULT_SHIPPING_FEE, currency: 'TWD' });
+    expect(below.shippingDetails.shippingRate).toEqual({ '@type': 'MonetaryAmount', value: 130, currency: 'TWD' });
     expect(below.shippingDetails.shippingDestination.addressCountry).toBe('TW');
     const free = buildProductJsonLd({ ...base, price: DEFAULT_FREE_SHIPPING_THRESHOLD })!.offers as Offers;
     expect(free.shippingDetails.shippingRate.value).toBe(0);
-    expect(structuredDataShippingRate(DEFAULT_FREE_SHIPPING_THRESHOLD - 1)).toBe(DEFAULT_SHIPPING_FEE);
+    expect(structuredDataShippingRate(DEFAULT_FREE_SHIPPING_THRESHOLD - 1)).toBe(130);
   });
 
   it('claims the 7-day free return only for items that are not sealed personal-care goods', () => {
