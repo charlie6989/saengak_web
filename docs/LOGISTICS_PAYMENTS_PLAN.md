@@ -2,7 +2,7 @@
 
 ## 2026-11-17 物流與金流比照 LUCISSI（店主決定；2026-11-17 已完成宅配與付款停權部分的正式切換，超商改綠界待 SiteGiant）
 
-店主要求「所有金流物流都需要比照 LUCISSI website」，並選定：超商取貨完全比照（NT$69、由 SiteGiant 開綠界 C2C 運單）、宅配改名「黑貓宅配」並新增「順豐宅配」、付款完全比照（停用 ATM、加 2 次拒收停權）、出貨時效比照（1 個工作天內出貨、1–2 個工作天送達）。依據：LUCISSI_website `origin/main` `d1f072d`（2026-11-13）的 `config/brands/lucissi.manifest.json`、`Lib/storefront/delivery-choice.ts`、`Lib/contracts/purchase-block.ts`、`Lib/docs/ECPAY_C2C_RUNBOOK.md` 與 `/shipping`、FAQ 文字。
+店主要求「所有金流物流都需要比照 LUCISSI website」，並選定：超商取貨完全比照（NT$69、由 SiteGiant 開綠界 C2C 運單）、宅配改名「黑貓宅配」並新增「順豐宅配」、付款比照（加 2 次拒收停權；原定停用 ATM，同日店主改為保留 TapPay ATM）、出貨時效比照（1 個工作天內出貨、1–2 個工作天送達）。依據：LUCISSI_website `origin/main` `d1f072d`（2026-11-13）的 `config/brands/lucissi.manifest.json`、`Lib/storefront/delivery-choice.ts`、`Lib/contracts/purchase-block.ts`、`Lib/docs/ECPAY_C2C_RUNBOOK.md` 與 `/shipping`、FAQ 文字。
 
 | 項目 | LUCISSI（2026-11-13） | CARE 切換前 | CARE 程式（本分支） |
 |---|---|---|---|
@@ -10,7 +10,7 @@
 | 超商取貨 | 7-11取貨／全家取貨／萊爾富取貨 NT$69，SiteGiant 開綠界 C2C | NT$60，ShipAny（全家店到店、順豐） | NT$69，文字改綠界與尺寸限制；門市清單仍取自 ShipAny |
 | 免運 | 單筆滿 NT$1,500，任何配送方式 | 同 | 同 |
 | 預選運費 | 建立購物車後依名稱 `cartSelectedDeliveryOptionsUpdate` | 無（結帳頁預設最便宜＝超商） | 已移植（`preselectDeliveryOption`） |
-| 付款 | 信用卡（Visa／Mastercard／JCB）、貨到付款 | 信用卡、ATM、貨到付款 | 文字改為信用卡與貨到付款；ATM 須在 Shopify 停用 |
+| 付款 | 信用卡（Visa／Mastercard／JCB）、貨到付款 | 信用卡、ATM、貨到付款 | 保留 ATM（11/17 店主決定，與 LUCISSI 不同）；網站文字為信用卡、ATM 轉帳、貨到付款 |
 | 拒收停權 | 累計 2 次「拒收／未取件」標籤停止購買 | 無 | 已移植，另以 Email 在結帳前檢查 |
 | 出貨時效 | 1 個工作天內出貨，出貨後約 1–2 個工作天送達 | 約 3 至 5 個工作天送達 | 已改 |
 
@@ -28,7 +28,7 @@
    4. Shopify Flow「COD 宅配送達後自動標記已付款」條件 `shippingLine.title` 由「標準」改「黑貓宅配」。三個超商 COD Flow 停用：超商改走綠界後 ShipAny 不會回寫 DELIVERED；比照 LUCISSI，順豐宅配與超商取貨的貨到付款在確認取件／送達後由客服手動標記已付款。**宅配 Flow 條件已改「黑貓宅配」。三個超商 COD Flow 暫不停用：SiteGiant／綠界尚未設定前，超商單仍經 ShipAny 出貨並回寫 DELIVERED，改走綠界時再停用。**
    5. ShipAny CARE 物流設定檔 `shopify-gh2xgs-zf`：黑貓規則的平台運送方式改「黑貓宅配」，新增「順豐宅配」→ 順豐宅配規則；超商訂單改由 SiteGiant 出貨，ShipAny 的超商草稿不要確認（或移除超商規則）。**已新增第 3 條「宅配（順豐）」：平台運送方式包括「順豐宅配」→ 順豐台灣（由 7-11 規則複製，常溫、寄方付款、自行寄件）；運費試算確認順豐台灣可送貨上門（高雄住址 1 kg 報價 NT$83、預計 1 日）。黑貓規則（現為第 5 條）維持無條件，當作其他台灣訂單的備援，未加「黑貓宅配」條件。超商規則保留到改走綠界為止。目前順序：全家店到店 → 7-11店取（順豐）→ 宅配（順豐）→ 萊爾富店取（順豐）→ 宅配（黑貓常溫）。尚未用真實順豐宅配訂單驗證草稿套用。**
    6. SiteGiant：CARE 頻道（43091）在 訂單處理 → 選擇快遞服務 → 綠界物流 → 安排發貨，比照 LUCISSI `ECPAY_C2C_RUNBOOK.md`；寄件人須為真實姓名。首筆需確認門市代碼、代收金額與追蹤號回寫 Shopify。
-   7. Shopify 付款：停用「Tappay ATM」，保留 TapPay 信用卡與貨到付款。
+   7. ~~Shopify 付款：停用「Tappay ATM」~~ **取消（2026-11-17 店主決定保留 ATM）**：Shopify 維持 TapPay 信用卡、Tappay ATM、貨到付款；網站購物車與 FAQ 文字加回「ATM 轉帳」，`verify:content` 不再封鎖。CARE 尚無真實 ATM 訂單，付款後同步、標記已付款與開票未驗證；ATM 未付款單不可出貨（見下方 A 節）。
    8. Shopify 政策：運送政策改寫（運費、時效、綠界與尺寸限制、付款、拒收停權）；隱私權政策同步網站 `/privacy` 新增的 SiteGiant、綠界科技。
    9. 確認 Shopify App（SAENGAK Order Sync）有 `write_orders`，否則停權帳號的新訂單自動取消會記成 `cancel_failed`，需人工取消。送出取消後先記 `cancel_pending`，收到已取消的訂單 webhook 才改成 `cancelled`；切換後可查 `blocked_order_actions` 是否有長時間停在 `cancel_pending` 的訂單。
 3. 客服流程：貨到付款拒收或逾期未取件的訂單，在 Shopify 訂單加標籤「拒收」或「未取件」；移除標籤即撤回。

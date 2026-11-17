@@ -4,6 +4,7 @@
 // - 超商取貨：7-11取貨、全家取貨、萊爾富取貨，各 NT$69，由 SiteGiant 開綠界 C2C 店到店運單；
 // - 單筆滿 NT$1,500 免運，任何配送方式皆適用；
 // - 付款：信用卡（Visa、Mastercard、JCB）與貨到付款；貨到付款累計 2 次拒收或逾期未取件，停止購買。
+//   例外：CARE 保留 TapPay ATM 轉帳（2026-11-17 店主決定，LUCISSI 沒有）。
 //
 // label 必須與 Shopify 運費名稱完全相同：建立結帳時以名稱預選運費，ShipAny 規則、Shipy 隱藏規則與
 // 「送達後標記已付款」Flow 也都以完整名稱比對。改名時要一起改這些地方（見 docs/STORE_PICKUP.md）。
@@ -124,7 +125,7 @@ export const DISPATCH_PROMISE = '付款完成後（貨到付款為訂單成立�
 export const TRANSIT_PROMISE = '出貨後一般約 1–2 個工作天送達，追蹤資訊以出貨通知為準';
 
 // 付款方式（比照 LUCISSI）。
-export const PAYMENT_METHODS_SHORT = '可用信用卡（Visa、Mastercard、JCB）線上付款，或選擇貨到付款。';
+export const PAYMENT_METHODS_SHORT = '可用信用卡（Visa、Mastercard、JCB）線上付款、ATM 轉帳，或選擇貨到付款。';
 export const COD_REFUSAL_RULE = '貨到付款訂單累計 2 次拒收或逾期未取件，帳號將暫停購買，並自動取消尚未出貨的訂單。';
 
 export interface DeliveryOptionLike {

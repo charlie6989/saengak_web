@@ -4,7 +4,7 @@
 
 - 店主決定 CARE 的物流與金流一律比照 LUCISSI website（`LUCISSI_website` `config/brands/lucissi.manifest.json` 的 `shippingDisplay`、`purchaseBlock`）。LUCISSI 改了運費、方式或付款，CARE 要跟著改。
 - 配送方式、運費、Shopify 運費名稱、出貨時效與付款文字的單一來源是 `src/domain/shippingMethods.ts`；label 必須等於 Shopify 運費名稱（建立結帳時依名稱預選，ShipAny 規則、Shipy、Flow 也用完整名稱比對）。正式運費可由 `site_settings`（`default_shipping_fee`、`sf_home_shipping_fee`、`pickup_shipping_fee`、`free_shipping_threshold`）覆寫。
-- 付款只有信用卡（Visa、Mastercard、JCB）與貨到付款；不提供 ATM（`verify:content` 封鎖「ATM 轉帳」）。
+- 付款：信用卡（Visa、Mastercard、JCB）、ATM 轉帳（TapPay）、貨到付款。ATM 是比照 LUCISSI 的唯一例外：2026-11-17 店主先選停用，同日改為保留，因此網站文字加回 ATM、`verify:content` 不再封鎖「ATM 轉帳」。
 - 拒收停權：Shopify 訂單標籤「拒收」「未取件」累計 2 筆停止購買（`src/domain/purchaseBlock.ts`、`api/_lib/purchase-block.ts`）。CARE 另存訂單 Email，以便建立結帳時擋下；檢查放在訪客 Turnstile 驗證之後，查詢失敗時放行。拒收紀錄依訂單 `updated_at` 排序（`order_refusal_versions`），晚到或重送的舊快照不能新增或移除拒收，也不能觸發取消。Shopify 接受 `orderCancel` 只代表排入背景工作，所以先記 `cancel_pending`；要等訂單 webhook 帶 `cancelled_at` 才記 `cancelled`（不可被改回）。PR #121 Codex 審查意見，2026-11-17。
 - 超商取貨由 SiteGiant 開綠界 C2C 運單（店主 11-17 決定比照，正式切換步驟見 `docs/LOGISTICS_PAYMENTS_PLAN.md`）；門市清單仍取自 ShipAny。
 - 外部系統比對運費名稱的位置（改名時要一起改，2026-11-17 回讀）：Shopify 運費（Domestic 台灣）、Shipy 隱藏規則、Shopify Flow COD 條件、ShipAny CARE 設定檔 `shopify-gh2xgs-zf` 規則（「包括」是清單完全相符）。ShipAny 規則順序：全家店到店 → 7-11店取（順豐）→ 宅配（順豐，包括「順豐宅配」）→ 萊爾富店取（順豐）→ 宅配（黑貓常溫，無條件、當備援）。超商規則與三個超商 COD Flow 要等 SiteGiant／綠界上線後才移除或停用。

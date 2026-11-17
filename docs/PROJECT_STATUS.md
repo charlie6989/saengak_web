@@ -10,20 +10,22 @@
 - Shopify Flow：COD 宅配 Flow 條件改「黑貓宅配」。三個超商 COD Flow 仍啟用（超商仍經 ShipAny 出貨，改綠界時再停用）。
 - ShipAny CARE 設定檔：新增「宅配（順豐）」規則（包括「順豐宅配」→ 順豐台灣），運費試算確認順豐台灣可送貨上門。黑貓規則維持無條件備援。
 
-尚未執行：SiteGiant／綠界 C2C、停用 TapPay ATM、Shopify 運送與隱私權政策改寫、確認 SAENGAK Order Sync 的 `write_orders`。
+TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文字已加回 ATM 轉帳。
+
+尚未執行：SiteGiant／綠界 C2C、Shopify 運送與隱私權政策改寫、確認 SAENGAK Order Sync 的 `write_orders`。
 尚未驗證：真實結帳的預選運費（需真人通過 Turnstile）、第一筆順豐宅配訂單的 ShipAny 草稿、停權流程的真實訂單。步驟與細節見 [物流與金流上線清單](LOGISTICS_PAYMENTS_PLAN.md)。
 
 ## 上線前全面盤點、SEO 與物流金流比照 LUCISSI（2026-11-17，分支 `claude/pre-launch-review-seo-0c8078`，[PR #121](https://github.com/charlie6989/saengak_web/pull/121) 已於 2026-11-17 合併部署，正式切換結果見上一節）
 
 店主要求「徹底檢視上線前欠缺的部分、徹底處理 SEO、所有金流物流比照 LUCISSI website」。
 
-**物流與金流（程式已完成；正式切換進度見上一節）**：店主選定超商完全比照（NT$69、SiteGiant 開綠界 C2C）、「標準」改名「黑貓宅配」並新增「順豐宅配」NT$130、停用 ATM 並加 2 次拒收停權、出貨時效改 1 個工作天內出貨／1–2 個工作天送達。程式、migration 與正式切換的 9 個步驟見 [物流與金流上線清單](LOGISTICS_PAYMENTS_PLAN.md) 最新一節。已驗證（本機）：Vitest 78 檔／808 項、build、verify:content、verify:supabase；Vite 開發站手機寬度確認購物車可選順豐／黑貓、預估運費 130→146、選擇會記住、無橫向捲動（本機沒有 Supabase，超商面板與 FAQ 超商文字只有單元測試）。
+**物流與金流（程式已完成；正式切換進度見上一節）**：店主選定超商完全比照（NT$69、SiteGiant 開綠界 C2C）、「標準」改名「黑貓宅配」並新增「順豐宅配」NT$130、加 2 次拒收停權（原定停用 ATM，11/17 改為保留）、出貨時效改 1 個工作天內出貨／1–2 個工作天送達。程式、migration 與正式切換的 9 個步驟見 [物流與金流上線清單](LOGISTICS_PAYMENTS_PLAN.md) 最新一節。已驗證（本機）：Vitest 78 檔／808 項、build、verify:content、verify:supabase；Vite 開發站手機寬度確認購物車可選順豐／黑貓、預估運費 130→146、選擇會記住、無橫向捲動（本機沒有 Supabase，超商面板與 FAQ 超商文字只有單元測試）。
 
 **SEO**：見下一節。結構化資料運費已改為最便宜的宅配（NT$130，比照 LUCISSI）；robots.txt 不擋 `/api/`（Google 算繪頁面要呼叫），只擋 `/admin`、`/profile`、`/auth/`。
 
 **上線前仍欠缺（依影響排序；狀態取自既有紀錄，本輪未登入各後台重新回讀）**
 
-1. 物流金流切換剩餘步驟（11/17 已完成部署、Shopify 運費、Shipy、宅配 Flow、ShipAny 規則）：SiteGiant 綠界、停用 ATM、政策文字、`write_orders`。
+1. 物流金流切換剩餘步驟（11/17 已完成部署、Shopify 運費、Shipy、宅配 Flow、ShipAny 規則）：SiteGiant 綠界、政策文字、`write_orders`。（ATM 已決定保留，不停用。）
 2. 真實訂單端到端都還沒有：訪客實付後的同步／確認信／發票／認領；首筆黑貓 COD 送達→已付款→開票；首筆超商（切換後為綠界）取件、代收與追蹤號回寫。#1011 已取消退款，目前沒有有效的真實訂單。
 3. Search Console：目前 Google 帳號沒有 `lucissicare.com` 權限，收錄狀況未知；需以 DNS TXT 驗證網域、提交 sitemap，再匯入 Bing。網站沒有任何分析工具（LUCISSI 有 GA4／Meta Pixel／PostHog，是否比照待決定，需同步改 CSP 與隱私權文字）。
 4. Facebook 登入：Meta App Review 11/08 送審（約 20 天），通過後發布 App 並設定 `VITE_FACEBOOK_LOGIN_ENABLED=true` 重新部署。
