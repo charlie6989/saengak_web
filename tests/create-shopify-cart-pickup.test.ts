@@ -75,7 +75,7 @@ describe('建立結帳：超商取貨門市', () => {
       }),
     });
     globalThis.fetch = vi.fn().mockImplementation(async (_url, options) => {
-      capturedVariables = JSON.parse(options.body).variables;
+      if (JSON.parse(options.body).query.includes("cartCreate")) capturedVariables = JSON.parse(options.body).variables;
       return {
         ok: true,
         status: 200,

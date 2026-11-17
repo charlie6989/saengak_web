@@ -6,7 +6,7 @@ describe('buildPromotionSubtitle', () => {
     expect(buildPromotionSubtitle({ discount_type: 'fixed_amount', discount_value: 100, min_spend: 1500 })).toBe('滿 NT$ 1,500 現折 NT$ 100');
     expect(buildPromotionSubtitle({ discount_type: 'percentage', discount_value: 15, min_spend: 3000 })).toBe('滿 NT$ 3,000 享 85 折');
     expect(buildPromotionSubtitle({ discount_type: 'percentage', discount_value: 30, min_spend: 0 })).toBe('全館享 7 折');
-    expect(buildPromotionSubtitle({ discount_type: 'free_shipping', discount_value: 0, min_spend: 1500 })).toBe('黑貓宅配滿 NT$ 1,500 免運費');
+    expect(buildPromotionSubtitle({ discount_type: 'free_shipping', discount_value: 0, min_spend: 1500 })).toBe('宅配與超商取貨滿 NT$ 1,500 免運費');
     expect(buildPromotionSubtitle({ discount_type: 'fixed_amount', discount_value: 50, min_spend: 0, min_quantity: 2 })).toBe('滿 2 件現折 NT$ 50');
   });
 });
@@ -33,8 +33,8 @@ describe('applyPromotionCopy', () => {
   it('replaces stale FREESHIP copy with text derived from the live threshold', () => {
     const result = applyPromotionCopy(stale);
     expect(result.title).toBe('滿額免運');
-    expect(result.subtitle).toBe('黑貓宅配滿 NT$ 1,500 免運費');
-    expect(result.subtitle).not.toContain('超商');
+    expect(result.subtitle).toBe('宅配與超商取貨滿 NT$ 1,500 免運費');
+    expect(result.subtitle).not.toContain('黑貓');
     expect(applyPromotionCopy({ ...stale, badge_text: '全館免運' }).badge_text).toBe('滿額免運');
   });
 

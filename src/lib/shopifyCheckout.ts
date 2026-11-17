@@ -1,6 +1,7 @@
 import type { ShopifyCheckoutLine } from '../domain/algorithms';
 import type { InvoicePreference } from '../domain/invoice';
 import type { PickupPoint } from '../domain/pickupPoints';
+import type { HomeMethodId } from '../domain/shippingMethods';
 import { isSupabaseConfigured, supabase } from './supabase';
 
 export const LUCISSI_CARE_SHOPIFY_DOMAIN = 'gh2xgs-zf.myshopify.com';
@@ -179,7 +180,7 @@ export async function createShopifyCheckout(
   invoicePreference: InvoicePreference,
   discountCodes?: string[],
   guest?: GuestCheckoutDetails,
-  delivery?: { pickupPoint?: Pick<PickupPoint, 'carrier' | 'code'> | null },
+  delivery?: { pickupPoint?: Pick<PickupPoint, 'carrier' | 'code'> | null; homeMethod?: HomeMethodId },
 ): Promise<{ checkoutUrl: string; invalidDiscountCodes: string[]; checkoutKind: 'member' | 'guest' }> {
   if (!isShopifyCheckoutConfigured) {
     throw new Error('結帳服務尚未設定，暫時無法結帳。');
@@ -206,9 +207,10 @@ export async function createShopifyCheckout(
   }
 
   // 只送超商與門市代碼；名稱與地址由伺服器依門市清單填入。
+  // 宅配則送顧客選的宅配方式（黑貓宅配／順豐宅配），伺服器據此預選結帳頁運費。
   const pickupPoint = delivery?.pickupPoint
     ? { pickupPoint: { carrier: delivery.pickupPoint.carrier, code: delivery.pickupPoint.code } }
-    : {};
+    : delivery?.homeMethod ? { homeMethod: delivery.homeMethod } : {};
   const requestBody = guest
     ? {
         lines,

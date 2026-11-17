@@ -259,7 +259,7 @@ describe('LUCISSI CARE Shopify Cart 結帳 API 整合與維護模式測試 (api/
     it('會員具有姓名、手機與台灣標準地址時，自動將符合 Shopify 規格的 buyerIdentity 與 shipping attributes 帶入 cartCreate', async () => {
       let capturedVariables: any = null;
       globalThis.fetch = vi.fn().mockImplementation(async (_url, options) => {
-        capturedVariables = JSON.parse(options.body).variables;
+        if (JSON.parse(options.body).query.includes("cartCreate")) capturedVariables = JSON.parse(options.body).variables;
         return {
           ok: true,
           status: 200,

@@ -49,7 +49,7 @@ export default function ReturnPolicyPage() {
 
           <section className={sectionClass}>
             <h2 className="text-2xl font-semibold">退款</h2>
-            <p className="mt-4 leading-7">我們會在收到退回商品或解除契約通知的次日起 15 日內辦理退款。信用卡付款退回原付款信用卡，實際入帳時間依發卡銀行作業而定；ATM 轉帳與貨到付款，由客服確認退款帳戶後匯款。已開立的電子發票會依規定作廢或開立折讓。</p>
+            <p className="mt-4 leading-7">我們會在收到退回商品或解除契約通知的次日起 15 日內辦理退款。信用卡付款退回原付款信用卡，實際入帳時間依發卡銀行作業而定；貨到付款等非信用卡付款，客服會請您提供本人銀行帳戶，於同一期限內匯款退還。已開立的電子發票會依規定作廢或開立折讓。</p>
           </section>
         </div>
       </main>

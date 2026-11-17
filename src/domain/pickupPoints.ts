@@ -1,8 +1,10 @@
 // 超商取貨（門市取件）共用規則：前台選店畫面、門市搜尋 API 與建立 Shopify 結帳共用。
-// 2026-11-09 店主決定：開放全家、7-11、萊爾富；運費 NT$60，達全站免運門檻免運；同時提供取貨付款（顧客於結帳步驟選擇付款方式）。
-// 正式開關為 site_settings.store_pickup_enabled（預設 false）。門市寫入 Shopify 的格式尚待 ShipAny 確認，見 docs/STORE_PICKUP.md。
+// 2026-11-09 店主決定：開放全家、7-11、萊爾富，同時提供取貨付款（顧客於結帳步驟選擇付款方式）。
+// 2026-11-17 店主決定比照 LUCISSI：運費改 NT$69，由 SiteGiant 開綠界 C2C 店到店運單（運費名稱與文字見 shippingMethods.ts）。
+// 正式開關為 site_settings.store_pickup_enabled。門市清單仍取自 ShipAny「物流服務點列表」，寫入格式見 docs/STORE_PICKUP.md。
 
-export const PICKUP_CARRIERS = ['familymart', 'seven-eleven', 'hilife'] as const;
+// 顯示順序比照 LUCISSI：7-11、全家、萊爾富。
+export const PICKUP_CARRIERS = ['seven-eleven', 'familymart', 'hilife'] as const;
 export type PickupCarrier = (typeof PICKUP_CARRIERS)[number];
 
 export const PICKUP_CARRIER_LABELS: Record<PickupCarrier, string> = {
@@ -27,8 +29,8 @@ export function isVercelPreviewHostname(hostname: string): boolean {
   return /\.vercel\.app$/i.test(hostname.trim());
 }
 
-/** 超商取貨運費的程式預設值（正式值可存在 site_settings.pickup_shipping_fee）。 */
-export const DEFAULT_PICKUP_SHIPPING_FEE = 60;
+/** 超商取貨運費的程式預設值（正式值可存在 site_settings.pickup_shipping_fee）；比照 LUCISSI 為 NT$69。 */
+export const DEFAULT_PICKUP_SHIPPING_FEE = 69;
 
 export type DeliveryMethod = 'home' | 'pickup';
 

@@ -26,6 +26,15 @@ import {
   isValidPickupCode,
 } from '../src/domain/pickupPoints.js';
 import { findShipAnyPickupPoint, type ShipAnyPickupPoint } from './_lib/shipany-pickup-points.js';
+import { emailPurchaseBlocked, PURCHASE_BLOCKED_MESSAGE } from './_lib/purchase-block.js';
+import {
+  chooseDeliveryOption,
+  homeMethodLabel,
+  isHomeMethodId,
+  pickupMethodLabel,
+  type DeliveryOptionLike,
+  type HomeMethodId,
+} from '../src/domain/shippingMethods.js';
 import { isStorePickupEnabled, pickupPointDepsFromEnvironment } from './_lib/pickup-points-handler.js';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -86,6 +95,43 @@ interface CreateCartRequestBody {
   turnstileToken?: unknown;
   /** 超商取貨：只收超商與門市代碼，名稱與地址一律以伺服器的門市清單為準。 */
   pickupPoint?: unknown;
+  /** 宅配：standard（黑貓宅配）或 sf-home（順豐宅配）；用來預選結帳頁運費。 */
+  homeMethod?: unknown;
+}
+
+const CART_DELIVERY_QUERY = `query CartDelivery($id: ID!) {
+  cart(id: $id) { deliveryGroups(first: 5) { nodes { id deliveryOptions { handle title estimatedCost { amount } } } } }
+}`;
+
+const CART_SELECT_DELIVERY_MUTATION = `mutation CartSelectDelivery($cartId: ID!, $selected: [CartSelectedDeliveryOptionInput!]!) {
+  cartSelectedDeliveryOptionsUpdate(cartId: $cartId, selectedDeliveryOptions: $selected) { userErrors { field message } }
+}`;
+
+/**
+ * 結帳頁預設選最便宜的運費（超商 NT$69 低於宅配），因此建立購物車後依顧客在購物車的選擇預選運費
+ * （比照 LUCISSI api/shopify-cart.ts）。盡力而為：Shopify 沒回應或沒有對應運費時沿用結帳頁預設。
+ */
+export async function preselectDeliveryOption(
+  post: (query: string, variables: Record<string, unknown>) => Promise<any>,
+  cartId: string,
+  choice: { pickupLabel?: string; homeLabel?: string },
+): Promise<boolean> {
+  try {
+    const delivery = await post(CART_DELIVERY_QUERY, { id: cartId });
+    const groups = (delivery?.data?.cart?.deliveryGroups?.nodes ?? []) as Array<{ id: string; deliveryOptions?: DeliveryOptionLike[] }>;
+    const selected = groups
+      .map((group) => ({
+        deliveryGroupId: group.id,
+        deliveryOptionHandle: chooseDeliveryOption(group.deliveryOptions ?? [], choice.pickupLabel, choice.homeLabel),
+      }))
+      .filter((item): item is { deliveryGroupId: string; deliveryOptionHandle: string } => Boolean(item.deliveryGroupId && item.deliveryOptionHandle));
+    if (selected.length === 0) return false;
+    const result = await post(CART_SELECT_DELIVERY_MUTATION, { cartId, selected });
+    const errors = result?.data?.cartSelectedDeliveryOptionsUpdate?.userErrors;
+    return !result?.errors?.length && !(Array.isArray(errors) && errors.length);
+  } catch {
+    return false;
+  }
 }
 
 function parseDiscountCodes(value: unknown): string[] | undefined {
@@ -321,6 +367,8 @@ export async function POST(request: Request): Promise<Response> {
       }
     }
 
+    const homeMethod: HomeMethodId | undefined = !pickupPoint && isHomeMethodId(body.homeMethod) ? body.homeMethod : undefined;
+
     const hasSensitiveInvoicePreference = invoicePreference.kind === 'company' ||
       Boolean(invoicePreference.notificationEmail) ||
       (invoicePreference.kind === 'personal' && invoicePreference.carrier !== 'none');
@@ -354,6 +402,15 @@ export async function POST(request: Request): Promise<Response> {
           code: 'TURNSTILE_VERIFICATION_FAILED',
         }, { status: 403, headers: corsHeaders });
       }
+    }
+
+    // 貨到付款累計 2 次拒收或逾期未取件的帳號暫停購買（比照 LUCISSI）。放在訪客驗證之後，
+    // 未通過驗證的請求無法探測某個 Email 是否停權；查詢失敗時放行，webhook 仍會取消停權帳號的新訂單。
+    if (await emailPurchaseBlocked(adminClient as never, isGuest ? guestEmail : member?.email)) {
+      return jsonResponse({
+        error: PURCHASE_BLOCKED_MESSAGE,
+        code: 'PURCHASE_BLOCKED',
+      }, { status: 403, headers: corsHeaders });
     }
 
     const query = `
@@ -499,6 +556,7 @@ export async function POST(request: Request): Promise<Response> {
         { key: '_pickup_courier', value: pickupPoint.courier },
       );
     }
+    if (homeMethod) attributes.push({ key: '_home_method', value: homeMethod });
     const pickupCompany = pickupPoint ? formatPickupCompanyLine(pickupPoint) : undefined;
 
     if (!pickupPoint && shopifyAddress.province) attributes.push({ key: '_shipping_province', value: shopifyAddress.province });
@@ -618,6 +676,26 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     const invalidDiscountCodes = findInapplicableDiscountCodes(discountCodes, payload.cart.discountCodes);
+
+    // 有收件地址（門市或會員地址）時 Shopify 才有運費選項可選。
+    if (buyerIdentity.deliveryAddressPreferences) {
+      await preselectDeliveryOption(
+        (query, variables) => fetch(`https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_PUBLIC_TOKEN,
+            'Shopify-Storefront-Buyer-IP': getClientIp(request),
+          },
+          body: JSON.stringify({ query, variables }),
+          signal: AbortSignal.timeout(4000),
+        }).then((res) => res.json()),
+        cartId,
+        pickupPoint
+          ? { pickupLabel: pickupMethodLabel(pickupPoint.carrier) }
+          : { homeLabel: homeMethod ? homeMethodLabel(homeMethod) : undefined },
+      );
+    }
 
     return jsonResponse({
       checkoutUrl: payload.cart.checkoutUrl,

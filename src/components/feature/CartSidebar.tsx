@@ -42,6 +42,14 @@ import SignedOutCheckoutActions, {
 import { isSealedCareProduct, SEALED_CARE_CART_NOTICE } from '../../domain/returnPolicy';
 import { DEFAULT_PICKUP_SHIPPING_FEE, type DeliveryMethod, type PickupPoint } from '../../domain/pickupPoints';
 import { fetchStorePickupSettings, loadDeliverySelection, saveDeliverySelection } from '../../lib/pickupPoints';
+import {
+  DISPATCH_PROMISE,
+  PAYMENT_METHODS_SHORT,
+  resolveShippingMethods,
+  shippingFeeSummary,
+  sortedHomeMethods,
+  type HomeMethodId,
+} from '../../domain/shippingMethods';
 import PickupPointSelector from './PickupPointSelector';
 
 export default function CartSidebar() {
@@ -62,9 +70,10 @@ export default function CartSidebar() {
   const [manualCouponInput, setManualCouponInput] = useState<string>('');
   const [shippingSettings, setShippingSettings] = useState({ freeShippingThreshold: DEFAULT_FREE_SHIPPING_THRESHOLD, defaultShippingFee: DEFAULT_SHIPPING_FEE });
   const [guestCheckoutEnabled, setGuestCheckoutEnabled] = useState(false);
-  const [storePickup, setStorePickup] = useState({ enabled: false, shippingFee: DEFAULT_PICKUP_SHIPPING_FEE });
+  const [storePickup, setStorePickup] = useState<{ enabled: boolean; shippingFee: number; sfHomeShippingFee?: number }>({ enabled: false, shippingFee: DEFAULT_PICKUP_SHIPPING_FEE });
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() => loadDeliverySelection().method);
   const [pickupPoint, setPickupPoint] = useState<PickupPoint | null>(() => loadDeliverySelection().pickupPoint);
+  const [homeMethod, setHomeMethod] = useState<HomeMethodId | null>(() => loadDeliverySelection().homeMethod);
   const [signedOutMode, setSignedOutMode] = useState<SignedOutCheckoutMode>('member');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestCaptchaToken, setGuestCaptchaToken] = useState('');
@@ -120,7 +129,7 @@ export default function CartSidebar() {
     }
   }, [isCartOpen, user?.id]);
 
-  // 讀取超商取貨開關與運費（site_settings.store_pickup_enabled、pickup_shipping_fee，公開設定）
+  // 讀取超商取貨開關與運費（site_settings.store_pickup_enabled、pickup_shipping_fee、sf_home_shipping_fee，公開設定）
   useEffect(() => {
     if (isCartOpen) {
       void fetchStorePickupSettings().then(setStorePickup);
@@ -128,10 +137,10 @@ export default function CartSidebar() {
   }, [isCartOpen]);
 
   useEffect(() => {
-    saveDeliverySelection({ method: deliveryMethod, pickupPoint });
-  }, [deliveryMethod, pickupPoint]);
+    saveDeliverySelection({ method: deliveryMethod, pickupPoint, homeMethod });
+  }, [deliveryMethod, pickupPoint, homeMethod]);
 
-  // 開關關閉時一律宅配；購物車只在開關開啟時顯示配送方式
+  // 開關關閉時一律宅配
   const isPickupSelected = storePickup.enabled && deliveryMethod === 'pickup';
 
   // 未登入時讀取訪客結帳開關（site_settings.guest_checkout_enabled，公開設定）
@@ -164,6 +173,17 @@ export default function CartSidebar() {
 
   const totalPrice = getTotalPrice();
 
+  // 配送方式與運費比照 LUCISSI（src/domain/shippingMethods.ts）；宅配沒選過時預設最便宜的。
+  const shippingMethods = resolveShippingMethods({
+    freeShippingThreshold: shippingSettings.freeShippingThreshold,
+    defaultShippingFee: shippingSettings.defaultShippingFee,
+    sfHomeShippingFee: storePickup.sfHomeShippingFee,
+    pickupShippingFee: storePickup.shippingFee,
+    pickupEnabled: storePickup.enabled,
+  });
+  const selectedHomeMethod = shippingMethods.homeMethods.find((method) => method.id === homeMethod)
+    ?? sortedHomeMethods(shippingMethods)[0];
+
   const activeCoupon = userCoupons.find((c) => c.coupon_code === selectedCouponCode);
   const discountCalculation = activeCoupon?.promotion
     ? calculateDiscountAmount(activeCoupon.promotion, totalPrice)
@@ -179,7 +199,7 @@ export default function CartSidebar() {
     subtotal: totalPrice,
     discountAmount: discountCalculation.amount,
     freeShippingThreshold: shippingSettings.freeShippingThreshold,
-    shippingFee: isPickupSelected ? storePickup.shippingFee : shippingSettings.defaultShippingFee,
+    shippingFee: isPickupSelected ? storePickup.shippingFee : selectedHomeMethod.fee,
     hasFreeShippingCoupon: activeCoupon?.promotion?.discount_type === 'free_shipping' && discountCalculation.isEligible,
   });
   const amountToFreeShipping = cartEstimate.amountToFreeShipping;
@@ -264,7 +284,7 @@ export default function CartSidebar() {
         invoicePreference,
         discountCodes,
         guest,
-        { pickupPoint: isPickupSelected ? pickupPoint : null },
+        isPickupSelected ? { pickupPoint } : { pickupPoint: null, homeMethod: selectedHomeMethod.id },
       );
       if (result.invalidDiscountCodes.length > 0) {
         setSelectedCouponCode('');
@@ -457,6 +477,9 @@ export default function CartSidebar() {
                 style={{ width: `${freeShippingProgress}%` }}
               />
             </div>
+            <p className="mt-1.5 text-[11px] leading-5 text-gray-600" data-testid="cart-shipping-fee-summary">
+              台灣宅配{shippingMethods.pickupMethods.length > 0 ? '與超商取貨' : ''}，運費：{shippingFeeSummary(shippingMethods)}，單筆滿 {formatTwd(shippingMethods.freeShippingThreshold)} 免運。使用折扣碼時，實際運費以結帳頁計算為準。
+            </p>
           </div>
         )}
 
@@ -775,16 +798,16 @@ export default function CartSidebar() {
             </div>
             )}
 
-            {storePickup.enabled && (
-              <PickupPointSelector
-                method={deliveryMethod}
-                pickupPoint={pickupPoint}
-                homeShippingFee={shippingSettings.defaultShippingFee}
-                pickupShippingFee={storePickup.shippingFee}
-                onMethodChange={setDeliveryMethod}
-                onPickupPointChange={setPickupPoint}
-              />
-            )}
+            <PickupPointSelector
+              method={isPickupSelected ? 'pickup' : 'home'}
+              pickupPoint={pickupPoint}
+              shippingMethods={shippingMethods}
+              homeMethod={selectedHomeMethod.id}
+              isFreeShipping={cartEstimate.isFreeShipping}
+              onMethodChange={setDeliveryMethod}
+              onHomeMethodChange={setHomeMethod}
+              onPickupPointChange={setPickupPoint}
+            />
 
             {/* Invoice Form */}
             <div className="space-y-3 pt-4 pb-2 border-t border-gray-100">
@@ -1005,6 +1028,10 @@ export default function CartSidebar() {
             <p className="text-xs text-gray-500 text-center mt-2">
               下一步填寫收件資料與付款，最終金額以結帳頁為準。
             </p>
+            <ul className="mt-3 space-y-1 text-[11px] leading-5 text-gray-500" data-testid="cart-service-notes">
+              <li>{PAYMENT_METHODS_SHORT}</li>
+              <li>{DISPATCH_PROMISE.replace(/（例如.*）$/, '')}。</li>
+            </ul>
 
             {/* 清空購物車與主按鈕保持距離，並需再次確認，避免手機誤觸 */}
             <div className="flex items-center justify-center gap-3 pt-6 text-xs text-gray-500">

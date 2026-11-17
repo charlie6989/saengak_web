@@ -21,6 +21,7 @@ vi.mock('../src/lib/supabase', () => ({
 }));
 
 import PickupPointSelector from '../src/components/feature/PickupPointSelector';
+import { resolveShippingMethods } from '../src/domain/shippingMethods';
 import {
   describePickupPoint,
   formatPickupAddressLine,
@@ -79,19 +80,39 @@ describe('pickup point rules', () => {
 describe('PickupPointSelector', () => {
   const baseProps = {
     pickupPoint: null,
-    homeShippingFee: 146,
-    pickupShippingFee: 60,
+    shippingMethods: resolveShippingMethods({ pickupEnabled: true }),
+    homeMethod: 'sf-home' as const,
     onMethodChange: () => undefined,
+    onHomeMethodChange: () => undefined,
     onPickupPointChange: () => undefined,
   };
 
-  it('shows both delivery methods with their fees and no store panel for home delivery', () => {
+  it('offers both home couriers with their fees and no store panel for home delivery', () => {
     const html = renderToStaticMarkup(<PickupPointSelector {...baseProps} method="home" />);
     expect(html).toContain('宅配到府');
     expect(html).toContain('超商取貨');
+    expect(html).toContain('順豐宅配');
+    expect(html).toContain('黑貓宅配');
+    expect(html).toContain('NT$130');
     expect(html).toContain('NT$146');
-    expect(html).toContain('NT$60');
+    expect(html).toContain('NT$69');
+    expect(html).toContain('結帳頁會預先選好「順豐宅配」');
     expect(html).not.toContain('data-testid="pickup-point-panel"');
+  });
+
+  it('shows only home couriers when store pickup is closed', () => {
+    const html = renderToStaticMarkup(
+      <PickupPointSelector {...baseProps} shippingMethods={resolveShippingMethods({ pickupEnabled: false })} method="home" />,
+    );
+    expect(html).not.toContain('超商取貨');
+    expect(html).toContain('data-testid="home-method-standard"');
+    expect(html).toContain('data-testid="home-method-sf-home"');
+  });
+
+  it('strikes the fees through once the bag ships free', () => {
+    const html = renderToStaticMarkup(<PickupPointSelector {...baseProps} method="home" isFreeShipping />);
+    expect(html).toContain('line-through');
+    expect(html).toContain('NT$0');
   });
 
   it('asks for a chain and a search keyword when no store is chosen', () => {
@@ -100,6 +121,8 @@ describe('PickupPointSelector', () => {
     for (const label of ['全家', '7-ELEVEN', '萊爾富']) expect(html).toContain(label);
     expect(html).toContain('id="pickup-point-query"');
     expect(html).toContain('取貨付款');
+    expect(html).toContain('綠界 7-ELEVEN 交貨便');
+    expect(html).toContain('請選擇「7-11取貨」運送方式');
   });
 
   it('shows the chosen store with a change button', () => {
@@ -108,6 +131,8 @@ describe('PickupPointSelector', () => {
     expect(html).toContain('全家台北民生店（F001234）');
     expect(html).toContain('更換');
     expect(html).not.toContain('id="pickup-point-query"');
+    expect(html).toContain('請選擇「全家取貨」運送方式');
+    expect(html).toContain('綠界全家店到店');
   });
 });
 

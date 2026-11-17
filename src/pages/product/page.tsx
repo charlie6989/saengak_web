@@ -26,6 +26,7 @@ import { shopifyImageUrl } from '../../lib/shopifyImage';
 import { fetchShippingSettings } from '../../lib/promotions';
 import { fetchStorePickupSettings, type StorePickupSettings } from '../../lib/pickupPoints';
 import { computeFreeShippingGap, DEFAULT_FREE_SHIPPING_THRESHOLD, DEFAULT_SHIPPING_FEE } from '../../domain/shipping';
+import { cheapestHomeFee, resolveShippingMethods } from '../../domain/shippingMethods';
 import SizeChartTable from '../../components/feature/SizeChartTable';
 import type { SizeChart } from '../../domain/sizeChart';
 import { siteContent } from '../../content/site';
@@ -152,6 +153,12 @@ export default function ProductPage() {
       cancelled = true;
     };
   }, []);
+
+  // 宅配最低運費（黑貓宅配、順豐宅配取低者，比照 LUCISSI 的配送方式）
+  const lowestHomeFee = cheapestHomeFee(resolveShippingMethods({
+    defaultShippingFee: shippingSettings.defaultShippingFee,
+    sfHomeShippingFee: storePickup?.sfHomeShippingFee,
+  }));
 
   // 尺寸指南彈窗：Esc 關閉
   useEffect(() => {
@@ -1260,8 +1267,8 @@ export default function ProductPage() {
                   ) : (
                     <>
                       {storePickup?.enabled
-                        ? <>宅配運費 {formatTwd(shippingSettings.defaultShippingFee)}（超商取貨 {formatTwd(storePickup.shippingFee)}）</>
-                        : <>運費 {formatTwd(shippingSettings.defaultShippingFee)}</>}
+                        ? <>宅配運費 {formatTwd(lowestHomeFee)} 起（超商取貨 {formatTwd(storePickup.shippingFee)}）</>
+                        : <>宅配運費 {formatTwd(lowestHomeFee)} 起</>}
                       ，滿 {formatTwd(shippingSettings.freeShippingThreshold)} 免運；加入後還差{' '}
                       <strong className="font-semibold text-brand">{formatTwd(freeShippingGap.remaining)}</strong>
                     </>
@@ -1417,7 +1424,7 @@ export default function ProductPage() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-truck-line text-eucalyptus" aria-hidden="true"></i>
-                  <span>黑貓宅配・超商取貨</span>
+                  <span>{storePickup?.enabled === false ? '台灣宅配' : '宅配・超商取貨'}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <i className="ri-refresh-line text-eucalyptus" aria-hidden="true"></i>
