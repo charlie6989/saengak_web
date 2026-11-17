@@ -1,5 +1,11 @@
 # 項目狀態
 
+## SEO：伺服器產生 head（2026-11-17，分支 worktree-agent-ab2c706bffec7f581，未推送、未部署）
+
+- 程式碼：`middleware.js` 改成 `middleware.ts`，為每個網頁寫入路由 head、結構化資料（Organization／WebSite、Product＋BreadcrumbList、BlogPosting），以及給爬蟲的隱藏文字；未知路由、查無商品或文章回 404；canonical 308 轉址。`vercel.json` 新增 `/blog`、`/brand-story`、`/terms-of-service`、`/product`、`/search` 的永久轉址，站內連結改用 `/products`。商品／文章卡片改成連結；FAQ 收合時答案仍在 DOM；sitemap 加入文章；新增 `favicon.ico`、preconnect、`lang="zh-Hant-TW"`、首頁標題，robots.txt 擋 `/api/`、`/auth/`。
+- 已驗證（本機）：Vitest 77 檔／795 項、typecheck、build、verify:content（131 檔）通過。另把 `dist/index.html` 當殼層、以唯讀 Storefront 公開資料跑 middleware：商品、文章、分類頁 200，查無商品、文章、路由 404。Vite 開發站實測換頁時 canonical 只有一個、JSON-LD 會換掉、FAQ 答案收合時仍在 DOM、卡片連結與收藏按鈕都正常。
+- 未確認：正式 Vercel 的 Node.js middleware 是否能照預期以 `.js` 副檔名載入 TypeScript（`api/` 函式已這樣使用，但 middleware 尚未在正式站驗證）、vercel.json 轉址與 middleware 的執行順序、實際延遲。需要預覽部署驗證。
+
 ## 測試訂單清理與發票作廢（2026-11-09，店主要求「測試訂單都取消，有發票也作廢」）
 
 - 逐筆檢查 Shopify 未取消訂單：#1003、#1004、#1005 有 Shopify「測試訂單」標示（金流測試模式）；#1002 由 SAENGAK Order Sync 匯入，`is_sandbox_test=true`、實收 0。四筆已取消（退款選「稍後」、不重新入庫、不通知顧客、員工備註註明測試）；網站資料庫沒有這四筆，Shopify 時間軸也沒有發票紀錄。ShipAny 中 CARE 的 #1003–#1005 草稿早已取消，#1002 從未匯入；列表中其他商店的同號訂單未動。
