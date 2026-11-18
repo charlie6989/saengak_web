@@ -265,7 +265,7 @@ export default function PickupPointSelector({
           )}
           {activePickup && (
             <div className="space-y-1 text-[11px] leading-5 text-gray-500" data-testid="pickup-method-notes">
-              <p>取件時需出示與姓名相符的證件。{activePickup.sizeNote}。</p>
+              <p>由{activePickup.service}配送。取件時需出示與姓名相符的證件。{activePickup.sizeNote}。</p>
               <p>前往結帳後，請選擇「{activePickup.label}」運送方式，地址會自動帶入，請勿修改。可在結帳頁選擇線上付款或取貨付款。</p>
             </div>
           )}

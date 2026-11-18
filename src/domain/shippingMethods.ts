@@ -26,6 +26,8 @@ export interface PickupShippingMethod {
   carrier: PickupCarrier;
   /** Shopify 運費名稱 */
   label: string;
+  /** 顧客看到的物流服務名稱 */
+  service: string;
   fee: number;
   /** 包裹尺寸與重量限制 */
   sizeNote: string;
@@ -41,12 +43,12 @@ const PICKUP_SIZE_NOTE = '三邊合計 105 公分以內、最長邊 45 公分以
 
 /**
  * 顯示順序比照 LUCISSI：7-11、全家、萊爾富。
- * 不寫承運服務名稱：SiteGiant／綠界上線前超商單仍由 ShipAny 出貨（2026-11-18 店主決定先拿掉綠界字樣）。
+ * 2026-11-18 店主決定超商全部改由 SiteGiant 開綠界 C2C 運單，顧客文字寫綠界服務名稱。
  */
 export const PICKUP_METHOD_DEFINITIONS: ReadonlyArray<Omit<PickupShippingMethod, 'fee'>> = [
-  { carrier: 'seven-eleven', label: '7-11取貨', sizeNote: `${PICKUP_SIZE_NOTE}、10 公斤以下` },
-  { carrier: 'familymart', label: '全家取貨', sizeNote: `${PICKUP_SIZE_NOTE}、10 公斤以下` },
-  { carrier: 'hilife', label: '萊爾富取貨', sizeNote: `${PICKUP_SIZE_NOTE}、5 公斤以下` },
+  { carrier: 'seven-eleven', label: '7-11取貨', service: '綠界 7-ELEVEN 交貨便', sizeNote: `${PICKUP_SIZE_NOTE}、10 公斤以下` },
+  { carrier: 'familymart', label: '全家取貨', service: '綠界全家店到店', sizeNote: `${PICKUP_SIZE_NOTE}、10 公斤以下` },
+  { carrier: 'hilife', label: '萊爾富取貨', service: '綠界萊爾富店到店', sizeNote: `${PICKUP_SIZE_NOTE}、5 公斤以下` },
 ];
 
 /** 說明頁用的超商包裹限制摘要。 */
