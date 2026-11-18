@@ -121,7 +121,7 @@ describe('PickupPointSelector', () => {
     for (const label of ['全家', '7-ELEVEN', '萊爾富']) expect(html).toContain(label);
     expect(html).toContain('id="pickup-point-query"');
     expect(html).toContain('取貨付款');
-    expect(html).toContain('綠界 7-ELEVEN 交貨便');
+    expect(html).not.toContain('綠界');
     expect(html).toContain('請選擇「7-11取貨」運送方式');
   });
 
@@ -132,7 +132,8 @@ describe('PickupPointSelector', () => {
     expect(html).toContain('更換');
     expect(html).not.toContain('id="pickup-point-query"');
     expect(html).toContain('請選擇「全家取貨」運送方式');
-    expect(html).toContain('綠界全家店到店');
+    expect(html).toContain('取件時需出示與姓名相符的證件');
+    expect(html).not.toContain('綠界');
   });
 });
 

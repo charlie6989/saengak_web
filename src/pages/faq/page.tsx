@@ -28,7 +28,7 @@ export default function FAQPage() {
   const [searchTerm, setSearchTerm] = useState('');
   // 配送方式與運費比照 LUCISSI，以 site_settings 為準（與購物車相同來源），讀取前先顯示程式預設值
   const shipping = useShippingMethods(true);
-  const pickupServices = shipping.pickupMethods.map((method) => `${method.label}（${method.service}）`).join('、');
+  const pickupServices = shipping.pickupMethods.map((method) => method.label).join('、');
 
   const categories = [
     { id: 'all', name: '全部問題', icon: 'ri-question-line' },
@@ -81,7 +81,7 @@ export default function FAQPage() {
       id: '7',
       category: 'payment',
       question: '支援哪些付款方式？',
-      answer: `可使用信用卡（Visa、Mastercard、JCB）線上付款，或選擇貨到付款：宅配於收件時付款，超商取貨於取件時付款。${COD_REFUSAL_RULE}`
+      answer: `可使用信用卡（Visa、Mastercard、JCB）線上付款、ATM 轉帳，或選擇貨到付款：宅配於收件時付款，超商取貨於取件時付款。${COD_REFUSAL_RULE}`
     },
     {
       id: '8',

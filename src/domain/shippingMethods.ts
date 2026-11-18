@@ -4,6 +4,7 @@
 // - 超商取貨：7-11取貨、全家取貨、萊爾富取貨，各 NT$69，由 SiteGiant 開綠界 C2C 店到店運單；
 // - 單筆滿 NT$1,500 免運，任何配送方式皆適用；
 // - 付款：信用卡（Visa、Mastercard、JCB）與貨到付款；貨到付款累計 2 次拒收或逾期未取件，停止購買。
+//   例外：CARE 保留 TapPay ATM 轉帳（2026-11-17 店主決定，LUCISSI 沒有）。
 //
 // label 必須與 Shopify 運費名稱完全相同：建立結帳時以名稱預選運費，ShipAny 規則、Shipy 隱藏規則與
 // 「送達後標記已付款」Flow 也都以完整名稱比對。改名時要一起改這些地方（見 docs/STORE_PICKUP.md）。
@@ -25,8 +26,6 @@ export interface PickupShippingMethod {
   carrier: PickupCarrier;
   /** Shopify 運費名稱 */
   label: string;
-  /** 顧客看到的物流服務名稱 */
-  service: string;
   fee: number;
   /** 包裹尺寸與重量限制 */
   sizeNote: string;
@@ -40,11 +39,14 @@ export const SF_HOME_LABEL = '順豐宅配';
 
 const PICKUP_SIZE_NOTE = '三邊合計 105 公分以內、最長邊 45 公分以內';
 
-/** 顯示順序比照 LUCISSI：7-11、全家、萊爾富。 */
+/**
+ * 顯示順序比照 LUCISSI：7-11、全家、萊爾富。
+ * 不寫承運服務名稱：SiteGiant／綠界上線前超商單仍由 ShipAny 出貨（2026-11-18 店主決定先拿掉綠界字樣）。
+ */
 export const PICKUP_METHOD_DEFINITIONS: ReadonlyArray<Omit<PickupShippingMethod, 'fee'>> = [
-  { carrier: 'seven-eleven', label: '7-11取貨', service: '綠界 7-ELEVEN 交貨便', sizeNote: `${PICKUP_SIZE_NOTE}、10 公斤以下` },
-  { carrier: 'familymart', label: '全家取貨', service: '綠界全家店到店', sizeNote: `${PICKUP_SIZE_NOTE}、10 公斤以下` },
-  { carrier: 'hilife', label: '萊爾富取貨', service: '綠界萊爾富店到店', sizeNote: `${PICKUP_SIZE_NOTE}、5 公斤以下` },
+  { carrier: 'seven-eleven', label: '7-11取貨', sizeNote: `${PICKUP_SIZE_NOTE}、10 公斤以下` },
+  { carrier: 'familymart', label: '全家取貨', sizeNote: `${PICKUP_SIZE_NOTE}、10 公斤以下` },
+  { carrier: 'hilife', label: '萊爾富取貨', sizeNote: `${PICKUP_SIZE_NOTE}、5 公斤以下` },
 ];
 
 /** 說明頁用的超商包裹限制摘要。 */
@@ -124,7 +126,7 @@ export const DISPATCH_PROMISE = '付款完成後（貨到付款為訂單成立�
 export const TRANSIT_PROMISE = '出貨後一般約 1–2 個工作天送達，追蹤資訊以出貨通知為準';
 
 // 付款方式（比照 LUCISSI）。
-export const PAYMENT_METHODS_SHORT = '可用信用卡（Visa、Mastercard、JCB）線上付款，或選擇貨到付款。';
+export const PAYMENT_METHODS_SHORT = '可用信用卡（Visa、Mastercard、JCB）線上付款、ATM 轉帳，或選擇貨到付款。';
 export const COD_REFUSAL_RULE = '貨到付款訂單累計 2 次拒收或逾期未取件，帳號將暫停購買，並自動取消尚未出貨的訂單。';
 
 export interface DeliveryOptionLike {

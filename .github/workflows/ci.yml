@@ -49,5 +49,10 @@ jobs:
       - name: Verify Supabase static baseline
         run: npm run verify:supabase
 
-      - name: Audit dependencies
-        run: npm audit --audit-level=moderate
+      # 比照 LUCISSI：上線的套件（dependencies）維持 moderate 門檻；開發工具只擋 critical。
+      # 2026-11-18 picomatch ReDoS（GHSA-fc5q-39xc-vjpf，<=4.0.7 尚無修正版）只在 vite／vitest 等開發工具，不進正式網站。
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Audit all dependencies (critical only)
+        run: npm audit --audit-level=critical
