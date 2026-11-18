@@ -9,7 +9,7 @@
   - TapPay 卡別：Shopify 開著 Visa、Mastercard、American Express、JCB、中國銀聯，網站只寫三種。店主選擇關掉 AmEx 與銀聯，已存檔並回讀為 Visa、Mastercard、JCB（LINE Pay 原本就關）。Shopify 提示實際可否刷卡仍由 TapPay 商店設定決定，TapPay 端未查。
   - 超商文字：網站寫「綠界 7-ELEVEN 交貨便／綠界全家店到店／綠界萊爾富店到店」，但 SiteGiant／綠界未設定，超商單仍由 ShipAny 出貨。店主選擇先拿掉綠界字樣：購物車與 FAQ 只寫 7-11取貨、全家取貨、萊爾富取貨，`verify:content` 封鎖這三個服務名稱。隱私權頁列出處理者（含綠界）不變。
 - Shopify 運送政策：原為舊內容（超商 NT$60、3–5 個工作天、沒有順豐宅配）。店主看過全文後同意發布，已改為黑貓 146／順豐 130／超商各 69、滿 1,500 免運、1 個工作天內出貨（ATM 確認入帳後出貨）、1–2 個工作天送達、付款含信用卡（Visa、Mastercard、JCB）／ATM／貨到付款與 2 次拒收停權，存檔後重新載入讀回全文一致。
-- 不一致，待處理：正式網站的付款文字在 [PR #122](https://github.com/charlie6989/saengak_web/pull/122) 合併部署前仍沒有 ATM 轉帳（Shopify 已開 ATM）。
+- 正式網站付款與超商文字：店主同意後 [PR #122](https://github.com/charlie6989/saengak_web/pull/122) 合併 main `4beb343`（CI 通過），Vercel 正式部署 `dpl_AsNkcAepMpEhDPvgzt6VvDgCUqMp` READY。下載 lucissicare.com 正式 JS（主檔與 36 個延遲載入檔）核對：付款文字為「可用信用卡（Visa、Mastercard、JCB）線上付款、ATM 轉帳，或選擇貨到付款。」；「綠界」只出現在隱私權頁的處理者說明，購物車與 FAQ 已無綠界服務名稱。未用瀏覽器實際點開頁面，結帳頁未重測。
 - 已驗證（本機）：Vitest 78 檔／812 項、typecheck、build、verify:content（184 檔）。
 
 ## 物流與金流正式切換（2026-11-17，店主同意依清單順序執行）
