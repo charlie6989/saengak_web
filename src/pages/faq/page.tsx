@@ -81,7 +81,7 @@ export default function FAQPage() {
       id: '7',
       category: 'payment',
       question: '支援哪些付款方式？',
-      answer: `可使用信用卡（Visa、Mastercard、JCB）線上付款、ATM 轉帳，或選擇貨到付款：宅配於收件時付款，超商取貨於取件時付款。${COD_REFUSAL_RULE}`
+      answer: `可使用信用卡（Visa、Mastercard、JCB）或 LINE Pay 線上付款、ATM 轉帳，或選擇貨到付款：宅配於收件時付款，超商取貨於取件時付款。${COD_REFUSAL_RULE}`
     },
     {
       id: '8',
