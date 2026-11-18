@@ -7,7 +7,7 @@
 - 現況（正式站實測）：Shopify 6 篇 care-talk 文章的 SEO 標題都自帶後綴，2 篇是「｜LUCISSI Talk」、4 篇是「｜LUCISSI CARE」。網站又會加「｜LUCISSI CARE」，頁面 `<title>` 與分享預覽的 og:title 變成「…｜LUCISSI Talk｜LUCISSI CARE」或「…｜LUCISSI CARE｜LUCISSI CARE」。同日早上「商品 SEO 標題補上」一節寫「重複後綴已不存在」是錯的：該次只看了 sitemap 上的商品頁，沒有確認文章頁。
 - 程式碼：`src/lib/seo.ts` 的 `formatPageTitle` 先去掉結尾的「｜LUCISSI CARE」「｜LUCISSI Talk」（全形或半形直線、可連續多個），再加站名；標題開頭或中間的品牌名稱保留。`api/share/product.ts` 的商品與文章分享標題改用同一個函式。頁面標題、結構化資料與分享預覽都經過這個函式，所以不必改 Shopify 文章資料。
 - 已驗證（本機）：typecheck、Vitest 78 檔／814 項（新增 `pageTitle.test.ts`、`share-product-api.test.ts` 的後綴案例）、build、verify:content 通過。
-- 部署後驗證：待預覽與正式站實測。
+- 部署後驗證：PR #131 預覽（提交 `7d6c164`）與合併後正式站（`dad3141`，lucissicare.com）實測 6 篇文章：Googlebot 取得的 `<title>` 與 facebookexternalhit 取得的 og:title 都只有一個「｜LUCISSI CARE」（例：「白帶正常嗎？分泌物顏色、氣味與就醫時機｜LUCISSI CARE」）；商品頁、`/community`（「LUCISSI Talk 私密對話｜LUCISSI CARE」）不受影響。CI 5 項通過（合併時 Validate 仍在跑，合併後回報通過）。Google 何時更新搜尋結果標題未確認。
 - 同日分享圖（PR #130，`e14535c`）正式站驗證：`/images/brand/og-image.png` 200 image/png 196,523 bytes，與本機檔案逐位元組相同；現有 6 篇文章都沒有編輯圖或 Shopify 文章圖，分享預覽使用這張網站預設圖。11/08 驗證過的 `/blog/how-we-review-products-and-content` 已不存在（404）。
 
 ## 網站預設分享圖改版（2026-11-19）
