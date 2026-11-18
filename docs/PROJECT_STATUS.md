@@ -1,5 +1,15 @@
 # 項目狀態
 
+## 文章標題重複品牌後綴（2026-11-19）
+
+店主要求「修重複後綴」。
+
+- 現況（正式站實測）：Shopify 6 篇 care-talk 文章的 SEO 標題都自帶後綴，2 篇是「｜LUCISSI Talk」、4 篇是「｜LUCISSI CARE」。網站又會加「｜LUCISSI CARE」，頁面 `<title>` 與分享預覽的 og:title 變成「…｜LUCISSI Talk｜LUCISSI CARE」或「…｜LUCISSI CARE｜LUCISSI CARE」。同日早上「商品 SEO 標題補上」一節寫「重複後綴已不存在」是錯的：該次只看了 sitemap 上的商品頁，沒有確認文章頁。
+- 程式碼：`src/lib/seo.ts` 的 `formatPageTitle` 先去掉結尾的「｜LUCISSI CARE」「｜LUCISSI Talk」（全形或半形直線、可連續多個），再加站名；標題開頭或中間的品牌名稱保留。`api/share/product.ts` 的商品與文章分享標題改用同一個函式。頁面標題、結構化資料與分享預覽都經過這個函式，所以不必改 Shopify 文章資料。
+- 已驗證（本機）：typecheck、Vitest 78 檔／814 項（新增 `pageTitle.test.ts`、`share-product-api.test.ts` 的後綴案例）、build、verify:content 通過。
+- 部署後驗證：待預覽與正式站實測。
+- 同日分享圖（PR #130，`e14535c`）正式站驗證：`/images/brand/og-image.png` 200 image/png 196,523 bytes，與本機檔案逐位元組相同；現有 6 篇文章都沒有編輯圖或 Shopify 文章圖，分享預覽使用這張網站預設圖。11/08 驗證過的 `/blog/how-we-review-products-and-content` 已不存在（404）。
+
 ## 網站預設分享圖改版（2026-11-19）
 
 店主要求「做 og-image」。原本 `public/images/brand/og-image.png` 只有米白底加暫用字標。
@@ -22,7 +32,7 @@
 
 店主要求「修商品 SEO 標題」，看過草稿後回覆「照草稿寫入」。
 
-- 讀取（Storefront API）：27 件上架商品中有 9 件沒有 SEO 標題，其中 7 件也沒有 SEO 說明（Storefront 會把商品說明開頭當成 SEO 說明回傳），絨面收納包沒有 SEO 說明與副標。原列「部分 SEO 標題含『｜LUCISSI Talk』導致重複後綴」：以 Googlebot UA 抓 sitemap 全部網址的 `<title>`，沒有重複後綴，已不存在。
+- 讀取（Storefront API）：27 件上架商品中有 9 件沒有 SEO 標題，其中 7 件也沒有 SEO 說明（Storefront 會把商品說明開頭當成 SEO 說明回傳），絨面收納包沒有 SEO 說明與副標。原列「部分 SEO 標題含『｜LUCISSI Talk』導致重複後綴」：以 Googlebot UA 抓 sitemap 全部網址的 `<title>`，沒有重複後綴，已不存在。（更正：只看了商品頁；文章頁仍重複，見最上方「文章標題重複品牌後綴」。）
 - 寫入（Chrome 已登入的 Shopify 後台，逐件在商品頁「搜尋引擎產品資訊」修改並儲存）：冰絲無痕中腰三角褲、親膚安全私密除毛刀、精緻內著專用清洗護衣袋、隱形中腰無痕女內著、冰絲無痕波浪邊三角褲、高腰蕾絲無痕內褲、冰絲無痕平口安全褲、絨面收納包寫入 SEO 標題與說明；Saengak 益生菌私密舒緩凝膠只寫標題（「…單支 1.8 g 無香料」），說明保留。絨面收納包的「商品副標題與認證簡述」寫入「絨面格紋車縫｜拉鍊開口｜約 18×10×8 cm」。網址代碼（handle）每件寫入前後比對未變。內容只用商品說明、副標與尺寸選項已有的事實。
 - 已驗證：Storefront API 回讀 9/9 與草稿一致，其他 18 件 SEO 與 handle 未變，目前沒有缺 SEO 標題的商品；收納包副標回讀一致。正式站以 Googlebot UA 抓平口安全褲、收納包、凝膠三頁，`<title>` 與 meta description 已是新內容。
 - 未驗證：Google 何時重新收錄新標題（未在 Search Console 要求重新索引）。
@@ -116,7 +126,7 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 4. Facebook 登入：Meta App Review 11/08 送審（約 20 天），通過後發布 App 並設定 `VITE_FACEBOOK_LOGIN_ENABLED=true` 重新部署。
 5. 寄件網域：Shopify 寄件網域 DNS 6 筆已加，總狀態仍「需要設定」待 Shopify 更新；DMARC 未改。
 6. 庫存：6 件 SAENGAK 保養品與 1 件內褲售完需補貨（售完商品不能下單，不阻擋上線）。
-7. 商品內容：16 件內著缺材質與產地（`care_specs` 空白）、（SEO 標題、收納包副標與重複後綴已於 2026-11-19 處理，見最上方「商品 SEO 標題補上」）；「抗菌內褲」標籤需有依據。SAENGAK、MEDION 化粧品登錄／PIF 紀錄不在 repo。
+7. 商品內容：16 件內著缺材質與產地（`care_specs` 空白）、（SEO 標題、收納包副標已於 2026-11-19 處理，見「商品 SEO 標題補上」；文章標題重複後綴同日改由程式去除，見「文章標題重複品牌後綴」）；「抗菌內褲」標籤需有依據。SAENGAK、MEDION 化粧品登錄／PIF 紀錄不在 repo。
 8. 法律文字未經律師審閱（隱私權、條款、退換貨）；條款頁 4 句提到 Shopify 與商品頁「結帳由 Shopify 安全處理」待店主決定；本次隱私權新增 SiteGiant、綠界，Shopify 隱私權政策需同步。
 9. 服務帳務：ShipAny 餘額（11/08 為 NT$500）、物流服務點列表 11/21 起 NT$398／月、API Pro 11/30 續期；Shipy 11/16 起 US$7.99／月；光貿服務到期日未知、2027 年 1–2 月字軌尚未配發、後台店主無法登入。
 10. 監控：Sentry 帳號歸屬未確認、伺服器事件未實際驗證；Supabase 外洩密碼保護需付費方案。

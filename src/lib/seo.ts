@@ -57,8 +57,12 @@ export interface RouteSeo {
   category?: string;
 }
 
+/** Shopify 的 SEO 標題有時已自帶品牌後綴（｜LUCISSI CARE、｜LUCISSI Talk），網站會再加站名，所以先去掉。 */
+const BRAND_TITLE_SUFFIX = /(?:\s*[｜|]\s*LUCISSI\s+(?:CARE|Talk))+\s*$/i;
+
 export function formatPageTitle(title?: string): string {
-  return title ? `${title}｜${SITE_NAME}` : SITE_TITLE;
+  const base = title?.replace(BRAND_TITLE_SUFFIX, '').trim();
+  return base ? `${base}｜${SITE_NAME}` : SITE_TITLE;
 }
 
 export function summarizeText(text: string | undefined | null, max = DESCRIPTION_MAX): string {

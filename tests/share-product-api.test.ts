@@ -106,6 +106,13 @@ describe('article share preview', () => {
     expect(meta.image).toMatchObject({ url: 'https://lucissicare.com/images/lucissi-v5/share-standards.jpg', width: 1200, height: 630 });
   });
 
+  it('does not repeat the brand suffix that the SEO title already carries', () => {
+    const withSuffix = (title: string) => articleShareMeta(article.handle, { ...article, seo: { title, description: null } }).title;
+
+    expect(withSuffix('白帶正常嗎？分泌物顏色、氣味與就醫時機｜LUCISSI Talk')).toBe('白帶正常嗎？分泌物顏色、氣味與就醫時機｜LUCISSI CARE');
+    expect(withSuffix('私密處越洗越不舒服？外陰清潔原則｜LUCISSI CARE')).toBe('私密處越洗越不舒服？外陰清潔原則｜LUCISSI CARE');
+  });
+
   it('falls back to the Shopify article image when there is no editorial image', () => {
     const meta = articleShareMeta('new-article', { ...article, handle: 'new-article' });
 
