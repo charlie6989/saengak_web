@@ -2,6 +2,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { applyRouteSeo } from "../../lib/documentMeta";
+import { PAGE_VIEW_DELAY_MS, initAnalytics, trackPageView } from "../../lib/analytics";
 
 export default function ScrollToTop() {
   const { pathname, search, hash } = useLocation();
@@ -13,6 +14,13 @@ export default function ScrollToTop() {
   useLayoutEffect(() => {
     applyRouteSeo(pathname, search, { initial: initialRender.current });
     initialRender.current = false;
+  }, [pathname, search]);
+
+  // GA4：只在正式網域載入；換頁後稍等再送 page_view，讓頁面載入資料後的標題被記到
+  useEffect(() => {
+    if (!initAnalytics()) return undefined;
+    const timer = setTimeout(() => trackPageView(pathname, search), PAGE_VIEW_DELAY_MS);
+    return () => clearTimeout(timer);
   }, [pathname, search]);
 
   useEffect(() => {
