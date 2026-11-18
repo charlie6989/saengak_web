@@ -1,5 +1,14 @@
 # 項目狀態
 
+## 網站預設分享圖改版（2026-11-19）
+
+店主要求「做 og-image」。原本 `public/images/brand/og-image.png` 只有米白底加暫用字標。
+
+- 程式碼：新增 `scripts/build-og-image.mjs`，用首頁品牌照片 `home-brand.webp`（左側本來就是米白留白，右側是噴霧、濕紙巾、內著與 plum 色布樣平拍）裁成 1200×630，左側放 Primary 字標（330px 寬）、「私密保養・舒適內搭・生理期照護」與 `lucissicare.com`（Noto Sans TC，plum #5B3D48）。輸出路徑、尺寸與檔名不變，所以 `index.html`、`src/lib/seo.ts`、`api/share/product.ts` 不用改；檔案約 197 KB。
+- 已驗證（本機）：目視檢查成品；build 後 `dist/images/brand/og-image.png` 為 1200×630 PNG；verify:content、相關 Vitest 通過。
+- 未驗證：正式部署後 Facebook／LINE 預覽。圖片網址沒變，平台可能沿用舊快取，需要時可用 Facebook 分享偵錯工具重新抓取。部分平台會把預覽裁成接近正方形，左側字標可能被裁掉。
+- 仍待：字標仍是暫用版；設計師正式 SVG 到位、替換 `lucissi-care-primary.svg` 後重跑 `node scripts/build-og-image.mjs`。中文字用本機安裝的 Noto Sans TC 繪製，換電腦產圖要先確認字型。
+
 ## 舊網址結尾斜線一次轉址（2026-11-19）
 
 店主要求「修 /blog/ 雙重轉址」。
@@ -111,7 +120,7 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 8. 法律文字未經律師審閱（隱私權、條款、退換貨）；條款頁 4 句提到 Shopify 與商品頁「結帳由 Shopify 安全處理」待店主決定；本次隱私權新增 SiteGiant、綠界，Shopify 隱私權政策需同步。
 9. 服務帳務：ShipAny 餘額（11/08 為 NT$500）、物流服務點列表 11/21 起 NT$398／月、API Pro 11/30 續期；Shipy 11/16 起 US$7.99／月；光貿服務到期日未知、2027 年 1–2 月字軌尚未配發、後台店主無法登入。
 10. 監控：Sentry 帳號歸屬未確認、伺服器事件未實際驗證；Supabase 外洩密碼保護需付費方案。
-11. 其他：分享預覽圖 `og-image.png` 仍是暫用字標；Safari 無痕模式會卡在訪客驗證；waaship 仍安裝；PR #117 預覽開關與 Preview 的 `SHIPANY_CLIENT_KEY` 去留；#1011 顯示重量 0.0 kg（當時商品重量未設；2026-11-18 已補上估算重量，組合商品除外，見最上方「商品重量補上」）。
+11. 其他：分享預覽圖 `og-image.png` 已於 2026-11-19 改成品牌照片＋字標（字標仍是暫用版，見最上方「網站預設分享圖改版」）；Safari 無痕模式會卡在訪客驗證；waaship 仍安裝；PR #117 預覽開關與 Preview 的 `SHIPANY_CLIENT_KEY` 去留；#1011 顯示重量 0.0 kg（當時商品重量未設；2026-11-18 已補上估算重量，組合商品除外，見最上方「商品重量補上」）。
 
 ## SEO：伺服器產生 head（2026-11-17，已併入上述分支，未推送、未部署）
 
