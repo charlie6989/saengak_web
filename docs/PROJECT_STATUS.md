@@ -7,7 +7,7 @@
 - 原因：`middleware.ts` 先處理結尾斜線（`/blog/` 308 到 `/blog`），下一個請求才由舊網址規則 308 到 `/community`，共兩跳。`/brand-story/`、`/search/`、`/product/`、`/terms-of-service/` 也一樣。
 - 程式碼：`handleRequest` 改成先判斷只會轉址的舊網址（`seoForLocation` 本身會去掉多餘斜線並轉小寫），再整理斜線，所以這些網址帶結尾或重複斜線時都一次 308 到最終網址，查詢字串保留。`tests/middleware.test.ts` 加上 `/blog/`、`/brand-story/?a=1`、`//search//?q=x` 的案例。
 - 已驗證（本機）：typecheck、Vitest 78 檔／812 項、build、verify:content 通過。本機預覽不會執行 middleware，部署後的結果見下一行。
-- 部署後驗證：待 PR 預覽與正式站實測。
+- 部署後驗證：PR #128 預覽（`saengak-web-d2ux`，提交 `46831bd`）與合併後正式站（`205a1e1`，lucissicare.com）實測：`/blog/`、`/blog` 一跳 308 到 `/community`（`curl -L` 共 1 次轉址，最後 200）；`/brand-story/?a=1`→`/about?a=1`、`/search/`、`/product/`→`/products`、`/terms-of-service/`→`/terms` 皆一跳；`/faq/` 仍 308 到 `/faq`。CI 5 項通過，Codex 審查無意見。
 
 ## 商品 SEO 標題補上（2026-11-19）
 
