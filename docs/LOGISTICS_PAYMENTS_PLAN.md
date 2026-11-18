@@ -2,6 +2,8 @@
 
 ## 2026-11-17 物流與金流比照 LUCISSI（店主決定；2026-11-17 已完成宅配與付款停權部分的正式切換，超商改綠界待 SiteGiant）
 
+> 2026-11-18 店主要求貨到付款全自動：新增「COD 順豐宅配送達後自動標記已付款」Flow（作用中）；超商全自動方案見 `COD_AUTO_PAID_PLAN.md`。
+>
 > 2026-11-18 店主決定超商全部改綠界：第 4 步三個超商 COD Flow 已停用；第 6 步 SiteGiant 綠界物流已啟用（帳號層級，與 LUCISSI 共用）；第 8 步 Shopify 隱私權政策已加入 SiteGiant、綠界；第 5 步 ShipAny 超商規則刻意保留（見 PROJECT_STATUS）。首筆綠界超商單尚未驗證。
 >
 > 2026-11-18 一致性核對：TapPay 卡別改為只開 Visa、Mastercard、JCB；網站超商文字拿掉「綠界…」服務名稱（超商單仍由 ShipAny 出貨）；Shopify 運送政策已改寫發布並讀回；PR #122 合併 main `4beb343` 並正式部署，正式 JS 回讀付款文字含 ATM、購物車與 FAQ 無綠界服務名稱。詳見 PROJECT_STATUS「金流物流一致性核對」。
