@@ -20,7 +20,7 @@
   <!-- 首頁的預設 head。正式站由 middleware.ts 依路由改寫標題、說明、robots、canonical、og:url 與分享圖
        （規則在 src/lib/seo.ts），瀏覽器換頁時再由 src/lib/documentMeta.ts 更新同一組標籤。
        殼層刻意不放 canonical 與 og:url：middleware 失敗退回此檔時，才不會讓每一頁都指向首頁。
-       分享預覽暫用字標，設計師正式檔到位後替換圖片即可。 -->
+       分享預覽圖由 scripts/build-og-image.mjs 產生；字標 2026-11-19 起為正式版。 -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="LUCISSI CARE" />
   <meta property="og:locale" content="zh_TW" />

@@ -1,5 +1,5 @@
-// Generated: interim LUCISSI CARE wordmark (direction A) outlined from Cormorant Garamond 400 and
-// Noto Sans TC 500 (SIL OFL). Replace with the designer's final SVG paths when delivered.
+// Generated: LUCISSI CARE wordmark (direction A) outlined from Cormorant Garamond 400 and
+// Noto Sans TC 500 (SIL OFL). Adopted as the official logo on 2026-11-19 (no designer redraw).
 export const BRAND_LOGO_LOCKUPS = {
   "primary": {
     "viewBox": "0 -63.6 540.5 129.76",
