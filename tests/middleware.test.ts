@@ -219,6 +219,10 @@ describe('canonical redirects', () => {
     expect(legacy.response.status).toBe(308);
     expect(legacy.response.headers.get('location')).toBe(`https://lucissicare.com/products?q=${encodeURIComponent('凝膠')}`);
     expect((await render('/blog')).response.headers.get('location')).toBe('https://lucissicare.com/community');
+    // 舊網址帶結尾斜線也一次轉到最終網址，不先 308 到沒有斜線的舊網址
+    expect((await render('/blog/')).response.headers.get('location')).toBe('https://lucissicare.com/community');
+    expect((await render('/brand-story/?a=1')).response.headers.get('location')).toBe('https://lucissicare.com/about?a=1');
+    expect((await render('//search//?q=x')).response.headers.get('location')).toBe('https://lucissicare.com/products?q=x');
     const gid = await render('/product/gid:/shopify/Product/7819900551235');
     expect(gid.response.status).toBe(308);
     expect(gid.response.headers.get('location')).toBe('https://lucissicare.com/product/7819900551235');
