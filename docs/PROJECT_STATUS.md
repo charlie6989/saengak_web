@@ -1,5 +1,17 @@
 # 項目狀態
 
+## Facebook 登入上線、GA4、Vercel 預覽變數（2026-11-19 晚間）
+
+店主回覆：抗菌標籤先不拿掉；同意發布 Facebook App 並開啟網站 Facebook 登入、部署；授權移除預覽環境的 `VITE_STORE_PICKUP_PREVIEW_ENABLED` 與 `SHIPANY_CLIENT_KEY`；先加 GA4；協助寄件網域；接著查尚未查的項目。
+
+- **Facebook 登入（正式設定，已上線）**：Meta App「LUCISSI」（1415921654939372）審查已核准，已發布（Publish 頁顯示 Published、「Your app was successfully published」）。Vercel Production 新增 `VITE_FACEBOOK_LOGIN_ENABLED=true`，以 `vercel redeploy` 重建正式部署（Ready）。正式站 `/login` 出現「使用 Facebook 繼續操作」，點擊後經 Supabase 轉到 Facebook 授權頁，`app_id=1415921654939372`、`redirect_uri` 為正式 Supabase callback；未以任何帳號完成登入。LUCISSI 母站的 `VITE_SUPABASE_FACEBOOK_ENABLED` 屬母站 repo，未變更。
+- **Vercel 預覽變數（正式設定）**：`VITE_STORE_PICKUP_PREVIEW_ENABLED`（Preview，分支 `claude/store-pickup-preview-switch`）已刪除；`SHIPANY_CLIENT_KEY` 的套用環境由 Production 與 Preview 改為只有 Production（值未變，正式站超商選店不受影響）。`vercel env ls` 回讀確認。工作樹另以 `vercel link` 連結 `saengak-web-d2ux`（`.vercel/` 已在 .gitignore）。
+- **Bing（外部，已完成）**：PR #134 部署後，Bing Webmaster 以 meta 標籤驗證 `https://lucissicare.com/` 成功，已提交 `https://lucissicare.com/sitemap.xml`（顯示 Processing）。
+- **寄件網域（未完成）**：在 Shopify 電子郵件網域驗證頁按 GoDaddy「自動驗證」，按鈕轉為處理中，但沒有在自動化瀏覽器分頁內開出授權視窗；重新整理後總狀態仍「需要設定」，6 筆 CNAME 仍相符。需店主在 Chrome 跳出的 GoDaddy 視窗登入並同意，或聯絡 Shopify 支援查詢 DNS 已相符卻未完成的原因。
+- **write_orders（唯讀）**：Shopify 應用程式「SAENGAK Order Sync」詳情頁：訂單「檢視」「編輯」皆已授予（最近活動 1 週前），停權帳號新訂單自動取消所需權限具備。同頁另有：存取憑證未設到期日、未設 IP 限制（Shopify 建議）；應用程式頁提示此 App 與 2027-07-01 起「市場」運送設定不相容，尚未處理。
+- **GA4（程式碼，分支 `claude/ga4`，未部署）**：Google Analytics 帳號「LUCISSI」下新增資源「LUCISSI CARE 網站」（565124221，台灣時區、新台幣），網站資料串流 `https://lucissicare.com`，評估 ID `G-8HKZRE72SY`（加強型評估預設開啟）。`src/lib/analytics.ts` 只在 `lucissicare.com` 載入 gtag.js，關閉自動 page_view，換頁 800 ms 後送 page_view（含當時標題）；`/admin`、`/auth/`、`/reset-password` 不送；可用 `VITE_PUBLIC_GA4_MEASUREMENT_ID` 覆寫或設 `off` 關閉。`vercel.json` CSP 加 `script-src https://www.googletagmanager.com`、`connect-src https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com`。隱私權頁新增「瀏覽統計資料」與服務供應商 Google Analytics（含 Cookie 與停用外掛說明），更新日改 2026年11月19日。已驗證（本機）：Vitest 79 檔／820 項（新增 `tests/analytics.test.ts`）、typecheck、build、verify:content。未驗證：正式站實際送出資料與 GA 即時報表。
+- **抗菌標籤**：店主決定先不拿掉，維持現狀。
+
 ## 上線前待辦逐項處理（2026-11-19 下午）
 
 店主逐項回覆待辦清單後處理。本節「程式碼」只在分支 `claude/turnstile-fallback`，未合併、未部署。
@@ -146,8 +158,8 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 
 1. 物流金流切換剩餘步驟（11/17 已完成部署、Shopify 運費、Shipy、宅配 Flow、ShipAny 規則）：SiteGiant 綠界、Shopify 隱私權政策（隨 SiteGiant 上線）、`write_orders`。運送政策 11/18 已改寫發布。（ATM 已決定保留，不停用。）
 2. 真實訂單端到端都還沒有：訪客實付後的同步／確認信／發票／認領；首筆黑貓 COD 送達→已付款→開票；首筆超商（切換後為綠界）取件、代收與追蹤號回寫。#1011 已取消退款，目前沒有有效的真實訂單。
-3. Search Console：2026-11-18 店主同意後，在 GoDaddy DNS（`ns19/ns20.domaincontrol.com`）新增 `@` TXT `google-site-verification=…`（A／CNAME 未動），Search Console 網域資源 `sc-domain:lucissicare.com` 驗證成功；提交 `https://lucissicare.com/sitemap.xml`（44 個網址，以 Googlebot UA 抓取回 200 XML），剛提交時顯示「Couldn't fetch」為新資源常見狀態，待 Google 重新讀取；網址檢查首頁「URL is on Google／Page is indexed」，已要求重新索引。未匯入 Bing。網站沒有任何分析工具（LUCISSI 有 GA4／Meta Pixel／PostHog，是否比照待決定，需同步改 CSP 與隱私權文字）。
-4. Facebook 登入：Meta App Review 11/08 送審（約 20 天），通過後發布 App 並設定 `VITE_FACEBOOK_LOGIN_ENABLED=true` 重新部署。
+3. Search Console：2026-11-18 店主同意後，在 GoDaddy DNS（`ns19/ns20.domaincontrol.com`）新增 `@` TXT `google-site-verification=…`（A／CNAME 未動），Search Console 網域資源 `sc-domain:lucissicare.com` 驗證成功；提交 `https://lucissicare.com/sitemap.xml`（44 個網址，以 Googlebot UA 抓取回 200 XML），剛提交時顯示「Couldn't fetch」為新資源常見狀態，待 Google 重新讀取；網址檢查首頁「URL is on Google／Page is indexed」，已要求重新索引。未匯入 Bing。GA4 於 2026-11-19 加入（分支 `claude/ga4`，見最上方）；Bing 已驗證並提交 sitemap。
+4. Facebook 登入：2026-11-19 審查已核准、App 已發布、正式站已開啟並重新部署（見最上方「Facebook 登入上線、GA4、Vercel 預覽變數」）；尚未以真實顧客帳號完成整個登入流程。
 5. 寄件網域：Shopify 寄件網域 DNS 6 筆已加，總狀態仍「需要設定」待 Shopify 更新；DMARC 未改。
 6. 庫存：6 件 SAENGAK 保養品與 1 件內褲售完需補貨（售完商品不能下單，不阻擋上線）。
 7. 商品內容：16 件內著缺材質與產地（`care_specs` 空白；2026-11-19 查無來源，店主決定維持現在的顯示，見最上方「內著材質與產地維持現狀」）、（SEO 標題、收納包副標已於 2026-11-19 處理，見「商品 SEO 標題補上」；文章標題重複後綴同日改由程式去除，見「文章標題重複品牌後綴」）；「抗菌內褲」標籤需有依據。SAENGAK、MEDION 化粧品登錄／PIF 紀錄不在 repo。
