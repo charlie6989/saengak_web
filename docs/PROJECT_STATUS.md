@@ -1,5 +1,16 @@
 # 項目狀態
 
+## 金流物流一致性核對（2026-11-18）
+
+店主要求「確認金流物流都一致」。逐項回讀（唯讀）後的結果：
+
+- 一致：Supabase `site_settings`（146／130／69／1,500）；Shopify 運費（同上，1 至 2 個工作日，另有國際區 NT$610）；Shipy 5 條啟用規則（取貨地址隱藏「黑貓宅配」「順豐宅配」，2 條舊規則停用）；Flow 4 條 COD 條件（黑貓宅配、7-11取貨、全家取貨、萊爾富取貨）；Shopify 付款（TapPay、Tappay ATM、貨到付款，無付款方式自訂）；Shopify 退款政策（已含 ATM）、服務條款、隱私權政策（列 TapPay、ShipAny）。ShipAny 規則沿用 11/17 回讀結果，本次未重新登入。
+- 不一致，已處理：
+  - TapPay 卡別：Shopify 開著 Visa、Mastercard、American Express、JCB、中國銀聯，網站只寫三種。店主選擇關掉 AmEx 與銀聯，已存檔並回讀為 Visa、Mastercard、JCB（LINE Pay 原本就關）。Shopify 提示實際可否刷卡仍由 TapPay 商店設定決定，TapPay 端未查。
+  - 超商文字：網站寫「綠界 7-ELEVEN 交貨便／綠界全家店到店／綠界萊爾富店到店」，但 SiteGiant／綠界未設定，超商單仍由 ShipAny 出貨。店主選擇先拿掉綠界字樣：購物車與 FAQ 只寫 7-11取貨、全家取貨、萊爾富取貨，`verify:content` 封鎖這三個服務名稱。隱私權頁列出處理者（含綠界）不變。
+- 不一致，待處理：Shopify 運送政策仍是舊內容（超商 NT$60、3–5 個工作天、沒有順豐宅配），店主同意改寫，草稿待店主看過全文後才發布。正式網站的付款文字在 [PR #122](https://github.com/charlie6989/saengak_web/pull/122) 合併部署前仍沒有 ATM 轉帳（Shopify 已開 ATM）。
+- 已驗證（本機）：Vitest 78 檔／812 項、typecheck、build、verify:content（184 檔）。
+
 ## 物流與金流正式切換（2026-11-17，店主同意依清單順序執行）
 
 已完成並回讀（正式）：

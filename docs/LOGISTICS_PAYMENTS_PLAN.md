@@ -2,6 +2,8 @@
 
 ## 2026-11-17 物流與金流比照 LUCISSI（店主決定；2026-11-17 已完成宅配與付款停權部分的正式切換，超商改綠界待 SiteGiant）
 
+> 2026-11-18 一致性核對：TapPay 卡別改為只開 Visa、Mastercard、JCB；網站超商文字拿掉「綠界…」服務名稱（超商單仍由 ShipAny 出貨）；Shopify 運送政策待改寫。詳見 PROJECT_STATUS「金流物流一致性核對」。
+
 店主要求「所有金流物流都需要比照 LUCISSI website」，並選定：超商取貨完全比照（NT$69、由 SiteGiant 開綠界 C2C 運單）、宅配改名「黑貓宅配」並新增「順豐宅配」、付款比照（加 2 次拒收停權；原定停用 ATM，同日店主改為保留 TapPay ATM）、出貨時效比照（1 個工作天內出貨、1–2 個工作天送達）。依據：LUCISSI_website `origin/main` `d1f072d`（2026-11-13）的 `config/brands/lucissi.manifest.json`、`Lib/storefront/delivery-choice.ts`、`Lib/contracts/purchase-block.ts`、`Lib/docs/ECPAY_C2C_RUNBOOK.md` 與 `/shipping`、FAQ 文字。
 
 | 項目 | LUCISSI（2026-11-13） | CARE 切換前 | CARE 程式（本分支） |
