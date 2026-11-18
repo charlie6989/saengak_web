@@ -110,6 +110,10 @@ const forbiddenContent = [
   ['internal service wording', 'Shopify 未回傳'],
   ['internal service wording', 'Shopify 回傳了'],
   ['internal service wording', '光貿 Email 載具'],
+  // 2026-11-19 商品頁信任標章與條款頁不再提結帳服務商名稱（服務商列於隱私權政策）
+  ['internal service wording', '結帳由 Shopify'],
+  ['internal service wording', 'Shopify 結帳畫面'],
+  ['internal service wording', 'Shopify 接受結帳'],
 ];
 
 async function collectFiles(target) {

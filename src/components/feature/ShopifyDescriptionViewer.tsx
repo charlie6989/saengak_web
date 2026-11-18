@@ -710,7 +710,7 @@ export default function ShopifyDescriptionViewer({
           </div>
           <div className="flex items-center gap-2">
             <i className="ri-checkbox-circle-fill text-brand text-base" aria-hidden="true"></i>
-            <span>結帳由 Shopify 安全處理</span>
+            <span>安全加密結帳</span>
           </div>
           <div className="flex items-center gap-2">
             <i className="ri-checkbox-circle-fill text-brand text-base" aria-hidden="true"></i>

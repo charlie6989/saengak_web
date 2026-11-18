@@ -11,4 +11,6 @@ export const siteContent = {
   contentReviewedAt: '2026年11月7日',
   // 隱私權政策 2026-11-09 依店主決定新增訪客結帳資料與保存說明；其他政策頁仍沿用 contentReviewedAt。
   privacyUpdatedAt: '2026年11月17日',
+  // 條款頁 2026-11-19 改寫結帳相關 4 句，不再提服務商名稱（服務商列於隱私權政策）。
+  termsUpdatedAt: '2026年11月19日',
 } as const;
