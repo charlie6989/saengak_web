@@ -8,7 +8,8 @@
 - 不一致，已處理：
   - TapPay 卡別：Shopify 開著 Visa、Mastercard、American Express、JCB、中國銀聯，網站只寫三種。店主選擇關掉 AmEx 與銀聯，已存檔並回讀為 Visa、Mastercard、JCB（LINE Pay 原本就關）。Shopify 提示實際可否刷卡仍由 TapPay 商店設定決定，TapPay 端未查。
   - 超商文字：網站寫「綠界 7-ELEVEN 交貨便／綠界全家店到店／綠界萊爾富店到店」，但 SiteGiant／綠界未設定，超商單仍由 ShipAny 出貨。店主選擇先拿掉綠界字樣：購物車與 FAQ 只寫 7-11取貨、全家取貨、萊爾富取貨，`verify:content` 封鎖這三個服務名稱。隱私權頁列出處理者（含綠界）不變。
-- 不一致，待處理：Shopify 運送政策仍是舊內容（超商 NT$60、3–5 個工作天、沒有順豐宅配），店主同意改寫，草稿待店主看過全文後才發布。正式網站的付款文字在 [PR #122](https://github.com/charlie6989/saengak_web/pull/122) 合併部署前仍沒有 ATM 轉帳（Shopify 已開 ATM）。
+- Shopify 運送政策：原為舊內容（超商 NT$60、3–5 個工作天、沒有順豐宅配）。店主看過全文後同意發布，已改為黑貓 146／順豐 130／超商各 69、滿 1,500 免運、1 個工作天內出貨（ATM 確認入帳後出貨）、1–2 個工作天送達、付款含信用卡（Visa、Mastercard、JCB）／ATM／貨到付款與 2 次拒收停權，存檔後重新載入讀回全文一致。
+- 不一致，待處理：正式網站的付款文字在 [PR #122](https://github.com/charlie6989/saengak_web/pull/122) 合併部署前仍沒有 ATM 轉帳（Shopify 已開 ATM）。
 - 已驗證（本機）：Vitest 78 檔／812 項、typecheck、build、verify:content（184 檔）。
 
 ## 物流與金流正式切換（2026-11-17，店主同意依清單順序執行）
@@ -23,7 +24,7 @@
 
 TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文字已加回 ATM 轉帳。
 
-尚未執行：SiteGiant／綠界 C2C、Shopify 運送與隱私權政策改寫、確認 SAENGAK Order Sync 的 `write_orders`。
+尚未執行：SiteGiant／綠界 C2C、Shopify 隱私權政策（SiteGiant 上線時加入 SiteGiant、綠界；運送政策已於 11/18 改寫）、確認 SAENGAK Order Sync 的 `write_orders`。
 尚未驗證：真實結帳的預選運費（需真人通過 Turnstile）、第一筆順豐宅配訂單的 ShipAny 草稿、停權流程的真實訂單。步驟與細節見 [物流與金流上線清單](LOGISTICS_PAYMENTS_PLAN.md)。
 
 ## 上線前全面盤點、SEO 與物流金流比照 LUCISSI（2026-11-17，分支 `claude/pre-launch-review-seo-0c8078`，[PR #121](https://github.com/charlie6989/saengak_web/pull/121) 已於 2026-11-17 合併部署，正式切換結果見上一節）
@@ -36,7 +37,7 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 
 **上線前仍欠缺（依影響排序；狀態取自既有紀錄，本輪未登入各後台重新回讀）**
 
-1. 物流金流切換剩餘步驟（11/17 已完成部署、Shopify 運費、Shipy、宅配 Flow、ShipAny 規則）：SiteGiant 綠界、政策文字、`write_orders`。（ATM 已決定保留，不停用。）
+1. 物流金流切換剩餘步驟（11/17 已完成部署、Shopify 運費、Shipy、宅配 Flow、ShipAny 規則）：SiteGiant 綠界、Shopify 隱私權政策（隨 SiteGiant 上線）、`write_orders`。運送政策 11/18 已改寫發布。（ATM 已決定保留，不停用。）
 2. 真實訂單端到端都還沒有：訪客實付後的同步／確認信／發票／認領；首筆黑貓 COD 送達→已付款→開票；首筆超商（切換後為綠界）取件、代收與追蹤號回寫。#1011 已取消退款，目前沒有有效的真實訂單。
 3. Search Console：目前 Google 帳號沒有 `lucissicare.com` 權限，收錄狀況未知；需以 DNS TXT 驗證網域、提交 sitemap，再匯入 Bing。網站沒有任何分析工具（LUCISSI 有 GA4／Meta Pixel／PostHog，是否比照待決定，需同步改 CSP 與隱私權文字）。
 4. Facebook 登入：Meta App Review 11/08 送審（約 20 天），通過後發布 App 並設定 `VITE_FACEBOOK_LOGIN_ENABLED=true` 重新部署。
