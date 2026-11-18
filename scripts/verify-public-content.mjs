@@ -77,10 +77,6 @@ const forbiddenContent = [
   ['outdated pickup fee', '超商取貨運費 NT$60'],
   ['misleading trial-period wording', '安心鑑賞期'],
   ['outdated home courier wording', '黑貓宅配滿額免運費'],
-  // 2026-11-18 店主決定：SiteGiant／綠界上線前超商單仍由 ShipAny 出貨，顧客文字不寫綠界服務名稱（隱私權頁列出處理者不在此限）。
-  ['pickup carrier not yet live', '綠界 7-ELEVEN 交貨便'],
-  ['pickup carrier not yet live', '綠界全家店到店'],
-  ['pickup carrier not yet live', '綠界萊爾富店到店'],
   // 2026-11-07 優惠頁 FAQ：Shopify 後台用語不對顧客顯示
   ['internal Shopify admin wording', 'Shopify 官方後台'],
   ['internal Shopify admin wording', '組合（Combinations）'],

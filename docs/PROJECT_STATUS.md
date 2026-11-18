@@ -1,5 +1,23 @@
 # 項目狀態
 
+## 超商改綠界、LINE Pay、Search Console（2026-11-18）
+
+店主要求「超商取貨都要改成綠界、開啟 LINE Pay、Search Console 開啟」。
+
+已完成並回讀（正式）：
+- SiteGiant（店主登入）：運輸標籤設定 → 官網及其它 → 快遞服務設定 → 台灣 → 綠界物流已啟用（LUCISSI 11/11 設定，同一 SiteGiant 帳號含 LUCISSI CARE 與 LUCISSI Shopify 兩個頻道），店鋪名稱為真實姓名；只查看未修改。
+- Shopify Flow：店主同意後停用「COD 7-11／全家／萊爾富取貨後自動標記已付款」3 條，回讀為非作用中；「COD 宅配送達後自動標記已付款」維持作用中。超商貨到付款改由客服確認取件後手動標記已付款（比照 LUCISSI）。
+- Shopify 隱私權政策：店主同意後，服務供應商段落加入 SiteGiant（訂單出貨管理）、綠界科技與其合作超商，並改為可能處理「取貨門市」，最後更新改 2026-11-18；後台重新開啟讀回一致。公開頁稍後讀回已是 11/18 版本並含 SiteGiant。
+- Search Console：見下方「上線前仍欠缺」第 3 項。
+
+程式（本分支，未部署）：恢復超商文字的綠界服務名稱（購物車「由綠界 7-ELEVEN 交貨便配送」、FAQ），移除 `verify:content` 對三個服務名稱的封鎖。
+
+刻意不改：ShipAny 超商規則保留。ShipAny 最後一條黑貓規則無條件，刪除超商規則會讓超商單套成黑貓草稿；超商單產生的順豐草稿不要確認。
+
+待處理／未驗證：
+- LINE Pay：TapPay 11/12 來信核准 CARE LINE Pay 收單；TapPay 正式商家目前只有 3D 信用卡、超商取貨付款、ATM。新增 LINE Pay 商家需店主輸入 Channel Secret／ID（已開好表單），之後才能做 MGID 備援收單配置、Shopify 安裝 TapPay LINE Pay App 與網站付款文字。
+- SiteGiant 是否能為 CARE 的 Shopify 超商單選綠界物流、門市代碼與代收金額、追蹤號回寫 Shopify，需第一張真實超商訂單驗證。
+
 ## 金流物流一致性核對（2026-11-18）
 
 店主要求「確認金流物流都一致」。逐項回讀（唯讀）後的結果：
@@ -9,7 +27,7 @@
   - TapPay 卡別：Shopify 開著 Visa、Mastercard、American Express、JCB、中國銀聯，網站只寫三種。店主選擇關掉 AmEx 與銀聯，已存檔並回讀為 Visa、Mastercard、JCB（LINE Pay 原本就關）。Shopify 提示實際可否刷卡仍由 TapPay 商店設定決定，TapPay 端未查。
   - 超商文字：網站寫「綠界 7-ELEVEN 交貨便／綠界全家店到店／綠界萊爾富店到店」，但 SiteGiant／綠界未設定，超商單仍由 ShipAny 出貨。店主選擇先拿掉綠界字樣：購物車與 FAQ 只寫 7-11取貨、全家取貨、萊爾富取貨，`verify:content` 封鎖這三個服務名稱。隱私權頁列出處理者（含綠界）不變。
 - Shopify 運送政策：原為舊內容（超商 NT$60、3–5 個工作天、沒有順豐宅配）。店主看過全文後同意發布，已改為黑貓 146／順豐 130／超商各 69、滿 1,500 免運、1 個工作天內出貨（ATM 確認入帳後出貨）、1–2 個工作天送達、付款含信用卡（Visa、Mastercard、JCB）／ATM／貨到付款與 2 次拒收停權，存檔後重新載入讀回全文一致。
-- 不一致，待處理：正式網站的付款文字在 [PR #122](https://github.com/charlie6989/saengak_web/pull/122) 合併部署前仍沒有 ATM 轉帳（Shopify 已開 ATM）。
+- 正式網站付款與超商文字：店主同意後 [PR #122](https://github.com/charlie6989/saengak_web/pull/122) 合併 main `4beb343`（CI 通過），Vercel 正式部署 `dpl_AsNkcAepMpEhDPvgzt6VvDgCUqMp` READY。下載 lucissicare.com 正式 JS（主檔與 36 個延遲載入檔）核對：付款文字為「可用信用卡（Visa、Mastercard、JCB）線上付款、ATM 轉帳，或選擇貨到付款。」；「綠界」只出現在隱私權頁的處理者說明，購物車與 FAQ 已無綠界服務名稱。未用瀏覽器實際點開頁面，結帳頁未重測。
 - 已驗證（本機）：Vitest 78 檔／812 項、typecheck、build、verify:content（184 檔）。
 
 ## 物流與金流正式切換（2026-11-17，店主同意依清單順序執行）
@@ -39,7 +57,7 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 
 1. 物流金流切換剩餘步驟（11/17 已完成部署、Shopify 運費、Shipy、宅配 Flow、ShipAny 規則）：SiteGiant 綠界、Shopify 隱私權政策（隨 SiteGiant 上線）、`write_orders`。運送政策 11/18 已改寫發布。（ATM 已決定保留，不停用。）
 2. 真實訂單端到端都還沒有：訪客實付後的同步／確認信／發票／認領；首筆黑貓 COD 送達→已付款→開票；首筆超商（切換後為綠界）取件、代收與追蹤號回寫。#1011 已取消退款，目前沒有有效的真實訂單。
-3. Search Console：目前 Google 帳號沒有 `lucissicare.com` 權限，收錄狀況未知；需以 DNS TXT 驗證網域、提交 sitemap，再匯入 Bing。網站沒有任何分析工具（LUCISSI 有 GA4／Meta Pixel／PostHog，是否比照待決定，需同步改 CSP 與隱私權文字）。
+3. Search Console：2026-11-18 店主同意後，在 GoDaddy DNS（`ns19/ns20.domaincontrol.com`）新增 `@` TXT `google-site-verification=…`（A／CNAME 未動），Search Console 網域資源 `sc-domain:lucissicare.com` 驗證成功；提交 `https://lucissicare.com/sitemap.xml`（44 個網址，以 Googlebot UA 抓取回 200 XML），剛提交時顯示「Couldn't fetch」為新資源常見狀態，待 Google 重新讀取；網址檢查首頁「URL is on Google／Page is indexed」，已要求重新索引。未匯入 Bing。網站沒有任何分析工具（LUCISSI 有 GA4／Meta Pixel／PostHog，是否比照待決定，需同步改 CSP 與隱私權文字）。
 4. Facebook 登入：Meta App Review 11/08 送審（約 20 天），通過後發布 App 並設定 `VITE_FACEBOOK_LOGIN_ENABLED=true` 重新部署。
 5. 寄件網域：Shopify 寄件網域 DNS 6 筆已加，總狀態仍「需要設定」待 Shopify 更新；DMARC 未改。
 6. 庫存：6 件 SAENGAK 保養品與 1 件內褲售完需補貨（售完商品不能下單，不阻擋上線）。
