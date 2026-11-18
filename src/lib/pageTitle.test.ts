@@ -27,4 +27,13 @@ describe('page titles', () => {
     expect(formatPageTitle('涼感冰絲無痕內褲')).toBe('涼感冰絲無痕內褲｜LUCISSI CARE');
     expect(formatPageTitle()).toBe(SITE_TITLE);
   });
+
+  it('drops brand suffixes that Shopify SEO titles already carry', () => {
+    expect(formatPageTitle('私密處越洗越不舒服？外陰清潔原則｜LUCISSI CARE')).toBe('私密處越洗越不舒服？外陰清潔原則｜LUCISSI CARE');
+    expect(formatPageTitle('白帶正常嗎？就醫時機｜LUCISSI Talk')).toBe('白帶正常嗎？就醫時機｜LUCISSI CARE');
+    expect(formatPageTitle('白帶正常嗎 | LUCISSI Talk ｜ LUCISSI CARE ')).toBe('白帶正常嗎｜LUCISSI CARE');
+    // 品牌名稱在標題中間或開頭時保留
+    expect(formatPageTitle('LUCISSI Talk 私密對話')).toBe('LUCISSI Talk 私密對話｜LUCISSI CARE');
+    expect(formatPageTitle('｜LUCISSI CARE')).toBe(SITE_TITLE);
+  });
 });

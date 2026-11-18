@@ -2,7 +2,7 @@ import { SHOPIFY_API_VERSION, SHOPIFY_STOREFRONT_PUBLIC_TOKEN, SHOPIFY_STORE_DOM
 import { editorialShareImage } from '../../src/content/editorialImages.js';
 import { hasPublicArticleTag, normalizeLegacyStorefrontCopy } from '../../src/domain/storefrontCopy.js';
 import { publicArticleSet, type CuratedArticle } from '../../src/content/curatedArticles.js';
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from '../../src/lib/seo.js';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL, formatPageTitle } from '../../src/lib/seo.js';
 
 /**
  * 社群分享預覽（LINE、Facebook 等）專用：爬蟲不執行 JavaScript，只讀第一份 HTML 的 og 標籤，
@@ -68,7 +68,7 @@ export function productShareMeta(id: string, product: StorefrontProduct | null |
   // 優先使用 Shopify 的 SEO 標題／說明，與商品頁一致；沒填時退回商品名稱與說明摘要
   const title = product.seo?.title?.trim() || product.title;
   return {
-    title: `${title}｜${SITE_NAME}`,
+    title: formatPageTitle(title),
     description: summarize(product.seo?.description?.trim() || product.description) || SITE_DESCRIPTION,
     url,
     type: 'product',
@@ -88,7 +88,7 @@ export function articleShareMeta(handle: string, article: StorefrontArticle | nu
       ? { url: article.image.url, width: article.image.width, height: article.image.height, alt: normalizeLegacyStorefrontCopy(article.image.altText) || title }
       : SITE_IMAGE;
   return {
-    title: `${title}｜${SITE_NAME}`,
+    title: formatPageTitle(title),
     description: summarize(normalizeLegacyStorefrontCopy(article.seo?.description?.trim() || article.excerpt || '')) || SITE_DESCRIPTION,
     url,
     type: 'article',
