@@ -15,7 +15,7 @@
 刻意不改：ShipAny 超商規則保留。ShipAny 最後一條黑貓規則無條件，刪除超商規則會讓超商單套成黑貓草稿；超商單產生的順豐草稿不要確認。
 
 待處理／未驗證：
-- LINE Pay：TapPay 11/12 來信核准 CARE LINE Pay 收單；TapPay 正式商家目前只有 3D 信用卡、超商取貨付款、ATM。新增 LINE Pay 商家需店主輸入 Channel Secret／ID（已開好表單），之後才能做 MGID 備援收單配置、Shopify 安裝 TapPay LINE Pay App 與網站付款文字。
+- LINE Pay（已開通，2026-11-18）：TapPay 11/12 來信核准 CARE LINE Pay 收單。店主在 TapPay（`charlieliu0809`）正式環境自行輸入 Channel Secret／ID 新增商家 `charlieliu0809_00001`（TW_LINE_PAY）；MGID `charlieliu0809_00005_spfy_backup` 新增支付配置「LINE Pay／非 3D／一般」，備援收單帳號為該商家（回讀）；Shopify 已安裝的 Line Pay 供應商（alternative-providers/1058765）改為啟用中，測試模式關閉，請款自動。訂單同步與發票：`invoiceContext` 只把「Cash on Delivery (COD)」視為貨到付款，LINE Pay 走與信用卡相同的已付款流程，不需改程式。網站付款文字與退款說明已加 LINE Pay（見 PR）。未驗證：結帳頁實際出現 LINE Pay、真實付款與退款；Shopify 運送政策（付款段加 LINE Pay、超商取貨加「綠界店到店」）與退款政策（加「LINE Pay 付款退回原 LINE Pay 付款方式」）已於店主同意後發布，後台重新開啟讀回一致。LINE Pay 手續費預設 2.8%，首頁露出 LINE Pay 並預設付款方式後可向 TapPay 申請調降 2.2%（未稅），尚未申請。
 - SiteGiant 是否能為 CARE 的 Shopify 超商單選綠界物流、門市代碼與代收金額、追蹤號回寫 Shopify，需第一張真實超商訂單驗證。
 
 ## 金流物流一致性核對（2026-11-18）
