@@ -1,5 +1,14 @@
 # 項目狀態
 
+## 舊網址結尾斜線一次轉址（2026-11-19）
+
+店主要求「修 /blog/ 雙重轉址」。
+
+- 原因：`middleware.ts` 先處理結尾斜線（`/blog/` 308 到 `/blog`），下一個請求才由舊網址規則 308 到 `/community`，共兩跳。`/brand-story/`、`/search/`、`/product/`、`/terms-of-service/` 也一樣。
+- 程式碼：`handleRequest` 改成先判斷只會轉址的舊網址（`seoForLocation` 本身會去掉多餘斜線並轉小寫），再整理斜線，所以這些網址帶結尾或重複斜線時都一次 308 到最終網址，查詢字串保留。`tests/middleware.test.ts` 加上 `/blog/`、`/brand-story/?a=1`、`//search//?q=x` 的案例。
+- 已驗證（本機）：typecheck、Vitest 78 檔／812 項、build、verify:content 通過。本機預覽不會執行 middleware，部署後的結果見下一行。
+- 部署後驗證：待 PR 預覽與正式站實測。
+
 ## 商品 SEO 標題補上（2026-11-19）
 
 店主要求「修商品 SEO 標題」，看過草稿後回覆「照草稿寫入」。
@@ -110,7 +119,7 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 - 已驗證（本機）：Vitest 77 檔／795 項、typecheck、build、verify:content（131 檔）通過。另把 `dist/index.html` 當殼層、以唯讀 Storefront 公開資料跑 middleware：商品、文章、分類頁 200，查無商品、文章、路由 404。Vite 開發站實測換頁時 canonical 只有一個、JSON-LD 會換掉、FAQ 答案收合時仍在 DOM、卡片連結與收藏按鈕都正常。
 - 已驗證（Vercel 預覽 `saengak-web-d2ux`，提交 `3ca72fa`，2026-11-17，以 23 小時分享連結讀取）：middleware 正常載入。`/`、`/products`、`/faq`、`/about`、商品、文章 200（約 0.3–0.9 秒）；`/no-such-page`、`/product/999999999`、`/blog/no-such-article` 404；`/blog`→`/community`、`/search`、`/product`→`/products`、`/brand-story`→`/about`、`/terms-of-service`→`/terms`、結尾斜線皆 308。以 Googlebot UA 取 HTML：每頁 title、description、canonical（`https://lucissicare.com/...`）正確；首頁 Organization＋WebSite；商品頁 Product（價格、InStock、運費 130、退貨政策、5 張圖）＋BreadcrumbList；文章 BlogPosting＋BreadcrumbList；`/products` HTML 內有 27 個商品連結；sitemap 44 個網址；robots.txt 只擋 `/admin`、`/profile`、`/auth/`；`/admin` 回 `x-robots-tag: noindex`。Chrome 開商品頁無主控台錯誤，購物車顯示順豐宅配 NT$130（預設）／黑貓宅配 NT$146 及超商取貨。
 - 預覽讀的是正式 Supabase：超商運費仍顯示 NT$60（當時運費 migration 尚未套用，11/17 已以版本 `20261117125105` 套用），屬預期；合併後若未同時改 Shopify 運費名稱，購物車會顯示「黑貓宅配／順豐宅配」而結帳頁仍是「標準」，所以要與正式切換一起上。
-- 未驗證：結帳頁依名稱預選運費（預覽網址不在 Turnstile 白名單，且 Shopify 運費尚未改名）；`/blog/` 會先 308 到 `/blog` 再 308 到 `/community`（兩跳，不影響收錄，可之後合併成一跳）。
+- 未驗證：結帳頁依名稱預選運費（預覽網址不在 Turnstile 白名單，且 Shopify 運費尚未改名）。（`/blog/` 兩跳轉址已於 2026-11-19 改成一跳，見最上方「舊網址結尾斜線一次轉址」。）
 
 ## 測試訂單清理與發票作廢（2026-11-09，店主要求「測試訂單都取消，有發票也作廢」）
 

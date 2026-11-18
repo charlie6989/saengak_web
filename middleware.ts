@@ -261,12 +261,13 @@ export async function handleRequest(request: Request, fetchImpl: typeof fetch = 
   const url = new URL(request.url);
   if (LEGACY_HOSTS.has(url.hostname) || isPassthroughPath(url.pathname)) return next();
 
-  const canonicalPath = canonicalRedirectPath(request, url);
-  if (canonicalPath) return Response.redirect(new URL(canonicalPath, url), 308);
-
-  // 只會轉址的舊網址（與 vercel.json 的 redirects 相同），保留查詢字串
+  // 只會轉址的舊網址（與 vercel.json 的 redirects 相同），保留查詢字串。
+  // 先於斜線整理判斷：seoForLocation 會自行去掉多餘斜線，/blog/ 一次就轉到 /community，不必先 308 到 /blog。
   const redirectTo = isDocumentRequest(request, url) ? seoForLocation(url.pathname).redirectTo : undefined;
   if (redirectTo) return Response.redirect(new URL(`${redirectTo}${url.search}`, url), 308);
+
+  const canonicalPath = canonicalRedirectPath(request, url);
+  if (canonicalPath) return Response.redirect(new URL(canonicalPath, url), 308);
 
   if (SHARE_PREVIEW_BOT.test(request.headers.get('user-agent') || '')) {
     const product = url.pathname.match(SHARE_PRODUCT_PATH);
