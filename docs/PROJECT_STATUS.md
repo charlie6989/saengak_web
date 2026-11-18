@@ -1,5 +1,20 @@
 # 項目狀態
 
+## 上線前待辦逐項處理（2026-11-19 下午）
+
+店主逐項回覆待辦清單後處理。本節「程式碼」只在分支 `claude/turnstile-fallback`，未合併、未部署。
+
+- **Safari 無痕驗證（程式碼）**：Cloudflare 判定 Safari 無痕為機器人，網站無法改變判定。`AuthCaptcha` 改為驗證錯誤、逾時、不支援或 15 秒沒拿到 token 時，顯示說明（建議改用一般瀏覽模式）與「重新驗證」按鈕；訪客結帳另提示可改用「登入結帳」。Turnstile 語言設為 `zh-tw`。已驗證（本機）：Vitest 815 項、typecheck、build、verify:content；以 Cloudflare 測試金鑰在本機頁面確認必定失敗金鑰會出現說明與按鈕、按下後重新驗證，必定通過金鑰會取得 token 且不出現說明。未在真實 Safari 無痕驗證。
+- **條款頁（程式碼）**：4 句改成不提服務商名稱（結帳由合作的電子商務平台處理，服務商列於隱私權政策），條款頁改用自己的更新日 `termsUpdatedAt`（2026年11月19日）；商品頁信任標章「結帳由 Shopify 安全處理」改「安全加密結帳」；`verify:content` 封鎖這三種 Shopify 說法。隱私權頁仍列 Shopify 等服務商。
+- **Bing（程式碼＋外部）**：Bing Webmaster Tools 已新增 `https://lucissicare.com/`（選「稍後驗證」）；`index.html` 加 `msvalidate.01` meta。部署後還要回 Bing 按驗證並提交 sitemap。
+- **waaship（正式設定）**：店主同意「不需要就移除」；過去 30 天無活動、發票只用光貿，已於 Shopify 解除安裝（原因：現在沒有使用），應用程式頁顯示成功解除安裝。應用程式頁另提示 SAENGAK Order Sync 與 2027-07-01 起的「市場」運送設定不相容，尚未處理。
+- **寄件網域（唯讀＋重新檢查）**：Shopify 電子郵件網域驗證頁 6 筆 CNAME 都顯示「DNS 記錄相符」，按「我已更新 DNS 記錄」後總狀態仍「需要設定」。`_dmarc.lucissi.com` 為 `p=reject`。顧客信件目前由 `shopifyemail.com` 備用地址寄出，可正常寄送。可試 GoDaddy「自動驗證」（需店主登入 GoDaddy 授權）或聯絡 Shopify 支援。
+- **Facebook 登入（唯讀）**：Meta App「LUCISSI」11/09 送審已核准（`email`、`public_profile`），App 仍 Unpublished。發布 App 的點擊被自動權限檢查擋下，待店主確認；發布後再設定 CARE `VITE_FACEBOOK_LOGIN_ENABLED=true` 並重新部署。
+- **庫存（唯讀，Storefront）**：6 件 SAENGAK 保養品目前都可購買。整件售完只剩「舒適純棉透氣內褲」（4 個規格皆 0）；另有 13 件內著共 20 個規格為 0。庫存由 SiteGiant ERP Sync 寫入 Shopify。
+- **抗菌標籤（唯讀，本機採購資料）**：6 件帶「抗菌內褲」標籤的商品中，4 件（5387、4178、4238、5975）的 1688 供應商品名沒有任何抗菌字樣；5835（第二家供應商）、4901 只有供應商品名寫「抑菌」，都沒有檢驗報告。未帶標籤的 4889 供應商品名寫「抗菌裆」。來源：`stock-forecast` 採購表的 1688 訂單匯出；多數 Offer ID 因科學記號損壞，無法回查原商品頁。
+- **ShipAny 服務點列表（判斷）**：正式 `store_pickup_enabled`=true，網站選超商門市的清單來自 ShipAny 服務點 API，取消會讓選店失效，所以需要保留。有經 ShipAny 出貨的月份免收 NT$398，宅配仍走 ShipAny。
+- **PR #117（判斷）**：已於 11/09 合併。正式開關已開，預覽專用開關 `VITE_STORE_PICKUP_PREVIEW_ENABLED` 已無作用，建議從 Vercel Preview 移除；Preview 的 `SHIPANY_CLIENT_KEY` 會讓每個預覽部署用正式金鑰呼叫 ShipAny、輪替正式資料庫中的 token，建議一併移除，需要測試時再暫時加回。Vercel 環境變數清單本輪無權限讀取（MCP 403、CLI 未連結），未變更。
+
 ## 內著材質與產地維持現狀（2026-11-19）
 
 店主要求「補 16 件內著材質產地」。查無可用來源，店主決定「依照現在顯示即可」，不補資料。
@@ -139,7 +154,7 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 8. 法律文字未經律師審閱（隱私權、條款、退換貨）；條款頁 4 句提到 Shopify 與商品頁「結帳由 Shopify 安全處理」待店主決定；本次隱私權新增 SiteGiant、綠界，Shopify 隱私權政策需同步。
 9. 服務帳務：ShipAny 餘額（11/08 為 NT$500）、物流服務點列表 11/21 起 NT$398／月、API Pro 11/30 續期；Shipy 11/16 起 US$7.99／月；光貿服務到期日未知、2027 年 1–2 月字軌尚未配發、後台店主無法登入。
 10. 監控：Sentry 帳號歸屬未確認、伺服器事件未實際驗證；Supabase 外洩密碼保護需付費方案。
-11. 其他：分享預覽圖 `og-image.png` 已於 2026-11-19 改成品牌照片＋字標（字標仍是暫用版，見最上方「網站預設分享圖改版」）；Safari 無痕模式會卡在訪客驗證；waaship 仍安裝；PR #117 預覽開關與 Preview 的 `SHIPANY_CLIENT_KEY` 去留；#1011 顯示重量 0.0 kg（當時商品重量未設；2026-11-18 已補上估算重量，組合商品除外，見最上方「商品重量補上」）。
+11. 其他：分享預覽圖 `og-image.png` 已於 2026-11-19 改成品牌照片＋字標（字標仍是暫用版，見「網站預設分享圖改版」）；Safari 無痕驗證改為顯示說明與重新驗證（分支 `claude/turnstile-fallback`，未部署）；waaship 已於 2026-11-19 移除；PR #117 預覽開關與 Preview 的 `SHIPANY_CLIENT_KEY` 建議移除（見最上方「上線前待辦逐項處理」）；#1011 顯示重量 0.0 kg（當時商品重量未設；2026-11-18 已補上估算重量，組合商品除外，見最上方「商品重量補上」）。
 
 ## SEO：伺服器產生 head（2026-11-17，已併入上述分支，未推送、未部署）
 

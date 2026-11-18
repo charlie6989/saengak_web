@@ -9,11 +9,11 @@ export default function TermsPage() {
     <div className="min-h-screen bg-stone-50 text-gray-800">
       <Header />
       <main className="mx-auto max-w-4xl px-5 pb-20 pt-36">
-        <p className="mb-3 text-sm font-medium tracking-wide text-brand">最後更新：{siteContent.contentReviewedAt}</p>
+        <p className="mb-3 text-sm font-medium tracking-wide text-brand">最後更新：{siteContent.termsUpdatedAt}</p>
         <h1 className="mb-5 text-4xl font-bold text-gray-950">網站使用與訂購條款</h1>
         <div className="mb-10 rounded-xl border border-blush bg-blush p-5 text-teal-950">
           <p className="font-semibold">結帳與付款</p>
-          <p className="mt-2 text-sm leading-6">本站使用 Shopify Checkout 處理結帳；可用付款方式、運費、配送條件與最終金額以當次結帳頁面顯示為準。</p>
+          <p className="mt-2 text-sm leading-6">本站結帳由合作的電子商務平台處理（服務商列於隱私權政策）；可用付款方式、運費、配送條件與最終金額，以當次結帳頁面顯示為準。</p>
         </div>
 
         <div className="space-y-7">
@@ -30,10 +30,10 @@ export default function TermsPage() {
           <section className="rounded-2xl bg-white p-7 shadow-xs">
             <h2 className="text-2xl font-semibold">商品與訂單</h2>
             <ul className="mt-4 list-disc space-y-3 pl-6 leading-7">
-              <li>商品名稱、規格、價格、庫存與促銷，以實際商品頁及 Shopify 結帳畫面為準。</li>
-              <li>購物車內容不等於訂單成立；只有 Shopify 接受結帳並回傳訂單後，才進入訂單流程。</li>
+              <li>商品名稱、規格、價格、庫存與促銷，以實際商品頁及結帳頁面為準。</li>
+              <li>購物車內容不等於訂單成立；完成結帳並收到訂單確認後，才進入訂單流程。</li>
               <li>付款方式、運費、配送區域與預估時間，以結帳畫面及訂單通知為準。</li>
-              <li>前端購物車與頁面提示不代表付款成功；付款與訂單狀態以 Shopify 訂單記錄為準。</li>
+              <li>購物車與頁面提示不代表付款成功；付款與訂單狀態以訂單確認通知及訂單查詢結果為準。</li>
             </ul>
           </section>
 

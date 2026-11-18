@@ -170,7 +170,7 @@ export default function SignedOutCheckoutActions({
             訂單確認信會寄到這個信箱；之後以同一 Email 註冊會員，即可在會員中心看到這筆訂單。
           </p>
         </div>
-        <AuthCaptcha siteKey={guestCheckoutSiteKey} onTokenChange={onCaptchaTokenChange} resetKey={captchaResetKey} action="guest_checkout" />
+        <AuthCaptcha siteKey={guestCheckoutSiteKey} onTokenChange={onCaptchaTokenChange} resetKey={captchaResetKey} action="guest_checkout" fallbackHint="也可以改用「登入結帳」。" />
       </div>
       {message && (
         <p
