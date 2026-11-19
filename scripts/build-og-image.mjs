@@ -1,7 +1,7 @@
 // 產生網站預設分享圖 public/images/brand/og-image.png（1200×630）。
 // 底圖用首頁品牌照片 home-brand.webp（左側本來就是留給文字的米白區），左側放 Primary 字標與系列說明。
 // 系列說明的中文以系統字型 Noto Sans TC 繪製（librsvg 透過 fontconfig 找字型），沒有安裝時會改用其他字型，產圖後請目視確認。
-// 設計師正式字標到位、替換 public/images/brand/lucissi-care-primary.svg 後，重跑：node scripts/build-og-image.mjs
+// 字標 2026-11-19 起為正式版；日後若修改 public/images/brand/lucissi-care-primary.svg，重跑：node scripts/build-og-image.mjs
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
