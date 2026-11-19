@@ -203,6 +203,7 @@
 - 光貿發票採 outbox／派送流程；缺少必要憑證時拒絕處理。不可為了讓測試通過而補入正式憑證或取消防護。
 - ShipAny 由 Shopify 後台管理；`.env.example` 明確記載網站／Supabase 不另持有 ShipAny API key。
 - Sentry 的事件處理與資料清理在 `src/lib/sentry.ts`。
+- 網站伺服器以 Shopify 自訂 App「SAENGAK Order Sync」（Dev Dashboard app 411199766529）的 `SHOPIFY_APP_CLIENT_ID`／`SHOPIFY_APP_CLIENT_SECRET` 走 client credentials 取得 Admin API token（`api/shopify/discounts.ts` 的 `getShopifyAdminAccessToken`），用於折扣、顧客、訂單取消與 COD 貨件核對。網站不讀寫運送設定；2026-11-19 起 App 版本 v4 已移除 `read_shipping`、`write_shipping`（2027-07-01「市場」運送移轉），之後不要加回，也不要用這組金鑰呼叫 `deliveryProfile*`。
 - Vercel CLI 不再是 devDependency（其 `@vercel/*` → ts-morph → fast-glob 會帶入沒有修補版本的 `braces`，最新 64.x 仍是如此）；`npm run dev:vercel` 以 `npx --yes vercel@64 dev` 執行。原本只為 Vercel CLI 依賴樹存在的 `overrides` 已全部移除。
 - 若之後需要 `overrides`，必須同時被 npm 10（CI 的 Node 22）與 npm 11 的 `npm ci` 接受：npm 10 對部分以版本為鍵的 override 會誤判 lock 不同步。修改後以乾淨目錄的 `npx npm@10.9.4 ci --ignore-scripts` 與 `npm ci` 驗證，不要用 npm 10 重建 lock。
 - CI 已恢復完整 `npm audit --audit-level=moderate`；2026-10-16 本機乾淨安裝回報 0 項漏洞，見 `PROJECT_STATUS.md`。
