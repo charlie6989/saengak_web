@@ -7,7 +7,8 @@
 - 經 Shopify 說明中心對話：AI 助理先建議再等 48 小時；說明記錄 2026-11-08 已加後轉真人客服。客服與同事查核後在 Shopify 端修正。應客服詢問，已說明 `lucissi.com` 只用於本店寄信（母品牌網站由另一間 Shopify 商店使用），並以文字提供 6 筆 CNAME 公開查詢結果，未提供 GoDaddy 截圖。
 - 已驗證（正式設定）：Shopify「通知」頁電子郵件網域驗證狀態為「已驗證」。公開 DNS（8.8.8.8）`954a988cefa4.p638.email.myshopify.com` 現指向 `mailer3.email.myshopify.com`，`dkim3`／`dkim4` 指向 `mgsend.org`，不再是 NXDOMAIN。商家 DNS 沒有任何變更。
 - DMARC 維持 `p=reject; adkim=r; aspf=r`，未改。
-- 未驗證：實際寄出的顧客通知信是否改用 `service@lucissi.com` 且通過 DKIM／DMARC，要等下一封真實通知信檢查信件標頭。
+- 信件標頭已驗證（2026-11-19 20:52，台北時間）：從後台「訂單確認」範本按「傳送測試」寄到店主信箱，Gmail 回讀原始標頭：寄件者 `LUCISSI CARE <service@lucissi.com>`、Return-Path 在 `mailerm5s.lucissi.com`；`dkim=pass`（`d=lucissi.com`、`s=m5s`）、`spf=pass`、`dmarc=pass`（`p=REJECT`）。
+- 未驗證：真實顧客訂單觸發的通知信（測試信與真實信走同一寄件設定，預期相同）。
 
 ## SAENGAK Order Sync 權限、寄件網域、Sentry（2026-11-19 晚間）
 
@@ -179,7 +180,7 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 2. 真實訂單端到端都還沒有：訪客實付後的同步／確認信／發票／認領；首筆黑貓 COD 送達→已付款→開票；首筆超商（切換後為綠界）取件、代收與追蹤號回寫。#1011 已取消退款，目前沒有有效的真實訂單。
 3. Search Console：2026-11-18 店主同意後，在 GoDaddy DNS（`ns19/ns20.domaincontrol.com`）新增 `@` TXT `google-site-verification=…`（A／CNAME 未動），Search Console 網域資源 `sc-domain:lucissicare.com` 驗證成功；提交 `https://lucissicare.com/sitemap.xml`（44 個網址，以 Googlebot UA 抓取回 200 XML），剛提交時顯示「Couldn't fetch」為新資源常見狀態，待 Google 重新讀取；網址檢查首頁「URL is on Google／Page is indexed」，已要求重新索引。GA4 於 2026-11-19 加入並正式上線（PR #135，正式站送出資料、即時報表有使用者，見最上方）；Bing 已於同日驗證並提交 sitemap。
 4. Facebook 登入：2026-11-19 審查已核准、App 已發布、正式站已開啟並重新部署（見最上方「Facebook 登入上線、GA4、Vercel 預覽變數」）；尚未以真實顧客帳號完成整個登入流程。
-5. 寄件網域（已完成）：2026-11-19 晚間經 Shopify 支援在 Shopify 端修正，後台顯示「已驗證」，公開 DNS 第二組目標已可解析（見最上方「寄件網域驗證完成」）。DMARC（`p=reject`）未改；實際通知信的寄件者與 DKIM 待下一封真實通知信確認。
+5. 寄件網域（已完成）：2026-11-19 晚間經 Shopify 支援在 Shopify 端修正，後台顯示「已驗證」，公開 DNS 第二組目標已可解析（見最上方「寄件網域驗證完成」）。DMARC（`p=reject`）未改。同日測試通知信回讀標頭：寄件者 `service@lucissi.com`，DKIM／SPF／DMARC 都通過。
 6. 庫存（2026-11-19 Storefront 回讀）：6 件 SAENGAK 保養品都可購買；整件售完只剩「舒適純棉透氣內褲」（4 個規格皆 0），另有 13 件內著共 20 個規格為 0。售完商品不能下單，不阻擋上線。
 7. 商品內容：16 件內著缺材質與產地（`care_specs` 空白；2026-11-19 查無來源，店主決定維持現在的顯示，見最上方「內著材質與產地維持現狀」）、（SEO 標題、收納包副標已於 2026-11-19 處理，見「商品 SEO 標題補上」；文章標題重複後綴同日改由程式去除，見「文章標題重複品牌後綴」）；「抗菌內褲」標籤沒有檢驗報告，2026-11-19 店主決定先不拿掉。SAENGAK、MEDION 化粧品登錄／PIF 紀錄不在 repo。
 8. 法律文字：店主 2026-11-19 決定不送律師審閱。條款頁 4 句與商品頁「結帳由 Shopify 安全處理」已改成不提服務商（PR #134，見最上方「上線前待辦逐項處理」）。仍待：網站隱私權已新增 SiteGiant、綠界，Shopify 隱私權政策需在 SiteGiant 上線時同步。
