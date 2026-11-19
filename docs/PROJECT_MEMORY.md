@@ -25,7 +25,7 @@
 - `/promotion` 的公開規則集中在 `src/domain/promotionPresentation.ts`：隱藏代碼清單與文案覆寫都註明了移除條件，店主更新 Shopify 後要回頭刪除。Shopify 的英文 `summary` 不顯示。
 - `LUCISSI_PUBLIC_URL`（`src/content/carePillars.ts`）是母站連結的唯一開關；`lucissi.com` 2026-11-07 回應 401。
 - 內部驗收商品的判斷規則在 `src/domain/testProducts.ts`，前台與 sitemap 共用。`/blog` 是 `/community` 的轉址，文章網址是 `/blog/:handle`；只會轉址的路徑不列入 sitemap。
-- Shopify 商店預設語言是繁體中文（2026-11-07 由英文改），結帳頁與顧客通知信的語言由此決定。商店聯絡信箱是 `service@lucissi.com`。
+- Shopify 商店預設語言是繁體中文（2026-11-07 由英文改），結帳頁與顧客通知信的語言由此決定。商店聯絡信箱是 `service@lucissi.com`。Shopify 寄件網域 `lucissi.com` 於 2026-11-19 驗證完成（GoDaddy 6 筆 CNAME：`mailerm5s`、`m5s`／`m5s2._domainkey`、`mailer6h3`、`pdk1`／`pdk2._domainkey.mailer6h3`；第二組目標曾因 Shopify 端未建立而 NXDOMAIN，由 Shopify 支援修正）；`lucissi.com` 在本店只用於寄信，DMARC 為 `p=reject`，不要刪改這些記錄。
 - 退換貨規則比照 LUCISSI（2026-11-07 店主決定）。密封護理品的判斷在 `src/domain/returnPolicy.ts`，用品名比對；新增這類商品時要確認品名符合，告知才會顯示。
 - 伺服器失敗回報一律走 `api/_lib/server-monitoring.ts`，只能傳穩定代碼，不可傳 Error message、資料庫 details 或 payload。DSN 讀 `SENTRY_DSN`，沒有時沿用 `VITE_PUBLIC_SENTRY_DSN`。
 - `/sitemap.xml` 由 `vite build` 產生（`src/domain/sitemap.ts`），商品清單在每次部署時更新；讀不到 Shopify 時只列固定頁面並在建置 log 警告。不要加 `public/sitemap.xml`。Vercel Hobby 上限 12 個函式（`api/` 加 `middleware.ts`，2026-11-17 前為 `middleware.js`），目前已滿，`tests/vercel-function-limit.test.ts` 會擋下超額。
