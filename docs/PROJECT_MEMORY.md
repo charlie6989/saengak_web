@@ -201,7 +201,8 @@
 - Shopify 提供商品、分類、文章與 Checkout；主要客戶端在 `src/lib/shopify.ts`，結帳與導頁另有專用模組及測試。
 - Supabase 承載會員、訂單、評價／問答、優惠券、發票投影與相關授權；`supabase/migrations/`、`supabase/functions/`、`supabase/tests/database/` 保存 schema 變更、Edge Functions 及資料庫測試。
 - 光貿發票採 outbox／派送流程；缺少必要憑證時拒絕處理。不可為了讓測試通過而補入正式憑證或取消防護。
-- ShipAny 由 Shopify 後台管理；`.env.example` 明確記載網站／Supabase 不另持有 ShipAny API key。
+- ShipAny 出貨由 Shopify 後台的 ShipAny App 管理。網站伺服器只為超商門市清單呼叫 ShipAny API（`api/_lib/shipany-pickup-points.ts`，`SHIPANY_CLIENT_KEY`＋輪替的 merchant／refresh token，加密存在 `private.shipany_api_tokens`）。
+- ShipAny 帳號與母站共用，訂閱（API 系統對接服務 Pro、物流服務點列表）是帳號層級。母站的標籤頁、自動出貨、門市清單都依賴 API，CARE 單方面改選店方式省不到訂閱費；2026-11-19 結論是兩個都保留（見 `docs/PROJECT_STATUS.md`「ShipAny 訂閱是否保留」）。
 - Sentry 的事件處理與資料清理在 `src/lib/sentry.ts`。
 - 網站伺服器以 Shopify 自訂 App「SAENGAK Order Sync」（Dev Dashboard app 411199766529）的 `SHOPIFY_APP_CLIENT_ID`／`SHOPIFY_APP_CLIENT_SECRET` 走 client credentials 取得 Admin API token（`api/shopify/discounts.ts` 的 `getShopifyAdminAccessToken`），用於折扣、顧客、訂單取消與 COD 貨件核對。網站不讀寫運送設定；2026-11-19 起 App 版本 v4 已移除 `read_shipping`、`write_shipping`（2027-07-01「市場」運送移轉），之後不要加回，也不要用這組金鑰呼叫 `deliveryProfile*`。
 - Vercel CLI 不再是 devDependency（其 `@vercel/*` → ts-morph → fast-glob 會帶入沒有修補版本的 `braces`，最新 64.x 仍是如此）；`npm run dev:vercel` 以 `npx --yes vercel@64 dev` 執行。原本只為 Vercel CLI 依賴樹存在的 `overrides` 已全部移除。
