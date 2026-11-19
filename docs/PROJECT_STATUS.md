@@ -1,5 +1,14 @@
 # 項目狀態
 
+## SAENGAK Order Sync 權限、寄件網域、Sentry（2026-11-19 晚間）
+
+店主回覆：寄件網域請協助；SAENGAK Order Sync 請協助修復（選「只拿掉運送權限」）；Sentry 帳號「應該是」在公司信箱底下。
+
+- **SAENGAK Order Sync（正式設定）**：Shopify 應用程式頁與 Dev Dashboard 顯示「需要市場導向運送更新」。v3 申請 181 個權限範圍（含 `read_shipping`、`write_shipping`）；網站程式（`api/`、`supabase/functions/`、`scripts/`）沒有任何 `deliveryProfile*` 或運送設定呼叫，Shopify 移轉指南也只要求檢查這些操作。Dev Dashboard 發布新版本 `saengak-order-sync-v4`（有效），只移除 `read_shipping`、`write_shipping`，另移除表單判為無效、無法發布的 `read_discounts_allocator_functions`、`write_discounts_allocator_functions`（共 177 個）；Webhook API 版本 2026-07、其他設定沿用 v3。商店 App 頁未要求重新接受權限。發布後正式站 `GET /api/shopify/discounts` 回 200 且有折扣資料（Admin token 仍正常）。
+  - 未完成：發布後 Shopify 應用程式頁與 Dev Dashboard 仍顯示不相容警告。指南說 Shopify 會自動偵測，但只有提交相容聲明表單（Google 表單，7 頁，同時聲明市場導向運送、分批出貨、同單宅配＋取貨相容；提交「Yes, fully rolled out」後 48 小時內解除）才保證解除。表單以店主 Google 帳號填寫並代表商家聲明，未代填；待店主決定是否提交，或等自動偵測。2027-07-01 前處理即可。
+- **寄件網域（未完成，原因已找到）**：店主同意後再按 GoDaddy「自動驗證」，店主在跳出視窗登入並同意；重新整理後仍「需要設定」，6 筆 CNAME 仍顯示「DNS 記錄相符」。公開 DNS（8.8.8.8）回讀 `lucissi.com` 6 筆 CNAME 都與 Shopify 要求一致；第一組目標（`13a313500fce.p142.email.myshopify.com`、`dkim1`、`dkim2`）可解析到 SendGrid，第二組目標 `954a988cefa4.p638.email.myshopify.com`、`dkim3.954a988cefa4.p638…`、`dkim4.954a988cefa4.p638…` 查詢 A／TXT／CNAME／MX 都是 NXDOMAIN。問題在 Shopify 端未建立第二組記錄，商家 DNS 無法修正；需店主聯絡 Shopify 支援。DMARC `p=reject`、SPF 只含 `secureserver.net`，未改。信件仍由 `shopifyemail.com` 備用地址寄出。
+- **Sentry**：店主表示帳號應該在公司信箱底下（未登入 Sentry 回讀確認）；維持保留。
+
 ## Facebook 登入上線、GA4、Vercel 預覽變數（2026-11-19 晚間）
 
 店主回覆：抗菌標籤先不拿掉；同意發布 Facebook App 並開啟網站 Facebook 登入、部署；授權移除預覽環境的 `VITE_STORE_PICKUP_PREVIEW_ENABLED` 與 `SHIPANY_CLIENT_KEY`；先加 GA4；協助寄件網域；接著查尚未查的項目。
@@ -161,12 +170,12 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 2. 真實訂單端到端都還沒有：訪客實付後的同步／確認信／發票／認領；首筆黑貓 COD 送達→已付款→開票；首筆超商（切換後為綠界）取件、代收與追蹤號回寫。#1011 已取消退款，目前沒有有效的真實訂單。
 3. Search Console：2026-11-18 店主同意後，在 GoDaddy DNS（`ns19/ns20.domaincontrol.com`）新增 `@` TXT `google-site-verification=…`（A／CNAME 未動），Search Console 網域資源 `sc-domain:lucissicare.com` 驗證成功；提交 `https://lucissicare.com/sitemap.xml`（44 個網址，以 Googlebot UA 抓取回 200 XML），剛提交時顯示「Couldn't fetch」為新資源常見狀態，待 Google 重新讀取；網址檢查首頁「URL is on Google／Page is indexed」，已要求重新索引。GA4 於 2026-11-19 加入並正式上線（PR #135，正式站送出資料、即時報表有使用者，見最上方）；Bing 已於同日驗證並提交 sitemap。
 4. Facebook 登入：2026-11-19 審查已核准、App 已發布、正式站已開啟並重新部署（見最上方「Facebook 登入上線、GA4、Vercel 預覽變數」）；尚未以真實顧客帳號完成整個登入流程。
-5. 寄件網域（待店主）：Shopify 寄件網域 DNS 6 筆已加且都顯示相符，總狀態仍「需要設定」；2026-11-19 按 GoDaddy「自動驗證」未在自動化分頁開出授權視窗。需店主登入 GoDaddy 授權，或聯絡 Shopify 支援。DMARC（`p=reject`）未改；未完成前信件由 `shopifyemail.com` 備用地址寄出，可正常寄送。
+5. 寄件網域（待店主聯絡 Shopify 支援）：Shopify 寄件網域 DNS 6 筆已加且都顯示相符，總狀態仍「需要設定」；2026-11-19 店主已完成 GoDaddy 自動驗證授權，仍未通過。公開 DNS 查到 Shopify 端第二組目標（`954a988cefa4.p638.email.myshopify.com` 與 dkim3／dkim4）不存在（NXDOMAIN），需 Shopify 支援處理（見最上方「SAENGAK Order Sync 權限、寄件網域、Sentry」）。DMARC（`p=reject`）未改；未完成前信件由 `shopifyemail.com` 備用地址寄出，可正常寄送。
 6. 庫存（2026-11-19 Storefront 回讀）：6 件 SAENGAK 保養品都可購買；整件售完只剩「舒適純棉透氣內褲」（4 個規格皆 0），另有 13 件內著共 20 個規格為 0。售完商品不能下單，不阻擋上線。
 7. 商品內容：16 件內著缺材質與產地（`care_specs` 空白；2026-11-19 查無來源，店主決定維持現在的顯示，見最上方「內著材質與產地維持現狀」）、（SEO 標題、收納包副標已於 2026-11-19 處理，見「商品 SEO 標題補上」；文章標題重複後綴同日改由程式去除，見「文章標題重複品牌後綴」）；「抗菌內褲」標籤沒有檢驗報告，2026-11-19 店主決定先不拿掉。SAENGAK、MEDION 化粧品登錄／PIF 紀錄不在 repo。
 8. 法律文字：店主 2026-11-19 決定不送律師審閱。條款頁 4 句與商品頁「結帳由 Shopify 安全處理」已改成不提服務商（PR #134，見最上方「上線前待辦逐項處理」）。仍待：網站隱私權已新增 SiteGiant、綠界，Shopify 隱私權政策需在 SiteGiant 上線時同步。
 9. 服務帳務：ShipAny 餘額（11/08 為 NT$500）、物流服務點列表 11/21 起 NT$398／月、API Pro 11/30 續期；Shipy 11/16 起 US$7.99／月；光貿服務到期日未知、2027 年 1–2 月字軌尚未配發、後台店主無法登入。服務點列表因正式站超商選店依賴它，建議保留。LINE Pay 手續費（2.8%）店主決定先不申請調降。
-10. 監控：Sentry 建議保留（免費錯誤監控，結帳出錯時才會知道），帳號歸屬待店主確認是否在公司信箱底下；伺服器事件未實際驗證。Supabase 外洩密碼保護需付費方案。SAENGAK Order Sync 與 2027-07-01 起 Shopify「市場」運送設定不相容，尚未處理。
+10. 監控：Sentry 建議保留（免費錯誤監控，結帳出錯時才會知道），店主表示帳號應該在公司信箱底下（未回讀確認）；伺服器事件未實際驗證。Supabase 外洩密碼保護需付費方案。SAENGAK Order Sync 已於 2026-11-19 發布 v4 移除運送權限，Shopify 不相容警告仍在，待自動偵測或店主提交相容聲明表單（2027-07-01 前）。
 11. 其他：分享預覽圖 `og-image.png` 已於 2026-11-19 改成品牌照片＋字標，字標同日定為正式版（見「網站預設分享圖改版」）；Safari 無痕驗證改為顯示說明與重新驗證（PR #134 已合併部署，未在真實 Safari 無痕驗證）；waaship 已於 2026-11-19 移除；PR #117 預覽開關已刪除、Preview 的 `SHIPANY_CLIENT_KEY` 已改為只套用 Production（2026-11-19，見最上方）；#1011 顯示重量 0.0 kg（當時商品重量未設；2026-11-18 已補上估算重量，組合商品除外，見最上方「商品重量補上」）。
 
 ## SEO：伺服器產生 head（2026-11-17，已併入上述分支，未推送、未部署）
