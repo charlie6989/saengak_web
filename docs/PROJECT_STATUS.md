@@ -15,18 +15,18 @@
 
 ## 上線前待辦逐項處理（2026-11-19 下午）
 
-店主逐項回覆待辦清單後處理。本節「程式碼」只在分支 `claude/turnstile-fallback`，未合併、未部署。
+店主逐項回覆待辦清單後處理。本節「程式碼」在分支 `claude/turnstile-fallback`，已由 PR #134 合併進 main（`2fc032d`）並隨 main 正式部署；Safari 無痕的說明與重新驗證未在正式站真實 Safari 無痕驗證。
 
 - **Safari 無痕驗證（程式碼）**：Cloudflare 判定 Safari 無痕為機器人，網站無法改變判定。`AuthCaptcha` 改為驗證錯誤、逾時、不支援或 15 秒沒拿到 token 時，顯示說明（建議改用一般瀏覽模式）與「重新驗證」按鈕；訪客結帳另提示可改用「登入結帳」。Turnstile 語言設為 `zh-tw`。已驗證（本機）：Vitest 815 項、typecheck、build、verify:content；以 Cloudflare 測試金鑰在本機頁面確認必定失敗金鑰會出現說明與按鈕、按下後重新驗證，必定通過金鑰會取得 token 且不出現說明。未在真實 Safari 無痕驗證。
 - **條款頁（程式碼）**：4 句改成不提服務商名稱（結帳由合作的電子商務平台處理，服務商列於隱私權政策），條款頁改用自己的更新日 `termsUpdatedAt`（2026年11月19日）；商品頁信任標章「結帳由 Shopify 安全處理」改「安全加密結帳」；`verify:content` 封鎖這三種 Shopify 說法。隱私權頁仍列 Shopify 等服務商。
-- **Bing（程式碼＋外部）**：Bing Webmaster Tools 已新增 `https://lucissicare.com/`（選「稍後驗證」）；`index.html` 加 `msvalidate.01` meta。部署後還要回 Bing 按驗證並提交 sitemap。
+- **Bing（程式碼＋外部）**：Bing Webmaster Tools 已新增 `https://lucissicare.com/`（選「稍後驗證」）；`index.html` 加 `msvalidate.01` meta。部署後還要回 Bing 按驗證並提交 sitemap（已完成，見最上方「Facebook 登入上線、GA4、Vercel 預覽變數」）。
 - **waaship（正式設定）**：店主同意「不需要就移除」；過去 30 天無活動、發票只用光貿，已於 Shopify 解除安裝（原因：現在沒有使用），應用程式頁顯示成功解除安裝。應用程式頁另提示 SAENGAK Order Sync 與 2027-07-01 起的「市場」運送設定不相容，尚未處理。
 - **寄件網域（唯讀＋重新檢查）**：Shopify 電子郵件網域驗證頁 6 筆 CNAME 都顯示「DNS 記錄相符」，按「我已更新 DNS 記錄」後總狀態仍「需要設定」。`_dmarc.lucissi.com` 為 `p=reject`。顧客信件目前由 `shopifyemail.com` 備用地址寄出，可正常寄送。可試 GoDaddy「自動驗證」（需店主登入 GoDaddy 授權）或聯絡 Shopify 支援。
-- **Facebook 登入（唯讀）**：Meta App「LUCISSI」11/09 送審已核准（`email`、`public_profile`），App 仍 Unpublished。發布 App 的點擊被自動權限檢查擋下，待店主確認；發布後再設定 CARE `VITE_FACEBOOK_LOGIN_ENABLED=true` 並重新部署。
+- **Facebook 登入（唯讀）**：Meta App「LUCISSI」11/09 送審已核准（`email`、`public_profile`），App 仍 Unpublished。發布 App 的點擊被自動權限檢查擋下，待店主確認；發布後再設定 CARE `VITE_FACEBOOK_LOGIN_ENABLED=true` 並重新部署。（同日晚間店主同意後已發布並上線，見最上方。）
 - **庫存（唯讀，Storefront）**：6 件 SAENGAK 保養品目前都可購買。整件售完只剩「舒適純棉透氣內褲」（4 個規格皆 0）；另有 13 件內著共 20 個規格為 0。庫存由 SiteGiant ERP Sync 寫入 Shopify。
 - **抗菌標籤（唯讀，本機採購資料）**：6 件帶「抗菌內褲」標籤的商品中，4 件（5387、4178、4238、5975）的 1688 供應商品名沒有任何抗菌字樣；5835（第二家供應商）、4901 只有供應商品名寫「抑菌」，都沒有檢驗報告。未帶標籤的 4889 供應商品名寫「抗菌裆」。來源：`stock-forecast` 採購表的 1688 訂單匯出；多數 Offer ID 因科學記號損壞，無法回查原商品頁。
 - **ShipAny 服務點列表（判斷）**：正式 `store_pickup_enabled`=true，網站選超商門市的清單來自 ShipAny 服務點 API，取消會讓選店失效，所以需要保留。有經 ShipAny 出貨的月份免收 NT$398，宅配仍走 ShipAny。
-- **PR #117（判斷）**：已於 11/09 合併。正式開關已開，預覽專用開關 `VITE_STORE_PICKUP_PREVIEW_ENABLED` 已無作用，建議從 Vercel Preview 移除；Preview 的 `SHIPANY_CLIENT_KEY` 會讓每個預覽部署用正式金鑰呼叫 ShipAny、輪替正式資料庫中的 token，建議一併移除，需要測試時再暫時加回。Vercel 環境變數清單本輪無權限讀取（MCP 403、CLI 未連結），未變更。
+- **PR #117（判斷）**：已於 11/09 合併。正式開關已開，預覽專用開關 `VITE_STORE_PICKUP_PREVIEW_ENABLED` 已無作用，建議從 Vercel Preview 移除；Preview 的 `SHIPANY_CLIENT_KEY` 會讓每個預覽部署用正式金鑰呼叫 ShipAny、輪替正式資料庫中的 token，建議一併移除，需要測試時再暫時加回。Vercel 環境變數清單本輪無權限讀取（MCP 403、CLI 未連結），未變更。（同日晚間店主授權後已處理，見最上方。）
 
 ## 內著材質與產地維持現狀（2026-11-19）
 
@@ -144,7 +144,7 @@
 
 TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文字已加回 ATM 轉帳。
 
-尚未執行：SiteGiant／綠界 C2C、Shopify 隱私權政策（SiteGiant 上線時加入 SiteGiant、綠界；運送政策已於 11/18 改寫）、確認 SAENGAK Order Sync 的 `write_orders`。
+尚未執行：SiteGiant／綠界 C2C、Shopify 隱私權政策（SiteGiant 上線時加入 SiteGiant、綠界；運送政策已於 11/18 改寫）、確認 SAENGAK Order Sync 的 `write_orders`（2026-11-19 已確認具備）。
 尚未驗證：真實結帳的預選運費（需真人通過 Turnstile）、第一筆順豐宅配訂單的 ShipAny 草稿、停權流程的真實訂單。步驟與細節見 [物流與金流上線清單](LOGISTICS_PAYMENTS_PLAN.md)。
 
 ## 上線前全面盤點、SEO 與物流金流比照 LUCISSI（2026-11-17，分支 `claude/pre-launch-review-seo-0c8078`，[PR #121](https://github.com/charlie6989/saengak_web/pull/121) 已於 2026-11-17 合併部署，正式切換結果見上一節）
@@ -157,17 +157,17 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 
 **上線前仍欠缺（依影響排序；狀態取自既有紀錄，本輪未登入各後台重新回讀）**
 
-1. 物流金流切換剩餘步驟（11/17 已完成部署、Shopify 運費、Shipy、宅配 Flow、ShipAny 規則）：SiteGiant 綠界、Shopify 隱私權政策（隨 SiteGiant 上線）、`write_orders`。運送政策 11/18 已改寫發布。（ATM 已決定保留，不停用。）
+1. 物流金流切換剩餘步驟（11/17 已完成部署、Shopify 運費、Shipy、宅配 Flow、ShipAny 規則）：SiteGiant 綠界、Shopify 隱私權政策（隨 SiteGiant 上線）。`write_orders` 已於 2026-11-19 確認具備（訂單檢視／編輯）。運送政策 11/18 已改寫發布。（ATM 已決定保留，不停用。）
 2. 真實訂單端到端都還沒有：訪客實付後的同步／確認信／發票／認領；首筆黑貓 COD 送達→已付款→開票；首筆超商（切換後為綠界）取件、代收與追蹤號回寫。#1011 已取消退款，目前沒有有效的真實訂單。
-3. Search Console：2026-11-18 店主同意後，在 GoDaddy DNS（`ns19/ns20.domaincontrol.com`）新增 `@` TXT `google-site-verification=…`（A／CNAME 未動），Search Console 網域資源 `sc-domain:lucissicare.com` 驗證成功；提交 `https://lucissicare.com/sitemap.xml`（44 個網址，以 Googlebot UA 抓取回 200 XML），剛提交時顯示「Couldn't fetch」為新資源常見狀態，待 Google 重新讀取；網址檢查首頁「URL is on Google／Page is indexed」，已要求重新索引。未匯入 Bing。GA4 於 2026-11-19 加入（分支 `claude/ga4`，見最上方）；Bing 已驗證並提交 sitemap。
+3. Search Console：2026-11-18 店主同意後，在 GoDaddy DNS（`ns19/ns20.domaincontrol.com`）新增 `@` TXT `google-site-verification=…`（A／CNAME 未動），Search Console 網域資源 `sc-domain:lucissicare.com` 驗證成功；提交 `https://lucissicare.com/sitemap.xml`（44 個網址，以 Googlebot UA 抓取回 200 XML），剛提交時顯示「Couldn't fetch」為新資源常見狀態，待 Google 重新讀取；網址檢查首頁「URL is on Google／Page is indexed」，已要求重新索引。GA4 於 2026-11-19 加入並正式上線（PR #135，正式站送出資料、即時報表有使用者，見最上方）；Bing 已於同日驗證並提交 sitemap。
 4. Facebook 登入：2026-11-19 審查已核准、App 已發布、正式站已開啟並重新部署（見最上方「Facebook 登入上線、GA4、Vercel 預覽變數」）；尚未以真實顧客帳號完成整個登入流程。
-5. 寄件網域：Shopify 寄件網域 DNS 6 筆已加，總狀態仍「需要設定」待 Shopify 更新；DMARC 未改。
-6. 庫存：6 件 SAENGAK 保養品與 1 件內褲售完需補貨（售完商品不能下單，不阻擋上線）。
-7. 商品內容：16 件內著缺材質與產地（`care_specs` 空白；2026-11-19 查無來源，店主決定維持現在的顯示，見最上方「內著材質與產地維持現狀」）、（SEO 標題、收納包副標已於 2026-11-19 處理，見「商品 SEO 標題補上」；文章標題重複後綴同日改由程式去除，見「文章標題重複品牌後綴」）；「抗菌內褲」標籤需有依據。SAENGAK、MEDION 化粧品登錄／PIF 紀錄不在 repo。
-8. 法律文字未經律師審閱（隱私權、條款、退換貨）；條款頁 4 句提到 Shopify 與商品頁「結帳由 Shopify 安全處理」待店主決定；本次隱私權新增 SiteGiant、綠界，Shopify 隱私權政策需同步。
-9. 服務帳務：ShipAny 餘額（11/08 為 NT$500）、物流服務點列表 11/21 起 NT$398／月、API Pro 11/30 續期；Shipy 11/16 起 US$7.99／月；光貿服務到期日未知、2027 年 1–2 月字軌尚未配發、後台店主無法登入。
-10. 監控：Sentry 帳號歸屬未確認、伺服器事件未實際驗證；Supabase 外洩密碼保護需付費方案。
-11. 其他：分享預覽圖 `og-image.png` 已於 2026-11-19 改成品牌照片＋字標，字標同日定為正式版（見「網站預設分享圖改版」）；Safari 無痕驗證改為顯示說明與重新驗證（分支 `claude/turnstile-fallback`，未部署）；waaship 已於 2026-11-19 移除；PR #117 預覽開關與 Preview 的 `SHIPANY_CLIENT_KEY` 建議移除（見最上方「上線前待辦逐項處理」）；#1011 顯示重量 0.0 kg（當時商品重量未設；2026-11-18 已補上估算重量，組合商品除外，見最上方「商品重量補上」）。
+5. 寄件網域（待店主）：Shopify 寄件網域 DNS 6 筆已加且都顯示相符，總狀態仍「需要設定」；2026-11-19 按 GoDaddy「自動驗證」未在自動化分頁開出授權視窗。需店主登入 GoDaddy 授權，或聯絡 Shopify 支援。DMARC（`p=reject`）未改；未完成前信件由 `shopifyemail.com` 備用地址寄出，可正常寄送。
+6. 庫存（2026-11-19 Storefront 回讀）：6 件 SAENGAK 保養品都可購買；整件售完只剩「舒適純棉透氣內褲」（4 個規格皆 0），另有 13 件內著共 20 個規格為 0。售完商品不能下單，不阻擋上線。
+7. 商品內容：16 件內著缺材質與產地（`care_specs` 空白；2026-11-19 查無來源，店主決定維持現在的顯示，見最上方「內著材質與產地維持現狀」）、（SEO 標題、收納包副標已於 2026-11-19 處理，見「商品 SEO 標題補上」；文章標題重複後綴同日改由程式去除，見「文章標題重複品牌後綴」）；「抗菌內褲」標籤沒有檢驗報告，2026-11-19 店主決定先不拿掉。SAENGAK、MEDION 化粧品登錄／PIF 紀錄不在 repo。
+8. 法律文字：店主 2026-11-19 決定不送律師審閱。條款頁 4 句與商品頁「結帳由 Shopify 安全處理」已改成不提服務商（PR #134，見最上方「上線前待辦逐項處理」）。仍待：網站隱私權已新增 SiteGiant、綠界，Shopify 隱私權政策需在 SiteGiant 上線時同步。
+9. 服務帳務：ShipAny 餘額（11/08 為 NT$500）、物流服務點列表 11/21 起 NT$398／月、API Pro 11/30 續期；Shipy 11/16 起 US$7.99／月；光貿服務到期日未知、2027 年 1–2 月字軌尚未配發、後台店主無法登入。服務點列表因正式站超商選店依賴它，建議保留。LINE Pay 手續費（2.8%）店主決定先不申請調降。
+10. 監控：Sentry 建議保留（免費錯誤監控，結帳出錯時才會知道），帳號歸屬待店主確認是否在公司信箱底下；伺服器事件未實際驗證。Supabase 外洩密碼保護需付費方案。SAENGAK Order Sync 與 2027-07-01 起 Shopify「市場」運送設定不相容，尚未處理。
+11. 其他：分享預覽圖 `og-image.png` 已於 2026-11-19 改成品牌照片＋字標，字標同日定為正式版（見「網站預設分享圖改版」）；Safari 無痕驗證改為顯示說明與重新驗證（PR #134 已合併部署，未在真實 Safari 無痕驗證）；waaship 已於 2026-11-19 移除；PR #117 預覽開關已刪除、Preview 的 `SHIPANY_CLIENT_KEY` 已改為只套用 Production（2026-11-19，見最上方）；#1011 顯示重量 0.0 kg（當時商品重量未設；2026-11-18 已補上估算重量，組合商品除外，見最上方「商品重量補上」）。
 
 ## SEO：伺服器產生 head（2026-11-17，已併入上述分支，未推送、未部署）
 
@@ -200,7 +200,7 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 - 11/09 實單測試（店主同意，Shopify #1013–#1018，皆已取消、未出貨）：結帳頁每家只出現自己的運費，COD 可選，ShipAny 依 `[門市代碼]` 辨識全家／順豐門市並讀到代收 NT$159。發現 ShipAny 規則「包括」是清單完全相符，只寫「全家」比對不到「全家取貨」；三條規則補上完整運費名稱後，#1016 全家店到店、#1017／#1018 順豐台灣皆命中。
 - 11/09 取貨付款：店主決定「現在就加進 Flow」。新增並啟用「COD 全家取貨／7-11取貨／萊爾富取貨後自動標記已付款」三個 Flow（DELIVERED＋COD＋PENDING＋運費名稱完全相符），宅配 Flow 未改。風險：尚未確認 ShipAny 超商單的 DELIVERED 是到店還是取件付款。
 - 11/09 網站完整流程驗證（PR #117 預覽專用開關，正式開關未開）：預覽網站選 7-11一勝門市 → 會員登入（店主本人）→ 網站建立結帳 → Shopify 只出現「7-11取貨 $60」→ 貨到付款下單 #1019 → 網站資料庫同步為會員訂單、ShipAny 草稿命中順豐台灣、代收 NT$80。測完已取消，三邊皆同步。
-- 阻擋：首筆真實訂單需確認 DELIVERED 時點；正式站「訪客＋超商取貨」未以真人驗證（預覽無 Turnstile 金鑰）。PR #117 是否合併、預覽的 `SHIPANY_CLIENT_KEY`／預覽開關是否保留待店主決定。COD 付款說明已改為通用文字。開關 `store_pickup_enabled` 仍為 false。
+- 阻擋：首筆真實訂單需確認 DELIVERED 時點；正式站「訪客＋超商取貨」未以真人驗證（預覽無 Turnstile 金鑰）。PR #117 是否合併、預覽的 `SHIPANY_CLIENT_KEY`／預覽開關是否保留待店主決定（2026-11-19 已處理，見最上方）。COD 付款說明已改為通用文字。開關 `store_pickup_enabled` 仍為 false。
 - 「物流服務點列表」11/21 起收費（NT$398／月，有經 ShipAny 出貨的月份豁免），店主決定繼續做，不取消。
 
 ## 訪客結帳營運決策（2026-11-09）
@@ -398,7 +398,7 @@ TapPay ATM：店主同日決定保留（不比照 LUCISSI），網站付款文�
 - 已驗證（Vercel 預覽 `saengak-web-d2ux`，提交 `9454b93`）：`/faq` 顯示新文案、畫面沒有 Shopify；40 個 JS 檔中找得到抽查的 12 句新文案，16 句舊文案都不存在。
 - 已驗證（正式站 `158abea`，瀏覽器）：`/faq` 兩題顯示新文案，畫面沒有 Shopify、TapPay、Supabase；40 個 JS 檔中找得到抽查的 12 句新文案，18 句舊文案都不存在。預覽與正式站都未操作登入或結帳。
 - 只有單元測試：結帳商店不符與不安全網址。未實際觸發：其餘結帳錯誤、評價／提問「會員服務尚未設定」、`facebookAuth` 的兩則訊息、載具 Email 驗證（選單已無此選項）。
-- 仍待店主（核准 #85、#86 不含這兩項）：條款頁四句提到 Shopify 是否保留（`src/pages/terms/page.tsx`）；商品頁「結帳由 Shopify 安全處理」是否保留。這兩處未修改。
+- 仍待店主（核准 #85、#86 不含這兩項）：條款頁四句提到 Shopify 是否保留（`src/pages/terms/page.tsx`）；商品頁「結帳由 Shopify 安全處理」是否保留。這兩處未修改。（2026-11-19 已改成不提服務商，PR #134。）
 
 ## 正式發票開關（2026-11-07）
 
