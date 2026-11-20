@@ -1,5 +1,6 @@
 import EditorialHero from '../../components/feature/EditorialHero';
 import { editorialImage, editorialImageAlt } from '../../content/editorialImages';
+import { displayArticleTags } from '../../domain/storefrontCopy';
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
@@ -242,7 +243,8 @@ export default function BlogArticle() {
   const displayDate = article.publishedAt
     ? new Date(article.publishedAt).toLocaleDateString('zh-TW')
     : '2026/9/1';
-  const categoryName = article.blog?.title || (article.tags && article.tags.length > 0 ? article.tags[0] : '專欄文章');
+  const visibleTags = displayArticleTags(article.tags);
+  const categoryName = article.blog?.title || visibleTags[0] || '專欄文章';
   const coverImage = editorialImage(article.handle, article.image?.url, 'hero');
 
   return (
@@ -366,11 +368,11 @@ export default function BlogArticle() {
               />
 
               {/* 專欄標籤 */}
-              {article.tags && article.tags.length > 0 && (
+              {visibleTags.length > 0 && (
                 <div className="mt-14 pt-8 border-t border-gray-100">
                   <h4 className="text-sm font-bold text-gray-900 mb-3.5">相關主題標籤</h4>
                   <div className="flex flex-wrap gap-2">
-                    {article.tags.map((tag, index) => (
+                    {visibleTags.map((tag, index) => (
                       <span
                         key={index}
                         className="px-3.5 py-1.5 text-xs font-medium bg-blush text-brand rounded-full hover:bg-brand hover:text-white transition-all cursor-pointer"
@@ -539,7 +541,7 @@ export default function BlogArticle() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <span className="text-[10px] font-bold text-brand uppercase tracking-wider block mb-0.5">
-                            {related.tags && related.tags.length > 0 ? related.tags[0] : '專欄'}
+                            {displayArticleTags(related.tags)[0] || '專欄'}
                           </span>
                           <h4 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-brand transition-colors">
                             {related.title}

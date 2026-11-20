@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { articleBylineAuthor } from '../src/domain/storefrontCopy';
+import { articleBylineAuthor, displayArticleTags } from '../src/domain/storefrontCopy';
 import {
   formatShopifyProduct,
   getShopifyProduct,
@@ -280,6 +280,15 @@ describe('Shopify Storefront SDK Client', () => {
       expect(article.blog?.title).toBe('LUCISSI Talk');
       expect(article.author).toBe('LUCISSI CARE 編輯團隊');
       expect(article.tags).toEqual(['LUCISSI CARE', '公開']);
+    });
+  });
+
+  describe('displayArticleTags', () => {
+    it('hides the internal visibility tags but keeps topic tags in order', () => {
+      expect(displayArticleTags(['健康知識', '公開', '私密護理'])).toEqual(['健康知識', '私密護理']);
+      expect(displayArticleTags(['公開', ' 私密護理 '])).toEqual(['私密護理']);
+      expect(displayArticleTags(['LUCISSI CARE', 'SAENGAK', 'public', 'Public', ''])).toEqual([]);
+      expect(displayArticleTags(null)).toEqual([]);
     });
   });
 

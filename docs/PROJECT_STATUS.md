@@ -34,7 +34,7 @@
 - `verify:content` 的舊品牌 VAGI 檢查是不分大小寫的子字串比對，會誤判文章網址的英文字 vaginal；改為先移除 vaginal 再比對。
 - 本機驗證：typecheck、Vitest 826 項（新增 `tests/editorial-images.test.ts`）、build、verify:content 通過；dev server 實測 `/community` 6 張卡片各不相同、圖檔 200 image/webp，文章頁主圖桌機與手機版構圖正確、無 console 錯誤。PR #144 合併（`5e5a5fe`，部署 `dpl_66VHfTtKTKa1LYS6sxb2XUotZgsV` READY）後實測正式站：facebookexternalhit 取得 `/blog/intimate-odor-without-shame` 的 og:image 為 `share-odor-without-shame.jpg`（1200×630）、og:image:alt 為描述文字；Googlebot 取得的 BlogPosting `image` 為四張；sitemap 6 篇文章各有 2 筆 `image:loc`；30 個新圖檔都回 image/webp 或 image/jpeg。注意：不存在的網址也回 200 text/html（SPA），檢查圖檔要看 content-type。Google 搜尋結果與 LINE／Facebook 既有分享快取何時更新未確認。
 - 文章作者（同日後續）：Shopify 6 篇文章的作者是發文員工帳號名稱「My Store 7 Admin」，文章頁的作者列、「內容審核」卡片與 `/community` 的「作者：」都直接顯示。`src/domain/storefrontCopy.ts` 新增 `articleBylineAuthor`：空白或含 Admin／My Store／管理員的帳號名改顯示「LUCISSI CARE 編輯團隊」，其他署名保留；BlogPosting 的 author 改用同一個常數 `ARTICLE_EDITORIAL_AUTHOR`。本機 Vitest 829 項、typecheck、build、verify:content 通過，dev server 實測文章頁與 `/community` 不再出現 My Store。Shopify 員工帳號名稱本身沒有改。
-- 尚未處理：文章「相關主題標籤」與 `/community` 卡片會顯示內部用的「#公開」標籤（`hasPublicArticleTag` 用它決定文章是否公開）。
+- 內部標籤（同日後續）：文章「相關主題標籤」、`/community` 卡片與分類徽章曾顯示「#公開」。這是 `hasPublicArticleTag` 判斷文章能否公開的內部標籤。新增 `displayArticleTags`，在文章頁、`/community`、首頁、面向頁顯示前移除公開標記（公開／public／LUCISSI CARE／SAENGAK），判斷公開仍用原本的完整標籤。本機 Vitest 830 項、build、verify:content 通過，dev server 實測文章頁與 `/community` 只剩 #健康知識、#私密護理。
 
 ## ShipAny 訂閱是否保留（2026-11-19 晚間）
 

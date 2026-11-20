@@ -42,7 +42,15 @@ export function articleBylineAuthor(name: unknown): string {
   return normalized;
 }
 
+/** Shopify 文章用來標示「可公開」的內部標籤（舊店名 SAENGAK 會被改寫成 LUCISSI CARE，所以兩者都算）。 */
+const PUBLIC_ARTICLE_TAG = /^(saengak|lucissi care|公開|public)$/i;
+
 /** 只有帶公開標籤的 Shopify 文章才會出現在網站上。 */
 export function hasPublicArticleTag(tags: readonly string[] | null | undefined): boolean {
-  return (tags || []).some((tag) => /^(saengak|lucissi care|公開|public)$/i.test(tag.trim()));
+  return (tags || []).some((tag) => PUBLIC_ARTICLE_TAG.test(tag.trim()));
+}
+
+/** 顯示給顧客的文章標籤：拿掉判斷公開與否的內部標籤（例如「公開」）與空白標籤。 */
+export function displayArticleTags(tags: readonly string[] | null | undefined): string[] {
+  return (tags || []).map((tag) => tag.trim()).filter((tag) => tag && !PUBLIC_ARTICLE_TAG.test(tag));
 }
