@@ -1,5 +1,13 @@
 # 項目狀態
 
+## 新文章草稿：私密處清潔產品怎麼挑（2026-11-21，未上架）
+
+- 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 1 題撰寫：主要關鍵字「私密處清潔推薦」「私密處清潔」（各 1k–10k／月），也回答「私密處清潔可以每天用嗎」。草稿與 Shopify 欄位（標題、SEO、handle `intimate-cleanser-how-to-choose`、標籤）在 `docs/shopify/articles/2026-11-21-intimate-cleanser-how-to-choose.html`。
+- 依據：美國 Office on Women's Health〈Douching〉、Devon Sexual Health（Royal Devon NHS）〈Genital hygiene〉、英國皮膚科醫學會〈Vulval skincare〉（2023-05 版，原訂 2026-05 複審，未見新版）；2026-11-21 以網頁原文核對引用內容。原本想引用的 NHS〈Keeping your vagina clean and healthy〉已下架，未使用。商品敘述只用 Storefront 上的商品資料（慕斯 pH 5.5、無香料、外部使用；濕巾 pH 5.5、單片包裝）。皮膚科衛教不建議用清潔濕巾當日常清潔，文中照實寫出，濕巾定位為臨時沒有水時使用。
+- 檢查：`verify-public-content.mjs` 97 條封鎖詞無命中，也沒有治療、改善、止癢等療效用語。
+- 圖片：依內容生成 2 張，裁成 `public/images/talk/*-cleanser-choice.*`，並在 `editorialImages.ts` 預先登記 handle；Shopify 文章建立前這筆登記不會被用到。
+- 待辦：店主確認內容後，在 Shopify care-talk 建立文章（帶「公開」標籤），部署後驗證文章頁、分享預覽與 sitemap，再送 Search Console 與 `npm run submit:indexnow`。
+
 ## Bing IndexNow 一次送出全部網址（2026-11-20）
 
 - 店主要求 Bing 一次送出全部網址（Google 的「要求建立索引」每日配額無法提高，見 Search Console 一節）。

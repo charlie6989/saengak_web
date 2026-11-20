@@ -17,6 +17,7 @@ const TALK_HANDLES = [
   'intimate-products-purpose-guide',
   'intimate-care-trial-fatigue',
   'intimate-odor-without-shame',
+  'intimate-cleanser-how-to-choose',
 ];
 const CURATED_HANDLES = ['daily-feminine-care-guide', 'how-to-choose-seamless-underwear', 'how-we-review-products-and-content'];
 

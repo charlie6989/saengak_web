@@ -38,6 +38,11 @@ const covers: Record<string, EditorialCover> = {
     dir: 'talk', key: 'product-log', structuredCrops: true,
     alt: '筆記本上的空白表格與排成一列的用品，整理私密保養用品的使用紀錄',
   },
+  // 2026-11-21 草稿，店主確認後才在 Shopify 建立；文章未建立前這筆登記不會被用到
+  'intimate-cleanser-how-to-choose': {
+    dir: 'talk', key: 'cleanser-choice', structuredCrops: true,
+    alt: '浴室檯面上並排的慕斯、清潔液與獨立包裝濕巾，一隻手翻到瓶身背面看標示，比較私密處清潔產品的劑型與成分',
+  },
   'intimate-odor-without-shame': {
     dir: 'talk', key: 'odor-without-shame', structuredCrops: true,
     alt: '窗邊通風處晾乾的棉質內褲，私密處氣味不必靠香味遮蓋',
