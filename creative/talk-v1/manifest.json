@@ -85,6 +85,20 @@
       "placement": "LUCISSI Talk 文章主圖",
       "promptFile": "creative/talk-v1/article-odor-without-shame.txt",
       "scene": "A bright open window with a sheer linen curtain lifting in a soft breeze; on a pale oak drying rack beside it, clean breathable ivory and dusty rose cotton briefs hang to air-dry in the sunlight. Fresh air instead of fragrance. No perfume, no spray, no person. Airy, honest, unashamed everyday calm."
+    },
+    {
+      "id": "talk-thumb-cleanser-choice",
+      "topic": "私密處清潔產品怎麼挑",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-cleanser-choice.txt",
+      "scene": "On a pale ivory bathroom ledge, three unbranded cleansing formats stand side by side with generous spacing: a plain matte white foam pump bottle with a small soft dome of white foam beside it on a ceramic dish, a plain frosted clear liquid cleanser bottle, and two small plain individually wrapped wipe sachets in muted dusty rose. A natural adult hand holds a fourth plain bottle turned to its back, as if reading the label; the label area is blank with no letters. A folded soft ivory towel at the edge. Calm, considered product comparison, morning window light. No text, no logos, no brand names."
+    },
+    {
+      "id": "talk-article-cleanser-choice",
+      "topic": "私密處清潔產品怎麼挑",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-cleanser-choice.txt",
+      "scene": "On a pale ivory bathroom ledge, three unbranded cleansing formats stand side by side with generous spacing: a plain matte white foam pump bottle with a small soft dome of white foam beside it on a ceramic dish, a plain frosted clear liquid cleanser bottle, and two small plain individually wrapped wipe sachets in muted dusty rose. A natural adult hand holds a fourth plain bottle turned to its back, as if reading the label; the label area is blank with no letters. A folded soft ivory towel at the edge. Calm, considered product comparison, morning window light. No text, no logos, no brand names."
     }
   ],
   "generator": "Codex CLI built-in image generation (ChatGPT sign-in), one call per prompt, 2026-11-20; source PNGs ~1672x941 kept outside Git",
@@ -299,6 +313,41 @@
       "sha256": "6437fe8aaad55f91560393fa95b59a8cd191a2f4350900de7af4b4e97273e9ca",
       "source": "thumb",
       "key": "odor-without-shame"
+    },
+    {
+      "asset": "public/images/talk/thumb-cleanser-choice.webp",
+      "bytes": 63646,
+      "sha256": "0e1a555f4bbae266d4ec5e44cc92b60905da442323ee0672d8416137adf41228",
+      "source": "thumb",
+      "key": "cleanser-choice"
+    },
+    {
+      "asset": "public/images/talk/card-cleanser-choice.webp",
+      "bytes": 47654,
+      "sha256": "7d66a5e54477fd16b7cdd8f5410fdb93e48e6edd869d402900ee66eef9989943",
+      "source": "thumb",
+      "key": "cleanser-choice"
+    },
+    {
+      "asset": "public/images/talk/square-cleanser-choice.webp",
+      "bytes": 34570,
+      "sha256": "4078e898b50f5e82ff1d89520deaee147c493c29f8986e05dc80cfd7af3da749",
+      "source": "thumb",
+      "key": "cleanser-choice"
+    },
+    {
+      "asset": "public/images/talk/article-cleanser-choice.webp",
+      "bytes": 48398,
+      "sha256": "170b1184e9fbab259d34023dce17bed10ea0ddb969b962bfdb4564416ffc2ae8",
+      "source": "article",
+      "key": "cleanser-choice"
+    },
+    {
+      "asset": "public/images/talk/share-cleanser-choice.jpg",
+      "bytes": 87953,
+      "sha256": "bbdca371a8d0c0c628b55feceb7b1b335e80347915cfcce7dea1502e54570eb1",
+      "source": "thumb",
+      "key": "cleanser-choice"
     }
   ],
   "handles": {
@@ -307,6 +356,7 @@
     "gentle-cleansing": "intimate-cleansing-less-irritation",
     "products-by-purpose": "intimate-products-purpose-guide",
     "product-log": "intimate-care-trial-fatigue",
-    "odor-without-shame": "intimate-odor-without-shame"
+    "odor-without-shame": "intimate-odor-without-shame",
+    "cleanser-choice": "intimate-cleanser-how-to-choose"
   }
 }
