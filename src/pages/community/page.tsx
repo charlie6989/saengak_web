@@ -1,5 +1,5 @@
 import EditorialHero from '../../components/feature/EditorialHero';
-import { editorialImage } from '../../content/editorialImages';
+import { editorialImage, editorialImageAlt } from '../../content/editorialImages';
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,6 +18,8 @@ interface CommunityArticle {
   date: string;
   readTime: string;
   image: string;
+  /** 圖片的替代文字；沒有時用標題 */
+  imageAlt?: string;
   tags: string[];
   handle?: string;
   blogHandle?: string;
@@ -97,6 +99,7 @@ export default function Community() {
           date: new Date(article.publishedAt).toLocaleDateString('zh-TW'),
           readTime: `${estimateReadingMinutes(article.contentHtml || article.excerpt || '')} 分鐘`,
           image: editorialImage(article.handle, article.image?.url),
+          imageAlt: editorialImageAlt(article.handle, article.image?.altText, article.title),
           tags: article.tags || [],
           handle: article.handle,
           blogHandle: article.blog?.handle,
@@ -211,7 +214,7 @@ export default function Community() {
                       <div className="aspect-4/3 md:aspect-video lg:aspect-21/9 overflow-hidden">
                         <img
                           src={filteredArticles[0].image}
-                          alt={filteredArticles[0].title}
+                          alt={filteredArticles[0].imageAlt || filteredArticles[0].title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       </div>
@@ -273,7 +276,8 @@ export default function Community() {
                         <div className="aspect-16/10 overflow-hidden">
                           <img
                             src={article.image}
-                            alt={article.title}
+                            alt={article.imageAlt || article.title}
+                            loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>

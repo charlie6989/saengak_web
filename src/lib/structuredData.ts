@@ -3,7 +3,7 @@ import { isSealedCareProduct } from '../domain/returnPolicy.js';
 import { structuredDataShippingRate } from '../domain/structuredDataShipping.js';
 import { normalizeLegacyStorefrontCopy } from '../domain/storefrontCopy.js';
 import { classifyCarePillar, getCarePillar, isPeriodCareProduct } from '../content/carePillars.js';
-import { editorialShareImage } from '../content/editorialImages.js';
+import { editorialImageAlt, editorialShareImage, editorialStructuredImages } from '../content/editorialImages.js';
 import { siteContent } from '../content/site.js';
 import { resolveDisplayVendor } from './brandOwnership.js';
 import { DEFAULT_SHARE_IMAGE, SITE_LOGO_URL, SITE_NAME, SITE_URL, absoluteUrl, formatPageTitle, summarizeText } from './seo.js';
@@ -211,7 +211,7 @@ export function articleMeta(article: ArticleSeoSource): ArticleMeta {
   const title = normalizeLegacyStorefrontCopy(article.seoTitle?.trim() || article.title);
   const editorial = editorialShareImage(article.handle);
   const image = editorial
-    ? { url: absoluteUrl(editorial), width: 1200, height: 630, alt: title }
+    ? { url: absoluteUrl(editorial), width: 1200, height: 630, alt: editorialImageAlt(article.handle, null, title) }
     : article.image?.url
       ? { url: absoluteUrl(article.image.url), alt: normalizeLegacyStorefrontCopy(article.image.altText) || title }
       : undefined;
@@ -238,8 +238,8 @@ export function buildArticleJsonLd(article: ArticleSeoSource): JsonLd {
     '@type': 'BlogPosting',
     headline: meta.heading,
     ...(meta.description ? { description: meta.description } : {}),
-    // 文章沒有圖片時用網站分享圖（與 og:image 相同）
-    image: [(meta.image ?? DEFAULT_SHARE_IMAGE).url],
+    // 第一張與 og:image 相同（文章沒有圖片時用網站分享圖），再加上 Google 建議的 16:9、4:3、1:1 版本
+    image: [(meta.image ?? DEFAULT_SHARE_IMAGE).url, ...editorialStructuredImages(article.handle).map(absoluteUrl)],
     ...(published ? { datePublished: published, dateModified: published } : {}),
     inLanguage: 'zh-TW',
     url: meta.canonicalUrl,

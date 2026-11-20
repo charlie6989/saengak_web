@@ -1,5 +1,14 @@
 # 項目狀態
 
+## LUCISSI Talk 文章圖片依內容重做（2026-11-20）
+
+- 問題：Shopify 6 篇 care-talk 文章都沒有設定文章圖，`editorialImages.ts` 只登記了 3 篇舊精選文章，因此列表、首頁、面向頁、文章主圖、og:image 與 BlogPosting 都退回同一張「編輯審查」圖。
+- 圖片：依各篇內容生成 12 張（每篇一張置中預覽、一張主體在右的主圖），再裁成 `public/images/talk/` 的 thumb／article（1600×900 WebP）、card 4:3、square 1:1 與 share 1200×630 JPG。生成工具是 Codex CLI 內建生圖（ChatGPT 登入）：CARE `.env.local` 沒有 `GEMINI_API_KEY`，LUCISSI 的 OpenAI API 帳戶回 429 無額度。提示詞、裁切方式與 sha256 在 `creative/talk-v1/manifest.json`；原始 PNG 未納入 Git。圖片不含文字、商品包裝或醫療宣稱。
+- SEO：每張圖有描述畫面與主題的中文 alt（頁面、og:image:alt、分享預覽共用）；BlogPosting `image` 由一張改為分享圖加 16:9、4:3、1:1；sitemap 加 `image:image`（文章主圖與預覽圖，未登記的通用圖不列）；列表與相關文章圖片改為 lazy loading。
+- `verify:content` 的舊品牌 VAGI 檢查是不分大小寫的子字串比對，會誤判文章網址的英文字 vaginal；改為先移除 vaginal 再比對。
+- 本機驗證：typecheck、Vitest 826 項（新增 `tests/editorial-images.test.ts`）、build、verify:content 通過；dev server 實測 `/community` 6 張卡片各不相同、圖檔 200 image/webp，文章頁主圖桌機與手機版構圖正確、無 console 錯誤。部署後的正式站與分享預覽尚未驗證。
+- 另見：文章作者顯示「My Store 7 Admin」（Shopify 文章作者欄位），未在這次處理。
+
 ## ShipAny 訂閱是否保留（2026-11-19 晚間）
 
 店主問 API Pro 是否還需要、改網站程式能否省掉。本節只有查核與建議，ShipAny 訂閱與設定都沒有變更。

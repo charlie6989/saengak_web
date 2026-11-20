@@ -1,4 +1,4 @@
-import { editorialImage } from '../../content/editorialImages';
+import { editorialImage, editorialImageAlt } from '../../content/editorialImages';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
@@ -30,7 +30,7 @@ export default function Home() {
             contentHtml: a.contentHtml || '',
             tags: a.tags || [],
             publishedAt: a.publishedAt,
-            image: { url: editorialImage(a.handle, a.image?.url), altText: a.title },
+            image: { url: editorialImage(a.handle, a.image?.url), altText: editorialImageAlt(a.handle, a.image?.altText, a.title) },
           })));
         } else {
           setArticles(fallbackArticles);
@@ -160,6 +160,7 @@ export default function Home() {
                         <img
                           src={article.image?.url || '/images/lucissi-v5/thumb-standards.webp'}
                           alt={article.image?.altText || article.title}
+                          loading="lazy"
                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                         />
                       </div>
