@@ -1,7 +1,7 @@
 import { isProductSoldOut } from '../domain/algorithms.js';
 import { isSealedCareProduct } from '../domain/returnPolicy.js';
 import { structuredDataShippingRate } from '../domain/structuredDataShipping.js';
-import { normalizeLegacyStorefrontCopy } from '../domain/storefrontCopy.js';
+import { ARTICLE_EDITORIAL_AUTHOR, normalizeLegacyStorefrontCopy } from '../domain/storefrontCopy.js';
 import { classifyCarePillar, getCarePillar, isPeriodCareProduct } from '../content/carePillars.js';
 import { editorialImageAlt, editorialShareImage, editorialStructuredImages } from '../content/editorialImages.js';
 import { siteContent } from '../content/site.js';
@@ -23,7 +23,6 @@ export interface Crumb {
 }
 
 const JSON_LD_MAX_IMAGES = 5;
-const ARTICLE_AUTHOR = 'LUCISSI CARE 編輯團隊';
 export const HOME_CRUMB: Crumb = { name: '首頁', url: '/' };
 export const ARTICLES_CRUMB: Crumb = { name: 'LUCISSI Talk', url: '/community' };
 
@@ -244,7 +243,7 @@ export function buildArticleJsonLd(article: ArticleSeoSource): JsonLd {
     inLanguage: 'zh-TW',
     url: meta.canonicalUrl,
     mainEntityOfPage: { '@type': 'WebPage', '@id': meta.canonicalUrl },
-    author: { '@type': 'Organization', name: ARTICLE_AUTHOR, url: absoluteUrl('/about') },
+    author: { '@type': 'Organization', name: ARTICLE_EDITORIAL_AUTHOR, url: absoluteUrl('/about') },
     publisher: {
       '@type': 'Organization',
       name: SITE_NAME,

@@ -29,6 +29,19 @@ export function normalizeLegacyStorefrontCopy(value: unknown): string {
   );
 }
 
+/** 文章作者欄位沒有可公開的署名時，網站與結構化資料共用的署名。 */
+export const ARTICLE_EDITORIAL_AUTHOR = `${CURRENT_STOREFRONT_NAME} 編輯團隊`;
+
+/**
+ * Shopify 文章作者來自發文的員工帳號名稱；預設會是「My Store 7 Admin」這類後台帳號名，
+ * 不能當成公開署名。空白、含 Admin 或 My Store 的帳號名一律顯示編輯團隊。
+ */
+export function articleBylineAuthor(name: unknown): string {
+  const normalized = normalizeLegacyStorefrontCopy(name).trim();
+  if (!normalized || /\badmin\b|\bmy store\b|管理員/i.test(normalized)) return ARTICLE_EDITORIAL_AUTHOR;
+  return normalized;
+}
+
 /** 只有帶公開標籤的 Shopify 文章才會出現在網站上。 */
 export function hasPublicArticleTag(tags: readonly string[] | null | undefined): boolean {
   return (tags || []).some((tag) => /^(saengak|lucissi care|公開|public)$/i.test(tag.trim()));
