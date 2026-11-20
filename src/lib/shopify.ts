@@ -3,7 +3,7 @@ import { normalizeSizeChart, type SizeChart } from '../domain/sizeChart';
 import { captureExceptionSafe } from './sentry';
 import { isNonSaengakOwnBrandProduct, resolveDisplayVendor } from './brandOwnership';
 import { hasTestProductMarker } from '../domain/testProducts';
-import { hasPublicArticleTag, normalizeLegacyStorefrontCopy } from '../domain/storefrontCopy';
+import { articleBylineAuthor, hasPublicArticleTag, normalizeLegacyStorefrontCopy } from '../domain/storefrontCopy';
 import { CURATED_ARTICLES, type CuratedArticle } from '../content/curatedArticles';
 
 /**
@@ -176,7 +176,7 @@ export function normalizeShopifyArticle(node: any): ShopifyArticle {
           title: blogTitle,
         }
       : null,
-    author: normalizeLegacyStorefrontCopy(node?.authorV2?.name) || 'LUCISSI CARE 編輯團隊',
+    author: articleBylineAuthor(node?.authorV2?.name),
     tags: (node?.tags || []).map((tag: unknown) =>
       typeof tag === 'string' && tag.trim().toUpperCase() === 'SAENGAK' ? 'LUCISSI CARE' : String(tag),
     ),

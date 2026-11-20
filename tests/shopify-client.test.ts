@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { articleBylineAuthor, displayArticleTags } from '../src/domain/storefrontCopy';
 import {
   formatShopifyProduct,
   getShopifyProduct,
@@ -279,6 +280,34 @@ describe('Shopify Storefront SDK Client', () => {
       expect(article.blog?.title).toBe('LUCISSI Talk');
       expect(article.author).toBe('LUCISSI CARE 編輯團隊');
       expect(article.tags).toEqual(['LUCISSI CARE', '公開']);
+    });
+  });
+
+  describe('displayArticleTags', () => {
+    it('hides the internal visibility tags but keeps topic tags in order', () => {
+      expect(displayArticleTags(['健康知識', '公開', '私密護理'])).toEqual(['健康知識', '私密護理']);
+      expect(displayArticleTags(['公開', ' 私密護理 '])).toEqual(['私密護理']);
+      expect(displayArticleTags(['LUCISSI CARE', 'SAENGAK', 'public', 'Public', ''])).toEqual([]);
+      expect(displayArticleTags(null)).toEqual([]);
+    });
+  });
+
+  describe('articleBylineAuthor', () => {
+    it('replaces Shopify staff account placeholders with the editorial team', () => {
+      for (const name of ['My Store 7 Admin', 'my store admin', 'Admin', 'Store Admin', '管理員', '', '  ', null, undefined]) {
+        expect(articleBylineAuthor(name), String(name)).toBe('LUCISSI CARE 編輯團隊');
+      }
+    });
+
+    it('keeps a real byline and rewrites the legacy store name', () => {
+      expect(articleBylineAuthor('林小姐')).toBe('林小姐');
+      expect(articleBylineAuthor('Adminton Lee')).toBe('Adminton Lee');
+      expect(articleBylineAuthor('SAENGAK 編輯團隊')).toBe('LUCISSI CARE 編輯團隊');
+    });
+
+    it('is applied when normalizing Shopify articles', () => {
+      const article = normalizeShopifyArticle({ id: 'a', title: 't', handle: 'h', publishedAt: '2026-11-14T00:00:00Z', authorV2: { name: 'My Store 7 Admin' }, tags: ['公開'] });
+      expect(article.author).toBe('LUCISSI CARE 編輯團隊');
     });
   });
 

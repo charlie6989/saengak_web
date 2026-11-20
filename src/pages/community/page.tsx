@@ -1,5 +1,6 @@
 import EditorialHero from '../../components/feature/EditorialHero';
 import { editorialImage, editorialImageAlt } from '../../content/editorialImages';
+import { displayArticleTags } from '../../domain/storefrontCopy';
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Link, useNavigate } from 'react-router-dom';
@@ -94,13 +95,13 @@ export default function Community() {
           id: article.id,
           title: article.title,
           excerpt: article.excerpt || article.contentHtml?.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...',
-          category: article.blog?.title || (article.tags && article.tags.length > 0 ? article.tags[0] : '精彩文章'),
+          category: article.blog?.title || displayArticleTags(article.tags)[0] || '精彩文章',
           author: article.author || 'LUCISSI CARE 編輯團隊',
           date: new Date(article.publishedAt).toLocaleDateString('zh-TW'),
           readTime: `${estimateReadingMinutes(article.contentHtml || article.excerpt || '')} 分鐘`,
           image: editorialImage(article.handle, article.image?.url),
           imageAlt: editorialImageAlt(article.handle, article.image?.altText, article.title),
-          tags: article.tags || [],
+          tags: displayArticleTags(article.tags),
           handle: article.handle,
           blogHandle: article.blog?.handle,
           url: `/blog/${article.handle}`,

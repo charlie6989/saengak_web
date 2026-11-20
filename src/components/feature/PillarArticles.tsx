@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getShopifyArticles } from '../../lib/shopify';
 import { editorialImage, editorialImageAlt } from '../../content/editorialImages';
+import { displayArticleTags } from '../../domain/storefrontCopy';
 import { TALK_FALLBACK_ARTICLES, type TalkArticlePreview } from '../../content/talkFallbackArticles';
 import type { CarePillar } from '../../content/carePillars';
 
@@ -30,7 +31,7 @@ export default function PillarArticles({ pillar, hasProducts }: { pillar: CarePi
               title: item.title,
               excerpt: item.excerpt || '',
               contentHtml: item.contentHtml || '',
-              tags: item.tags || [],
+              tags: displayArticleTags(item.tags),
               publishedAt: item.publishedAt,
               image: { url: editorialImage(item.handle, item.image?.url), altText: editorialImageAlt(item.handle, item.image?.altText, item.title) },
             }))

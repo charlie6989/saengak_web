@@ -1,4 +1,5 @@
 import { editorialImage, editorialImageAlt } from '../../content/editorialImages';
+import { displayArticleTags } from '../../domain/storefrontCopy';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/feature/Header';
@@ -28,7 +29,7 @@ export default function Home() {
             title: a.title,
             excerpt: a.excerpt || '',
             contentHtml: a.contentHtml || '',
-            tags: a.tags || [],
+            tags: displayArticleTags(a.tags),
             publishedAt: a.publishedAt,
             image: { url: editorialImage(a.handle, a.image?.url), altText: editorialImageAlt(a.handle, a.image?.altText, a.title) },
           })));
