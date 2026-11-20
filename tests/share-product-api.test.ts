@@ -40,7 +40,7 @@ describe('product share preview', () => {
   it('falls back to the site preview when the product is missing', () => {
     const meta = productShareMeta('1', null);
 
-    expect(meta.title).toBe('LUCISSI CARE｜私密保養・舒適內搭・生理期照護');
+    expect(meta.title).toBe('LUCISSI CARE｜私密處清潔保養・無痕內褲・生理褲');
     expect(meta.url).toBe('https://lucissicare.com/product/1');
     expect(meta.image.url).toBe('https://lucissicare.com/images/brand/og-image.png');
   });
@@ -73,7 +73,7 @@ describe('product share preview', () => {
 
     expect(fetchMock).not.toHaveBeenCalled();
     expect(response.status).toBe(200);
-    expect(await response.text()).toContain('LUCISSI CARE｜私密保養・舒適內搭・生理期照護');
+    expect(await response.text()).toContain('LUCISSI CARE｜私密處清潔保養・無痕內褲・生理褲');
   });
 
   it('keeps the site preview when shopify fails', async () => {
@@ -129,7 +129,7 @@ describe('article share preview', () => {
 
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: { articles: { nodes: [{ ...article, handle: 'draft-article', tags: ['草稿'] }] } } }))));
     html = await (await GET(new Request('https://lucissicare.com/api/share/product?article=draft-article'))).text();
-    expect(html).toContain('<meta property="og:title" content="LUCISSI CARE｜私密保養・舒適內搭・生理期照護" />');
+    expect(html).toContain('<meta property="og:title" content="LUCISSI CARE｜私密處清潔保養・無痕內褲・生理褲" />');
     expect(html).toContain('og:url" content="https://lucissicare.com/blog/draft-article"');
   });
 
@@ -151,6 +151,6 @@ describe('article share preview', () => {
     const response = await GET(new Request('https://lucissicare.com/api/share/product?article=..%2Fadmin'));
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(await response.text()).toContain('LUCISSI CARE｜私密保養・舒適內搭・生理期照護');
+    expect(await response.text()).toContain('LUCISSI CARE｜私密處清潔保養・無痕內褲・生理褲');
   });
 });

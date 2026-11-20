@@ -1,5 +1,16 @@
 # 項目狀態
 
+## 依關鍵字研究改標題、要求建立索引（2026-11-20）
+
+店主回覆「核可」「建立索引」：套用 [關鍵字研究](seo/2026-11-keyword-research.md) 第 6 節的標題，並在 Search Console 要求建立索引。
+
+- **Shopify（正式設定，已生效）**：Chrome 已登入的後台，逐件改 SEO 標題（SEO 說明、handle、商品名稱、文章標題沒動），寫入前比對雜湊。商品 6 件：潔淨慕斯、Saengak 凝膠、生理褲、隱形中腰無痕、除毛刀、護衣袋；文章 6 篇全部。前後值記在 `docs/shopify/seo-2026-11-20.json`。Saengak 凝膠的 SEO 標題保留原本就有的「益生菌」，沒有新增成分宣稱。
+- 已驗證：Storefront API 回讀 12/12 與清單一致，其他商品 SEO 沒變；正式站以 Googlebot UA 抓慕斯、生理褲、兩篇文章，`<title>` 已是新內容。
+- **程式（[PR #148](https://github.com/charlie6989/saengak_web/pull/148)，未合併、未部署）**：首頁、全部商品、三個照護入口（`CarePillar.seoTitle`，導覽名稱與 H1 不變）、`/community` 的標題。`/community` 的 seoTitle 把「LUCISSI Talk」放在開頭，因為 `formatPageTitle` 會去掉結尾的「｜LUCISSI Talk」。商品列表頁原本用分類名稱設定瀏覽器標題，改成和伺服器共用 `productListingTitle`。本機 typecheck、Vitest 826 項、verify:content、build 通過；dev server 確認五種列表與首頁的分頁標題。
+- **Search Console 要求建立索引**：已送出 4 個 `/blog/vaginal-discharge-normal-changes`、`/blog/intimate-odor-without-shame`（這兩篇原為「已發現 - 目前尚未建立索引」）、`/blog/intimate-cleansing-less-irritation`、`/blog/intimate-products-purpose-guide`（這兩篇已在 Google，要求重新檢索新標題）。清潔文章多按了一次「再次要求」。第 5 個 `/blog/recurrent-intimate-discomfort-follow-up` 出現「Quota exceeded」（每日配額用完），沒有送出。
+- 明天以後再送：`/blog/recurrent-intimate-discomfort-follow-up`、`/blog/intimate-care-trial-fatigue`、商品頁（慕斯 7819899994179、凝膠 7828435107907、生理褲 7811057942595、平口安全褲 7811245015107、隱形中腰 7811204743235）、`/community`；首頁與三個分類頁等 PR #148 部署後再送。
+- 未驗證：Google 何時採用新標題。
+
 ## 關鍵字研究與頁面對應（2026-11-20，只有文件）
 
 店主問網站的 SEO 關鍵字是否經過量化分析：沒有，之前的關鍵字是手寫標題。本輪完成量化研究：[docs/seo/2026-11-keyword-research.md](seo/2026-11-keyword-research.md)。
@@ -7,7 +18,7 @@
 - 資料：Search Console（唯讀）、Keyword Planner 台灣搜尋量區間（46 個字）、Google 搜尋趨勢、自動完成、18 組查詢的前 10 名搜尋結果，都在 2026-11-20 讀取。沒有估算任何搜尋量。
 - 主要發現：「私密處保養／私密處清潔」各 1k–10k，「私密保養」只有 100–1k；「內搭」在搜尋中指內搭褲；Google 只收錄 7 個網址，沒有商品頁和文章頁；Search Console 只有 2 天資料。
 - 沒有修改程式、Shopify SEO 欄位或帳號設定。Keyword Planner 在已關閉的 Google Ads 帳戶 932-481-3328 自動存了一份計畫（plan ID 1445653641，地區改為台灣），沒有建立廣告活動或付款；要不要刪除由店主決定。
-- 待辦：店主核可後再改標題（文件第 6 節）；在 Search Console 要求重要頁面建立索引；2026-12-16 前後用 28 天資料回測。
+- 待辦：標題與建立索引已於同日處理（見上一節）；2026-12-16 前後用 28 天資料回測。
 
 ## MEDION 凝膠改名、凝膠與濕巾盒裝規格（2026-11-20）
 

@@ -160,7 +160,7 @@ describe('route table', () => {
     for (const head of heads) expect(head.robots, head.canonicalPath).toBe('index,follow');
     expect(new Set(heads.map((head) => head.title)).size).toBe(indexable.length);
     expect(new Set(heads.map((head) => head.description)).size).toBe(indexable.length);
-    expect(seoForLocation('/').title).toBe('LUCISSI CARE｜私密保養・舒適內搭・生理期照護');
+    expect(seoForLocation('/').title).toBe('LUCISSI CARE｜私密處清潔保養・無痕內褲・生理褲');
     expect(seoForLocation('/faq').title).toBe('常見問題｜LUCISSI CARE');
   });
 
@@ -174,7 +174,13 @@ describe('route table', () => {
     expect(seoForLocation('/products', '?utm_source=line&sort=price').canonicalPath).toBe('/products');
     const category = seoForLocation('/products', '?category=私密保養&utm_source=line');
     expect(category.canonicalPath).toBe(`/products?category=${encodeURIComponent('私密保養')}`);
-    expect(category.title).toBe('私密保養｜LUCISSI CARE');
+    expect(category.title).toBe('私密處清潔與保養｜慕斯、凝膠、噴霧、濕巾｜LUCISSI CARE');
+    expect(seoForLocation('/products', '?category=舒適內搭').title).toBe('女生內褲｜無痕內褲、純棉內褲、安全褲｜LUCISSI CARE');
+    expect(seoForLocation('/products', '?category=貼身穿著').title).toBe('女生內褲｜無痕內褲、純棉內褲、安全褲｜LUCISSI CARE');
+    expect(seoForLocation('/products').title).toBe('全部商品｜私密處清潔保養、女生內褲與生理褲｜LUCISSI CARE');
+    expect(seoForLocation('/products', '?q=凝膠').title).toBe('搜尋: 凝膠｜LUCISSI CARE');
+    expect(seoForLocation('/community').title).toBe('LUCISSI Talk｜私密處保養與女性健康知識｜LUCISSI CARE');
+    expect(seoForLocation('/community').heading).toBe('LUCISSI Talk 私密對話');
     expect(category.robots).toBe('index,follow');
     expect(seoForLocation('/products', '?category=all').canonicalPath).toBe('/products');
     expect(seoForLocation('/products', '?collection=summer').canonicalPath).toBe('/products?collection=summer');
@@ -438,7 +444,7 @@ describe('product structured data', () => {
 describe('home, listing and article pages', () => {
   it('describes the store on the home page', async () => {
     const { html } = await render('/', { listing: { nodes: [{ id: 'gid://shopify/Product/2', title: '純棉內褲', handle: 'cotton', tags: [] }, { id: 'gid://shopify/Product/3', title: '金流驗收測試－請勿購買', tags: [] }] } });
-    expect(html).toContain('<title>LUCISSI CARE｜私密保養・舒適內搭・生理期照護</title>');
+    expect(html).toContain('<title>LUCISSI CARE｜私密處清潔保養・無痕內褲・生理褲</title>');
     const [organization, website] = jsonLdBlocks(html);
     expect(organization).toMatchObject({
       '@type': 'Organization',

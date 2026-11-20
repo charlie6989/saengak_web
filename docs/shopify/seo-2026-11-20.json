@@ -1,0 +1,82 @@
+{
+  "date": "2026-11-20",
+  "source": "docs/seo/2026-11-keyword-research.md 第 6 節，店主 2026-11-20 核可",
+  "method": "Chrome 已登入的 Shopify 後台，逐件修改 SEO 標題並儲存；寫入前比對雜湊；Storefront API 回讀 12/12 一致",
+  "field": "SEO 標題（seo.title）；SEO 說明、handle、商品名稱與文章標題都沒有改",
+  "products": [
+    {
+      "id": "7819899994179",
+      "name": "Saengak 平衡調理私密潔淨慕斯",
+      "before": "Saengak 私密潔淨慕斯 弱酸性 pH 5.5 無香料",
+      "after": "Saengak 私密處清潔慕斯 弱酸性 pH 5.5 無香料"
+    },
+    {
+      "id": "7828435107907",
+      "name": "Saengak 益生菌私密舒緩凝膠",
+      "before": "Saengak 益生菌私密舒緩凝膠 單支 1.8 g 無香料",
+      "after": "Saengak 益生菌私密凝膠 單支 1.8 g 無香料"
+    },
+    {
+      "id": "7811057942595",
+      "name": "純棉高腰防漏生理褲",
+      "before": "純棉高腰防漏生理褲 前後加長防漏層",
+      "after": "純棉高腰防漏生理褲（月經內褲）前後加長防漏層"
+    },
+    {
+      "id": "7811204743235",
+      "name": "隱形中腰無痕女內著",
+      "before": "隱形中腰無痕女內著 熱壓切邊 雙層底襠",
+      "after": "隱形中腰無痕內褲 熱壓切邊 雙層底襠"
+    },
+    {
+      "id": "7811151855683",
+      "name": "親膚安全私密除毛刀",
+      "before": "親膚安全私密除毛刀 比基尼線修整 護網刀頭",
+      "after": "私密處除毛刀 比基尼線修整 護網刀頭"
+    },
+    {
+      "id": "7811152674883",
+      "name": "精緻內著專用清洗護衣袋",
+      "before": "精緻內著專用清洗護衣袋 立體網布 拉鍊保護套",
+      "after": "內衣洗衣袋 立體網布 拉鍊保護套"
+    }
+  ],
+  "articles": [
+    {
+      "handle": "vaginal-discharge-normal-changes",
+      "title": "白帶有時透明、有時乳白，正常嗎？",
+      "before": "白帶正常嗎？分泌物顏色、氣味與就醫時機｜LUCISSI Talk",
+      "after": "白帶顏色正常嗎？分泌物變多、顏色與氣味變化，什麼時候該看醫生"
+    },
+    {
+      "handle": "recurrent-intimate-discomfort-follow-up",
+      "title": "反覆私密不適，回診要怎麼說？",
+      "before": "反覆私密不適，回診要怎麼說？整理症狀與用藥紀錄｜LUCISSI Talk",
+      "after": "私密處反覆不適要看什麼科？回診前整理症狀與用藥紀錄"
+    },
+    {
+      "handle": "intimate-cleansing-less-irritation",
+      "title": "私密處越洗越不舒服？先把清潔步驟減下來",
+      "before": "私密處越洗越不舒服？外陰清潔與減少刺激的日常原則｜LUCISSI CARE",
+      "after": "私密處清潔可以每天用嗎？外陰怎麼洗比較不刺激"
+    },
+    {
+      "handle": "intimate-products-purpose-guide",
+      "title": "益生菌、清潔慕斯、保濕凝膠怎麼分？先看用途，再看成分",
+      "before": "私密益生菌、清潔慕斯、保濕凝膠怎麼分？用途與部位指南｜LUCISSI CARE",
+      "after": "私密處益生菌、凝膠、清潔慕斯差在哪？口服與外用怎麼分"
+    },
+    {
+      "handle": "intimate-care-trial-fatigue",
+      "title": "保養、清潔都試過，還是不舒服？先整理這份用品紀錄",
+      "before": "私密保養試過很多仍不舒服？用品紀錄與回診準備｜LUCISSI CARE",
+      "after": "私密處需要保養嗎？用品太多時，先整理這份紀錄"
+    },
+    {
+      "handle": "intimate-odor-without-shame",
+      "title": "私密處一定要沒有氣味嗎？先看變化，不用追求香味",
+      "before": "私密處一定要沒有氣味嗎？分辨變化與就醫時機｜LUCISSI CARE",
+      "after": "私密處異味是什麼原因？味道變化怎麼觀察、什麼時候該就醫"
+    }
+  ]
+}
