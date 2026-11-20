@@ -4,7 +4,7 @@ import { isSealedCareProduct } from '../src/domain/returnPolicy';
 describe('sealed care products', () => {
   it.each([
     'Saengak 益生菌私密養膚濕巾',
-    'MEDION 乳酸菌私密保濕凝膠',
+    'MEDION 女性私密護理凝膠',
     'Saengak 平衡調理私密潔淨慕斯',
     'Saengak 私密雙層修護精華噴霧',
     'Saengak 全效微生態修護組',
