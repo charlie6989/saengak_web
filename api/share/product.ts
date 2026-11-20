@@ -1,5 +1,5 @@
 import { SHOPIFY_API_VERSION, SHOPIFY_STOREFRONT_PUBLIC_TOKEN, SHOPIFY_STORE_DOMAIN } from '../_lib/shopify-config.js';
-import { editorialShareImage } from '../../src/content/editorialImages.js';
+import { editorialImageAlt, editorialShareImage } from '../../src/content/editorialImages.js';
 import { hasPublicArticleTag, normalizeLegacyStorefrontCopy } from '../../src/domain/storefrontCopy.js';
 import { publicArticleSet, type CuratedArticle } from '../../src/content/curatedArticles.js';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL, formatPageTitle } from '../../src/lib/seo.js';
@@ -83,7 +83,7 @@ export function articleShareMeta(handle: string, article: StorefrontArticle | nu
   const title = normalizeLegacyStorefrontCopy(article.seo?.title?.trim() || article.title);
   const editorial = editorialShareImage(handle);
   const image = editorial
-    ? { url: `${SITE_URL}${editorial}`, width: 1200, height: 630, alt: title }
+    ? { url: `${SITE_URL}${editorial}`, width: 1200, height: 630, alt: editorialImageAlt(handle, null, title) }
     : article.image?.url
       ? { url: article.image.url, width: article.image.width, height: article.image.height, alt: normalizeLegacyStorefrontCopy(article.image.altText) || title }
       : SITE_IMAGE;

@@ -6,6 +6,7 @@
 import { hasTestProductMarker } from './testProducts.js';
 import { hasPublicArticleTag } from './storefrontCopy.js';
 import { publicArticleSet } from '../content/curatedArticles.js';
+import { editorialImage, editorialShareImage } from '../content/editorialImages.js';
 
 const SITE_URL = 'https://lucissicare.com';
 const PAGE_SIZE = 250;
@@ -76,6 +77,14 @@ export function sitemapArticles(shopifyArticles: SitemapArticle[] | null = null)
   });
 }
 
+/** 有登記編輯圖的文章列出主圖與預覽圖，讓圖片搜尋找得到；未登記的通用圖不列，避免多篇文章共用同一張。 */
+function articleImageTags(handle: string): string {
+  if (!editorialShareImage(handle)) return '';
+  return [editorialImage(handle, null, 'hero'), editorialImage(handle)]
+    .map((path) => `<image:image><image:loc>${escapeXml(`${SITE_URL}${path}`)}</image:loc></image:image>`)
+    .join('');
+}
+
 export function renderSitemap(products: SitemapProduct[], articles: SitemapArticle[] = sitemapArticles()): string {
   const staticUrls = STATIC_PATHS.map((path) => `  <url><loc>${escapeXml(`${SITE_URL}${path}`)}</loc></url>`);
   const productUrls = products.flatMap((product) => {
@@ -84,9 +93,9 @@ export function renderSitemap(products: SitemapProduct[], articles: SitemapArtic
     return [`  <url><loc>${SITE_URL}/product/${id}</loc>${lastmodTag(product.updatedAt)}</url>`];
   });
   const articleUrls = articles.map((article) =>
-    `  <url><loc>${SITE_URL}/blog/${escapeXml(article.handle)}</loc>${lastmodTag(article.publishedAt)}</url>`);
+    `  <url><loc>${SITE_URL}/blog/${escapeXml(article.handle)}</loc>${lastmodTag(article.publishedAt)}${articleImageTags(article.handle)}</url>`);
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${[...staticUrls, ...articleUrls, ...productUrls].join('\n')}
 </urlset>
 `;

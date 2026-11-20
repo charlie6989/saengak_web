@@ -149,6 +149,8 @@ for (const file of files) {
   let content = await readFile(file, 'utf8');
   // Allow the official support email
   content = content.replace(/service@lucissi\.com/gi, '');
+  // 英文醫學用字 vaginal（例：Shopify 文章網址 vaginal-discharge-normal-changes）不是舊品牌 VAGI
+  content = content.replace(/vaginal/gi, '');
   const relativePath = path.relative(projectRoot, file);
   for (const [label, needle, onlyUnder] of forbiddenContent) {
     if (onlyUnder && !relativePath.startsWith(onlyUnder)) continue;

@@ -1,5 +1,5 @@
 import EditorialHero from '../../components/feature/EditorialHero';
-import { editorialImage } from '../../content/editorialImages';
+import { editorialImage, editorialImageAlt } from '../../content/editorialImages';
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/feature/Header';
@@ -258,7 +258,7 @@ export default function BlogArticle() {
       <EditorialHero
         className="mt-24"
         image={coverImage}
-        alt={article.image?.altText || article.title}
+        alt={editorialImageAlt(article.handle, article.image?.altText, article.title)}
         eyebrow={`LUCISSI CARE JOURNAL · ${categoryName}`}
         title={article.title}
         description={article.excerpt || ''}
@@ -532,7 +532,8 @@ export default function BlogArticle() {
                         <div className="w-16 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                           <img
                             src={editorialImage(related.handle, related.image?.url)}
-                            alt={related.title}
+                            alt={editorialImageAlt(related.handle, related.image?.altText, related.title)}
+                            loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>

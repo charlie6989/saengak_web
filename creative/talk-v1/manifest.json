@@ -1,0 +1,312 @@
+{
+  "createdAt": "2026-11-20",
+  "model": "gpt-image-2",
+  "records": [
+    {
+      "id": "talk-thumb-discharge-cycle",
+      "topic": "白帶與月經週期",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-discharge-cycle.txt",
+      "scene": "A paper monthly cycle planner with blank grid squares on a pale oak desk, a few small dusty rose round stickers marking several days, a folded clean ivory cotton brief and a ceramic cup of warm tea beside it. Communicates gently noticing your own normal cycle. No writing on the planner."
+    },
+    {
+      "id": "talk-article-discharge-cycle",
+      "topic": "白帶與月經週期",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-discharge-cycle.txt",
+      "scene": "A paper monthly cycle planner with blank grid squares on a pale oak desk, a few small dusty rose round stickers marking several days, a folded clean ivory cotton brief and a ceramic cup of warm tea beside it. Communicates gently noticing your own normal cycle. No writing on the planner."
+    },
+    {
+      "id": "talk-thumb-clinic-follow-up",
+      "topic": "回診準備",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-clinic-follow-up.txt",
+      "scene": "An adult East Asian woman in an ivory knit sweater sitting calmly on a light wooden bench in a bright, quiet clinic waiting area, seen from a three-quarter side angle; her natural hands hold a smartphone showing only a plain blank note screen, and a plain unmarked white paper pharmacy bag rests on her lap. Soft blurred ivory walls, a muted sage plant. Prepared and composed, not anxious. No doctor, no medical equipment, no visible screen text."
+    },
+    {
+      "id": "talk-article-clinic-follow-up",
+      "topic": "回診準備",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-clinic-follow-up.txt",
+      "scene": "An adult East Asian woman in an ivory knit sweater sitting calmly on a light wooden bench in a bright, quiet clinic waiting area, seen from a three-quarter side angle; her natural hands hold a smartphone showing only a plain blank note screen, and a plain unmarked white paper pharmacy bag rests on her lap. Soft blurred ivory walls, a muted sage plant. Prepared and composed, not anxious. No doctor, no medical equipment, no visible screen text."
+    },
+    {
+      "id": "talk-thumb-gentle-cleansing",
+      "topic": "簡化外陰清潔",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-gentle-cleansing.txt",
+      "scene": "A minimal ivory bathroom ledge with only a soft folded dusty rose cotton towel, a small ceramic basin of clear lukewarm water and a single plain unlabeled cream pump bottle; at the far edge, a few extra bottles, scented wipes packet and a loofah have been gently moved aside into a woven basket, out of focus. Message: fewer steps, gentler care. Morning window shadows."
+    },
+    {
+      "id": "talk-article-gentle-cleansing",
+      "topic": "簡化外陰清潔",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-gentle-cleansing.txt",
+      "scene": "A minimal ivory bathroom ledge with only a soft folded dusty rose cotton towel, a small ceramic basin of clear lukewarm water and a single plain unlabeled cream pump bottle; at the far edge, a few extra bottles, scented wipes packet and a loofah have been gently moved aside into a woven basket, out of focus. Message: fewer steps, gentler care. Morning window shadows."
+    },
+    {
+      "id": "talk-thumb-products-by-purpose",
+      "topic": "依用途分辨私密用品",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-products-by-purpose.txt",
+      "scene": "Overhead flat lay on an ivory linen surface divided into three clearly separated pale rectangles of fabric (ivory, dusty rose, pale sage). On the first sits a small plain amber glass jar with a few capsules; on the second a plain matte white foam pump bottle; on the third a plain soft white squeeze tube. Each object unbranded and unlabeled, generous spacing, like a calm sorting guide. A natural adult hand gently placing the tube in its section."
+    },
+    {
+      "id": "talk-article-products-by-purpose",
+      "topic": "依用途分辨私密用品",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-products-by-purpose.txt",
+      "scene": "Overhead flat lay on an ivory linen surface divided into three clearly separated pale rectangles of fabric (ivory, dusty rose, pale sage). On the first sits a small plain amber glass jar with a few capsules; on the second a plain matte white foam pump bottle; on the third a plain soft white squeeze tube. Each object unbranded and unlabeled, generous spacing, like a calm sorting guide. A natural adult hand gently placing the tube in its section."
+    },
+    {
+      "id": "talk-thumb-product-log",
+      "topic": "私密用品使用紀錄",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-product-log.txt",
+      "scene": "Overhead view of an ivory table: an open notebook with a hand-ruled blank table grid (lines only, no writing), a plain wooden pencil, small blank dusty rose index tabs, and three small unlabeled packages lined up in a neat row above the notebook with blank paper tags. A natural adult hand drawing a straight line in the grid. Organised, calm, a little tired but in control. No readable text."
+    },
+    {
+      "id": "talk-article-product-log",
+      "topic": "私密用品使用紀錄",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-product-log.txt",
+      "scene": "Overhead view of an ivory table: an open notebook with a hand-ruled blank table grid (lines only, no writing), a plain wooden pencil, small blank dusty rose index tabs, and three small unlabeled packages lined up in a neat row above the notebook with blank paper tags. A natural adult hand drawing a straight line in the grid. Organised, calm, a little tired but in control. No readable text."
+    },
+    {
+      "id": "talk-thumb-odor-without-shame",
+      "topic": "私密氣味與日常",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-odor-without-shame.txt",
+      "scene": "A bright open window with a sheer linen curtain lifting in a soft breeze; on a pale oak drying rack beside it, clean breathable ivory and dusty rose cotton briefs hang to air-dry in the sunlight. Fresh air instead of fragrance. No perfume, no spray, no person. Airy, honest, unashamed everyday calm."
+    },
+    {
+      "id": "talk-article-odor-without-shame",
+      "topic": "私密氣味與日常",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-odor-without-shame.txt",
+      "scene": "A bright open window with a sheer linen curtain lifting in a soft breeze; on a pale oak drying rack beside it, clean breathable ivory and dusty rose cotton briefs hang to air-dry in the sunlight. Fresh air instead of fragrance. No perfume, no spray, no person. Airy, honest, unashamed everyday calm."
+    }
+  ],
+  "generator": "Codex CLI built-in image generation (ChatGPT sign-in), one call per prompt, 2026-11-20; source PNGs ~1672x941 kept outside Git",
+  "postProcess": "center crops via Pillow: thumb 1600x900, card 4:3 1200x900, square 900x900, share 1200x630 JPG (all from thumb); article 1600x900 from article",
+  "assets": [
+    {
+      "asset": "public/images/talk/thumb-discharge-cycle.webp",
+      "bytes": 113170,
+      "sha256": "3f48e0c20cb6532ea8ab2418bbc5315581c7830fc0490fd5d9ed2f56be38467f",
+      "source": "thumb",
+      "key": "discharge-cycle"
+    },
+    {
+      "asset": "public/images/talk/card-discharge-cycle.webp",
+      "bytes": 80064,
+      "sha256": "5385fe8b724337e7f2ac13a4e19035acf7e80b1ceff19f6789137beac1c38410",
+      "source": "thumb",
+      "key": "discharge-cycle"
+    },
+    {
+      "asset": "public/images/talk/square-discharge-cycle.webp",
+      "bytes": 51466,
+      "sha256": "cfaa88ec5a97fcb818cc8f401ae573071ac7dd07e03ae1424b6a48c970646a59",
+      "source": "thumb",
+      "key": "discharge-cycle"
+    },
+    {
+      "asset": "public/images/talk/article-discharge-cycle.webp",
+      "bytes": 63638,
+      "sha256": "e0364cade6383251b64b51880fd7e61c6227b2b2f916a16f4cc439a42dcdf46e",
+      "source": "article",
+      "key": "discharge-cycle"
+    },
+    {
+      "asset": "public/images/talk/share-discharge-cycle.jpg",
+      "bytes": 125045,
+      "sha256": "09cbff2f81f81d28dc9a6d81c2526a1101a5489b0360bbb4a18e3445c9790d0a",
+      "source": "thumb",
+      "key": "discharge-cycle"
+    },
+    {
+      "asset": "public/images/talk/thumb-clinic-follow-up.webp",
+      "bytes": 70086,
+      "sha256": "13517a2f612a2cbd5fe961176773c99020ac66acf0daab1916854136383caaa8",
+      "source": "thumb",
+      "key": "clinic-follow-up"
+    },
+    {
+      "asset": "public/images/talk/card-clinic-follow-up.webp",
+      "bytes": 61212,
+      "sha256": "68ebef2fcca2c2b13f4fe142c0a6d68e1ebad205acce3acfa70a7d09884efbd8",
+      "source": "thumb",
+      "key": "clinic-follow-up"
+    },
+    {
+      "asset": "public/images/talk/square-clinic-follow-up.webp",
+      "bytes": 50986,
+      "sha256": "3ebb065ce8b4451cdaf80ab403efee16aff9723dc923bdf0e93942ccdeae7aeb",
+      "source": "thumb",
+      "key": "clinic-follow-up"
+    },
+    {
+      "asset": "public/images/talk/article-clinic-follow-up.webp",
+      "bytes": 40464,
+      "sha256": "e7ee6534d312ce129d26c3f5e0146d57c1e43ae891e7387e7d6c819a7b9fecd0",
+      "source": "article",
+      "key": "clinic-follow-up"
+    },
+    {
+      "asset": "public/images/talk/share-clinic-follow-up.jpg",
+      "bytes": 90389,
+      "sha256": "72986600f8715671b777603681957cd13309990adb02e3ba20347e9ab5cf79b6",
+      "source": "thumb",
+      "key": "clinic-follow-up"
+    },
+    {
+      "asset": "public/images/talk/thumb-gentle-cleansing.webp",
+      "bytes": 69042,
+      "sha256": "3ca2b51083637edef12c1dcdf85f871738e4673107b41ed7e1397b71866829fc",
+      "source": "thumb",
+      "key": "gentle-cleansing"
+    },
+    {
+      "asset": "public/images/talk/card-gentle-cleansing.webp",
+      "bytes": 55608,
+      "sha256": "f469b4f636ad7d357c595dbd0b31f6228437b2c195e339d3380c1d8d2302eed3",
+      "source": "thumb",
+      "key": "gentle-cleansing"
+    },
+    {
+      "asset": "public/images/talk/square-gentle-cleansing.webp",
+      "bytes": 41600,
+      "sha256": "9e96580a8318bc0dd530387fcc436c1552426ccca2038c43caf32b4afa35f0cb",
+      "source": "thumb",
+      "key": "gentle-cleansing"
+    },
+    {
+      "asset": "public/images/talk/article-gentle-cleansing.webp",
+      "bytes": 50442,
+      "sha256": "14fde58ea87b11bc10c6be22fe55003bb3b5155fce461eb74cdf785bf2f9d058",
+      "source": "article",
+      "key": "gentle-cleansing"
+    },
+    {
+      "asset": "public/images/talk/share-gentle-cleansing.jpg",
+      "bytes": 87894,
+      "sha256": "e05dedca2a17e8860b63fcf77fdef18a7fe42b535dc84eb86eb23f05969f78d6",
+      "source": "thumb",
+      "key": "gentle-cleansing"
+    },
+    {
+      "asset": "public/images/talk/thumb-products-by-purpose.webp",
+      "bytes": 136736,
+      "sha256": "02b10a1069ea2017a9b959d6529631df8b964967d587273b3e7532360c95a762",
+      "source": "thumb",
+      "key": "products-by-purpose"
+    },
+    {
+      "asset": "public/images/talk/card-products-by-purpose.webp",
+      "bytes": 109744,
+      "sha256": "4752555092594a7e90d9d0b17683d98ccf04819e8c11d3876785b4e88f9ad617",
+      "source": "thumb",
+      "key": "products-by-purpose"
+    },
+    {
+      "asset": "public/images/talk/square-products-by-purpose.webp",
+      "bytes": 83280,
+      "sha256": "d3b0171a553a8f55e79761a2a5b6443b46a14801a427342c4f216e49cf46e642",
+      "source": "thumb",
+      "key": "products-by-purpose"
+    },
+    {
+      "asset": "public/images/talk/article-products-by-purpose.webp",
+      "bytes": 68716,
+      "sha256": "0385d11c7b9b36b6ab053934b408bd9c97fdd1498f287fa29dafb82190838c8f",
+      "source": "article",
+      "key": "products-by-purpose"
+    },
+    {
+      "asset": "public/images/talk/share-products-by-purpose.jpg",
+      "bytes": 112577,
+      "sha256": "858c86c204cd53195017e78fd6c30371e545883ed064197ca1f197e481b564c6",
+      "source": "thumb",
+      "key": "products-by-purpose"
+    },
+    {
+      "asset": "public/images/talk/thumb-product-log.webp",
+      "bytes": 111196,
+      "sha256": "4d97d13ddc68c8366ff2bf5b3af8860eb1a9b3ae49d730dabbc6f5ee396e1fb7",
+      "source": "thumb",
+      "key": "product-log"
+    },
+    {
+      "asset": "public/images/talk/card-product-log.webp",
+      "bytes": 74180,
+      "sha256": "90cc51fef93f0bd5f2fe84f3e903ce3788a9ab217cb48c1c3a7b971c5ff2051f",
+      "source": "thumb",
+      "key": "product-log"
+    },
+    {
+      "asset": "public/images/talk/square-product-log.webp",
+      "bytes": 45762,
+      "sha256": "c39a257fb2a130932331b8559320ce00d76f1f90f606df85ad856f1fa8108073",
+      "source": "thumb",
+      "key": "product-log"
+    },
+    {
+      "asset": "public/images/talk/article-product-log.webp",
+      "bytes": 56262,
+      "sha256": "206327c89b9f39b062e3de7f602d2b107951ba53bc1902355a8520f1321e86d6",
+      "source": "article",
+      "key": "product-log"
+    },
+    {
+      "asset": "public/images/talk/share-product-log.jpg",
+      "bytes": 116883,
+      "sha256": "105c1095f58f2e7f2f643159dbf423e252cb511730c5c1856a026add79950521",
+      "source": "thumb",
+      "key": "product-log"
+    },
+    {
+      "asset": "public/images/talk/thumb-odor-without-shame.webp",
+      "bytes": 97754,
+      "sha256": "daedd92863ff9250fed529b65c4287aaf0394c88bfb9d0de70483e3e8f18122a",
+      "source": "thumb",
+      "key": "odor-without-shame"
+    },
+    {
+      "asset": "public/images/talk/card-odor-without-shame.webp",
+      "bytes": 70162,
+      "sha256": "be278676db33e36aeb726c8cd171041bfcafaa3f8771f1316fd8265c25b86e61",
+      "source": "thumb",
+      "key": "odor-without-shame"
+    },
+    {
+      "asset": "public/images/talk/square-odor-without-shame.webp",
+      "bytes": 47308,
+      "sha256": "7eb0519d19839cae05170bcb7717508412726b8c0125f50b6785b800b0c3bf02",
+      "source": "thumb",
+      "key": "odor-without-shame"
+    },
+    {
+      "asset": "public/images/talk/article-odor-without-shame.webp",
+      "bytes": 64054,
+      "sha256": "9faeb3b510b4545214c8bf5d5a689048bc3bb6fcf2979711f4966b287c06185c",
+      "source": "article",
+      "key": "odor-without-shame"
+    },
+    {
+      "asset": "public/images/talk/share-odor-without-shame.jpg",
+      "bytes": 116355,
+      "sha256": "6437fe8aaad55f91560393fa95b59a8cd191a2f4350900de7af4b4e97273e9ca",
+      "source": "thumb",
+      "key": "odor-without-shame"
+    }
+  ],
+  "handles": {
+    "discharge-cycle": "vaginal-discharge-normal-changes",
+    "clinic-follow-up": "recurrent-intimate-discomfort-follow-up",
+    "gentle-cleansing": "intimate-cleansing-less-irritation",
+    "products-by-purpose": "intimate-products-purpose-guide",
+    "product-log": "intimate-care-trial-fatigue",
+    "odor-without-shame": "intimate-odor-without-shame"
+  }
+}
