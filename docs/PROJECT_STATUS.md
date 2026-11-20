@@ -1,12 +1,15 @@
 # 項目狀態
 
-## 新文章草稿：私密處清潔產品怎麼挑（2026-11-21，未上架）
+## 新文章：私密處清潔產品怎麼挑（2026-11-21 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 1 題撰寫：主要關鍵字「私密處清潔推薦」「私密處清潔」（各 1k–10k／月），也回答「私密處清潔可以每天用嗎」。草稿與 Shopify 欄位（標題、SEO、handle `intimate-cleanser-how-to-choose`、標籤）在 `docs/shopify/articles/2026-11-21-intimate-cleanser-how-to-choose.html`。
 - 依據：美國 Office on Women's Health〈Douching〉、Devon Sexual Health（Royal Devon NHS）〈Genital hygiene〉、英國皮膚科醫學會〈Vulval skincare〉（2023-05 版，原訂 2026-05 複審，未見新版）；2026-11-21 以網頁原文核對引用內容。原本想引用的 NHS〈Keeping your vagina clean and healthy〉已下架，未使用。商品敘述只用 Storefront 上的商品資料（慕斯 pH 5.5、無香料、外部使用；濕巾 pH 5.5、單片包裝）。皮膚科衛教不建議用清潔濕巾當日常清潔，文中照實寫出，濕巾定位為臨時沒有水時使用。
 - 檢查：`verify-public-content.mjs` 97 條封鎖詞無命中，也沒有治療、改善、止癢等療效用語。
 - 圖片：依內容生成 2 張，裁成 `public/images/talk/*-cleanser-choice.*`，並在 `editorialImages.ts` 預先登記 handle；Shopify 文章建立前這筆登記不會被用到。
-- 待辦：店主確認內容後，在 Shopify care-talk 建立文章（帶「公開」標籤），部署後驗證文章頁、分享預覽與 sitemap，再送 Search Console 與 `npm run submit:indexnow`。
+- 上架（正式設定）：店主 2026-11-21 回覆「Publish it」。先合併 PR #152（`621ea7b`，圖片上線），再以 Chrome 已登入的 Shopify 後台在「SAENGAK Talk」（handle `care-talk`）建立文章 635284291651，公開時間 2026-11-21 04:28（UTC+8）。值由雜湊比對過的 JSON 檔載入（標題、內文、摘要、SEO 標題與說明、handle），標籤用挑選器加入；作者欄位為預設的「My Store 7 Admin」，網站顯示 LUCISSI CARE 編輯團隊（PR #146）。
+- 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文只差空白換行（後台編輯器重新排版），正規化後一致；標籤：健康知識、公開、私密護理、選購指南。
+- 正式站驗證：Googlebot 取得 `<title>`「私密處清潔推薦怎麼看？無香料、弱酸性與慕斯、濕巾挑選重點｜LUCISSI CARE」、og:image `share-cleanser-choice.jpg` 與描述性 alt、BlogPosting 四張圖與組織作者；facebookexternalhit 取得相同 og:title／og:image；Chrome 打開文章頁：主圖載入、比較表與內部連結正常，標籤只顯示 #健康知識、#私密護理、#選購指南，沒有 My Store。
+- sitemap 在建置時產生，文章建立當下的 sitemap 還沒有這篇；本次文件 PR 合併觸發重新部署後補驗，再送 `npm run submit:indexnow`。Search Console 的「要求建立索引」未送（11/21 晚上的排程只含既有 12 頁）。
 
 ## Bing IndexNow 一次送出全部網址（2026-11-20）
 
