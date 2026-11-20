@@ -6,9 +6,10 @@
 
 - **Shopify（正式設定，已生效）**：Chrome 已登入的後台，逐件改 SEO 標題（SEO 說明、handle、商品名稱、文章標題沒動），寫入前比對雜湊。商品 6 件：潔淨慕斯、Saengak 凝膠、生理褲、隱形中腰無痕、除毛刀、護衣袋；文章 6 篇全部。前後值記在 `docs/shopify/seo-2026-11-20.json`。Saengak 凝膠的 SEO 標題保留原本就有的「益生菌」，沒有新增成分宣稱。
 - 已驗證：Storefront API 回讀 12/12 與清單一致，其他商品 SEO 沒變；正式站以 Googlebot UA 抓慕斯、生理褲、兩篇文章，`<title>` 已是新內容。
-- **程式（[PR #148](https://github.com/charlie6989/saengak_web/pull/148)，未合併、未部署）**：首頁、全部商品、三個照護入口（`CarePillar.seoTitle`，導覽名稱與 H1 不變）、`/community` 的標題。`/community` 的 seoTitle 把「LUCISSI Talk」放在開頭，因為 `formatPageTitle` 會去掉結尾的「｜LUCISSI Talk」。商品列表頁原本用分類名稱設定瀏覽器標題，改成和伺服器共用 `productListingTitle`。本機 typecheck、Vitest 826 項、verify:content、build 通過；dev server 確認五種列表與首頁的分頁標題。
+- **程式（[PR #148](https://github.com/charlie6989/saengak_web/pull/148)，2026-11-20 店主同意合併，已部署）**：首頁、全部商品、三個照護入口（`CarePillar.seoTitle`，導覽名稱與 H1 不變）、`/community` 的標題。`/community` 的 seoTitle 把「LUCISSI Talk」放在開頭，因為 `formatPageTitle` 會去掉結尾的「｜LUCISSI Talk」。商品列表頁原本用分類名稱設定瀏覽器標題，改成和伺服器共用 `productListingTitle`。本機 typecheck、Vitest 826 項、verify:content、build 通過；dev server 確認五種列表與首頁的分頁標題。
 - **Search Console 要求建立索引**：已送出 4 個 `/blog/vaginal-discharge-normal-changes`、`/blog/intimate-odor-without-shame`（這兩篇原為「已發現 - 目前尚未建立索引」）、`/blog/intimate-cleansing-less-irritation`、`/blog/intimate-products-purpose-guide`（這兩篇已在 Google，要求重新檢索新標題）。清潔文章多按了一次「再次要求」。第 5 個 `/blog/recurrent-intimate-discomfort-follow-up` 出現「Quota exceeded」（每日配額用完），沒有送出。
 - 明天以後再送：`/blog/recurrent-intimate-discomfort-follow-up`、`/blog/intimate-care-trial-fatigue`、商品頁（慕斯 7819899994179、凝膠 7828435107907、生理褲 7811057942595、平口安全褲 7811245015107、隱形中腰 7811204743235）、`/community`；首頁與三個分類頁等 PR #148 部署後再送。
+- 部署後驗證：以 Googlebot UA 抓正式站首頁、`/products`、三個分類頁與 `/community`，`<title>` 都是新標題（合併約 45 秒後生效）。
 - 未驗證：Google 何時採用新標題。
 
 ## 關鍵字研究與頁面對應（2026-11-20，只有文件）
