@@ -18,6 +18,11 @@ export interface CarePillar {
   name: string;
   eyebrow: string;
   title: string;
+  /**
+   * 分類頁的分頁標題（不含品牌後綴）。用搜尋者的說法，與顯示用的 name 分開；
+   * 依據 docs/seo/2026-11-keyword-research.md（2026-11-20 店主核可）。
+   */
+  seoTitle: string;
   description: string;
   /** 首頁入口圖卡的一句話。 */
   teaser: string;
@@ -47,6 +52,7 @@ export const CARE_PILLARS: CarePillar[] = [
     name: '私密保養',
     eyebrow: 'INTIMATE CARE',
     title: '私密保養，從溫和開始',
+    seoTitle: '私密處清潔與保養｜慕斯、凝膠、噴霧、濕巾',
     description: '清潔、舒緩、修護與除毛修整，依照自己的節奏，為私密日常多一點舒適與安心。',
     teaser: '清潔、舒緩、修護與除毛',
     heroImage: '/images/lucissi-v5/catalog-care.webp',
@@ -61,6 +67,7 @@ export const CARE_PILLARS: CarePillar[] = [
     name: '舒適內搭',
     eyebrow: 'EVERYDAY COMFORT',
     title: '貼身的，更要舒服',
+    seoTitle: '女生內褲｜無痕內褲、純棉內褲、安全褲',
     description: '無痕、純棉、生理期與運動時的內搭，每天貼近肌膚的選擇，回到自己的舒適感受。',
     teaser: '無痕、純棉、生理期與運動時的內搭',
     heroImage: '/images/lucissi-v5/catalog-comfort.webp',
@@ -75,6 +82,7 @@ export const CARE_PILLARS: CarePillar[] = [
     name: '生理期照護',
     eyebrow: 'PERIOD CARE',
     title: '生理期，也可以好好過',
+    seoTitle: '生理期用品｜生理褲、私密濕巾與隨身收納',
     description: '生理褲、清潔與舒緩，把生理期需要的放在一起，少一點擔心，多一點自在。',
     teaser: '生理褲、清潔與舒緩一次備齊',
     heroImage: '/images/lucissi-v5/catalog-feminine.webp',

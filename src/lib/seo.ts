@@ -9,7 +9,8 @@ import { findCarePillarByName, resolveCategoryName } from '../content/carePillar
 
 export const SITE_URL = 'https://lucissicare.com';
 export const SITE_NAME = 'LUCISSI CARE';
-export const SITE_TITLE = 'LUCISSI CARE｜私密保養・舒適內搭・生理期照護';
+/** 首頁標題：依 docs/seo/2026-11-keyword-research.md 改用搜尋者的說法（2026-11-20 店主核可）。 */
+export const SITE_TITLE = 'LUCISSI CARE｜私密處清潔保養・無痕內褲・生理褲';
 export const SITE_DESCRIPTION = 'LUCISSI CARE 是 LUCISSI 的日常照護系列：私密保養、舒適內搭與生理期照護，照顧貼近身體的每一天。';
 export const DEFAULT_SHARE_IMAGE = { url: `${SITE_URL}/images/brand/og-image.png`, width: 1200, height: 630, alt: SITE_NAME };
 /** Organization 的標誌：搜尋引擎要求點陣圖（至少 112×112）。 */
@@ -74,7 +75,7 @@ export function absoluteUrl(path: string): string {
   return new URL(path, SITE_URL).toString();
 }
 
-type StaticCopy = { heading: string; description: string };
+type StaticCopy = { heading: string; description: string; /** 分頁標題與 heading 不同時使用（不含品牌後綴）。 */ seoTitle?: string };
 
 /** 可被收錄的固定頁面。說明文字是顧客會在搜尋結果看到的內容，不提內部服務。 */
 const STATIC_PAGES: Record<string, StaticCopy> = {
@@ -122,11 +123,14 @@ const STATIC_PAGES: Record<string, StaticCopy> = {
 
 const PRODUCTS_COPY: StaticCopy = {
   heading: '全部商品',
+  seoTitle: '全部商品｜私密處清潔保養、女生內褲與生理褲',
   description: '瀏覽 LUCISSI CARE 全部商品：私密保養、舒適內搭與生理期照護，依分類挑選適合自己的日常用品。',
 };
 
 const ARTICLES_COPY: StaticCopy = {
   heading: 'LUCISSI Talk 私密對話',
+  // 「｜LUCISSI Talk」放在結尾會被 formatPageTitle 當成品牌後綴去掉，所以放在開頭
+  seoTitle: 'LUCISSI Talk｜私密處保養與女性健康知識',
   description: '閱讀 LUCISSI Talk：私密保養、貼身衣物與生理期日常的照護文章，由 LUCISSI CARE 編輯團隊整理。',
 };
 
@@ -207,6 +211,20 @@ function notFoundRoute(path: string, heading = '找不到頁面'): RouteSeo {
   });
 }
 
+/**
+ * 商品列表的分頁標題，伺服器路由表與瀏覽器的商品列表頁共用。
+ * 照護入口用 seoTitle，全部商品用 PRODUCTS_COPY.seoTitle；標籤、其他分類與搜尋沿用頁面標題。
+ */
+export function productListingTitle({ category = '', tag = '', query = '' }: { category?: string; tag?: string; query?: string }): string {
+  if (tag) return formatPageTitle(`標籤: ${tag}`);
+  const pillar = findCarePillarByName(category);
+  if (pillar) return formatPageTitle(pillar.seoTitle);
+  const categoryName = resolveCategoryName(category);
+  if (categoryName) return formatPageTitle(categoryName);
+  if (query) return formatPageTitle(`搜尋: ${query}`);
+  return formatPageTitle(PRODUCTS_COPY.seoTitle);
+}
+
 function productsRoute(search: string): RouteSeo {
   const params = new URLSearchParams(search);
   const rawCategory = (params.get('category') || '').trim();
@@ -228,6 +246,7 @@ function productsRoute(search: string): RouteSeo {
   const heading = tag ? `標籤: ${tag}` : categoryName || (searchTerm ? `搜尋: ${searchTerm}` : PRODUCTS_COPY.heading);
   const description = pillar ? pillar.description : PRODUCTS_COPY.description;
   return page('products', heading, description, canonicalPath, searchTerm || tag ? NOINDEX_FOLLOW_ROBOTS : INDEX_ROBOTS, {
+    title: productListingTitle({ category, tag, query: searchTerm }),
     ...(pillar ? { category: pillar.name } : {}),
   });
 }
@@ -270,7 +289,9 @@ export function seoForLocation(pathname: string, search = ''): RouteSeo {
   }
 
   if (path === '/community') {
-    return page('articles', ARTICLES_COPY.heading, ARTICLES_COPY.description, '/community', INDEX_ROBOTS);
+    return page('articles', ARTICLES_COPY.heading, ARTICLES_COPY.description, '/community', INDEX_ROBOTS, {
+      title: formatPageTitle(ARTICLES_COPY.seoTitle),
+    });
   }
   const blogHandle = path.match(/^\/blog\/([^/]+)$/)?.[1];
   if (blogHandle !== undefined) {

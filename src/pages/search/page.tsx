@@ -10,7 +10,7 @@ import { useShopifyProductsByTag } from '../../hooks/useShopifyTags';
 import type { Product } from '../../mocks/products';
 import { calculateSearchScore, deriveCatalogSignals, matchesVariantOption, paginateItems, sortAvailableFirst } from '../../domain/algorithms';
 import { getShopifyProducts } from '../../lib/shopify';
-import { formatPageTitle } from '../../lib/pageTitle';
+import { formatPageTitle, productListingTitle } from '../../lib/pageTitle';
 import { captureExceptionSafe } from '../../lib/sentry';
 import PillarArticles from '../../components/feature/PillarArticles';
 import { CARE_PILLARS, PRODUCT_TYPE_SUBCATEGORIES, SUBCATEGORY_DESCRIPTIONS, belongsToCarePillar, classifyCarePillar, findCarePillarByName, matchesCareSubcategory, resolveCategoryLink } from '../../content/carePillars';
@@ -422,17 +422,11 @@ export default function Search() {
     selectedSizes.length > 0 || selectedColors.length > 0 ||
     selectedBrands.length > 0 || priceRange[0] > 0 || priceRange[1] < 200000;
 
-  // 獲取當前頁面標題
-  const pageTitleText = (() => {
-    if (collection) return collection.title;
-    if (tag) return `標籤: ${tag}`;
-    if (category) return category;
-    if (q) return `搜尋: ${q}`;
-    return '全部商品';
-  })();
+  // 分類與全部商品用路由表的 SEO 標題（與伺服器一致），商品集合用集合名稱
+  const documentTitle = collection ? formatPageTitle(collection.title) : productListingTitle({ category, tag, query: q });
   useEffect(() => {
-    document.title = formatPageTitle(pageTitleText);
-  }, [pageTitleText]);
+    document.title = documentTitle;
+  }, [documentTitle]);
 
   const getPageTitle = () => {
     if (collection) {

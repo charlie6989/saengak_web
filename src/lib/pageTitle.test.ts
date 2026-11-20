@@ -4,7 +4,7 @@ import { NOINDEX_ROBOTS, SITE_TITLE, formatPageTitle, robotsForPath, titleForPat
 describe('page titles', () => {
   it('gives each route its own tab title', () => {
     expect(titleForPath('/')).toBe(SITE_TITLE);
-    expect(titleForPath('/products')).toBe('全部商品｜LUCISSI CARE');
+    expect(titleForPath('/products')).toBe('全部商品｜私密處清潔保養、女生內褲與生理褲｜LUCISSI CARE');
     expect(titleForPath('/product/7812559405123')).toBe('商品｜LUCISSI CARE');
     expect(titleForPath('/customer-service')).toBe('客服中心｜LUCISSI CARE');
     expect(titleForPath('/welcome')).toBe('歡迎｜LUCISSI CARE');
