@@ -70,7 +70,7 @@ describe('ShopifyDescriptionViewer 跨品類自適應卡（萬用通用商品模
   it('其他品牌的保養品（MEDION）保留成分規格卡與品牌名稱，但不掛 SAENGAK 品牌故事', () => {
     const html = renderToString(
       <ShopifyDescriptionViewer
-        productName="MEDION 乳酸菌私密保濕凝膠"
+        productName="MEDION 女性私密護理凝膠"
         category="女性護理"
         vendor="MEDION"
         careSpecs={{ volume: '單支 1.8 g（原廠盒裝 20 支）', origin: '韓國' }}

@@ -205,6 +205,9 @@
 - ShipAny 出貨由 Shopify 後台的 ShipAny App 管理。網站伺服器只為超商門市清單呼叫 ShipAny API（`api/_lib/shipany-pickup-points.ts`，`SHIPANY_CLIENT_KEY`＋輪替的 merchant／refresh token，加密存在 `private.shipany_api_tokens`）。
 - ShipAny 帳號與母站共用，訂閱（API 系統對接服務 Pro、物流服務點列表）是帳號層級。母站的標籤頁、自動出貨、門市清單都依賴 API，CARE 單方面改選店方式省不到訂閱費；2026-11-19 結論是兩個都保留（見 `docs/PROJECT_STATUS.md`「ShipAny 訂閱是否保留」）。
 - Sentry 的事件處理與資料清理在 `src/lib/sentry.ts`。
+- 品名不寫「乳酸菌」（2026-11-20 店主更正）：MEDION 凝膠成分是乳酸桿菌發酵溶胞產物，不是活菌，品名為「MEDION 女性私密護理凝膠」，只賣單支。成分可照 INCI 寫「發酵溶胞產物」。密封護理品的退貨告知依品名字詞判斷（`src/domain/returnPolicy.ts`），改名時要保留「凝膠」「濕巾」等字。
+- 盒裝 SKU 以 SKU 管理表（Google 試算表 `SKUs_list`）為準：舒緩凝膠盒裝 7 支 `ICC-ICG-6877-GRE-U-NA-LO`、養膚濕巾盒裝 15 片 `ICC-IWS-6878-GRE-U-NA-LO`（2026-11-10 定案，舊 `…-BX7` 已停用）。盒裝是獨立實體庫存，Shopify 售價＝件數 × 單價（2026-11-20 店主決定）。
+- CARE 庫存由 SiteGiant 依 SKU 連接同步：Shopify 規格 SKU 要等於 SiteGiant 庫存 SKU。新增規格後要在 SiteGiant「Shopify 列表」同步該商品，再到「庫存連接」選 Shopify - LUCISSI CARE 連接，並在「審核草稿列表」確認保存，否則 CARE 顯示的是 Shopify 自己的數字（2026-11-20 濕巾單片曾顯示 557、實際 106）。
 - 網站伺服器以 Shopify 自訂 App「SAENGAK Order Sync」（Dev Dashboard app 411199766529）的 `SHOPIFY_APP_CLIENT_ID`／`SHOPIFY_APP_CLIENT_SECRET` 走 client credentials 取得 Admin API token（`api/shopify/discounts.ts` 的 `getShopifyAdminAccessToken`），用於折扣、顧客、訂單取消與 COD 貨件核對。網站不讀寫運送設定；2026-11-19 起 App 版本 v4 已移除 `read_shipping`、`write_shipping`（2027-07-01「市場」運送移轉），之後不要加回，也不要用這組金鑰呼叫 `deliveryProfile*`。
 - Vercel CLI 不再是 devDependency（其 `@vercel/*` → ts-morph → fast-glob 會帶入沒有修補版本的 `braces`，最新 64.x 仍是如此）；`npm run dev:vercel` 以 `npx --yes vercel@64 dev` 執行。原本只為 Vercel CLI 依賴樹存在的 `overrides` 已全部移除。
 - 若之後需要 `overrides`，必須同時被 npm 10（CI 的 Node 22）與 npm 11 的 `npm ci` 接受：npm 10 對部分以版本為鍵的 override 會誤判 lock 不同步。修改後以乾淨目錄的 `npx npm@10.9.4 ci --ignore-scripts` 與 `npm ci` 驗證，不要用 npm 10 重建 lock。

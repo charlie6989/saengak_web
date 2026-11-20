@@ -1,5 +1,31 @@
 # 項目狀態
 
+## MEDION 凝膠改名、凝膠與濕巾盒裝規格（2026-11-20）
+
+店主要求凝膠與部分護理品加上盒裝規格；之後決定 MEDION 凝膠不賣盒裝，並指出品名不應是「乳酸菌」。
+
+- 查核：原廠外盒（商品說明內 2 張原廠包裝圖）品名為「MEDION Lacto Remedy Lady's Inner Care Gel 2.0」，1.8 g × 20 ea；成分是乳酸桿菌**發酵溶胞產物**（Lactobacillus Ferment Lysate），不是活的乳酸菌。母站同一個 SKU `W-BAT-3176-WHI-U-NA-LO` 標為「私密淨化凝膠 10支/盒」NT$99、重量 0.1 kg；CARE 標「單支 1.8 g」NT$99、5 g。兩站對同一 SKU 的件數說法不一致，未處理（店主決定 CARE 維持單支、不賣盒裝）。
+- Shopify（正式設定，Chrome 已登入後台）：品名改為「MEDION 女性私密護理凝膠」（照原廠名 Lady's Inner Care Gel，店主選定）；SEO 標題改為「MEDION 女性私密護理凝膠 單支 1.8 g」；3 張商品圖替代文字的品名同步改。網址 handle、規格、SKU、價格、庫存、說明、副標、成分卡、標籤（含「乳酸菌發酵」）都沒改。
+- 已驗證：Storefront API 回讀品名、SEO 標題、3 張圖替代文字都是新值；正式站 `/product/7811130785859` 以 Googlebot UA 抓取，`<title>` 與 `og:title` 為「MEDION 女性私密護理凝膠 單支 1.8 g｜LUCISSI CARE」。新品名仍含「凝膠」，密封護理品退貨告知照常顯示（`src/domain/returnPolicy.ts`）。
+- 盒裝規格（店主要求「直接用數量做價格」，正式設定，Chrome 已登入 Shopify 後台）：
+
+  | 商品 | 新規格 | SKU | 售價 | 原價 | 重量 | Shopify 庫存 |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | Saengak 益生菌私密舒緩凝膠 | 盒裝 (1.8g × 7支) | `ICC-ICG-6877-GRE-U-NA-LO` | NT$623（7 × 89） | NT$763（7 × 109） | 60 g（估算） | 由 SiteGiant 同步（280） |
+  | Saengak 益生菌私密養膚濕巾 | 盒裝 (15片入) | `ICC-IWS-6878-GRE-U-NA-LO` | NT$300（15 × 20） | 無 | 150 g（估算） | 由 SiteGiant 同步（72） |
+
+  - SKU 來源：SKU 管理表（Google 試算表 `SKUs_list`，第 6749–6750 列，2026-11-10 店主確認）。凝膠盒裝原為 `ICC-ICG-5136-GRE-U-NA-LO-BX7`，2026-11-10 改為標準命名，SiteGiant 舊 BX7 貨品已設不活躍；本輪一度誤填 BX7，同日已改正。兩者都是獨立實體庫存，首批入庫 PI HLBBC-20260921（#PO-1900）：凝膠 300 盒、濕巾 80 盒（表上備註，SiteGiant 未回讀）。
+  - 盒數來源：NAS 原廠產品表 `/saengak_kr/saengak products_details_2025 (3).pdf`（凝膠 1.8g x 7ea、濕巾 6g x 15sheet）。
+  - 已驗證：Storefront API 回讀兩個商品各兩個規格、上列 SKU／價格／重量；盒裝庫存 0、顯示缺貨。三個組合商品仍只有一個規格、可售數量不變（32／30／16）。正式站兩個商品頁都顯示「單支／單片」與「盒裝（缺貨）」兩個選項。
+  - SiteGiant 實際庫存（2026-11-20 Chrome 回讀「庫存列表」）：凝膠盒裝 `ICC-ICG-6877-GRE-U-NA-LO` 可售 280、濕巾盒裝 `ICC-IWS-6878-GRE-U-NA-LO` 可售 72，原本都沒有連結任何通路；濕巾單品 `ICC-IWS-5137-GRE-14-NA-LO` 可售 106（手上 114、分配 8），原本只連 Cyberbiz、兩個蝦皮店、酷澎，沒有 CARE，CARE 單片當時顯示 557。凝膠單支、噴霧、慕斯與 CARE 數字一致。
+  - 庫存連接（店主同意「連上三個」，正式設定）：
+    1. Shopify 濕巾單片 SKU 由 `SG-DC-WIPES-1PC` 改為 SiteGiant 的 `ICC-IWS-5137-GRE-14-NA-LO`（比照凝膠單支用同一 SKU）。
+    2. SiteGiant「Shopify 列表」對 CARE 的濕巾、凝膠兩件商品「同步已選」，兩件都變成 2 個選項並帶入新 SKU。
+    3. 「批量庫存連接」選 Shopify - LUCISSI CARE：濕巾單片 → `ICC-IWS-5137-GRE-14-NA-LO`、濕巾盒裝 → `ICC-IWS-6878-GRE-U-NA-LO`、凝膠盒裝 → `ICC-ICG-6877-GRE-U-NA-LO`；在「審核草稿列表」確認並保存（草稿只有這 3 筆）。
+  - 已驗證：約 1 分鐘後 Storefront API 回讀 CARE 可售量：濕巾單片 106、濕巾盒裝 72、凝膠單支 32、凝膠盒裝 280；SiteGiant 列表數變為 6877／6878 各 1、5137 為 5。正式站兩個商品頁的盒裝選項不再顯示缺貨。三個組合商品可售量不變（32／30／16）。
+  - 單支與盒裝是不同 SKU、不同庫存，賣出一盒不扣單支；拆盒要在 SiteGiant 做庫存調整。
+  - 未驗證：還沒有真實盒裝訂單確認 SiteGiant 扣的是盒裝庫存；CARE「沒有庫存連接」仍有其他商品（例如 XL／XXL 睡衣尺碼、組合商品、`SG-DC-CLEANSER-200ML` 草稿），本輪未處理。
+
 ## LUCISSI Talk 文章圖片依內容重做（2026-11-20）
 
 - 問題：Shopify 6 篇 care-talk 文章都沒有設定文章圖，`editorialImages.ts` 只登記了 3 篇舊精選文章，因此列表、首頁、面向頁、文章主圖、og:image 與 BlogPosting 都退回同一張「編輯審查」圖。
@@ -136,8 +162,8 @@
 | 精緻內著專用清洗護衣袋 | 60 g |
 | 親膚安全私密除毛刀 | 30 g |
 | 益生菌私密養膚濕巾（單片） | 8 g |
-| MEDION 乳酸菌私密保濕凝膠（單支） | 5 g |
-| 益生菌私密舒緩凝膠（單支） | 維持原本的 1.8 g，未改 |
+| MEDION 女性私密護理凝膠（單支；2026-11-20 前名為「乳酸菌私密保濕凝膠」） | 5 g |
+| 益生菌私密舒緩凝膠（單支） | 維持原本的 1.8 g，未改；2026-11-20 新增盒裝 7 支 60 g、濕巾盒裝 15 片 150 g |
 
 未處理或未驗證：
 - 三個組合商品（益生菌舒緩養膚組、潔淨調理舒緩組、全效微生態修護組）是 Shopify 套裝。後台重量欄不能編輯，Storefront 讀回為 0。訂單與 SiteGiant 會不會改用組件重量，要等第一筆含組合的訂單才能確認。
