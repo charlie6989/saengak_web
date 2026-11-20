@@ -62,6 +62,7 @@
     "verify:binding:supabase": "node scripts/verify-project-binding.mjs --scope supabase",
     "verify:binding:vercel": "node scripts/verify-project-binding.mjs --scope vercel",
     "verify:content": "node scripts/verify-public-content.mjs",
+    "submit:indexnow": "node scripts/submit-indexnow.mjs",
     "verify:commerce": "node scripts/verify-commerce-sandbox.mjs",
     "verify:production": "node scripts/verify-production-surface.mjs",
     "verify:supabase": "node scripts/verify-supabase-baseline.mjs",

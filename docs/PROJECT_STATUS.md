@@ -1,5 +1,12 @@
 # 項目狀態
 
+## Bing IndexNow 一次送出全部網址（2026-11-20）
+
+- 店主要求 Bing 一次送出全部網址（Google 的「要求建立索引」每日配額無法提高，見 Search Console 一節）。
+- 程式：`public/1ef4c0132396ef415cb2a3f9269d845c.txt` 是 IndexNow 金鑰檔（內容即金鑰，依協定公開，不是秘密）；有副檔名的路徑不經 middleware，與 `robots.txt` 相同直接回靜態檔。`npm run submit:indexnow` 讀正式站 `sitemap.xml` 的頁面網址（不含 `image:loc`），先確認正式站金鑰檔內容相符，再 POST 到 `https://www.bing.com/indexnow`；`-- --dry-run` 只列網址。
+- 執行結果：待部署後補記。
+- 之後新增或大改頁面時可再執行一次；IndexNow 只影響 Bing 等支援的搜尋引擎，不影響 Google。
+
 ## 依關鍵字研究改標題、要求建立索引（2026-11-20）
 
 店主回覆「核可」「建立索引」：套用 [關鍵字研究](seo/2026-11-keyword-research.md) 第 6 節的標題，並在 Search Console 要求建立索引。
