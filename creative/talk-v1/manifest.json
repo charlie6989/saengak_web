@@ -99,6 +99,24 @@
       "placement": "LUCISSI Talk 文章主圖",
       "promptFile": "creative/talk-v1/article-cleanser-choice.txt",
       "scene": "On a pale ivory bathroom ledge, three unbranded cleansing formats stand side by side with generous spacing: a plain matte white foam pump bottle with a small soft dome of white foam beside it on a ceramic dish, a plain frosted clear liquid cleanser bottle, and two small plain individually wrapped wipe sachets in muted dusty rose. A natural adult hand holds a fourth plain bottle turned to its back, as if reading the label; the label area is blank with no letters. A folded soft ivory towel at the edge. Calm, considered product comparison, morning window light. No text, no logos, no brand names."
+    },
+    {
+      "id": "talk-thumb-seamless-fit",
+      "topic": "無痕內褲缺點",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-seamless-fit.txt",
+      "scene": "On a pale oak dresser top, two plain unbranded women's briefs are laid flat side by side with generous spacing, viewed from a gentle three-quarter overhead angle: one smooth seamless brief in muted dusty rose with thin, clean laser-cut raw edges at the waist and leg openings and no elastic band, and one soft ivory cotton brief with a visibly stitched elastic waistband for contrast. A soft ivory fabric tape measure lies loosely coiled between them, and a folded fine white mesh laundry bag rests at the edge. A natural adult hand gently lifts the edge of the seamless brief to show how thin and flat the cut edge is. Calm, practical comparison of fabric, edge finish and fit, morning window light. No text, no numbers on the tape measure, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-22",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-article-seamless-fit",
+      "topic": "無痕內褲缺點",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-seamless-fit.txt",
+      "scene": "On a pale oak dresser top, two plain unbranded women's briefs are laid flat side by side with generous spacing, viewed from a gentle three-quarter overhead angle: one smooth seamless brief in muted dusty rose with thin, clean laser-cut raw edges at the waist and leg openings and no elastic band, and one soft ivory cotton brief with a visibly stitched elastic waistband for contrast. A soft ivory fabric tape measure lies loosely coiled between them, and a folded fine white mesh laundry bag rests at the edge. A natural adult hand gently lifts the edge of the seamless brief to show how thin and flat the cut edge is. Calm, practical comparison of fabric, edge finish and fit, morning window light. No text, no numbers on the tape measure, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-22",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
     }
   ],
   "generator": "Codex CLI built-in image generation (ChatGPT sign-in), one call per prompt, 2026-11-20; source PNGs ~1672x941 kept outside Git",
@@ -348,6 +366,41 @@
       "sha256": "bbdca371a8d0c0c628b55feceb7b1b335e80347915cfcce7dea1502e54570eb1",
       "source": "thumb",
       "key": "cleanser-choice"
+    },
+    {
+      "asset": "public/images/talk/thumb-seamless-fit.webp",
+      "bytes": 120988,
+      "sha256": "950a9d810e8368dc5d27fc8605c417cffac5bcbe525c0094aa41e4906a17bce0",
+      "source": "thumb",
+      "key": "seamless-fit"
+    },
+    {
+      "asset": "public/images/talk/card-seamless-fit.webp",
+      "bytes": 85120,
+      "sha256": "6d934e96f4a1e240e6d6a5442b91af4e7d25117fa113b66e63b4d9ef23c8202e",
+      "source": "thumb",
+      "key": "seamless-fit"
+    },
+    {
+      "asset": "public/images/talk/square-seamless-fit.webp",
+      "bytes": 62628,
+      "sha256": "c3968e85b91b6deaaad9c448b93db2432ab878948ec0cd58450b9b1b8ca3c896",
+      "source": "thumb",
+      "key": "seamless-fit"
+    },
+    {
+      "asset": "public/images/talk/article-seamless-fit.webp",
+      "bytes": 71292,
+      "sha256": "59ba080d560faa615acd09b4a4423218677e9ee38ff0bc82b36d14f9c01ac2bf",
+      "source": "article",
+      "key": "seamless-fit"
+    },
+    {
+      "asset": "public/images/talk/share-seamless-fit.jpg",
+      "bytes": 126846,
+      "sha256": "2997a693bc4f44549afb1b4841652a091f56f657d35964d151efebee051b0c6d",
+      "source": "thumb",
+      "key": "seamless-fit"
     }
   ],
   "handles": {
@@ -357,6 +410,7 @@
     "products-by-purpose": "intimate-products-purpose-guide",
     "product-log": "intimate-care-trial-fatigue",
     "odor-without-shame": "intimate-odor-without-shame",
-    "cleanser-choice": "intimate-cleanser-how-to-choose"
+    "cleanser-choice": "intimate-cleanser-how-to-choose",
+    "seamless-fit": "seamless-underwear-pros-cons"
   }
 }

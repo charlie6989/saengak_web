@@ -18,6 +18,7 @@ const TALK_HANDLES = [
   'intimate-care-trial-fatigue',
   'intimate-odor-without-shame',
   'intimate-cleanser-how-to-choose',
+  'seamless-underwear-pros-cons',
 ];
 const CURATED_HANDLES = ['daily-feminine-care-guide', 'how-to-choose-seamless-underwear', 'how-we-review-products-and-content'];
 
