@@ -1,5 +1,18 @@
 # 項目狀態
 
+## 部署後舊分頁點進其他頁面出現「頁面載入發生異常」（2026-11-23，本分支）
+
+- 回報：店主 2026-11-23 回報「點擊進去看到錯誤」（沒有附畫面）。
+- 檢查（正式站，Chrome）：重新開首頁後點全部商品、三個分類、LUCISSI Talk 與頁尾各頁，都沒有出現錯誤頁。
+- 推測原因（與回報吻合但未直接證實）：每次部署後前一版的 JS 分塊回 404（例：`/assets/index-DoMpwZSl.js` 在下一次部署後 404）。部署前就開著的分頁換頁時載入不到新頁面的程式，Error Boundary 顯示「頁面載入發生異常」，按「重新嘗試」也無效（`lazy()` 會記住失敗結果）。11/22–11/23 部署了十幾次，開著的分頁很容易碰到。
+- 修正（程式碼）：
+  - 新增 `src/lib/staleChunk.ts`：辨識 Chrome、Firefox、Safari 的動態 import 失敗訊息與 Vite 預載 CSS 失敗；重新載入一次，以 sessionStorage 記錄時間，30 秒內不再重載（避免無限循環）；無法使用 sessionStorage 時不重載、顯示錯誤頁。
+  - `ErrorBoundary`：這類錯誤改為顯示「網站已更新，正在重新載入…」並重載，不回報 Sentry。
+  - `src/main.tsx`：監聽 `vite:preloadError`，同樣重載一次。
+- 驗證（本機）：`tests/stale-chunk.test.ts` 4 項；typecheck、Vitest 850 項、build、`verify:content` 通過。正式版 build 以 `vite preview` 模擬部署：開首頁後刪掉條款頁的分塊，點頁尾「條款和協議」→ 頁面自動重新載入一次（navigation type 為 reload）；因模擬中檔案仍不存在，重載後顯示錯誤頁而沒有無限重載。
+- 另一個做法（未做）：Vercel 的 Skew Protection 可讓舊分頁繼續取得舊版檔案，屬專案設定與方案功能，需店主決定。
+- 未完成：尚未合併部署；店主看到的錯誤是否就是這個原因，需店主確認畫面或錯誤追蹤碼。
+
 ## Bing 建議：標題、說明與內容不足（2026-11-23，PR #184 已上線）
 
 - Bing Webmaster Tools 建議（2026-11-23 02:40 讀取，各項列出的頁面）：
