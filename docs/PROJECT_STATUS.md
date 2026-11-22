@@ -1,13 +1,16 @@
 # 項目狀態
 
-## 新文章草稿：安全褲還要穿內褲嗎（2026-11-22，待店主確認，未上架）
+## 新文章：安全褲還要穿內褲嗎（2026-11-22 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 4 題撰寫：主要關鍵字「安全褲」（1k–10k／月）、「安全褲推薦」（100–1k），回答自動完成的「安全褲還要穿內褲嗎」「安全褲要穿內褲嗎」「安全褲可以當內褲穿嗎」「安全褲可以單穿嗎」（2026-11-22 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-safety-shorts-underwear.html`，handle `safety-shorts-underwear`，標籤「選購指南、生活美學、公開」（會出現在舒適內搭入口）。
 - 重點：能不能單穿先看褲底有沒有貼身底襠；貼身那層照內褲原則（純棉、每天換），大腿外層防摩擦選貼身、吸濕排汗的布料，兩者分工。
 - 依據：Cleveland Clinic〈5 Underwear Tips To Avoid Problems Down There〉（2025-03-19）、〈8 Tips To Prevent Chafing〉（2025-07-24）；2026-11-22 以網頁原文核對。兩篇對棉的看法看似相反（貼身建議純棉；流汗多時防摩擦建議避開厚重棉布），文中照實寫出並說明是不同部位。兩篇都沒有談「內褲外再加一層短褲」，文中的疊穿建議標示為依原則推論。
 - 商品敘述只用 Storefront 上的商品資料。「冰絲無痕平口安全褲」現行商品頁沒有纖維成分與底襠材質（2026-10-19 快照的「雙層純棉底襠」重點已不在現行 metafield），文中照實寫「商品頁沒有標示」，建議在意材質者內搭純棉內褲；商品標籤「涼感防磨」未在說明出現，文中不寫防磨。
 - 檢查：`verify-public-content.mjs` 通過，沒有治療、改善、止癢、抗菌等用語。圖片：Codex CLI 0.163.0 內建生圖各 1 張，裁成 `public/images/talk/*-safety-shorts.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle，Shopify 文章建立前不會被用到。typecheck、Vitest 833 項通過。
-- 尚未做：Shopify 建立文章、sitemap／IndexNow／Search Console 送出，都等店主確認草稿。
+- 上架（正式設定）：店主 2026-11-22 回覆「照草稿上架」。PR #165 合併（`7d14cbe`，圖片上線）；在 Shopify「SAENGAK Talk」建立文章 635297660995，公開時間 2026-11-22 21:09（UTC+8），做法與前兩篇相同（雜湊比對過的 JSON 檔、HTML 模式寫入內文與摘要、挑選器加標籤）。
+- 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：公開、生活美學、選購指南。
+- 正式站驗證：Googlebot 取得 `<title>`「安全褲還要穿內褲嗎？可以單穿嗎、平口冰絲安全褲怎麼選｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-safety-shorts.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、對照表與內部連結正常，標籤 #生活美學、#選購指南，作者 LUCISSI CARE 編輯團隊，沒有 console 錯誤。
+- sitemap 在建置時產生，文章建立時正式站仍是 50 個網址；本狀態文件合併後重新部署才會列入，之後送 IndexNow 與 Search Console。
 
 ## 新文章：生理褲是什麼（2026-11-22 上架）
 
