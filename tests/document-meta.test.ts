@@ -70,7 +70,7 @@ describe('browser head updates', () => {
     expect(head.querySelector('link[rel="canonical"]')?.href).toBe('https://lucissicare.com/products');
 
     applyRouteSeo('/faq', '');
-    expect(fakeDocument.title).toBe('常見問題｜LUCISSI CARE');
+    expect(fakeDocument.title).toBe('常見問題｜訂購、付款、配送與退換貨｜LUCISSI CARE');
     expect(meta('description')).toContain('常見問題');
     expect(meta('og:description')).toBe(meta('description'));
     expect(meta('og:url')).toBe('https://lucissicare.com/faq');

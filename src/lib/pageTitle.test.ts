@@ -6,7 +6,7 @@ describe('page titles', () => {
     expect(titleForPath('/')).toBe(SITE_TITLE);
     expect(titleForPath('/products')).toBe('全部商品｜私密處清潔保養、女生內褲與生理褲｜LUCISSI CARE');
     expect(titleForPath('/product/7812559405123')).toBe('商品｜LUCISSI CARE');
-    expect(titleForPath('/customer-service')).toBe('客服中心｜LUCISSI CARE');
+    expect(titleForPath('/customer-service')).toBe('客服中心｜訂單、配送與退換貨問題聯絡方式｜LUCISSI CARE');
     expect(titleForPath('/welcome')).toBe('歡迎｜LUCISSI CARE');
     expect(titleForPath('/auth/confirm')).toBe('登入驗證｜LUCISSI CARE');
     expect(titleForPath('/no-such-page')).toBe('找不到頁面｜LUCISSI CARE');

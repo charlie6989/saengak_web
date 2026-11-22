@@ -175,6 +175,19 @@ async function articleHead(base: RenderedHead, route: RouteSeo, options: Storefr
   };
 }
 
+/** 固定頁面的伺服器 HTML 附上常用頁面連結，未執行 JavaScript 的爬蟲也能看到內容與站內連結。 */
+const SERVICE_LINKS: PageLink[] = [
+  { name: '全部商品', url: '/products' },
+  { name: 'LUCISSI Talk 私密對話', url: '/community' },
+  { name: '優惠活動', url: '/promotion' },
+  { name: '常見問題', url: '/faq' },
+  { name: '退換貨說明', url: '/return-policy' },
+  { name: '客服中心', url: '/customer-service' },
+  { name: '隱私權政策', url: '/privacy' },
+  { name: '條款和協議', url: '/terms' },
+];
+const serviceLinks = (currentPath: string): PageLink[] => SERVICE_LINKS.filter((item) => item.url !== currentPath);
+
 async function listingLinks(route: RouteSeo, options: StorefrontOptions): Promise<PageLink[]> {
   const products = await fetchListingProducts(options).catch(() => []);
   const pillar = findCarePillarByName(route.category);
@@ -225,7 +238,7 @@ export async function documentHeadFor(url: URL, fetchImpl: typeof fetch = fetch)
     case 'article':
       return articleHead(base, route, options);
     case 'static':
-      return { ...base, fallback: { heading: route.heading, summary: route.description, breadcrumbs: pageCrumbs } };
+      return { ...base, fallback: { heading: route.heading, summary: route.description, breadcrumbs: pageCrumbs, links: serviceLinks(route.canonicalPath) } };
     default:
       return base;
   }

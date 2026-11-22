@@ -1,5 +1,22 @@
 # 項目狀態
 
+## Bing 建議：標題、說明與內容不足（2026-11-23，本分支）
+
+- Bing Webmaster Tools 建議（2026-11-23 02:40 讀取，各項列出的頁面）：
+  - 說明過短（8 頁）：`/`、`/products`、`/customer-service`、`/brand-story`、`/promotion`、`/order-status`（含 `?source=shopify`）、`/terms`。
+  - 說明重複（5 頁）：都是舊的全站預設說明「LUCISSI CARE 是 LUCISSI 的日常照護系列：私密保養…」——首頁與 `/order-status` 至今仍共用。
+  - 標題過短（4 頁）：`/order-status?source=shopify`、`/products`、`/customer-service`、`/brand-story`。
+  - 標題重複（4 頁）：`/`、`/terms`、`/order-status`、`/promotion` 列出 11/17 前的舊標題，現行標題已各不相同（舊掃描）。
+  - 內容不足（3 頁）：`/promotion`、`/terms`、`/order-status`；伺服器 HTML 的本文只有 49–60 字（標題與一句說明），內容要等 JavaScript 執行後才出現。
+- 修正（程式碼）：
+  - `src/lib/seo.ts`：10 個固定頁加上 `seoTitle`（例：「客服中心｜訂單、配送與退換貨問題聯絡方式」），並讓固定頁真的使用 `seoTitle`（原本只有商品列表與文章列表會用）。說明改寫為 59–91 字，內容依各頁實際文字（不寫頁面沒有的承諾）。
+  - 首頁說明（`SITE_DESCRIPTION`，`index.html` 同步）改為「…提供私密處清潔保養、無痕內褲、純棉內褲與生理褲等貼身用品，並在 LUCISSI Talk 分享…」；全部商品說明列出慕斯、濕巾、凝膠、噴霧、內褲與生理褲。
+  - 不收錄的頁面（會員、登入、訂單查詢等）改用各自的說明，不再與首頁共用。
+  - `middleware.ts`：固定頁的伺服器 HTML 附上常用頁面連結（全部商品、LUCISSI Talk、優惠活動、常見問題、退換貨說明、客服中心、隱私權政策、條款和協議，不含本頁）。
+  - `/order-status` 是 noindex，Bing 列出的「內容不足／標題過短」不處理；`/brand-story` 會 308 轉到 `/about`，改的是 `/about`。
+- 驗證（本機）：`tests/middleware.test.ts` 新增可收錄頁面標題至少 20 字、說明至少 50 字，以及不收錄頁面不用首頁說明；typecheck、Vitest 846 項、build、`verify:content` 通過。本機 dev server 13 頁的分頁標題、說明與 robots 皆為新值。
+- 未完成：尚未合併部署；Bing 要等重新檢索才會更新建議（可在 Bing 的建議頁按重新掃描，或送 IndexNow）。
+
 ## 剛上架的文章仍被 Google 判為 noindex：第一份 HTML 改由伺服器決定 robots（2026-11-23，PR #182 已上線）
 
 - 發現（Search Console 網址檢查，2026-11-23 約 01:40）：14 篇文章中 11 篇已建立索引；3 篇「已由 noindex 標記排除」：

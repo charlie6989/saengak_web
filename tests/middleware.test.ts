@@ -161,7 +161,18 @@ describe('route table', () => {
     expect(new Set(heads.map((head) => head.title)).size).toBe(indexable.length);
     expect(new Set(heads.map((head) => head.description)).size).toBe(indexable.length);
     expect(seoForLocation('/').title).toBe('LUCISSI CARE｜私密處清潔保養・無痕內褲・生理褲');
-    expect(seoForLocation('/faq').title).toBe('常見問題｜LUCISSI CARE');
+    expect(seoForLocation('/faq').title).toBe('常見問題｜訂購、付款、配送與退換貨｜LUCISSI CARE');
+    // Bing 建議：標題與說明不要太短（中文標題 20 字、說明 50 字以上）
+    for (const head of heads) {
+      expect(head.title.length, head.canonicalPath).toBeGreaterThanOrEqual(20);
+      expect(head.description.length, head.canonicalPath).toBeGreaterThanOrEqual(50);
+    }
+  });
+
+  it('gives noindex pages their own description instead of the home description', () => {
+    const home = seoForLocation('/').description;
+    expect(seoForLocation('/order-status').description).not.toBe(home);
+    expect(seoForLocation('/order-status').description).toContain('訂單查詢');
   });
 
   it('keeps member, login, order lookup and admin pages out of the index', () => {
@@ -262,7 +273,9 @@ describe('server-rendered documents', () => {
     expect(response.headers.get('cache-control')).toBe('public, max-age=0, must-revalidate');
     expect(shellRequests[0].get(SHELL_REQUEST_HEADER)).toBe('1');
     expect(shellRequests[0].get('cookie')).toBe('_vercel_jwt=x');
-    expect(html).toContain('<title>常見問題｜LUCISSI CARE</title>');
+    expect(html).toContain('<title>常見問題｜訂購、付款、配送與退換貨｜LUCISSI CARE</title>');
+    expect(html).toContain('<a href="/return-policy">退換貨說明</a>');
+    expect(html).not.toContain('<a href="/faq">常見問題</a></li>');
     expect(html).toContain('<link rel="canonical" href="https://lucissicare.com/faq" />');
     expect(html).toContain('<meta property="og:url" content="https://lucissicare.com/faq" />');
     expect(html).toContain('<meta name="robots" content="index,follow" />');

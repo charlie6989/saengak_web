@@ -13,7 +13,7 @@
 
 ## SEO 架構的長期規則（2026-11-17）
 
-- 路由表在 `src/lib/seo.ts`（`seoForLocation`）：每個公開路由的標題、說明、robots、canonical。伺服器與瀏覽器共用；新增路由要登記，否則 middleware 回 404。不收錄：會員／登入／訂單查詢／後台為 `noindex,nofollow`；`/products` 帶 q、query、keyword、search、tag 為 `noindex,follow`。canonical 一律 `https://lucissicare.com`、無結尾斜線、去掉查詢字串，只保留 `/products` 的 `category`、`collection`。
+- 路由表在 `src/lib/seo.ts`（`seoForLocation`）：每個公開路由的標題、說明、robots、canonical。伺服器與瀏覽器共用；新增路由要登記，否則 middleware 回 404。不收錄：會員／登入／訂單查詢／後台為 `noindex,nofollow`；`/products` 帶 q、query、keyword、search、tag 為 `noindex,follow`。固定頁的分頁標題用 `STATIC_PAGES[path].seoTitle`（2026-11-23 起實際套用），可收錄頁的標題至少 20 字、說明至少 50 字且不得重複（測試會檢查）；固定頁的伺服器 HTML 會附常用頁面連結（`middleware.ts` `SERVICE_LINKS`）。canonical 一律 `https://lucissicare.com`、無結尾斜線、去掉查詢字串，只保留 `/products` 的 `category`、`collection`。
 - `middleware.ts`（Node.js runtime）對所有訪客取本次部署的 `/index.html`，寫入 head、JSON-LD 與 #root 內的隱藏爬蟲文字（`api/_lib/document-head.ts`）；查無商品／文章／路由回 404，`/index.html`、結尾與重複斜線及只會轉址的舊網址回 308；任何失敗退回 `next()`。商品、文章、首頁結構化資料在 `src/lib/structuredData.ts`，商品頁與文章頁用同一組函式。運費宣告只改 `src/domain/structuredDataShipping.ts`。
 - middleware 的 import 鏈一律寫 `.js` 副檔名（與 `api/` 函式相同）。不新增 `api/` 函式（12 個已滿）。
 - 搜尋引擎爬蟲絕不能送到 `api/share/product.ts`（回 `X-Robots-Tag: noindex`）；只有社群預覽爬蟲改寫過去。所有 User-Agent 拿到同一份 HTML。殼層 `index.html` 刻意不放 canonical／og:url。
