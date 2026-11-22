@@ -189,6 +189,24 @@
       "scene": "On a pale oak tray on a linen-covered table beside a bright window, two folded women's briefs are laid side by side for comparison: on the left a soft matte white cotton jersey brief with a visible fine knit texture, on the right a smooth seamless brief in pale sage with a subtle silky sheen and clean laser-cut edges. Behind them, a small dried cotton boll sprig in a narrow ceramic vase and a clear glass of water with a few ice cubes catching the light. Fresh, airy summer morning, a calm side-by-side fabric comparison. No people, no bodies, no mannequins, no text, no numbers, no logos, no brand names, no tags with writing.",
       "generatedAt": "2026-11-22",
       "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-thumb-intimate-shaving",
+      "topic": "私密處除毛可以自己來嗎",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-intimate-shaving.txt",
+      "scene": "On a pale oak bathroom shelf beside a softly lit frosted window, a small pink handheld bikini razor with a protective cap set beside it rests on a folded white cotton hand towel, next to a small ceramic dish of plain white shaving foam, a small pair of rounded grooming scissors, and a neat stack of soft dusty rose washcloths. A clear glass of fresh water and a small green plant sit at the back. Clean, calm, careful self-care routine. No people, no bodies, no skin, no blood, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-23",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-article-intimate-shaving",
+      "topic": "私密處除毛可以自己來嗎",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-intimate-shaving.txt",
+      "scene": "On a pale oak bathroom shelf beside a softly lit frosted window, a small pink handheld bikini razor with a protective cap set beside it rests on a folded white cotton hand towel, next to a small ceramic dish of plain white shaving foam, a small pair of rounded grooming scissors, and a neat stack of soft dusty rose washcloths. A clear glass of fresh water and a small green plant sit at the back. Clean, calm, careful self-care routine. No people, no bodies, no skin, no blood, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-23",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
     }
   ],
   "generator": "Codex CLI built-in image generation (ChatGPT sign-in), one call per prompt, 2026-11-20; source PNGs ~1672x941 kept outside Git",
@@ -613,6 +631,41 @@
       "sha256": "986dab6d05ee9a7963ed2ee4f2437a4ab174710166d9cc9da817df815acedc65",
       "source": "article",
       "key": "cotton-vs-ice-silk"
+    },
+    {
+      "asset": "public/images/talk/thumb-intimate-shaving.webp",
+      "bytes": 161644,
+      "sha256": "0751a5f879052d1713e8ae2d575cc5d29cf8ac2a22f82f403def0b453313dd3d",
+      "source": "thumb",
+      "key": "intimate-shaving"
+    },
+    {
+      "asset": "public/images/talk/card-intimate-shaving.webp",
+      "bytes": 122218,
+      "sha256": "9243a01217ea712df03fa642c9552b4ec2f7296754c5b818ac6aa9f4035d4a22",
+      "source": "thumb",
+      "key": "intimate-shaving"
+    },
+    {
+      "asset": "public/images/talk/square-intimate-shaving.webp",
+      "bytes": 90272,
+      "sha256": "70f3cec1e8cba6ae974aa7264d28e65671e390902fb1d7bec63635d8de532e66",
+      "source": "thumb",
+      "key": "intimate-shaving"
+    },
+    {
+      "asset": "public/images/talk/share-intimate-shaving.jpg",
+      "bytes": 148212,
+      "sha256": "e542634faf0074f5f1e46097740dc51f054dc2a29107e8021dca59b6cb3a30f3",
+      "source": "thumb",
+      "key": "intimate-shaving"
+    },
+    {
+      "asset": "public/images/talk/article-intimate-shaving.webp",
+      "bytes": 79776,
+      "sha256": "271ae14aa664f641e8a03600952cc01aef441e285895bab59ebacc2f1cf3701a",
+      "source": "article",
+      "key": "intimate-shaving"
     }
   ],
   "handles": {
@@ -627,6 +680,7 @@
     "period-underwear": "period-underwear-guide",
     "safety-shorts": "safety-shorts-underwear",
     "itch-which-doctor": "intimate-itch-which-doctor",
-    "cotton-vs-ice-silk": "cotton-vs-ice-silk-underwear"
+    "cotton-vs-ice-silk": "cotton-vs-ice-silk-underwear",
+    "intimate-shaving": "intimate-shaving-razor-guide"
   }
 }
