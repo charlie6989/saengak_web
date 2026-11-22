@@ -207,6 +207,24 @@
       "scene": "On a pale oak bathroom shelf beside a softly lit frosted window, a small pink handheld bikini razor with a protective cap set beside it rests on a folded white cotton hand towel, next to a small ceramic dish of plain white shaving foam, a small pair of rounded grooming scissors, and a neat stack of soft dusty rose washcloths. A clear glass of fresh water and a small green plant sit at the back. Clean, calm, careful self-care routine. No people, no bodies, no skin, no blood, no text, no numbers, no logos, no brand names, no tags with writing.",
       "generatedAt": "2026-11-23",
       "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-thumb-period-cleansing",
+      "topic": "生理期私密處怎麼清潔、衛生棉多久換",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-period-cleansing.txt",
+      "scene": "Inside an open soft linen zip pouch in muted dusty rose resting on a pale oak bathroom shelf beside a softly lit frosted window: a few individually wrapped plain white sanitary pads in blank unprinted wrappers, two small sealed blank wipe sachets with no printing, and a neatly folded spare pair of plain white cotton briefs. Beside the pouch, a small plain white unlabeled pump bottle and a folded white hand towel, with a small green plant at the back. Calm, discreet, prepared period-day routine. No people, no bodies, no blood, no red liquid, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-23",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-article-period-cleansing",
+      "topic": "生理期私密處怎麼清潔、衛生棉多久換",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-period-cleansing.txt",
+      "scene": "Inside an open soft linen zip pouch in muted dusty rose resting on a pale oak bathroom shelf beside a softly lit frosted window: a few individually wrapped plain white sanitary pads in blank unprinted wrappers, two small sealed blank wipe sachets with no printing, and a neatly folded spare pair of plain white cotton briefs. Beside the pouch, a small plain white unlabeled pump bottle and a folded white hand towel, with a small green plant at the back. Calm, discreet, prepared period-day routine. No people, no bodies, no blood, no red liquid, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-23",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
     }
   ],
   "generator": "Codex CLI built-in image generation (ChatGPT sign-in), one call per prompt, 2026-11-20; source PNGs ~1672x941 kept outside Git",
@@ -666,6 +684,41 @@
       "sha256": "271ae14aa664f641e8a03600952cc01aef441e285895bab59ebacc2f1cf3701a",
       "source": "article",
       "key": "intimate-shaving"
+    },
+    {
+      "asset": "public/images/talk/thumb-period-cleansing.webp",
+      "bytes": 164638,
+      "sha256": "1ca344e7980145fb8c493ffd452439e49454cc5914a3216f8360ba0f86d5db20",
+      "source": "thumb",
+      "key": "period-cleansing"
+    },
+    {
+      "asset": "public/images/talk/card-period-cleansing.webp",
+      "bytes": 126172,
+      "sha256": "b8a522c52e220166cf346505b05891eb674f1cf4385696ed7ab4ba3ff61ec5bd",
+      "source": "thumb",
+      "key": "period-cleansing"
+    },
+    {
+      "asset": "public/images/talk/square-period-cleansing.webp",
+      "bytes": 104892,
+      "sha256": "b6de7ab63d6224683e8ac0b7bc88d26f327ff4427e2b7fc94d4c07510f7acbb3",
+      "source": "thumb",
+      "key": "period-cleansing"
+    },
+    {
+      "asset": "public/images/talk/share-period-cleansing.jpg",
+      "bytes": 137390,
+      "sha256": "88ac75b99752d0c80b01c033e21cc6a8292be1efdc4274e352a68e1ef7574fc5",
+      "source": "thumb",
+      "key": "period-cleansing"
+    },
+    {
+      "asset": "public/images/talk/article-period-cleansing.webp",
+      "bytes": 88276,
+      "sha256": "d89f292830e8080346be5289704bc09feb912e7cce65b8a2a372e0a2682be80d",
+      "source": "article",
+      "key": "period-cleansing"
     }
   ],
   "handles": {
@@ -681,6 +734,7 @@
     "safety-shorts": "safety-shorts-underwear",
     "itch-which-doctor": "intimate-itch-which-doctor",
     "cotton-vs-ice-silk": "cotton-vs-ice-silk-underwear",
-    "intimate-shaving": "intimate-shaving-razor-guide"
+    "intimate-shaving": "intimate-shaving-razor-guide",
+    "period-cleansing": "period-cleansing-pad-change"
   }
 }
