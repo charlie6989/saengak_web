@@ -43,6 +43,11 @@ const covers: Record<string, EditorialCover> = {
     dir: 'talk', key: 'cleanser-choice', structuredCrops: true,
     alt: '浴室檯面上並排的慕斯、清潔液與獨立包裝濕巾，一隻手翻到瓶身背面看標示，比較私密處清潔產品的劑型與成分',
   },
+  // 2026-11-22 草稿，店主確認後才在 Shopify 建立；文章未建立前這筆登記不會被用到
+  'seamless-underwear-pros-cons': {
+    dir: 'talk', key: 'seamless-fit', structuredCrops: true,
+    alt: '木質檯面上並排攤開的無痕切邊內褲與鬆緊帶純棉內褲，一旁是布尺與細網洗衣袋，比較無痕內褲的切邊、尺寸與清洗方式',
+  },
   'intimate-odor-without-shame': {
     dir: 'talk', key: 'odor-without-shame', structuredCrops: true,
     alt: '窗邊通風處晾乾的棉質內褲，私密處氣味不必靠香味遮蓋',
