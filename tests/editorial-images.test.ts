@@ -21,6 +21,7 @@ const TALK_HANDLES = [
   'seamless-underwear-pros-cons',
   'period-underwear-guide',
   'safety-shorts-underwear',
+  'intimate-itch-which-doctor',
 ];
 const CURATED_HANDLES = ['daily-feminine-care-guide', 'how-to-choose-seamless-underwear', 'how-we-review-products-and-content'];
 

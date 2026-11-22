@@ -1,5 +1,14 @@
 # 項目狀態
 
+## 新文章草稿：私密處癢要看什麼科（2026-11-22，待店主確認，未上架）
+
+- 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 5 題撰寫：主要關鍵字「私密處癢」「外陰搔癢」（各 1k–10k／月），回答自動完成的「私密處癢要看什麼科」（2026-11-22 重新查詢；「私密處癢看皮膚科」沒有自動完成建議）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-intimate-itch-which-doctor.html`，handle `intimate-itch-which-doctor`，標籤「健康知識、私密護理、公開」（與其他健康文章相同）。
+- 與現有回診文章 `recurrent-intimate-discomfort-follow-up`（SEO 標題「私密處反覆不適要看什麼科？」）分工：本篇寫第一次癢（看哪一科、何時就醫、看診前記什麼），回診文章寫復發後怎麼回診，兩篇互相連結。兩篇都含「看什麼科」，上架後在 Search Console 觀察是否互搶同一查詢；這是判斷，尚未驗證。
+- 依據（2026-11-22 以原文核對）：臺北榮總家庭醫學部〈私密處癢怎麼辦？淺談女性陰部搔癢〉（《榮總人》2024 第 483 期 PDF）、臺大醫院婦產部〈認識白帶與外陰搔癢〉（網頁更新 2026-11-19）、Cleveland Clinic〈Vulvar Dermatitis〉（2026-02-13）、ACOG FAQ028〈Vaginitis〉（2025-12）。兩家醫院衛教都建議婦產科或家醫科，都沒有提皮膚科；文中照實寫，只建議若醫師判斷是皮膚問題可詢問轉介。NHS〈Itchy vagina〉與 Cleveland Clinic〈vaginal itching〉原網址已 404；CDC 念珠菌治療指引本次抓取失敗，沒有引用。
+- 依健康文案規則不寫止癢方法、藥膏推薦或自我診斷，也不放任何商品。
+- 圖片：Codex CLI 0.163.0 內建生圖各 1 張（玄關木桌上的托特包、筆記本、鑰匙、外套與水，準備出門看診；無人物、無藥品、無文字），裁成 `public/images/talk/*-itch-which-doctor.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle，Shopify 文章建立前不會被用到。Vitest 833 項、build、`verify:content` 通過。
+- 未做：Shopify 文章尚未建立，sitemap／IndexNow／Search Console 尚未送出；等店主確認。
+
 ## 新文章：安全褲還要穿內褲嗎（2026-11-22 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 4 題撰寫：主要關鍵字「安全褲」（1k–10k／月）、「安全褲推薦」（100–1k），回答自動完成的「安全褲還要穿內褲嗎」「安全褲要穿內褲嗎」「安全褲可以當內褲穿嗎」「安全褲可以單穿嗎」（2026-11-22 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-safety-shorts-underwear.html`，handle `safety-shorts-underwear`，標籤「選購指南、生活美學、公開」（會出現在舒適內搭入口）。
