@@ -10,7 +10,8 @@
 - 上架（正式設定）：店主 2026-11-22 回覆「照草稿上架」。先合併 PR #158（`ec61529`，圖片上線）；Chrome 的 Shopify 登入過期，店主重新登入後，在「SAENGAK Talk」（handle `care-talk`）建立文章 635292188739，公開時間 2026-11-22 18:05（UTC+8）。標題、內文、摘要、SEO 標題與說明、handle 由雜湊比對過的 JSON 檔載入（內文與摘要用編輯器的 HTML 模式寫入），標籤用挑選器加入；作者欄位為預設的「My Store 7 Admin」。
 - 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文只差空白換行，正規化後一致；標籤：公開、生活美學、選購指南。
 - 正式站驗證：Googlebot 取得 `<title>`「無痕內褲缺點：透氣嗎、會卡臀嗎？材質、尺寸與清洗挑選重點｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-seamless-fit.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖載入、比較表與內部連結正常，標籤顯示 #生活美學、#選購指南，作者顯示 LUCISSI CARE 編輯團隊，沒有 console 錯誤。
-- sitemap 在建置時產生，本文件 PR 合併觸發重新部署後補驗，再送 Search Console 與 `npm run submit:indexnow`。
+- sitemap 與索引：PR #159 合併（`28ce4dc`）後，正式站 `sitemap.xml` 列出本文、共 49 個網址；`npm run submit:indexnow` 送出 49 個網址，Bing 回 200；Search Console 網址審查為「Google 無法辨識這個網址」，按「要求建立索引」後出現「已要求建立索引」。
+- 未驗證：Google 與 Bing 實際收錄時間。
 
 ## sitemap 加入三個分類頁（2026-11-22，已上線）
 
