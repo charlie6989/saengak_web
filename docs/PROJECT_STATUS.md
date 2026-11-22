@@ -1,5 +1,14 @@
 # 項目狀態
 
+## 文章草稿：生理褲是什麼（2026-11-22，未上架）
+
+- 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 3 題撰寫：主要關鍵字「生理褲」（1k–10k／月）、「生理褲推薦」「月經內褲」（各 100–1k），回答「其他人也問了」的「生理褲還要用衛生棉嗎」「生理褲可以平常穿嗎」與自動完成的「跟一般內褲差別」「可以當內褲穿嗎」（2026-11-22 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-period-underwear-guide.html`，handle `period-underwear-guide`，標籤「選購指南、健康知識、公開」（會出現在舒適內搭與生理期照護入口）。
+- 重點：「生理褲」常指兩種商品，搭配衛生棉的防漏生理褲，以及可單穿的吸收型月經褲；文章先分清楚再談怎麼穿、多久換、怎麼洗。避用註冊商標「月亮褲」。
+- 依據：Cleveland Clinic〈What Is Period Underwear and Does It Work?〉（2022-02-07）、〈Menstrual Pads 101〉（2025-10-17）；2026-11-22 以網頁原文核對。沒有找到國健署或食藥署對衛生棉更換時數、吸收型月經褲分類的正式說明，文中不寫台灣法規分類。
+- 商品敘述只用 Storefront 上的商品資料。CARE 的「純棉高腰防漏生理褲」商品頁寫「請搭配適合的生理用品使用」，屬於防漏生理褲，文中照此說明。
+- **待店主決定**：11/20 依關鍵字研究把這件商品的 SEO 標題改成「純棉高腰防漏生理褲（月經內褲）前後加長防漏層」，但「月經內褲」多指可單穿的吸收型月經褲，可能讓人誤以為不用衛生棉。建議改為「純棉高腰防漏生理褲 前後加長防漏層 搭配衛生棉使用」；尚未修改。
+- 檢查：`verify-public-content.mjs` 97 條封鎖詞無命中，沒有治療、改善、止癢、抗菌等用語。圖片：Codex CLI 0.163.0 內建生圖各 1 張，裁成 `public/images/talk/*-period-underwear.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle。typecheck、Vitest 833 項、verify:content 通過。
+- 待店主確認內容後：在 Shopify `care-talk` 建立文章、驗證文章頁與分享預覽、重新部署讓 sitemap 收錄，再送 Search Console 與 `npm run submit:indexnow`。
 ## SEO 現況與 sitemap 重新提交（2026-11-22 晚）
 
 - Search Console（`sc-domain:lucissicare.com`，Chrome 已登入）：網頁索引 7 頁已收錄、3 頁未收錄（都是「頁面會重新導向」），與早上相同。成效報表 28 天只有 11/17–11/20 的資料：曝光 18、點擊 0、平均排名 11；查詢「lucissi」14 次曝光，「私密部位異味」1 次（第一個非品牌查詢，對應 `/blog/intimate-odor-without-shame`）。曝光頁面以首頁 17 次最多；`/brand-story`（轉址到 `/about`）也有 3 次。

@@ -117,6 +117,24 @@
       "scene": "On a pale oak dresser top, two plain unbranded women's briefs are laid flat side by side with generous spacing, viewed from a gentle three-quarter overhead angle: one smooth seamless brief in muted dusty rose with thin, clean laser-cut raw edges at the waist and leg openings and no elastic band, and one soft ivory cotton brief with a visibly stitched elastic waistband for contrast. A soft ivory fabric tape measure lies loosely coiled between them, and a folded fine white mesh laundry bag rests at the edge. A natural adult hand gently lifts the edge of the seamless brief to show how thin and flat the cut edge is. Calm, practical comparison of fabric, edge finish and fit, morning window light. No text, no numbers on the tape measure, no logos, no brand names, no tags with writing.",
       "generatedAt": "2026-11-22",
       "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-thumb-period-underwear",
+      "topic": "生理褲是什麼",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-period-underwear.txt",
+      "scene": "On a pale oak dresser top beside a softly lit window, a high-waisted brief in muted slate blue-grey is laid flat, its back folded down slightly to reveal a longer, lighter grey inner lining panel that runs from the front to the back of the gusset. Next to it lie a second plain folded brief in restrained plum, two small plain individually wrapped sanitary pad sachets in muted dusty rose with no printing, and a small plain velvet zip pouch in dusty rose. A ceramic mug of warm tea sits at the edge. Calm, practical preparation for the week of a period. No blood, no red liquid, no people, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-22",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-article-period-underwear",
+      "topic": "生理褲是什麼",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-period-underwear.txt",
+      "scene": "On a pale oak dresser top beside a softly lit window, a high-waisted brief in muted slate blue-grey is laid flat, its back folded down slightly to reveal a longer, lighter grey inner lining panel that runs from the front to the back of the gusset. Next to it lie a second plain folded brief in restrained plum, two small plain individually wrapped sanitary pad sachets in muted dusty rose with no printing, and a small plain velvet zip pouch in dusty rose. A ceramic mug of warm tea sits at the edge. Calm, practical preparation for the week of a period. No blood, no red liquid, no people, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-22",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
     }
   ],
   "generator": "Codex CLI built-in image generation (ChatGPT sign-in), one call per prompt, 2026-11-20; source PNGs ~1672x941 kept outside Git",
@@ -401,6 +419,41 @@
       "sha256": "2997a693bc4f44549afb1b4841652a091f56f657d35964d151efebee051b0c6d",
       "source": "thumb",
       "key": "seamless-fit"
+    },
+    {
+      "asset": "public/images/talk/thumb-period-underwear.webp",
+      "bytes": 139746,
+      "sha256": "7d40f095145d9ec379299afb1ecffa1d41d3910907a0b11788813bc6c29875ec",
+      "source": "thumb",
+      "key": "period-underwear"
+    },
+    {
+      "asset": "public/images/talk/card-period-underwear.webp",
+      "bytes": 101824,
+      "sha256": "a31f889ff70e2db73e368d466aef1945e38b2a2663a1fb5948484199ad6936b7",
+      "source": "thumb",
+      "key": "period-underwear"
+    },
+    {
+      "asset": "public/images/talk/square-period-underwear.webp",
+      "bytes": 80620,
+      "sha256": "526d12a8e95a44672d6e0fe5c261b70787ac2003fc2d0fd4fc6291e569d5cc87",
+      "source": "thumb",
+      "key": "period-underwear"
+    },
+    {
+      "asset": "public/images/talk/article-period-underwear.webp",
+      "bytes": 75178,
+      "sha256": "28e23efc2fbf60601aa3cd2f1e8428d9ca59ca7e5327c258d68504d714b781db",
+      "source": "article",
+      "key": "period-underwear"
+    },
+    {
+      "asset": "public/images/talk/share-period-underwear.jpg",
+      "bytes": 136979,
+      "sha256": "cf6c2f114498af9ad20321a5ee82ba49c59a639a7e1832a2f7db1f047e68b8a7",
+      "source": "thumb",
+      "key": "period-underwear"
     }
   ],
   "handles": {
@@ -411,6 +464,7 @@
     "product-log": "intimate-care-trial-fatigue",
     "odor-without-shame": "intimate-odor-without-shame",
     "cleanser-choice": "intimate-cleanser-how-to-choose",
-    "seamless-fit": "seamless-underwear-pros-cons"
+    "seamless-fit": "seamless-underwear-pros-cons",
+    "period-underwear": "period-underwear-guide"
   }
 }

@@ -19,6 +19,7 @@ const TALK_HANDLES = [
   'intimate-odor-without-shame',
   'intimate-cleanser-how-to-choose',
   'seamless-underwear-pros-cons',
+  'period-underwear-guide',
 ];
 const CURATED_HANDLES = ['daily-feminine-care-guide', 'how-to-choose-seamless-underwear', 'how-we-review-products-and-content'];
 
