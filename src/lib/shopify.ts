@@ -839,11 +839,24 @@ export async function getShopifyArticles(first: number = 6): Promise<ShopifyArti
 }
 
 /**
- * 依 Handle 取得單一部落格文章詳情
+ * 依 handle 查文章的結果。
+ * - found：找到公開文章
+ * - not-found：Shopify 有回應，網站公開的文章裡確定沒有這篇
+ * - unavailable：Shopify 讀取失敗，站內精選文章裡也沒有；不能斷定文章不存在
  */
-export async function getShopifyArticleByHandle(handle: string): Promise<ShopifyArticle | null> {
-  if (!handle) return null;
+export type ArticleLookup =
+  | { status: 'found'; article: ShopifyArticle }
+  | { status: 'not-found' }
+  | { status: 'unavailable' };
 
+/**
+ * 依 Handle 取得單一部落格文章詳情，並區分「確定不存在」與「暫時讀不到」。
+ * 規則與 middleware 的 articleHead 相同：Shopify 沒有回應時不能斷定文章不存在，頁面不可因此設成 noindex。
+ */
+export async function lookupShopifyArticleByHandle(handle: string): Promise<ArticleLookup> {
+  if (!handle) return { status: 'not-found' };
+
+  let shopifyArticles: ShopifyArticle[] | null = null;
   try {
     const gqlQuery = `
       query GetArticlesForHandle($first: Int!) {
@@ -878,25 +891,34 @@ export async function getShopifyArticleByHandle(handle: string): Promise<Shopify
       }
     `;
 
-    const data = await shopifyFetch<{ articles: { edges: { node: any }[] } }>({
+    const data = await shopifyFetch<{ articles?: { edges: { node: any }[] } }>({
       query: gqlQuery,
       variables: { first: 50 },
     });
+    if (!data?.articles) throw new Error('Storefront articles lookup returned no articles field.');
 
-    const articles = (data.articles?.edges || [])
+    shopifyArticles = (data.articles.edges || [])
       .map((edge) => normalizeShopifyArticle(edge.node))
       .filter(isPublicShopifyArticle);
-
-    const found = articles.find((a) => a.handle === handle || a.id === handle);
-    if (found) return found;
   } catch (err) {
     console.warn('Storefront getShopifyArticleByHandle query failed:', err);
     captureExceptionSafe(err, { source: 'getShopifyArticleByHandle', fallback: 'curatedArticles' });
   }
 
-  // 若 Shopify 查不到，在網站公開的文章中查詢（沒有公開的 Shopify 文章時是站內精選文章；middleware 與 sitemap 用同一規則）
-  const fallbacks = await getShopifyArticles(10);
-  return fallbacks.find((a) => a.handle === handle || a.id === handle) || null;
+  // 網站公開的文章：有公開的 Shopify 文章時只用它們，否則（含讀取失敗）用站內精選文章；middleware 與 sitemap 用同一規則
+  const publicArticles = shopifyArticles?.length ? shopifyArticles : CURATED_ARTICLES.map(copyCuratedArticle);
+  const found = publicArticles.find((a) => a.handle === handle || a.id === handle);
+  if (found) return { status: 'found', article: found };
+  return shopifyArticles ? { status: 'not-found' } : { status: 'unavailable' };
+}
+
+/**
+ * 依 Handle 取得單一部落格文章詳情；找不到或暫時讀不到都回 null。
+ * 需要決定 robots 時請用 lookupShopifyArticleByHandle。
+ */
+export async function getShopifyArticleByHandle(handle: string): Promise<ShopifyArticle | null> {
+  const result = await lookupShopifyArticleByHandle(handle);
+  return result.status === 'found' ? result.article : null;
 }
 
 function copyCuratedArticle(article: CuratedArticle): ShopifyArticle {
