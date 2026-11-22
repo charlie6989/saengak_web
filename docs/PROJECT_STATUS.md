@@ -10,7 +10,8 @@
 - 上架（正式設定）：店主 2026-11-23 回覆「照草稿上架」。PR #179 合併（`cf684b2`，圖片上線；Codex 審查唯一意見為就醫時機寫法，已修正並關閉）；在 Shopify「SAENGAK Talk」建立文章 635298119747，公開時間 2026-11-23 01:21（UTC+8），做法與前幾篇相同。
 - 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：健康知識、公開、私密護理。
 - 正式站驗證：Googlebot 取得 `<title>`「衛生棉多久換一次？生理期私密處怎麼清潔、可以用濕巾嗎｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-period-cleansing.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、8 個小節、9 筆查核來源、濕巾／慕斯／生理褲商品連結與相關文章連結正常，修正後的就醫時機文字已上線，標籤 #健康知識、#私密護理，作者 LUCISSI CARE 編輯團隊，重新整理後沒有 console 錯誤。
-- sitemap 在部署時產生，本文件的 PR 合併後才會列入；IndexNow 與 Search Console 要求建立索引在之後進行，結果另記。
+- sitemap 與索引：PR #180（`4f76edb`）合併重新部署後，sitemap 共 55 個網址並列入本文；`npm run submit:indexnow` 送出 55 個網址，Bing 回 200（之前一次分支名稱衝突、文件 PR 沒建立時已先送出 54 個網址，不含本文，無害）；Search Console 網址檢查顯示「網址不在 Google 中（Google 不知道此網址）」，按「要求建立索引」一次就成功，回覆「已將網址加入優先檢索佇列」（2026-11-23）。
+- 未驗證：Google 與 Bing 實際收錄時間。
 
 ## 新文章：私密處除毛可以自己來嗎（2026-11-23 上架）
 
