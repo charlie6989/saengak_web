@@ -1,6 +1,6 @@
 # 項目狀態
 
-## 剛上架的文章仍被 Google 判為 noindex：第一份 HTML 改由伺服器決定 robots（2026-11-23，本分支）
+## 剛上架的文章仍被 Google 判為 noindex：第一份 HTML 改由伺服器決定 robots（2026-11-23，PR #182 已上線）
 
 - 發現（Search Console 網址檢查，2026-11-23 約 01:40）：14 篇文章中 11 篇已建立索引；3 篇「已由 noindex 標記排除」：
   - 無痕內褲：最後檢索 11/22 18:11，早於 PR #174 修正，屬舊問題。
@@ -16,7 +16,13 @@
 - 驗證（本機）：
   - `tests/served-document.test.ts` 4 項、`tests/document-meta.test.ts` 新增 2 項；typecheck、Vitest 845 項、build、`verify:content` 通過。
   - 本機 dev server（沒有 middleware，任何網址都回 200，等同「伺服器確認、瀏覽器查不到」）：直接開不存在的文章顯示暫時無法載入、robots 維持 `index,follow`；站內換頁到不存在的文章顯示找不到、robots `noindex,nofollow`；直接開生理期清潔文章正常顯示、`index,follow`，console 沒有錯誤。
-- 未完成：尚未合併部署；正式站尚未驗證；3 篇文章尚未重新要求建立索引。
+- 合併與部署：PR #182 合併為 `c3e9999`，Vercel Production 部署成功（2026-11-23 02:17）；正式站 JS 含新程式。Codex 唯一意見（第一次載入時路由預設 robots 會蓋掉伺服器的 noindex）已在合併前修正並關閉。
+- 正式站驗證（2026-11-23 約 02:18）：
+  - Googlebot UA 抓伺服器 HTML：無痕內褲、除毛、生理期清潔皆 200＋`index,follow`；`/blog/no-such-article-xyz` 404＋`noindex,nofollow`。
+  - Chrome 轉譯後：不存在的文章顯示「找不到該專欄文章」、robots 維持 `noindex,nofollow`（狀態碼 404）；生理期清潔文章正常顯示、`index,follow`；console 沒有錯誤。
+  - 「伺服器回 200 而瀏覽器查不到」的情況正式站無法重現，只在本機驗證過。
+- 重新要求建立索引（2026-11-23 02:18–02:21）：無痕內褲、除毛、生理期清潔三篇的即時測試都是「網址可供 Google 使用／網頁可以建立索引」（導覽標記 1 項有效），按「要求建立索引」都回覆「已將網址加入優先檢索佇列」。實際何時收錄未知。
+- 之後檢查：約 2026-11-25 再看這 3 篇的網址檢查是否變成「已建立索引」；之後上架新文章時，若網址檢查又出現 noindex，記下檢索時間與當時是否正在部署。
 
 ## 新文章：生理期私密處怎麼清潔、衛生棉多久換（2026-11-23 上架）
 
