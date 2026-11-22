@@ -23,6 +23,7 @@ const TALK_HANDLES = [
   'safety-shorts-underwear',
   'intimate-itch-which-doctor',
   'cotton-vs-ice-silk-underwear',
+  'intimate-shaving-razor-guide',
 ];
 const CURATED_HANDLES = ['daily-feminine-care-guide', 'how-to-choose-seamless-underwear', 'how-we-review-products-and-content'];
 

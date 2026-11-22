@@ -1,5 +1,15 @@
 # 項目狀態
 
+## 新文章草稿：私密處除毛可以自己來嗎（2026-11-23，待店主確認，未上架）
+
+- 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 7 題撰寫：主要關鍵字「私密處除毛」（搜尋趨勢 88，Keyword Planner 無資料）、「私密處除毛刀」，回答自動完成的「私密處除毛後悔」「私密處除毛毛囊炎」「私密處除毛刀怎麼用」，並比較除毛膏、蜜蠟、雷射（2026-11-23 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-23-intimate-shaving-razor-guide.html`，handle `intimate-shaving-razor-guide`，標籤「健康知識、私密護理、選購指南、公開」。
+- 重點：除毛沒有健康上的必要；可以只修比基尼線；為什麼有人後悔（受傷、內生、長得快、毛囊炎）；除毛方式比較；皮膚科建議的刮毛步驟（站著、溫水軟化、刮毛霜、順毛流、不刮太貼、每刮沖刀片、刮後無香料保濕、不共用）；事後清潔與刀具保存（5～7 次換刀片、放乾燥處）；停手與就醫時機。
+- 依據（2026-11-23 以原文核對）：美國皮膚科醫學會〈7 ways to prevent injuries while trimming pubic hair〉〈How to shave〉、Truesdale 2017 JAMA Dermatology（PubMed 摘要：修整者 25.6% 受傷、1.4% 需就醫）、Cleveland Clinic〈Ingrown Pubic Hair〉、NHS〈Ingrown hairs〉、Nemours KidsHealth（移除陰毛沒有已知健康好處）、台北長庚皮膚科〈淺談除毛〉、萬芳醫院皮膚科新聞稿（2024-08-27）。「先剪短長毛」「不要刮有傷口處」沒有找到權威來源：前者不寫，後者只引用商品頁說明。FDA 除毛膏頁面目前 404、NHS 毛囊炎頁面已不存在，均未引用。
+- 依健康文案規則不寫毛囊炎或內生毛髮的用藥與處理方法。
+- 商品資料限制：除毛刀商品頁沒有刀片可否更換、刀片數量或材質；文中只寫護網刀頭、比基尼線外部修整、保護蓋與商品頁的使用清潔說明。封面圖的除毛刀是生成示意，不是商品實拍，草稿已註明。
+- 圖片：Codex CLI 0.163.0 內建生圖各 1 張（浴室木層板上的粉色除毛刀、保護蓋、刮毛泡沫、圓頭剪刀與毛巾；無人物、無皮膚、無文字），裁成 `public/images/talk/*-intimate-shaving.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle。Vitest 839 項、build、`verify:content` 通過。
+- 未做：Shopify 文章尚未建立，sitemap／IndexNow／Search Console 尚未送出；等店主確認。
+
 ## 新文章：純棉內褲和冰絲內褲哪個好（2026-11-22 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 6 題撰寫：主要關鍵字「純棉內褲」（1k–10k／月）、「冰絲內褲」（100–1k），回答自動完成的「冰絲內褲缺點」「冰絲內褲好嗎」「純棉內褲好處」「冰絲是什麼材質」（2026-11-22 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-cotton-vs-ice-silk-underwear.html`，handle `cotton-vs-ice-silk-underwear`，標籤「選購指南、生活美學、公開」。

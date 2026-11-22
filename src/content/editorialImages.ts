@@ -53,6 +53,10 @@ const covers: Record<string, EditorialCover> = {
     dir: 'talk', key: 'period-underwear', structuredCrops: true,
     alt: '木質檯面上攤開的高腰生理褲，露出前後加長的淺灰內襯，旁邊是摺好的內褲、獨立包裝衛生棉與絨面收納包，準備經期用品',
   },
+  'intimate-shaving-razor-guide': {
+    dir: 'talk', key: 'intimate-shaving', structuredCrops: true,
+    alt: '浴室木層板上的粉色除毛刀與保護蓋放在白毛巾上，旁邊是一小碗刮毛泡沫、圓頭小剪刀與摺好的玫瑰色毛巾',
+  },
   'cotton-vs-ice-silk-underwear': {
     dir: 'talk', key: 'cotton-vs-ice-silk', structuredCrops: true,
     alt: '木托盤上並排的白色純棉三角褲與淺綠色無痕冰絲三角褲，旁邊是棉花枝與一杯冰水，比較兩種布料',
