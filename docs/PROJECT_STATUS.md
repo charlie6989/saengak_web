@@ -1,13 +1,16 @@
 # 項目狀態
 
-## 新文章草稿：生理期私密處怎麼清潔、衛生棉多久換（2026-11-23，待店主確認，未上架）
+## 新文章：生理期私密處怎麼清潔、衛生棉多久換（2026-11-23 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 8 題撰寫（生理期可以用私密處清潔嗎；搜尋量未測）。2026-11-23 重新查詢自動完成：「月經來可以用私密處清潔嗎」「可以用濕紙巾擦私密處嗎」沒有建議，「衛生棉多久換一次」有多個建議（含「生理期剛來」），所以 SEO 標題以「衛生棉多久換一次」開頭。搜尋量仍未量測。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-23-period-cleansing-pad-change.html`，handle `period-cleansing-pad-change`，標籤「健康知識、私密護理、公開」（生理期照護入口）。
 - 與〈私密處清潔產品怎麼挑〉分工：該文比較劑型與每天使用；本篇只寫生理期更換頻率、經期清洗、濕巾使用時機與就醫時機，並互相連結。
 - 依據（2026-11-23 以原文核對）：臺大醫院健康電子報 2025-05（白天約每 2～4 小時換、量大 1～2 小時）、FDA 衛生棉／棉條／月亮杯三頁、衛福部（食藥署）棉條 4～8 小時、美國女性健康辦公室〈Douching〉、ACOG FAQ190、英國 PCDS〈Vulval care〉、NHS〈Heavy periods〉。國健署相關頁面本次無法讀取，沒有引用；臺北榮總〈月經期間的保健〉無法讀取，未引用。
 - 來源差異照實處理：臺大說量大時 1～2 小時換是可以的調整，NHS 把「每 1～2 小時就要換」列為經血過多徵象，文中區分「為了舒適勤換」與「經血量多、不得不每 1～2 小時換」，後者即使只在最多的一兩天也算量多，就醫時機照 NHS 列出的條件寫（依 Codex 審查意見修正，原本誤寫成「整個經期都這樣才看醫師」）。ACOG、PCDS 不建議用濕紙巾擦外陰，本店販售濕巾，文中照實寫並只建議外出臨時備用；濕巾商品頁沒有標示是否含香料，文中註明。
 - 圖片：Codex CLI 0.163.0 內建生圖各 1 張（打開的玫瑰色收納包，內有獨立包裝衛生棉、濕巾小包與備用棉質內褲；無人物、無血、無文字），裁成 `public/images/talk/*-period-cleansing.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle。Vitest 839 項、build、`verify:content` 通過。
-- 未做：Shopify 文章尚未建立，sitemap／IndexNow／Search Console 尚未送出；等店主確認。
+- 上架（正式設定）：店主 2026-11-23 回覆「照草稿上架」。PR #179 合併（`cf684b2`，圖片上線；Codex 審查唯一意見為就醫時機寫法，已修正並關閉）；在 Shopify「SAENGAK Talk」建立文章 635298119747，公開時間 2026-11-23 01:21（UTC+8），做法與前幾篇相同。
+- 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：健康知識、公開、私密護理。
+- 正式站驗證：Googlebot 取得 `<title>`「衛生棉多久換一次？生理期私密處怎麼清潔、可以用濕巾嗎｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-period-cleansing.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、8 個小節、9 筆查核來源、濕巾／慕斯／生理褲商品連結與相關文章連結正常，修正後的就醫時機文字已上線，標籤 #健康知識、#私密護理，作者 LUCISSI CARE 編輯團隊，重新整理後沒有 console 錯誤。
+- sitemap 在部署時產生，本文件的 PR 合併後才會列入；IndexNow 與 Search Console 要求建立索引在之後進行，結果另記。
 
 ## 新文章：私密處除毛可以自己來嗎（2026-11-23 上架）
 
