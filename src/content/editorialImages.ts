@@ -53,6 +53,10 @@ const covers: Record<string, EditorialCover> = {
     dir: 'talk', key: 'period-underwear', structuredCrops: true,
     alt: '木質檯面上攤開的高腰生理褲，露出前後加長的淺灰內襯，旁邊是摺好的內褲、獨立包裝衛生棉與絨面收納包，準備經期用品',
   },
+  'safety-shorts-underwear': {
+    dir: 'talk', key: 'safety-shorts', structuredCrops: true,
+    alt: '木質抽屜櫃上平放的膚色平口安全褲，旁邊是白色棉質內褲、洗衣網袋與一件玫瑰色百褶長裙，準備穿裙子出門',
+  },
   'intimate-odor-without-shame': {
     dir: 'talk', key: 'odor-without-shame', structuredCrops: true,
     alt: '窗邊通風處晾乾的棉質內褲，私密處氣味不必靠香味遮蓋',
