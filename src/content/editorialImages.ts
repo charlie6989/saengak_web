@@ -48,6 +48,11 @@ const covers: Record<string, EditorialCover> = {
     dir: 'talk', key: 'seamless-fit', structuredCrops: true,
     alt: '木質檯面上並排攤開的無痕切邊內褲與鬆緊帶純棉內褲，一旁是布尺與細網洗衣袋，比較無痕內褲的切邊、尺寸與清洗方式',
   },
+  // 2026-11-22 草稿，店主確認後才在 Shopify 建立；文章未建立前這筆登記不會被用到
+  'period-underwear-guide': {
+    dir: 'talk', key: 'period-underwear', structuredCrops: true,
+    alt: '木質檯面上攤開的高腰生理褲，露出前後加長的淺灰內襯，旁邊是摺好的內褲、獨立包裝衛生棉與絨面收納包，準備經期用品',
+  },
   'intimate-odor-without-shame': {
     dir: 'talk', key: 'odor-without-shame', structuredCrops: true,
     alt: '窗邊通風處晾乾的棉質內褲，私密處氣味不必靠香味遮蓋',
