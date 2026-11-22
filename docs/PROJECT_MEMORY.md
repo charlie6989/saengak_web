@@ -18,6 +18,7 @@
 - middleware 的 import 鏈一律寫 `.js` 副檔名（與 `api/` 函式相同）。不新增 `api/` 函式（12 個已滿）。
 - 搜尋引擎爬蟲絕不能送到 `api/share/product.ts`（回 `X-Robots-Tag: noindex`）；只有社群預覽爬蟲改寫過去。所有 User-Agent 拿到同一份 HTML。殼層 `index.html` 刻意不放 canonical／og:url。
 - 文章：站內精選文章在 `src/content/curatedArticles.ts`；`publicArticleSet` 規定 Shopify 有公開文章時只用 Shopify 文章，否則用精選文章。網站、sitemap、middleware、分享預覽共用這個規則。2026-11-17 建置時 Shopify 已有 6 篇公開文章，所以精選文章的網址目前是 404。
+- 文章頁瀏覽器端的 robots（2026-11-23，PR #174）：用 `lookupShopifyArticleByHandle`（found／not-found／unavailable），規則與 middleware `articleHead` 相同，Shopify 有回應才能斷定文章不存在。只有 not-found 才設 noindex；Shopify 讀取失敗（unavailable）時顯示「文章暫時無法載入」並保留原 robots。起因：2026-11-22 Google 轉譯冰絲文章時瀏覽器端讀不到文章，頁面被改成 noindex，要求建立索引被拒。不要再讓「讀不到」直接變成 noindex。
 - Bing IndexNow：金鑰檔 `public/1ef4c0132396ef415cb2a3f9269d845c.txt`，`npm run submit:indexnow` 一次送出 sitemap 全部網址；不要刪改金鑰檔，否則要換金鑰並重送。Google 不支援 IndexNow。
 - 文章圖片：`src/content/editorialImages.ts` 依文章 handle 登記一組圖（預覽 `thumb-`、主圖 `article-`、分享 `share-` 1200×630 JPG、結構化資料用 `card-` 4:3 與 `square-` 1:1）與描述圖片內容的 alt；登記優先於 Shopify 文章圖。Shopify 文章目前都沒有設定圖片，未登記的文章會退回通用圖（每篇看起來一樣）。**新增 Shopify 文章時要依內容生成一組圖並登記**；提示詞與來源放 `creative/talk-v1/`，圖檔放 `public/images/talk/`。
 

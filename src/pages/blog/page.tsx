@@ -9,7 +9,7 @@ import { formatTwd, estimateReadingMinutes, sortAvailableFirst } from '../../dom
 import { NOINDEX_ROBOTS } from '../../lib/seo';
 import { replaceStructuredData, setPageMeta } from '../../lib/documentMeta';
 import { articleBreadcrumbs, articleMeta, breadcrumbJsonLd, buildArticleJsonLd } from '../../lib/structuredData';
-import { getShopifyArticles, getShopifyArticleByHandle, getShopifyProducts, type ShopifyArticle, type ShopifyProduct } from '../../lib/shopify';
+import { getShopifyArticles, lookupShopifyArticleByHandle, getShopifyProducts, type ShopifyArticle, type ShopifyProduct } from '../../lib/shopify';
 
 interface TocItem {
   id: string;
@@ -32,10 +32,14 @@ export default function BlogArticle() {
   }, [article]);
   const [relatedArticles, setRelatedArticles] = useState<ShopifyArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  // 找不到文章時不讓搜尋引擎收錄這個網址（伺服器同樣回 404）
+  // Shopify 暫時讀不到（不是確定沒有這篇文章）
+  const [lookupUnavailable, setLookupUnavailable] = useState(false);
+  // 確定找不到文章時才不讓搜尋引擎收錄這個網址（伺服器同樣回 404）。
+  // 讀取失敗不能斷定文章不存在，不改 robots：搜尋引擎轉譯時若剛好讀不到，文章頁不會被排除索引。
   useEffect(() => {
-    if (!loading && !article) setPageMeta({ robots: NOINDEX_ROBOTS });
-  }, [loading, article]);
+    if (!loading && !article && !lookupUnavailable) setPageMeta({ robots: NOINDEX_ROBOTS });
+  }, [loading, article, lookupUnavailable]);
+  const [reloadKey, setReloadKey] = useState(0);
   const [activeTocId, setActiveTocId] = useState<string>('');
   const [readingProgress, setReadingProgress] = useState(0);
 
@@ -47,10 +51,12 @@ export default function BlogArticle() {
 
     async function loadArticleData() {
       setLoading(true);
+      setLookupUnavailable(false);
       try {
-        const fetched = await getShopifyArticleByHandle(activeHandle);
+        const result = await lookupShopifyArticleByHandle(activeHandle);
         if (isMounted) {
-          setArticle(fetched);
+          setArticle(result.status === 'found' ? result.article : null);
+          setLookupUnavailable(result.status === 'unavailable');
         }
 
         const allArticles = await getShopifyArticles(6);
@@ -62,6 +68,7 @@ export default function BlogArticle() {
         }
       } catch (err) {
         console.error('Error fetching blog article:', err);
+        if (isMounted) setLookupUnavailable(true);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -72,7 +79,7 @@ export default function BlogArticle() {
     return () => {
       isMounted = false;
     };
-  }, [activeHandle]);
+  }, [activeHandle, reloadKey]);
 
   // 監聽閱讀滾動進度與當前可見標題 (ScrollSpy)
   useEffect(() => {
@@ -213,6 +220,35 @@ export default function BlogArticle() {
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <div className="inline-block animate-spin h-10 w-10 border-4 border-brand border-t-transparent rounded-full mb-4"></div>
           <p className="text-gray-600 font-medium">專欄文章載入中...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!article && lookupUnavailable) {
+    return (
+      <div className="flow-root min-h-screen bg-ivory" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+        <Header />
+        <div className="max-w-4xl mx-auto px-6 py-24 text-center">
+          <i className="ri-wifi-off-line text-6xl text-gray-300 mb-4 inline-block"></i>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">文章暫時無法載入</h2>
+          <p className="text-gray-600 mb-8">連線可能不穩定，請稍後再試一次。</p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => setReloadKey((key) => key + 1)}
+              className="inline-block px-8 py-3 bg-brand text-white rounded-lg hover:opacity-90 transition-opacity cursor-pointer font-medium"
+            >
+              重新載入
+            </button>
+            <Link
+              to="/community"
+              className="inline-block px-8 py-3 border border-brand text-brand rounded-lg hover:bg-brand/5 transition-colors cursor-pointer font-medium"
+            >
+              返回文章列表
+            </Link>
+          </div>
         </div>
         <Footer />
       </div>

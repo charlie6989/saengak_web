@@ -12,7 +12,7 @@
 - 正式站驗證：Googlebot 取得 `<title>`「純棉內褲和冰絲內褲哪個好？冰絲是什麼材質、有什麼缺點｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-cotton-vs-ice-silk.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、9 個小節、對照表、7 筆查核來源與 7 個商品連結正常，標籤 #生活美學、#選購指南，作者 LUCISSI CARE 編輯團隊，重新整理後沒有 console 錯誤。
 - sitemap 與索引：PR #172（`bf4bb04`）合併重新部署後，sitemap 共 53 個網址並列入本文；`npm run submit:indexnow` 送出 53 個網址，Bing 回 200。
 - Search Console：第一次「要求建立索引」（2026-11-22 23:58）被拒絕，即時測試回報「已由 noindex 標記排除」。測試頁的轉譯結果是文章頁「找不到」狀態：標題變成通用的「LUCISSI Talk 私密對話」、robots `noindex,nofollow`；同一時間以 Googlebot UA 抓伺服器 HTML 是 `index,follow`。原因：`src/pages/blog/page.tsx` 在瀏覽器端讀不到文章時會把 robots 改成 noindex，而 Google 轉譯當下瀏覽器端的 Storefront 查詢沒有取得本文（為什麼沒取得未查明；當時 PR #172 正在部署，可能有關，未驗證）。2026-11-23 00:00 重新即時測試通過（「網頁可以建立索引」、導覽標記 1 項有效），再次要求建立索引，回覆「已將網址加入優先檢索佇列」。
-- 風險（尚未修正）：只要 Google 轉譯時 Storefront 查詢失敗或逾時，文章頁就會在瀏覽器端變成 noindex，即使文章存在。前五篇的即時測試都通過，目前只觀察到這一次。
+- 風險與修正：原本只要 Google 轉譯時 Storefront 查詢失敗或逾時，文章頁就會在瀏覽器端變成 noindex，即使文章存在。修正在 PR #174（分支 `claude/fix-article-client-noindex`，尚未合併、尚未部署）：新增 `lookupShopifyArticleByHandle` 回傳 found／not-found／unavailable，規則與 middleware `articleHead` 相同（Shopify 有回應才能斷定不存在）；文章頁只在 not-found 時設 noindex，unavailable 時顯示「文章暫時無法載入」與重新載入按鈕、robots 不變。驗證：`tests/article-lookup.test.ts` 6 項；本機 dev server 把 Shopify 網域指向無法連線的位址時，文章頁顯示暫時無法載入且 robots 維持 `index,follow`、重新載入會重試、站內精選文章照常顯示；正常連線時不存在的文章為 `noindex,nofollow`、存在的文章為 `index,follow`。typecheck、Vitest 839 項、build、`verify:content` 通過。未處理：Shopify 回應成功但內容過期（剛發布的文章還沒出現在回應裡）仍會被判為 not-found；這種情況是否發生過未驗證。
 - 未驗證：Google 與 Bing 實際收錄時間。
 
 ## 新文章：私密處癢要看什麼科（2026-11-22 上架）
