@@ -1,6 +1,6 @@
 # 項目狀態
 
-## Bing 建議：標題、說明與內容不足（2026-11-23，本分支）
+## Bing 建議：標題、說明與內容不足（2026-11-23，PR #184 已上線）
 
 - Bing Webmaster Tools 建議（2026-11-23 02:40 讀取，各項列出的頁面）：
   - 說明過短（8 頁）：`/`、`/products`、`/customer-service`、`/brand-story`、`/promotion`、`/order-status`（含 `?source=shopify`）、`/terms`。
@@ -15,7 +15,10 @@
   - `middleware.ts`：固定頁的伺服器 HTML 附上常用頁面連結（全部商品、LUCISSI Talk、優惠活動、常見問題、退換貨說明、客服中心、隱私權政策、條款和協議，不含本頁）。
   - `/order-status` 是 noindex，Bing 列出的「內容不足／標題過短」不處理；`/brand-story` 會 308 轉到 `/about`，改的是 `/about`。
 - 驗證（本機）：`tests/middleware.test.ts` 新增可收錄頁面標題至少 20 字、說明至少 50 字，以及不收錄頁面不用首頁說明；typecheck、Vitest 846 項、build、`verify:content` 通過。本機 dev server 13 頁的分頁標題、說明與 robots 皆為新值。
-- 未完成：尚未合併部署；Bing 要等重新檢索才會更新建議（可在 Bing 的建議頁按重新掃描，或送 IndexNow）。
+- 合併與部署：PR #184 合併為 `6c95120`（CI 通過，Codex 審查沒有意見），Vercel Production 部署成功。
+- 正式站驗證（bingbot UA 取伺服器 HTML，2026-11-23）：首頁、全部商品、客服中心、關於我們、優惠活動、條款和協議、常見問題皆為新標題（29–37 字）與新說明（76–91 字）、`index,follow`；固定頁伺服器 HTML 本文 145–161 字並含 8–9 個站內連結（原本 49–60 字、沒有連結）；`/order-status` 為 noindex、使用自己的說明。
+- IndexNow：`npm run submit:indexnow` 送出 sitemap 的 55 個網址，Bing 回 200（2026-11-23）。
+- 未確認：Bing 何時重新檢索、建議何時消失；之後到 Bing Webmaster Tools 的建議頁確認。
 
 ## 剛上架的文章仍被 Google 判為 noindex：第一份 HTML 改由伺服器決定 robots（2026-11-23，PR #182 已上線）
 
