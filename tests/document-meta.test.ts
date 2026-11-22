@@ -91,6 +91,21 @@ describe('browser head updates', () => {
     expect(jsonLd()).toEqual([{ '@type': 'Product', name: 'server' }]);
   });
 
+  it('keeps a server noindex on the first render and uses the route table after navigation', () => {
+    setPageMeta({ robots: 'noindex,nofollow' });
+    applyRouteSeo('/blog/no-such-article', '', { initial: true });
+    expect(meta('robots')).toBe('noindex,nofollow');
+
+    applyRouteSeo('/blog/vaginal-discharge-normal-changes', '');
+    expect(meta('robots')).toBe('index,follow');
+  });
+
+  it('applies the route robots on the first render when the server allowed indexing', () => {
+    setPageMeta({ robots: 'index,follow' });
+    applyRouteSeo('/admin', '', { initial: true });
+    expect(meta('robots')).toBe('noindex,nofollow');
+  });
+
   it('replaces product data with the same shape the server renders and removes it on leave', () => {
     replaceStructuredData([{ '@type': 'Product', name: 'server' }]);
     const remove = applyProductSeo({

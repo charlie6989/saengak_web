@@ -12,8 +12,9 @@
   - 以 Navigation Timing 的 `responseStatus` 取得那份文件的狀態碼。
   - 文章頁：第一份文件不再由瀏覽器改 robots（找不到的文章 middleware 已回 404＋noindex）。伺服器回 200 而瀏覽器查不到時，顯示「文章暫時無法載入」與重新載入按鈕。
   - 只有站內換頁到確定不存在的文章才由瀏覽器設 noindex。
+  - `applyRouteSeo` 第一次載入時若伺服器的 robots 含 noindex，就保留，不放寬成路由預設的 `index,follow`（Codex 審查意見：直接開不存在的文章時，原本路由預設會蓋掉 middleware 的 noindex）。
 - 驗證（本機）：
-  - `tests/served-document.test.ts` 4 項；typecheck、Vitest 843 項、build、`verify:content` 通過。
+  - `tests/served-document.test.ts` 4 項、`tests/document-meta.test.ts` 新增 2 項；typecheck、Vitest 845 項、build、`verify:content` 通過。
   - 本機 dev server（沒有 middleware，任何網址都回 200，等同「伺服器確認、瀏覽器查不到」）：直接開不存在的文章顯示暫時無法載入、robots 維持 `index,follow`；站內換頁到不存在的文章顯示找不到、robots `noindex,nofollow`；直接開生理期清潔文章正常顯示、`index,follow`，console 沒有錯誤。
 - 未完成：尚未合併部署；正式站尚未驗證；3 篇文章尚未重新要求建立索引。
 
