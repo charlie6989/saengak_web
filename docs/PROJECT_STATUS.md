@@ -11,7 +11,8 @@
 - 上架（正式設定）：店主 2026-11-22 回覆「都照做」。PR #161 與 main 衝突（狀態文件），rebase 後合併（`60a9f6c`，圖片上線）；在 Shopify「SAENGAK Talk」建立文章 635292352579，公開時間 2026-11-22 18:23（UTC+8），做法與無痕內褲文章相同（雜湊比對過的 JSON 檔、HTML 模式寫入內文與摘要、挑選器加標籤）。
 - 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：健康知識、公開、選購指南。
 - 正式站驗證：Googlebot 取得 `<title>`「生理褲是什麼？要搭配衛生棉嗎、跟一般內褲差在哪、可以平常穿嗎｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-period-underwear.jpg` 與描述性 alt；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、對照表與內部連結正常，標籤 #健康知識、#選購指南，作者 LUCISSI CARE 編輯團隊，沒有 console 錯誤。
-- sitemap 在建置時產生，本文件 PR 合併觸發重新部署後補驗，再送 Search Console（文章與生理褲商品頁）與 `npm run submit:indexnow`。
+- sitemap 與索引：PR #163 合併（`9280d5f`）後，正式站 `sitemap.xml` 列出本文、共 50 個網址；`npm run submit:indexnow` 送出 50 個網址，Bing 回 200。Search Console：文章原為「Google 無法辨識這個網址」，生理褲商品頁已收錄（產品摘要與商家資訊各 1 個有效項目）；兩者都按「要求建立索引」並出現「已要求建立索引」。
+- 未驗證：Google 與 Bing 實際收錄時間、Google 何時改用生理褲商品的新標題。
 ## SEO 現況與 sitemap 重新提交（2026-11-22 晚）
 
 - Search Console（`sc-domain:lucissicare.com`，Chrome 已登入）：網頁索引 7 頁已收錄、3 頁未收錄（都是「頁面會重新導向」），與早上相同。成效報表 28 天只有 11/17–11/20 的資料：曝光 18、點擊 0、平均排名 11；查詢「lucissi」14 次曝光，「私密部位異味」1 次（第一個非品牌查詢，對應 `/blog/intimate-odor-without-shame`）。曝光頁面以首頁 17 次最多；`/brand-story`（轉址到 `/about`）也有 3 次。
