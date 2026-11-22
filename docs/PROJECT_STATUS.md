@@ -1,6 +1,6 @@
 # 項目狀態
 
-## 新文章草稿：私密處除毛可以自己來嗎（2026-11-23，待店主確認，未上架）
+## 新文章：私密處除毛可以自己來嗎（2026-11-23 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 7 題撰寫：主要關鍵字「私密處除毛」（搜尋趨勢 88，Keyword Planner 無資料）、「私密處除毛刀」，回答自動完成的「私密處除毛後悔」「私密處除毛毛囊炎」「私密處除毛刀怎麼用」，並比較除毛膏、蜜蠟、雷射（2026-11-23 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-23-intimate-shaving-razor-guide.html`，handle `intimate-shaving-razor-guide`，標籤「健康知識、私密護理、選購指南、公開」。
 - 重點：除毛沒有健康上的必要；可以只修比基尼線；為什麼有人後悔（受傷、內生、長得快、毛囊炎）；除毛方式比較；皮膚科建議的刮毛步驟（站著、溫水軟化、刮毛霜、順毛流、不刮太貼、每刮沖刀片、刮後無香料保濕、不共用）；事後清潔與刀具保存（5～7 次換刀片、放乾燥處）；停手與就醫時機。
@@ -8,7 +8,10 @@
 - 依健康文案規則不寫毛囊炎或內生毛髮的用藥與處理方法。
 - 商品資料限制：除毛刀商品頁沒有刀片可否更換、刀片數量或材質；文中只寫護網刀頭、比基尼線外部修整、保護蓋與商品頁的使用清潔說明。封面圖的除毛刀是生成示意，不是商品實拍，草稿已註明。
 - 圖片：Codex CLI 0.163.0 內建生圖各 1 張（浴室木層板上的粉色除毛刀、保護蓋、刮毛泡沫、圓頭剪刀與毛巾；無人物、無皮膚、無文字），裁成 `public/images/talk/*-intimate-shaving.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle。Vitest 839 項、build、`verify:content` 通過。
-- 未做：Shopify 文章尚未建立，sitemap／IndexNow／Search Console 尚未送出；等店主確認。
+- 上架（正式設定）：店主 2026-11-23 回覆「照草稿上架」。PR #176 合併（`1106cc6`，圖片上線；Codex 審查完成、沒有問題）；在 Shopify「SAENGAK Talk」建立文章 635298086979，公開時間 2026-11-23 00:53（UTC+8），做法與前幾篇相同。
+- 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：健康知識、公開、私密護理、選購指南。
+- 正式站驗證：Googlebot 取得 `<title>`「私密處除毛可以自己來嗎？除毛刀步驟、毛囊炎與事後清潔｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-intimate-shaving.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、8 個小節、比較表、步驟清單、8 筆查核來源、除毛刀商品連結與相關文章連結正常，標籤 #健康知識、#私密護理、#選購指南，作者 LUCISSI CARE 編輯團隊，重新整理後沒有 console 錯誤。
+- sitemap 在部署時產生，本文件的 PR 合併後才會列入；IndexNow 與 Search Console 要求建立索引在之後進行，結果另記。
 
 ## 新文章：純棉內褲和冰絲內褲哪個好（2026-11-22 上架）
 
