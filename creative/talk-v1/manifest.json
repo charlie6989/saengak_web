@@ -153,6 +153,24 @@
       "scene": "On a pale oak dresser top beside a softly lit window, a pair of smooth, seamless short-leg safety shorts in soft almond beige is laid flat, with straight flat-cut leg openings ending at the upper thigh and a wide smooth waistband. Beside it lie a neatly folded plain white cotton brief, a flowing pleated midi skirt in muted dusty rose folded loosely over the edge of the dresser, and a small plain white mesh laundry bag. A ceramic mug of warm tea sits at the edge. Calm, practical getting-dressed moment for a summer day in a skirt. No people, no bodies, no mannequins, no text, no numbers, no logos, no brand names, no tags with writing.",
       "generatedAt": "2026-11-22",
       "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-thumb-itch-which-doctor",
+      "topic": "私密處癢要看什麼科",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-itch-which-doctor.txt",
+      "scene": "In a bright, calm home entryway in soft morning light, a pale oak console table holds what someone gathers before heading out to a clinic appointment: a plain ivory canvas tote bag, a small closed notebook with a muted dusty rose linen cover and a plain wooden pencil resting on it, a simple ring of house keys, a neatly folded light oatmeal cardigan, and a clear glass of water. A small muted sage plant in an unglazed ceramic pot stands at the back. Prepared, unhurried and reassured, not anxious. No people, no bodies, no hands, no medicine, no pills, no tubes, no medical equipment, no phone screens, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-22",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-article-itch-which-doctor",
+      "topic": "私密處癢要看什麼科",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-itch-which-doctor.txt",
+      "scene": "In a bright, calm home entryway in soft morning light, a pale oak console table holds what someone gathers before heading out to a clinic appointment: a plain ivory canvas tote bag, a small closed notebook with a muted dusty rose linen cover and a plain wooden pencil resting on it, a simple ring of house keys, a neatly folded light oatmeal cardigan, and a clear glass of water. A small muted sage plant in an unglazed ceramic pot stands at the back. Prepared, unhurried and reassured, not anxious. No people, no bodies, no hands, no medicine, no pills, no tubes, no medical equipment, no phone screens, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-22",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
     }
   ],
   "generator": "Codex CLI built-in image generation (ChatGPT sign-in), one call per prompt, 2026-11-20; source PNGs ~1672x941 kept outside Git",
@@ -507,6 +525,41 @@
       "sha256": "2f940da1e6adbd185771a4297bb5904e23f7bcbf5804582a7141db4644c08c13",
       "source": "thumb",
       "key": "safety-shorts"
+    },
+    {
+      "asset": "public/images/talk/thumb-itch-which-doctor.webp",
+      "bytes": 123430,
+      "sha256": "de8f33dc9675fe929bbeaf1ffd76c9f5060852b84cec8ecfd0f4c84174f36db4",
+      "source": "thumb",
+      "key": "itch-which-doctor"
+    },
+    {
+      "asset": "public/images/talk/card-itch-which-doctor.webp",
+      "bytes": 105358,
+      "sha256": "7ea4de4cdda25ccf795d2b70e68e44fcf825809838e73c9b1e923c4e613bd3a4",
+      "source": "thumb",
+      "key": "itch-which-doctor"
+    },
+    {
+      "asset": "public/images/talk/square-itch-which-doctor.webp",
+      "bytes": 87082,
+      "sha256": "bbc6b28d7105893eb41feb466b79e71efcc35926ebcda03e20409764e066ae5c",
+      "source": "thumb",
+      "key": "itch-which-doctor"
+    },
+    {
+      "asset": "public/images/talk/share-itch-which-doctor.jpg",
+      "bytes": 123081,
+      "sha256": "0f9c437eaf89423c98595fc21b953209a749a01586bbcca39d04b93526a0e5dd",
+      "source": "thumb",
+      "key": "itch-which-doctor"
+    },
+    {
+      "asset": "public/images/talk/article-itch-which-doctor.webp",
+      "bytes": 67206,
+      "sha256": "f05a373bfe4eddb0204d79bad3972c641c89a3f768e017925ae1552211d33ef1",
+      "source": "article",
+      "key": "itch-which-doctor"
     }
   ],
   "handles": {
@@ -519,6 +572,7 @@
     "cleanser-choice": "intimate-cleanser-how-to-choose",
     "seamless-fit": "seamless-underwear-pros-cons",
     "period-underwear": "period-underwear-guide",
-    "safety-shorts": "safety-shorts-underwear"
+    "safety-shorts": "safety-shorts-underwear",
+    "itch-which-doctor": "intimate-itch-which-doctor"
   }
 }
