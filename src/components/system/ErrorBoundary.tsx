@@ -1,5 +1,6 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import { captureExceptionSafe } from '../../lib/sentry';
+import { reloadForStaleChunk } from '../../lib/staleChunk';
 
 export interface ErrorBoundaryFallbackProps {
   error: Error;
@@ -16,6 +17,8 @@ export interface ErrorBoundaryProps {
 
 export interface ErrorBoundaryState {
   hasError: boolean;
+  /** 部署後載入不到舊版程式，正在重新載入 */
+  reloading?: boolean;
   error: Error | null;
   eventId: string | null;
 }
@@ -42,6 +45,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    // 部署後舊分頁載入不到新頁面的程式：重新載入一次即可，不當成錯誤回報
+    if (reloadForStaleChunk(error)) {
+      this.setState({ reloading: true });
+      return;
+    }
+
     // 經由 Sentry 安全通道捕獲例外與 Component Stack
     const eventId = captureExceptionSafe(error, {
       componentStack: errorInfo.componentStack,
@@ -64,8 +73,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   };
 
   render(): ReactNode {
-    const { hasError, error, eventId } = this.state;
+    const { hasError, error, eventId, reloading } = this.state;
     const { children, fallback } = this.props;
+
+    if (hasError && reloading) {
+      return (
+        <div className="min-h-[400px] flex items-center justify-center p-6 text-sm text-stone-600" role="status">
+          網站已更新，正在重新載入…
+        </div>
+      );
+    }
 
     if (hasError) {
       if (typeof fallback === 'function') {

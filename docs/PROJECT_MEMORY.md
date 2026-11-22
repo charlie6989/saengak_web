@@ -294,3 +294,4 @@
 - 過去 `.gitignore` 排除專案文件與素材紀錄，本次移除相關排除規則；保留金鑰與本機暫存排除。
 - `.vercelignore` 仍排除素材工作紀錄等部署不需要的內容；Git 保存範圍與部署上傳範圍不同。
 - Git 不包含正式資料庫內容、Shopify 商店資料、DNS、Vercel/Supabase secrets 或完整聊天歷史。後續進度以 `PROJECT_STATUS.md` 與提交歷史更新。
+- 部署後舊分頁（2026-11-23）：每次部署後前一版 `/assets/*.js` 會 404。`src/lib/staleChunk.ts` 讓動態 import 失敗時自動重載一次（sessionStorage 防循環 30 秒），`ErrorBoundary` 與 `vite:preloadError` 都會呼叫；不要拿掉，否則開著的分頁換頁會停在「頁面載入發生異常」。
