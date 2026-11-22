@@ -10,7 +10,10 @@
 - 上架（正式設定）：店主 2026-11-22 回覆「照草稿上架」。PR #171 合併（`518e65b`，圖片上線；Codex 審查完成、沒有問題）；在 Shopify「SAENGAK Talk」建立文章 635297955907，公開時間 2026-11-22 23:55（UTC+8），做法與前幾篇相同。
 - 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：公開、生活美學、選購指南。
 - 正式站驗證：Googlebot 取得 `<title>`「純棉內褲和冰絲內褲哪個好？冰絲是什麼材質、有什麼缺點｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-cotton-vs-ice-silk.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、9 個小節、對照表、7 筆查核來源與 7 個商品連結正常，標籤 #生活美學、#選購指南，作者 LUCISSI CARE 編輯團隊，重新整理後沒有 console 錯誤。
-- sitemap 在部署時產生，本文件的 PR 合併後才會列入；IndexNow 與 Search Console 要求建立索引在之後進行，結果另記。
+- sitemap 與索引：PR #172（`bf4bb04`）合併重新部署後，sitemap 共 53 個網址並列入本文；`npm run submit:indexnow` 送出 53 個網址，Bing 回 200。
+- Search Console：第一次「要求建立索引」（2026-11-22 23:58）被拒絕，即時測試回報「已由 noindex 標記排除」。測試頁的轉譯結果是文章頁「找不到」狀態：標題變成通用的「LUCISSI Talk 私密對話」、robots `noindex,nofollow`；同一時間以 Googlebot UA 抓伺服器 HTML 是 `index,follow`。原因：`src/pages/blog/page.tsx` 在瀏覽器端讀不到文章時會把 robots 改成 noindex，而 Google 轉譯當下瀏覽器端的 Storefront 查詢沒有取得本文（為什麼沒取得未查明；當時 PR #172 正在部署，可能有關，未驗證）。2026-11-23 00:00 重新即時測試通過（「網頁可以建立索引」、導覽標記 1 項有效），再次要求建立索引，回覆「已將網址加入優先檢索佇列」。
+- 風險（尚未修正）：只要 Google 轉譯時 Storefront 查詢失敗或逾時，文章頁就會在瀏覽器端變成 noindex，即使文章存在。前五篇的即時測試都通過，目前只觀察到這一次。
+- 未驗證：Google 與 Bing 實際收錄時間。
 
 ## 新文章：私密處癢要看什麼科（2026-11-22 上架）
 
