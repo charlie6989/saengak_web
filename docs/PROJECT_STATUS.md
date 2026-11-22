@@ -1,5 +1,13 @@
 # 項目狀態
 
+## SEO 現況與 sitemap 重新提交（2026-11-22 晚）
+
+- Search Console（`sc-domain:lucissicare.com`，Chrome 已登入）：網頁索引 7 頁已收錄、3 頁未收錄（都是「頁面會重新導向」），與早上相同。成效報表 28 天只有 11/17–11/20 的資料：曝光 18、點擊 0、平均排名 11；查詢「lucissi」14 次曝光，「私密部位異味」1 次（第一個非品牌查詢，對應 `/blog/intimate-odor-without-shame`）。曝光頁面以首頁 17 次最多；`/brand-story`（轉址到 `/about`）也有 3 次。
+- Sitemap：重新提交前最後讀取 11/22、探索 45 個網址；正式站已是 49 個（三個分類頁與無痕內褲文章）。店主同意後在 Sitemaps 頁重新提交 `https://lucissicare.com/sitemap.xml`，出現「Sitemap submitted successfully」，回讀為提交與讀取日期 22 Nov 2026、成功、探索 49 個網址。
+- Bing Webmaster Tools：成效 0 曝光、0 點擊。首頁建議列出描述過短或重複、標題過短或重複、內容不足。「標題重複」的 4 頁（`/`、`/terms`、`/order-status`、`/promotion`）列出的是 11/17 以前的全站預設標題「LUCISSI CARE｜LUCISSI 的日常照護系列」；以 bingbot UA 取得的現行標題與描述各不相同（`/order-status` 為 noindex），所以這項是舊掃描。其他四項建議未逐頁查看。
+- 正式站：`robots.txt` 正確；首頁與兩篇新文章各有標題、robots `index,follow`。
+- 未驗證：Google 何時收錄 11/22 要求建立索引的 15 個網址；Bing 何時重新掃描。約 2026-12-16 累積 28 天資料後再看成效。
+
 ## 新文章：無痕內褲缺點有哪些（2026-11-22 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 2 題撰寫：主要關鍵字「無痕內褲」（1k–10k／月）、「無痕內褲推薦」（100–1k），回答自動完成的「無痕內褲缺點」「透氣嗎」「卡臀／卡屁」「裂開」（2026-11-22 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-seamless-underwear-pros-cons.html`，handle `seamless-underwear-pros-cons`，標籤「選購指南、生活美學、公開」（會出現在舒適內搭入口）。
