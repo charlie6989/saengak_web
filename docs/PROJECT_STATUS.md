@@ -1,13 +1,16 @@
 # 項目狀態
 
-## 新文章草稿：私密處癢要看什麼科（2026-11-22，待店主確認，未上架）
+## 新文章：私密處癢要看什麼科（2026-11-22 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 5 題撰寫：主要關鍵字「私密處癢」「外陰搔癢」（各 1k–10k／月），回答自動完成的「私密處癢要看什麼科」（2026-11-22 重新查詢；「私密處癢看皮膚科」沒有自動完成建議）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-intimate-itch-which-doctor.html`，handle `intimate-itch-which-doctor`，標籤「健康知識、私密護理、公開」（與其他健康文章相同）。
 - 與現有回診文章 `recurrent-intimate-discomfort-follow-up`（SEO 標題「私密處反覆不適要看什麼科？」）分工：本篇寫第一次癢（看哪一科、何時就醫、看診前記什麼），回診文章寫復發後怎麼回診，兩篇互相連結。兩篇都含「看什麼科」，上架後在 Search Console 觀察是否互搶同一查詢；這是判斷，尚未驗證。
 - 依據（2026-11-22 以原文核對）：臺北榮總家庭醫學部〈私密處癢怎麼辦？淺談女性陰部搔癢〉（《榮總人》2024 第 483 期 PDF）、臺大醫院婦產部〈認識白帶與外陰搔癢〉（網頁更新 2026-11-19）、Cleveland Clinic〈Vulvar Dermatitis〉（2026-02-13）、ACOG FAQ028〈Vaginitis〉（2025-12）。兩家醫院衛教都建議婦產科或家醫科，都沒有提皮膚科；文中照實寫，只建議若醫師判斷是皮膚問題可詢問轉介。NHS〈Itchy vagina〉與 Cleveland Clinic〈vaginal itching〉原網址已 404；CDC 念珠菌治療指引本次抓取失敗，沒有引用。
 - 依健康文案規則不寫止癢方法、藥膏推薦或自我診斷，也不放任何商品。
 - 圖片：Codex CLI 0.163.0 內建生圖各 1 張（玄關木桌上的托特包、筆記本、鑰匙、外套與水，準備出門看診；無人物、無藥品、無文字），裁成 `public/images/talk/*-itch-which-doctor.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle，Shopify 文章建立前不會被用到。Vitest 833 項、build、`verify:content` 通過。
-- 未做：Shopify 文章尚未建立，sitemap／IndexNow／Search Console 尚未送出；等店主確認。
+- 上架（正式設定）：店主 2026-11-22 回覆「照草稿上架」。PR #168 合併（`f5ff57c`，圖片上線；Codex 審查完成、沒有問題）；在 Shopify「SAENGAK Talk」建立文章 635297890371，公開時間 2026-11-22 23:34（UTC+8），做法與前三篇相同（雜湊比對過的 JSON 檔、HTML 模式寫入內文與摘要、挑選器加標籤）。
+- 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：健康知識、公開、私密護理。
+- 正式站驗證：Googlebot 取得 `<title>`「私密處癢要看什麼科？外陰搔癢何時該就醫、看診前先記什麼｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-itch-which-doctor.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、8 個小節、查核來源與 3 個內部文章連結正常，標籤 #健康知識、#私密護理，作者 LUCISSI CARE 編輯團隊，重新整理後沒有 console 錯誤。
+- sitemap 在部署時產生，本文件的 PR 合併後才會列入；IndexNow 與 Search Console 要求建立索引在之後進行，結果另記。
 
 ## 新文章：安全褲還要穿內褲嗎（2026-11-22 上架）
 
