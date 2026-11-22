@@ -1,10 +1,12 @@
 # 項目狀態
 
-## sitemap 加入三個分類頁（2026-11-22，程式碼，尚未部署）
+## sitemap 加入三個分類頁（2026-11-22，已上線）
 
 - 程式碼：`src/domain/sitemap.ts` 新增 `CATEGORY_PATHS`，由 `CARE_PILLARS` 產生 `/products?category=私密保養`、`舒適內搭`、`生理期照護` 三個網址，寫法與頁面 canonical 相同（`URLSearchParams` 編碼，例如 `/products?category=%E7%A7%81%E5%AF%86%E4%BF%9D%E9%A4%8A`）。新增或改名照護入口時 sitemap 會跟著變。
 - 本機驗證：typecheck、Vitest 833 項（`tests/sitemap.test.ts` 新增一項：三個網址等於 `seoForLocation` 算出的 canonical、robots 可收錄、都在 sitemap 內）、build、verify:content 通過；build 產出的 `dist/sitemap.xml` 有 48 個網址（原 45 加 3）。
-- 未驗證：正式站 sitemap 要部署後才更新；部署後要確認 48 個網址，再送 `npm run submit:indexnow`，Search Console 的 sitemap 重新讀取後，分類頁的「參照 Sitemap」才會出現。
+- 上線：PR #155（`1e9ff74`）與 PR #156（`20b769f`）合併。部署後實測正式站 `sitemap.xml` 回 `application/xml`、48 個網址，含三個分類頁的編碼網址；以 Googlebot UA 取 `/products?category=生理期照護`，robots `index,follow`、canonical 與 sitemap 網址相同。
+- Bing：執行 `npm run submit:indexnow`，送出 48 個網址，`https://www.bing.com/indexnow` 回 200。
+- 未驗證：Search Console 何時重新讀取 sitemap、分類頁的「參照 Sitemap」何時出現；Google 與 Bing 實際收錄時間。
 
 ## Search Console 現況與第 2 批要求建立索引（2026-11-22）
 
