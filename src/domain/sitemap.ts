@@ -7,6 +7,7 @@ import { hasTestProductMarker } from './testProducts.js';
 import { hasPublicArticleTag } from './storefrontCopy.js';
 import { publicArticleSet } from '../content/curatedArticles.js';
 import { editorialImage, editorialShareImage } from '../content/editorialImages.js';
+import { CARE_PILLARS } from '../content/carePillars.js';
 
 const SITE_URL = 'https://lucissicare.com';
 const PAGE_SIZE = 250;
@@ -26,6 +27,9 @@ export const STATIC_PATHS = [
   '/privacy',
   '/terms',
 ];
+
+/** 照護入口分類頁，寫法與頁面的 canonical 相同（URLSearchParams 編碼的中文）。 */
+export const CATEGORY_PATHS = CARE_PILLARS.map((pillar) => `/products?${new URLSearchParams({ category: pillar.name })}`);
 
 export interface SitemapProduct {
   id: string;
@@ -86,7 +90,7 @@ function articleImageTags(handle: string): string {
 }
 
 export function renderSitemap(products: SitemapProduct[], articles: SitemapArticle[] = sitemapArticles()): string {
-  const staticUrls = STATIC_PATHS.map((path) => `  <url><loc>${escapeXml(`${SITE_URL}${path}`)}</loc></url>`);
+  const staticUrls = [...STATIC_PATHS, ...CATEGORY_PATHS].map((path) => `  <url><loc>${escapeXml(`${SITE_URL}${path}`)}</loc></url>`);
   const productUrls = products.flatMap((product) => {
     const id = numericProductId(product.id);
     if (!id) return [];

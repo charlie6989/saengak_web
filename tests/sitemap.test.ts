@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fetchSitemapArticles, fetchSitemapProducts, renderSitemap, sitemapArticles, STATIC_PATHS } from '../src/domain/sitemap';
+import { CATEGORY_PATHS, fetchSitemapArticles, fetchSitemapProducts, renderSitemap, sitemapArticles, STATIC_PATHS } from '../src/domain/sitemap';
+import { canonicalUrlFor, seoForLocation } from '../src/lib/seo';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -17,6 +18,19 @@ describe('sitemap', () => {
     expect(xml).toContain('<loc>https://lucissicare.com/product/7819900551235</loc><lastmod>2026-10-25T01:02:03Z</lastmod>');
     expect(xml).not.toContain('not-a-product-gid');
     for (const path of STATIC_PATHS) expect(xml).toContain(`<loc>https://lucissicare.com${path}</loc>`);
+  });
+
+  it('lists the care category pages at their canonical URL', () => {
+    const xml = renderSitemap([]);
+    expect(CATEGORY_PATHS).toHaveLength(3);
+    for (const path of CATEGORY_PATHS) {
+      const [pathname, search] = path.split('?');
+      const canonical = canonicalUrlFor(seoForLocation(pathname, search));
+      expect(canonical).toBe(`https://lucissicare.com${path}`);
+      expect(seoForLocation(pathname, search).robots).not.toMatch(/noindex/);
+      expect(xml).toContain(`<loc>${canonical}</loc>`);
+    }
+    expect(xml).toContain('<loc>https://lucissicare.com/products?category=%E7%A7%81%E5%AF%86%E4%BF%9D%E9%A4%8A</loc>');
   });
 
   it('never lists private or transitional pages', () => {

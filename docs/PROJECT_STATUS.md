@@ -1,5 +1,11 @@
 # 項目狀態
 
+## sitemap 加入三個分類頁（2026-11-22，程式碼，尚未部署）
+
+- 程式碼：`src/domain/sitemap.ts` 新增 `CATEGORY_PATHS`，由 `CARE_PILLARS` 產生 `/products?category=私密保養`、`舒適內搭`、`生理期照護` 三個網址，寫法與頁面 canonical 相同（`URLSearchParams` 編碼，例如 `/products?category=%E7%A7%81%E5%AF%86%E4%BF%9D%E9%A4%8A`）。新增或改名照護入口時 sitemap 會跟著變。
+- 本機驗證：typecheck、Vitest 833 項（`tests/sitemap.test.ts` 新增一項：三個網址等於 `seoForLocation` 算出的 canonical、robots 可收錄、都在 sitemap 內）、build、verify:content 通過；build 產出的 `dist/sitemap.xml` 有 48 個網址（原 45 加 3）。
+- 未驗證：正式站 sitemap 要部署後才更新；部署後要確認 48 個網址，再送 `npm run submit:indexnow`，Search Console 的 sitemap 重新讀取後，分類頁的「參照 Sitemap」才會出現。
+
 ## Search Console 現況與第 2 批要求建立索引（2026-11-22）
 
 - 11/21 20:30 的排程（`lucissicare-gsc-request-indexing`）有執行，但 Claude in Chrome 連續 5 次逾時，Search Console 沒打開，0 個網址送出，也沒開 PR。
@@ -8,7 +14,7 @@
   - 已收錄、為新標題要求重新檢索：`/community`、`/products?category=舒適內搭`、`/blog/intimate-care-trial-fatigue`、`/`、`/blog/recurrent-intimate-discomfort-follow-up`。
   - 第一次審查 `/products?category=%E7%A7%81%E5%AF%86%E4%BF%9D%E9%A4%8A`（編碼網址）時 Search Console 回「發生錯誤」，改輸入未編碼的中文網址即可。
 - 審查前現況：Sitemap 11/22 讀取成功、探索到 45 個網址；網頁索引報表 7 頁已收錄、3 頁未收錄（原因都是「頁面會重新導向」，未逐一確認是哪 3 個）；`/blog/vaginal-discharge-normal-changes` 已由 11/20 的「已找到 - 目前尚未建立索引」變為已收錄。成效報表只有 11/17–11/19：曝光 10、點擊 0，查詢全是「lucissi」，平均排名 6.9。
-- 發現：三個分類頁（`/products?category=…`）可收錄且 canonical 保留 category，但 `sitemap.xml` 沒有列出（`STATIC_PATHS` 只有 `/products`），Google 顯示「未偵測到任何參照 Sitemap」。未修改。
+- 發現：三個分類頁（`/products?category=…`）可收錄且 canonical 保留 category，但 `sitemap.xml` 沒有列出（`STATIC_PATHS` 只有 `/products`），Google 顯示「未偵測到任何參照 Sitemap」。已加入 sitemap，見上一節。
 - 未驗證：Google 何時實際收錄；Bing 實際收錄數。
 
 ## 綠界超商貨到付款確認（2026-11-22）
