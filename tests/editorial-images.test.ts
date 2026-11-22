@@ -24,6 +24,7 @@ const TALK_HANDLES = [
   'intimate-itch-which-doctor',
   'cotton-vs-ice-silk-underwear',
   'intimate-shaving-razor-guide',
+  'period-cleansing-pad-change',
 ];
 const CURATED_HANDLES = ['daily-feminine-care-guide', 'how-to-choose-seamless-underwear', 'how-we-review-products-and-content'];
 
