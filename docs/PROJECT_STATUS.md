@@ -1,13 +1,16 @@
 # 項目狀態
 
-## 文章草稿：無痕內褲缺點有哪些（2026-11-22，未上架）
+## 新文章：無痕內褲缺點有哪些（2026-11-22 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 2 題撰寫：主要關鍵字「無痕內褲」（1k–10k／月）、「無痕內褲推薦」（100–1k），回答自動完成的「無痕內褲缺點」「透氣嗎」「卡臀／卡屁」「裂開」（2026-11-22 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-seamless-underwear-pros-cons.html`，handle `seamless-underwear-pros-cons`，標籤「選購指南、生活美學、公開」（會出現在舒適內搭入口）。
 - 依據：英國皮膚科醫學會〈Vulval skincare〉（2023-05 版）、Cleveland Clinic〈The Best Material for Underwear〉（2025-03-19）；2026-11-22 以網頁原文核對。文章照實寫出醫療衛教建議日常以純棉為主，把無痕內褲定位為合身褲裝、洋裝等穿搭用。
 - 商品敘述只用 Storefront 上的商品資料（褲型、切邊、底襠、尺寸與體重範圍、照護說明）。7 件無痕／冰絲款的商品頁都沒有纖維成分，文中不寫自家商品的材質；「冰絲無痕中腰三角褲」有「純棉檔」標籤但說明沒寫，文中未採用。
 - 檢查：`verify-public-content.mjs` 97 條封鎖詞無命中，沒有治療、改善、止癢、抗菌等用語。
 - 圖片：Codex CLI 0.163.0 內建生圖各 1 張（預覽、主圖），裁成 `public/images/talk/*-seamless-fit.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle，Shopify 文章建立前不會被用到。typecheck、Vitest 833 項、verify:content 通過。
-- 待店主確認內容後：在 Shopify `care-talk` 建立文章、驗證文章頁與分享預覽、重新部署讓 sitemap 收錄，再送 Search Console 與 `npm run submit:indexnow`。
+- 上架（正式設定）：店主 2026-11-22 回覆「照草稿上架」。先合併 PR #158（`ec61529`，圖片上線）；Chrome 的 Shopify 登入過期，店主重新登入後，在「SAENGAK Talk」（handle `care-talk`）建立文章 635292188739，公開時間 2026-11-22 18:05（UTC+8）。標題、內文、摘要、SEO 標題與說明、handle 由雜湊比對過的 JSON 檔載入（內文與摘要用編輯器的 HTML 模式寫入），標籤用挑選器加入；作者欄位為預設的「My Store 7 Admin」。
+- 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文只差空白換行，正規化後一致；標籤：公開、生活美學、選購指南。
+- 正式站驗證：Googlebot 取得 `<title>`「無痕內褲缺點：透氣嗎、會卡臀嗎？材質、尺寸與清洗挑選重點｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-seamless-fit.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖載入、比較表與內部連結正常，標籤顯示 #生活美學、#選購指南，作者顯示 LUCISSI CARE 編輯團隊，沒有 console 錯誤。
+- sitemap 在建置時產生，本文件 PR 合併觸發重新部署後補驗，再送 Search Console 與 `npm run submit:indexnow`。
 
 ## sitemap 加入三個分類頁（2026-11-22，已上線）
 
