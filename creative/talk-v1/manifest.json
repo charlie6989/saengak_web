@@ -171,6 +171,24 @@
       "scene": "In a bright, calm home entryway in soft morning light, a pale oak console table holds what someone gathers before heading out to a clinic appointment: a plain ivory canvas tote bag, a small closed notebook with a muted dusty rose linen cover and a plain wooden pencil resting on it, a simple ring of house keys, a neatly folded light oatmeal cardigan, and a clear glass of water. A small muted sage plant in an unglazed ceramic pot stands at the back. Prepared, unhurried and reassured, not anxious. No people, no bodies, no hands, no medicine, no pills, no tubes, no medical equipment, no phone screens, no text, no numbers, no logos, no brand names, no tags with writing.",
       "generatedAt": "2026-11-22",
       "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-thumb-cotton-vs-ice-silk",
+      "topic": "純棉內褲和冰絲內褲哪個好",
+      "placement": "LUCISSI Talk 文章預覽圖",
+      "promptFile": "creative/talk-v1/thumb-cotton-vs-ice-silk.txt",
+      "scene": "On a pale oak tray on a linen-covered table beside a bright window, two folded women's briefs are laid side by side for comparison: on the left a soft matte white cotton jersey brief with a visible fine knit texture, on the right a smooth seamless brief in pale sage with a subtle silky sheen and clean laser-cut edges. Behind them, a small dried cotton boll sprig in a narrow ceramic vase and a clear glass of water with a few ice cubes catching the light. Fresh, airy summer morning, a calm side-by-side fabric comparison. No people, no bodies, no mannequins, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-22",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
+    },
+    {
+      "id": "talk-article-cotton-vs-ice-silk",
+      "topic": "純棉內褲和冰絲內褲哪個好",
+      "placement": "LUCISSI Talk 文章主圖",
+      "promptFile": "creative/talk-v1/article-cotton-vs-ice-silk.txt",
+      "scene": "On a pale oak tray on a linen-covered table beside a bright window, two folded women's briefs are laid side by side for comparison: on the left a soft matte white cotton jersey brief with a visible fine knit texture, on the right a smooth seamless brief in pale sage with a subtle silky sheen and clean laser-cut edges. Behind them, a small dried cotton boll sprig in a narrow ceramic vase and a clear glass of water with a few ice cubes catching the light. Fresh, airy summer morning, a calm side-by-side fabric comparison. No people, no bodies, no mannequins, no text, no numbers, no logos, no brand names, no tags with writing.",
+      "generatedAt": "2026-11-22",
+      "generator": "Codex CLI 0.163.0 built-in image generation (ChatGPT sign-in)"
     }
   ],
   "generator": "Codex CLI built-in image generation (ChatGPT sign-in), one call per prompt, 2026-11-20; source PNGs ~1672x941 kept outside Git",
@@ -560,6 +578,41 @@
       "sha256": "f05a373bfe4eddb0204d79bad3972c641c89a3f768e017925ae1552211d33ef1",
       "source": "article",
       "key": "itch-which-doctor"
+    },
+    {
+      "asset": "public/images/talk/thumb-cotton-vs-ice-silk.webp",
+      "bytes": 136848,
+      "sha256": "7ca5bf247cb2946e624a162d1a2b71993f00e33a959ef2c19196dcf739079efd",
+      "source": "thumb",
+      "key": "cotton-vs-ice-silk"
+    },
+    {
+      "asset": "public/images/talk/card-cotton-vs-ice-silk.webp",
+      "bytes": 91966,
+      "sha256": "4e8ee76c417279732cb9d405132636cc4884cbb165dfff453113c83e4c2a0a60",
+      "source": "thumb",
+      "key": "cotton-vs-ice-silk"
+    },
+    {
+      "asset": "public/images/talk/square-cotton-vs-ice-silk.webp",
+      "bytes": 65442,
+      "sha256": "7fa9fd3e9138aa7a01dc9788d9676081545acbd115a373e570cbef4e85d17e6d",
+      "source": "thumb",
+      "key": "cotton-vs-ice-silk"
+    },
+    {
+      "asset": "public/images/talk/share-cotton-vs-ice-silk.jpg",
+      "bytes": 126324,
+      "sha256": "f84077f690fed171807ded222ba467a9f89f35d09b3118a78e28a8c4d1644b29",
+      "source": "thumb",
+      "key": "cotton-vs-ice-silk"
+    },
+    {
+      "asset": "public/images/talk/article-cotton-vs-ice-silk.webp",
+      "bytes": 71972,
+      "sha256": "986dab6d05ee9a7963ed2ee4f2437a4ab174710166d9cc9da817df815acedc65",
+      "source": "article",
+      "key": "cotton-vs-ice-silk"
     }
   ],
   "handles": {
@@ -573,6 +626,7 @@
     "seamless-fit": "seamless-underwear-pros-cons",
     "period-underwear": "period-underwear-guide",
     "safety-shorts": "safety-shorts-underwear",
-    "itch-which-doctor": "intimate-itch-which-doctor"
+    "itch-which-doctor": "intimate-itch-which-doctor",
+    "cotton-vs-ice-silk": "cotton-vs-ice-silk-underwear"
   }
 }
