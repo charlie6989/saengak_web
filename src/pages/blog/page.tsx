@@ -8,6 +8,7 @@ import Footer from '../../components/feature/Footer';
 import { formatTwd, estimateReadingMinutes, sortAvailableFirst } from '../../domain/algorithms';
 import { NOINDEX_ROBOTS } from '../../lib/seo';
 import { replaceStructuredData, setPageMeta } from '../../lib/documentMeta';
+import { articlePageState, servedDocumentFor } from '../../lib/servedDocument';
 import { articleBreadcrumbs, articleMeta, breadcrumbJsonLd, buildArticleJsonLd } from '../../lib/structuredData';
 import { getShopifyArticles, lookupShopifyArticleByHandle, getShopifyProducts, type ShopifyArticle, type ShopifyProduct } from '../../lib/shopify';
 
@@ -32,13 +33,14 @@ export default function BlogArticle() {
   }, [article]);
   const [relatedArticles, setRelatedArticles] = useState<ShopifyArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  // Shopify 暫時讀不到（不是確定沒有這篇文章）
+  // Shopify 暫時讀不到，或伺服器已確認有這篇文章但瀏覽器讀到的資料還沒有它
   const [lookupUnavailable, setLookupUnavailable] = useState(false);
-  // 確定找不到文章時才不讓搜尋引擎收錄這個網址（伺服器同樣回 404）。
-  // 讀取失敗不能斷定文章不存在，不改 robots：搜尋引擎轉譯時若剛好讀不到，文章頁不會被排除索引。
+  // 站內換頁到確定不存在的文章時才由瀏覽器設 noindex；第一份 HTML 的 robots 由伺服器決定（找不到時回 404），
+  // 不因瀏覽器端較舊或失敗的查詢改成 noindex（規則見 src/lib/servedDocument.ts）。
+  const [noindexMissing, setNoindexMissing] = useState(false);
   useEffect(() => {
-    if (!loading && !article && !lookupUnavailable) setPageMeta({ robots: NOINDEX_ROBOTS });
-  }, [loading, article, lookupUnavailable]);
+    if (!loading && !article && noindexMissing) setPageMeta({ robots: NOINDEX_ROBOTS });
+  }, [loading, article, noindexMissing]);
   const [reloadKey, setReloadKey] = useState(0);
   const [activeTocId, setActiveTocId] = useState<string>('');
   const [readingProgress, setReadingProgress] = useState(0);
@@ -52,11 +54,14 @@ export default function BlogArticle() {
     async function loadArticleData() {
       setLoading(true);
       setLookupUnavailable(false);
+      setNoindexMissing(false);
       try {
         const result = await lookupShopifyArticleByHandle(activeHandle);
         if (isMounted) {
+          const state = articlePageState(result.status, servedDocumentFor(window.location.pathname));
           setArticle(result.status === 'found' ? result.article : null);
-          setLookupUnavailable(result.status === 'unavailable');
+          setLookupUnavailable(state.view === 'unavailable');
+          setNoindexMissing(state.noindex);
         }
 
         const allArticles = await getShopifyArticles(6);

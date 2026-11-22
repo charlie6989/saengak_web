@@ -1,4 +1,5 @@
 import { canonicalUrlFor, seoForLocation } from './seo';
+import { noteRouteChange } from './servedDocument';
 import { siteJsonLd, type JsonLd } from './structuredData';
 
 /**
@@ -70,6 +71,7 @@ export function replaceStructuredData(items: JsonLd[]): () => void {
  * 這裡不移除，等頁面載入資料後再以相同內容取代。
  */
 export function applyRouteSeo(pathname: string, search: string, { initial = false } = {}) {
+  noteRouteChange(pathname);
   const route = seoForLocation(pathname, search);
   setPageMeta({
     title: route.title,

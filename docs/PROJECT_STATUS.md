@@ -1,5 +1,22 @@
 # 項目狀態
 
+## 剛上架的文章仍被 Google 判為 noindex：第一份 HTML 改由伺服器決定 robots（2026-11-23，本分支）
+
+- 發現（Search Console 網址檢查，2026-11-23 約 01:40）：14 篇文章中 11 篇已建立索引；3 篇「已由 noindex 標記排除」：
+  - 無痕內褲：最後檢索 11/22 18:11，早於 PR #174 修正，屬舊問題。
+  - 除毛：最後檢索 11/23 00:59；生理期清潔：最後檢索 11/23 01:31。兩次都在 PR #174 合併部署（00:23）之後、文章上架與要求建立索引後幾分鐘，仍偵測到 robots meta 的 noindex。
+  - 同一時間以 Googlebot UA 抓伺服器 HTML 為 `index,follow`；即時測試（無痕內褲、生理期清潔）回報「網址可供 Google 使用」。
+- 推測原因（未證實）：Google 轉譯時瀏覽器端的 Storefront 文章查詢有回應但沒有這篇文章，PR #174 會判為 not-found 並設 noindex（PR #174 列為未處理的情況）。直接查 Storefront 回應為 `cf-cache-status: DYNAMIC`，沒有 CDN 快取；兩次檢索時間都剛好有文件 PR 正在重新部署，是否相關未驗證。
+- 修正（程式碼）：新增 `src/lib/servedDocument.ts`。
+  - 記錄伺服器送出的第一份文件網址，換頁時（`applyRouteSeo`）清除。
+  - 以 Navigation Timing 的 `responseStatus` 取得那份文件的狀態碼。
+  - 文章頁：第一份文件不再由瀏覽器改 robots（找不到的文章 middleware 已回 404＋noindex）。伺服器回 200 而瀏覽器查不到時，顯示「文章暫時無法載入」與重新載入按鈕。
+  - 只有站內換頁到確定不存在的文章才由瀏覽器設 noindex。
+- 驗證（本機）：
+  - `tests/served-document.test.ts` 4 項；typecheck、Vitest 843 項、build、`verify:content` 通過。
+  - 本機 dev server（沒有 middleware，任何網址都回 200，等同「伺服器確認、瀏覽器查不到」）：直接開不存在的文章顯示暫時無法載入、robots 維持 `index,follow`；站內換頁到不存在的文章顯示找不到、robots `noindex,nofollow`；直接開生理期清潔文章正常顯示、`index,follow`，console 沒有錯誤。
+- 未完成：尚未合併部署；正式站尚未驗證；3 篇文章尚未重新要求建立索引。
+
 ## 新文章：生理期私密處怎麼清潔、衛生棉多久換（2026-11-23 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 8 題撰寫（生理期可以用私密處清潔嗎；搜尋量未測）。2026-11-23 重新查詢自動完成：「月經來可以用私密處清潔嗎」「可以用濕紙巾擦私密處嗎」沒有建議，「衛生棉多久換一次」有多個建議（含「生理期剛來」），所以 SEO 標題以「衛生棉多久換一次」開頭。搜尋量仍未量測。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-23-period-cleansing-pad-change.html`，handle `period-cleansing-pad-change`，標籤「健康知識、私密護理、公開」（生理期照護入口）。
