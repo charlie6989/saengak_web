@@ -10,7 +10,8 @@
 - 上架（正式設定）：店主 2026-11-22 回覆「照草稿上架」。PR #165 合併（`7d14cbe`，圖片上線）；在 Shopify「SAENGAK Talk」建立文章 635297660995，公開時間 2026-11-22 21:09（UTC+8），做法與前兩篇相同（雜湊比對過的 JSON 檔、HTML 模式寫入內文與摘要、挑選器加標籤）。
 - 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：公開、生活美學、選購指南。
 - 正式站驗證：Googlebot 取得 `<title>`「安全褲還要穿內褲嗎？可以單穿嗎、平口冰絲安全褲怎麼選｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-safety-shorts.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、對照表與內部連結正常，標籤 #生活美學、#選購指南，作者 LUCISSI CARE 編輯團隊，沒有 console 錯誤。
-- sitemap 在建置時產生，文章建立時正式站仍是 50 個網址；本狀態文件合併後重新部署才會列入，之後送 IndexNow 與 Search Console。
+- sitemap 與索引：sitemap 在建置時產生，文章建立時正式站仍是 50 個網址；PR #166 合併（`8714db8`）重新部署後，`sitemap.xml` 列出本文、共 51 個網址。`npm run submit:indexnow` 送出 51 個網址，Bing 回 200。Search Console：文章為「Google 無法辨識這個網址」，按「要求建立索引」後出現「已要求建立索引」；平口安全褲商品頁 `/product/7811245015107` 已收錄（產品摘要與商家資訊各 1 個有效項目），內容未變，未重送。
+- 未驗證：Google 與 Bing 實際收錄時間。
 
 ## 新文章：生理褲是什麼（2026-11-22 上架）
 
