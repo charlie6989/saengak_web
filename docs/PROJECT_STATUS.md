@@ -1,14 +1,17 @@
 # 項目狀態
 
-## 文章草稿：生理褲是什麼（2026-11-22，未上架）
+## 新文章：生理褲是什麼（2026-11-22 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 3 題撰寫：主要關鍵字「生理褲」（1k–10k／月）、「生理褲推薦」「月經內褲」（各 100–1k），回答「其他人也問了」的「生理褲還要用衛生棉嗎」「生理褲可以平常穿嗎」與自動完成的「跟一般內褲差別」「可以當內褲穿嗎」（2026-11-22 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-period-underwear-guide.html`，handle `period-underwear-guide`，標籤「選購指南、健康知識、公開」（會出現在舒適內搭與生理期照護入口）。
 - 重點：「生理褲」常指兩種商品，搭配衛生棉的防漏生理褲，以及可單穿的吸收型月經褲；文章先分清楚再談怎麼穿、多久換、怎麼洗。避用註冊商標「月亮褲」。
 - 依據：Cleveland Clinic〈What Is Period Underwear and Does It Work?〉（2022-02-07）、〈Menstrual Pads 101〉（2025-10-17）；2026-11-22 以網頁原文核對。沒有找到國健署或食藥署對衛生棉更換時數、吸收型月經褲分類的正式說明，文中不寫台灣法規分類。
 - 商品敘述只用 Storefront 上的商品資料。CARE 的「純棉高腰防漏生理褲」商品頁寫「請搭配適合的生理用品使用」，屬於防漏生理褲，文中照此說明。
-- **待店主決定**：11/20 依關鍵字研究把這件商品的 SEO 標題改成「純棉高腰防漏生理褲（月經內褲）前後加長防漏層」，但「月經內褲」多指可單穿的吸收型月經褲，可能讓人誤以為不用衛生棉。建議改為「純棉高腰防漏生理褲 前後加長防漏層 搭配衛生棉使用」；尚未修改。
+- 生理褲 SEO 標題修正（正式設定）：11/20 依關鍵字研究改成「純棉高腰防漏生理褲（月經內褲）前後加長防漏層」，但「月經內褲」多指可單穿的吸收型月經褲，可能讓人誤以為不用衛生棉。店主 2026-11-22 回覆「都照做」，同日在 Shopify 後台改為「純棉高腰防漏生理褲 前後加長防漏層 搭配衛生棉使用」（雜湊比對後寫入）；Storefront 回讀一致，正式站 `/product/7811057942595` 的 `<title>` 已是新標題。`docs/seo/2026-11-keyword-research.md` 第 6 節對這件商品的建議以此為準。
 - 檢查：`verify-public-content.mjs` 97 條封鎖詞無命中，沒有治療、改善、止癢、抗菌等用語。圖片：Codex CLI 0.163.0 內建生圖各 1 張，裁成 `public/images/talk/*-period-underwear.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle。typecheck、Vitest 833 項、verify:content 通過。
-- 待店主確認內容後：在 Shopify `care-talk` 建立文章、驗證文章頁與分享預覽、重新部署讓 sitemap 收錄，再送 Search Console 與 `npm run submit:indexnow`。
+- 上架（正式設定）：店主 2026-11-22 回覆「都照做」。PR #161 與 main 衝突（狀態文件），rebase 後合併（`60a9f6c`，圖片上線）；在 Shopify「SAENGAK Talk」建立文章 635292352579，公開時間 2026-11-22 18:23（UTC+8），做法與無痕內褲文章相同（雜湊比對過的 JSON 檔、HTML 模式寫入內文與摘要、挑選器加標籤）。
+- 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：健康知識、公開、選購指南。
+- 正式站驗證：Googlebot 取得 `<title>`「生理褲是什麼？要搭配衛生棉嗎、跟一般內褲差在哪、可以平常穿嗎｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-period-underwear.jpg` 與描述性 alt；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、對照表與內部連結正常，標籤 #健康知識、#選購指南，作者 LUCISSI CARE 編輯團隊，沒有 console 錯誤。
+- sitemap 在建置時產生，本文件 PR 合併觸發重新部署後補驗，再送 Search Console（文章與生理褲商品頁）與 `npm run submit:indexnow`。
 ## SEO 現況與 sitemap 重新提交（2026-11-22 晚）
 
 - Search Console（`sc-domain:lucissicare.com`，Chrome 已登入）：網頁索引 7 頁已收錄、3 頁未收錄（都是「頁面會重新導向」），與早上相同。成效報表 28 天只有 11/17–11/20 的資料：曝光 18、點擊 0、平均排名 11；查詢「lucissi」14 次曝光，「私密部位異味」1 次（第一個非品牌查詢，對應 `/blog/intimate-odor-without-shame`）。曝光頁面以首頁 17 次最多；`/brand-story`（轉址到 `/about`）也有 3 次。
