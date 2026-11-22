@@ -1,4 +1,5 @@
 import { canonicalUrlFor, seoForLocation } from './seo';
+import { noteRouteChange } from './servedDocument';
 import { siteJsonLd, type JsonLd } from './structuredData';
 
 /**
@@ -70,11 +71,14 @@ export function replaceStructuredData(items: JsonLd[]): () => void {
  * 這裡不移除，等頁面載入資料後再以相同內容取代。
  */
 export function applyRouteSeo(pathname: string, search: string, { initial = false } = {}) {
+  noteRouteChange(pathname);
   const route = seoForLocation(pathname, search);
+  // 第一次載入時伺服器已判斷過這個網址（例如找不到的文章回 404＋noindex），不放寬成路由預設的 index
+  const served = initial ? document.head.querySelector('meta[name="robots"]')?.getAttribute('content') : null;
   setPageMeta({
     title: route.title,
     description: route.description,
-    robots: route.robots,
+    robots: served?.includes('noindex') ? served : route.robots,
     canonicalUrl: canonicalUrlFor(route),
     type: route.type,
   });
