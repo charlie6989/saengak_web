@@ -1,13 +1,16 @@
 # 項目狀態
 
-## 新文章草稿：純棉內褲和冰絲內褲哪個好（2026-11-22，待店主確認，未上架）
+## 新文章：純棉內褲和冰絲內褲哪個好（2026-11-22 上架）
 
 - 依[關鍵字研究](seo/2026-11-keyword-research.md)第 7 節第 6 題撰寫：主要關鍵字「純棉內褲」（1k–10k／月）、「冰絲內褲」（100–1k），回答自動完成的「冰絲內褲缺點」「冰絲內褲好嗎」「純棉內褲好處」「冰絲是什麼材質」（2026-11-22 重新查詢）。草稿與 Shopify 欄位在 `docs/shopify/articles/2026-11-22-cotton-vs-ice-silk-underwear.html`，handle `cotton-vs-ice-silk-underwear`，標籤「選購指南、生活美學、公開」。
 - 重點：冰絲是商品名不是纖維名，要看吊牌纖維成分；冰絲涼感只維持幾秒到幾分鐘；日常、敏感肌偏向整件純棉，合身衣物可輪替冰絲／無痕並挑棉底襠；運動流汗則重點在盡快換下。
 - 依據（2026-11-22 以原文核對）：Cleveland Clinic〈5 Underwear Tips〉〈Vulvar Dermatitis〉、美國女性健康辦公室〈Vaginal yeast infections〉、新華網轉載《科技日報》冰絲報導（中國來源，文中標明）、衛福部（國健署資料）涼感 Q-max 說明、標準檢驗局〈服飾標示基準〉與纖維名稱例示表（沒有「冰絲」）。兩個建議看似不同（女性健康辦公室：至少棉質底襠；Cleveland Clinic：小塊棉底襠不能取代全棉），文中照實並列。康健雜誌、北榮 ihealth 頁面本次無法以程式讀取原文，沒有引用；洗衣精柔軟精對機能布料的說法沒有權威來源，不寫。
 - 商品資料限制：冰絲 3 款商品頁沒有纖維成分、底襠材質與涼感數字；純棉款只標示「純棉雙層底襠」（或「純棉無縫」），沒有整件纖維比例。文中照實寫。純棉款商品標籤有「抗菌內褲」，但商品說明沒有依據，文中不寫。後續：店主若能從吊牌補上纖維成分，商品頁與文章都可更新。
 - 圖片：Codex CLI 0.163.0 內建生圖各 1 張（木托盤上並排的白色純棉三角褲與淺綠色無痕三角褲、棉花枝與冰水；無人物、無文字），裁成 `public/images/talk/*-cotton-vs-ice-silk.*`，提示詞與 sha256 在 `creative/talk-v1/manifest.json`；`editorialImages.ts` 預先登記 handle。Vitest 833 項、build、`verify:content` 通過。
-- 未做：Shopify 文章尚未建立，sitemap／IndexNow／Search Console 尚未送出；等店主確認。
+- 上架（正式設定）：店主 2026-11-22 回覆「照草稿上架」。PR #171 合併（`518e65b`，圖片上線；Codex 審查完成、沒有問題）；在 Shopify「SAENGAK Talk」建立文章 635297955907，公開時間 2026-11-22 23:55（UTC+8），做法與前幾篇相同。
+- 回讀（Storefront API）：標題、SEO 標題與說明、摘要完全一致；內文正規化空白後一致；標籤：公開、生活美學、選購指南。
+- 正式站驗證：Googlebot 取得 `<title>`「純棉內褲和冰絲內褲哪個好？冰絲是什麼材質、有什麼缺點｜LUCISSI CARE」、robots `index,follow`、canonical、og:image `share-cotton-vs-ice-silk.jpg` 與描述性 alt、BlogPosting；facebookexternalhit 取得相同 og:title／og:image；五張圖檔都回 200。Chrome 打開文章頁：主圖、9 個小節、對照表、7 筆查核來源與 7 個商品連結正常，標籤 #生活美學、#選購指南，作者 LUCISSI CARE 編輯團隊，重新整理後沒有 console 錯誤。
+- sitemap 在部署時產生，本文件的 PR 合併後才會列入；IndexNow 與 Search Console 要求建立索引在之後進行，結果另記。
 
 ## 新文章：私密處癢要看什麼科（2026-11-22 上架）
 
