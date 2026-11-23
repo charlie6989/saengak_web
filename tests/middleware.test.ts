@@ -430,6 +430,15 @@ describe('product structured data', () => {
     expect(structuredDataShippingRate(DEFAULT_FREE_SHIPPING_THRESHOLD - 1)).toBe(130);
   });
 
+  it('states the delivery time from the shipping page: ships within 1 working day, arrives 1–2 working days later', () => {
+    const offers = buildProductJsonLd(base)!.offers as { shippingDetails: { deliveryTime: Record<string, any> } };
+    const time = offers.shippingDetails.deliveryTime;
+    expect(time['@type']).toBe('ShippingDeliveryTime');
+    expect(time.handlingTime).toEqual({ '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'DAY' });
+    expect(time.transitTime).toEqual({ '@type': 'QuantitativeValue', minValue: 1, maxValue: 2, unitCode: 'DAY' });
+    expect(time.businessDays.dayOfWeek).toEqual(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => `https://schema.org/${day}`));
+  });
+
   it('claims the 7-day free return only for items that are not sealed personal-care goods', () => {
     const apparel = buildProductJsonLd(base)!.offers as Offers;
     expect(apparel.hasMerchantReturnPolicy).toEqual({

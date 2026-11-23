@@ -96,11 +96,22 @@ const RETURN_POLICY: JsonLd = {
   returnMethod: 'https://schema.org/ReturnByMail',
 };
 
+// 與配送說明一致（src/domain/shippingMethods.ts 的 DISPATCH_PROMISE／TRANSIT_PROMISE）：
+// 1 個工作天內出貨（週末與國定假日不出貨），出貨後一般 1–2 個工作天送達。
+const WORKING_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => `https://schema.org/${day}`);
+const DELIVERY_TIME: JsonLd = {
+  '@type': 'ShippingDeliveryTime',
+  businessDays: { '@type': 'OpeningHoursSpecification', dayOfWeek: WORKING_DAYS },
+  handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'DAY' },
+  transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 2, unitCode: 'DAY' },
+};
+
 function shippingDetails(price: number): JsonLd {
   return {
     '@type': 'OfferShippingDetails',
     shippingRate: { '@type': 'MonetaryAmount', value: structuredDataShippingRate(price), currency: 'TWD' },
     shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'TW' },
+    deliveryTime: DELIVERY_TIME,
   };
 }
 
