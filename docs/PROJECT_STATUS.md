@@ -1,5 +1,12 @@
 # 項目狀態
 
+## Google 建議：商品結構化資料缺少送達時間（2026-11-23，PR 待合併）
+
+- 來源：Google Search Console 2026-11-23 信件「Merchant listings structured data issues」：`offers.shippingDetails` 缺少 `deliveryTime`（非重大問題）。同日另一封「Product snippets」建議補 `aggregateRating`、`review`；商品頁沒有顯示評論，依 Google 規定不可只在結構化資料裡加，故不處理。
+- 修正：`src/lib/structuredData.ts` 的 `shippingDetails` 加上 `deliveryTime`（`ShippingDeliveryTime`：週一至週五為工作天、處理 0–1 天、運送 1–2 天），與 `src/domain/shippingMethods.ts` 的出貨與送達說明一致；伺服器 head 與商品頁共用同一函式。
+- 驗證（本機）：`tests/middleware.test.ts` 新增送達時間測試；typecheck、Vitest 851 項、build、`verify:content` 通過。尚未上線，Search Console 需重新檢索後才會更新。
+- 同次檢查：lucissicare.com 的「已重新導向的網頁」來自 lucissi.com 連到 `/search?category=…`（308 轉到 `/products?category=…`）；已在 LUCISSI_website PR #170 改為直接連 `/products`。sitemap 55 個網址皆為 200。
+
 ## 部署後舊分頁點進其他頁面出現「頁面載入發生異常」（2026-11-23，PR #186 已上線）
 
 - 回報：店主 2026-11-23 回報「點擊進去看到錯誤」（沒有附畫面）。
