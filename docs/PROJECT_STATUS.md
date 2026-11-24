@@ -1,12 +1,15 @@
 # 項目狀態
 
-## GA4 排除內部流量（2026-11-25）
+## GA4 排除內部流量（2026-11-25，PR #189／#190 已上線）
 
 - 店主要求排除內部流量。設定前 11/18–11/25 的報表：30 個工作階段、14 位使用者，直接流量佔 80%，多數可能是店主與自動化驗證的造訪；這段已收的資料不會被回溯排除。
 - **GA4 後台（已生效）**：資料串流「LUCISSI CARE 網站」→ 設定代碼設定 → 定義內部流量，新增規則「Owner network 2026-11-25」：IP `220.132.8.45/32`（當時這台 Mac 的對外 IPv4，取自 ipify；沒有 IPv6），traffic_type=internal。Google 代碼已升級成 Tag Manager 容器 `GTM-NWQ7T6L7`，規則要按「Submit」發布才會生效，已發布為容器版本 2。資料篩選器「Internal Traffic」（排除 traffic_type=internal）已由「測試」改為「啟用」。
 - 已驗證：發布後重新下載 `gtag/js?id=G-8HKZRE72SY` 已含 `__ogt_ip_mark`；以 Chrome 開正式站 `/terms`，送出的 `g/collect` 帶 `tt=internal`（發布前同樣的請求沒有 `tt`）。即時報表「測試資料篩選器名稱」的值清單當時沒有出現，因此沒有在 GA 報表端確認被排除。
 - 限制：IP 會換（HiNet 撥接重連），手機網路也不在規則內。IP 改變後要回到同一頁更新規則並再發布一次。
-- **裝置標記（程式碼，未部署）**：`src/lib/analytics.ts` 加入 `?ga_internal=1`，在這個瀏覽器的 localStorage 記住標記，之後 config 帶 `traffic_type: 'internal'`；`?ga_internal=0` 取消。用來補手機或 IP 變動。`tests/analytics.test.ts` 新增 3 項測試；本機 Vitest 854 項、typecheck 通過。部署後要在手機與電腦各開一次 `https://lucissicare.com/?ga_internal=1`。
+- **裝置標記（PR #189 已上線）**：`src/lib/analytics.ts` 加入 `?ga_internal=1`，在這個瀏覽器的 localStorage（`lucissi_ga_internal`）記住標記，之後 config 帶 `traffic_type: 'internal'`；`?ga_internal=0` 取消。用來補手機或 IP 變動。`tests/analytics.test.ts` 新增 3 項測試。
+- **i18next 升級（PR #190 已上線）**：#189 的 CI 因 `npm audit` 新通報 GHSA-6jcc-5g8w-32mx（i18next <26.3.4，moderate DoS）失敗，與本變更無關；店主選擇先修。`i18next` 25.4.1 → 26.7.2，`react-i18next` 留 15.7.4（peer >=23.4.0）。站內只掛 `I18nextProvider`，沒有元件呼叫 `t()`。本機 typecheck、Vitest 851 項、build、verify:content、audit 0 個漏洞；本機 Chrome 連不到 `vite preview`，改以正式站補驗。
+- 上線驗證（2026-11-25）：#190 合併 `5be332f`、#189 更新分支後 CI 通過並合併 `3b23f57`，main CI 通過。正式站約 40 秒後換成含 `lucissi_ga_internal` 的新 bundle。以 Chrome 開 `https://lucissicare.com/?ga_internal=1`：localStorage 為 1、dataLayer config 帶 `traffic_type: internal`；轉到 `/products`（12 個商品連結）後 page_view、scroll 皆帶 `tt=internal`；`/faq` 主控台沒有網站錯誤。這個 Chrome 已被標記為內部。
+- 待店主：在手機（和其他常用瀏覽器）各開一次 `https://lucissicare.com/?ga_internal=1`。
 
 ## Google 建議：商品結構化資料缺少送達時間（2026-11-23，PR 待合併）
 
