@@ -2,22 +2,33 @@ import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 import {
   DEFAULT_GA4_MEASUREMENT_ID,
+  INTERNAL_TRAFFIC_STORAGE_KEY,
   initAnalytics,
   isAnalyticsHost,
   isTrackedPath,
   resetAnalyticsForTest,
+  resolveInternalTraffic,
   resolveMeasurementId,
   trackPageView,
 } from '../src/lib/analytics';
 
-function fakeEnvironment(hostname: string) {
+function memoryStorage() {
+  const data = new Map<string, string>();
+  return {
+    getItem: (key: string) => data.get(key) ?? null,
+    setItem: (key: string, value: string) => void data.set(key, value),
+    removeItem: (key: string) => void data.delete(key),
+  };
+}
+
+function fakeEnvironment(hostname: string, search = '', storage: ReturnType<typeof memoryStorage> | undefined = memoryStorage()) {
   const appended: Array<{ src: string; async: boolean }> = [];
   const doc = {
     title: '頁面標題｜LUCISSI CARE',
     createElement: () => ({ src: '', async: false }),
     head: { appendChild: (node: { src: string; async: boolean }) => appended.push(node) },
   } as unknown as Document;
-  const win = { location: { hostname, origin: `https://${hostname}` } } as unknown as Window & { dataLayer?: unknown[]; gtag?: (...args: unknown[]) => void };
+  const win = { location: { hostname, origin: `https://${hostname}`, search }, localStorage: storage } as unknown as Window & { dataLayer?: unknown[]; gtag?: (...args: unknown[]) => void };
   return { win, doc, appended };
 }
 
@@ -67,6 +78,35 @@ describe('GA4 analytics', () => {
     expect(events).toEqual([
       ['event', 'page_view', { page_location: 'https://lucissicare.com/products?category=x', page_path: '/products?category=x', page_title: '頁面標題｜LUCISSI CARE' }],
     ]);
+  });
+
+  it('remembers the internal-traffic device flag until it is cleared', () => {
+    const storage = memoryStorage();
+    expect(resolveInternalTraffic('', storage)).toBe(false);
+    expect(resolveInternalTraffic('?ga_internal=1', storage)).toBe(true);
+    expect(storage.getItem(INTERNAL_TRAFFIC_STORAGE_KEY)).toBe('1');
+    expect(resolveInternalTraffic('?category=x', storage)).toBe(true);
+    expect(resolveInternalTraffic('?ga_internal=0', storage)).toBe(false);
+    expect(resolveInternalTraffic('', storage)).toBe(false);
+  });
+
+  it('falls back to the URL flag when storage is unavailable', () => {
+    const broken = {
+      getItem: () => { throw new Error('blocked'); },
+      setItem: () => { throw new Error('blocked'); },
+      removeItem: () => { throw new Error('blocked'); },
+    };
+    expect(resolveInternalTraffic('?ga_internal=1', broken)).toBe(true);
+    expect(resolveInternalTraffic('', broken)).toBe(false);
+    expect(resolveInternalTraffic('?ga_internal=1', undefined)).toBe(true);
+  });
+
+  it('marks every hit as internal traffic on a flagged device', () => {
+    const storage = memoryStorage();
+    storage.setItem(INTERNAL_TRAFFIC_STORAGE_KEY, '1');
+    const { win, doc } = fakeEnvironment('lucissicare.com', '', storage);
+    expect(initAnalytics(win, doc)).toBe(true);
+    expect(calls(win)[1]).toEqual(['config', DEFAULT_GA4_MEASUREMENT_ID, { send_page_view: false, traffic_type: 'internal' }]);
   });
 
   it('is allowed by the site CSP and disclosed on the privacy page', () => {
