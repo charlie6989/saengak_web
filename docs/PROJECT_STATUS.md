@@ -1,5 +1,25 @@
 # 項目狀態
 
+## PostHog（2026-11-28，PR 待合併，尚未啟用）
+
+- 店主要求比照 LUCISSI 母站（`LUCISSI_website` 的 `src/lib/marketing-tags.ts`、`Lib/storefront/marketing-tags.ts`）安裝 PostHog；選擇「另開新專案」與「比照母站開啟畫面錄影」，並同意由我用 Chrome 建專案。
+- **PostHog 後台（未完成）**：Chrome 已登入 PostHog（美國區），組織「Charlie and Eric」下有「Insight Engine」與母站專案 623517。「New project」無法使用，提示「需要組織管理員以上權限才能建立新專案」，所以沒有建專案、沒有金鑰。
+- **程式碼（已完成，未啟用）**：
+  - `posthog-js` 1.438.21（與母站同版本，2026-10-23 發布），動態載入成獨立檔案（約 330 KB），主程式不變大。
+  - `src/lib/posthog.ts`：`DEFAULT_POSTHOG_KEY` 目前是空字串，所以正式站不會載入；也可用 `VITE_PUBLIC_POSTHOG_KEY` 設定。設定同母站：`capture_pageview: 'history_change'`、`person_profiles: 'identified_only'`、`respect_dnt`、錄影 `maskAllInputs` 與 `.ph-mask`、錄影預設關閉並依頁面開關。
+  - 只在 `lucissicare.com` 載入；排除內部流量（`?ga_internal=1`，與 GA4、Vercel 共用；載入後才標記會停止收集）、DNT、自動化瀏覽器與爬蟲；後台、登入回跳、重設密碼頁的事件不送。
+  - 不錄影的頁面：`/admin`、`/auth`、`/login`、`/register`、`/forgot-password`、`/reset-password`、`/profile`、`/order-status`、`/welcome`。結帳在 Shopify，不在本站。
+  - `before_send` 把本站網址（`$current_url`、`$referrer`、首次造訪網址等）的查詢字串去掉，只留 `category`、`collection`、`utm_*`。Vercel Analytics 同步改為也保留 `utm_*`。
+  - `ScrollToTop` 換頁時呼叫 `syncPosthog`。
+  - `vercel.json` CSP：`script-src` 加 `https://us-assets.i.posthog.com`；`connect-src` 加 `https://us.i.posthog.com`、`https://us-assets.i.posthog.com`（與母站相同）。
+  - 隱私權頁：「瀏覽統計資料」與服務供應商加入 PostHog（畫面錄影、遮蔽輸入、哪些頁不錄、Cookie／本機儲存、網址去除查詢參數）。PostHog 尚未啟用時政策已列入；文字仍待店主／律師確認。
+- Codex 審查 2 項意見（已修正）：
+  - 頁首會員選單（桌機下拉、手機選單）以一般文字與 title 顯示姓名、Email，輸入遮蔽擋不到。兩處加 `ph-no-capture`，錄影中整塊不顯示。
+  - 載入後開 `?ga_internal=1` 會停止收集，但 `?ga_internal=0` 沒有恢復。新增 `restoreCaptureIfUnmarked`：只在網址明確帶 `=0`、且 PostHog 是停止狀態時呼叫 `opt_in_capturing`（不送 opt-in 事件）。
+- 驗證（本機）：`tests/posthog.test.ts` 7 項、`tests/vercel-insights.test.ts` 加 UTM；typecheck、Vitest 874 項、build、`verify:content`、`npm audit` 0 個漏洞。
+- 未驗證：正式站實際送出事件與錄影。要等有專案金鑰、填入 `DEFAULT_POSTHOG_KEY` 並部署後才能驗證。
+- 待店主：請組織管理員建立「LUCISSI CARE」專案（或把店主帳號升為管理員），或決定暫時共用母站專案 623517。
+
 ## Vercel Web Analytics 與 Speed Insights（2026-11-28，PR #194、#195 已上線）
 
 - 店主問現有分析工具後要求「請安裝」。安裝前只有 GA4（另有 Sentry 只收錯誤）；Vercel Analytics、Speed Insights、PostHog 都沒有。

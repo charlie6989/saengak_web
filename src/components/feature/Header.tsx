@@ -324,7 +324,8 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
                   {/* 用戶下拉選單 */}
                   {isUserMenuOpen && user && (
                     <div className="absolute right-0 mt-2 w-60 sm:w-64 bg-white rounded-lg shadow-xl py-1.5 z-50 border border-gray-200">
-                      <div className="px-4 py-2.5 border-b border-gray-100">
+                      {/* ph-no-capture：會員姓名與 Email 不進入 PostHog 畫面錄影（src/lib/posthog.ts） */}
+                      <div className="px-4 py-2.5 border-b border-gray-100 ph-no-capture">
                         <div
                           className="font-medium text-sm text-gray-900 truncate"
                           title={hasDistinctName ? userDisplayName : (user.email || '會員')}
@@ -592,7 +593,8 @@ export default function Header({ hideMobileBottomNav = false }: HeaderProps = {}
               <div className="pt-2">
                 {user ? (
                   <>
-                    <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    {/* ph-no-capture：會員姓名與 Email 不進入 PostHog 畫面錄影（src/lib/posthog.ts） */}
+                    <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 ph-no-capture">
                       <div
                         className="font-semibold text-base text-gray-800 truncate"
                         title={hasDistinctName ? userDisplayName : (user.email || '會員')}

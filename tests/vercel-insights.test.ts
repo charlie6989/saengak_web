@@ -29,6 +29,9 @@ describe('vercel insights', () => {
       'https://lucissicare.com/products?category=%E7%94%9F%E7%90%86%E6%9C%9F',
     );
     expect(redactInsightsUrl('https://lucissicare.com/', storage(null))).toBe('https://lucissicare.com/');
+    expect(redactInsightsUrl('https://lucissicare.com/?utm_source=line&utm_campaign=dec&fbclid=abc', storage(null))).toBe(
+      'https://lucissicare.com/?utm_source=line&utm_campaign=dec',
+    );
   });
 
   it('skips admin, auth callback and reset-password pages', () => {

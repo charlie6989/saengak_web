@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { applyRouteSeo } from "../../lib/documentMeta";
 import { PAGE_VIEW_DELAY_MS, initAnalytics, trackPageView } from "../../lib/analytics";
+import { syncPosthog } from "../../lib/posthog";
 
 export default function ScrollToTop() {
   const { pathname, search, hash } = useLocation();
@@ -14,6 +15,11 @@ export default function ScrollToTop() {
   useLayoutEffect(() => {
     applyRouteSeo(pathname, search, { initial: initialRender.current });
     initialRender.current = false;
+  }, [pathname, search]);
+
+  // PostHog：第一次在允許的瀏覽器載入（自己記錄換頁），之後依頁面開關畫面錄影
+  useEffect(() => {
+    syncPosthog(pathname, search);
   }, [pathname, search]);
 
   // GA4：只在正式網域載入；換頁後稍等再送 page_view，讓頁面載入資料後的標題被記到
