@@ -1,6 +1,6 @@
 # 項目狀態
 
-## 上線表現與商品頁 noindex 修正（2026-11-28，PR 待合併）
+## 上線表現與商品頁 noindex 修正（2026-11-28，PR #192 已上線）
 
 - 上線表現（2026-11-28 讀取，唯讀）：
   - GA4（10/31–11/27，實際資料從 11/18 起）：22 位使用者、40 個工作階段、355 次瀏覽；直接 75%、參照 17.5%（lucissi.com 為主）、Facebook 7.5%、自然搜尋 0。11/25 才開始排除內部流量，之前多數是店主與自動化驗證。最近 7 天 15 位使用者，其中中國、德國、芬蘭、美國的造訪可能是爬蟲（未確認）。主要事件、營收 0。
@@ -13,7 +13,10 @@
   - `src/lib/servedDocument.ts`：`articlePageState` 改名 `lookupPageState`，文章頁與商品頁共用。
   - `src/pages/product/page.tsx`：第一份 HTML 不再由瀏覽器改 robots；伺服器回 200 而瀏覽器讀不到時顯示「商品暫時無法載入」與重新載入按鈕；只在站內換頁到確定不存在的商品時設 noindex。
 - 驗證（本機）：`tests/product-lookup.test.ts` 5 項；typecheck、Vitest 859 項、build、`verify:content` 通過。本機 dev server（沒有 middleware，任何網址回 200）：直接開修護組商品頁正常顯示、`index,follow`；直接開不存在的 `/product/1` 顯示「商品暫時無法載入」、`index,follow`；從全部商品站內換頁到 `/product/2` 顯示「找不到該商品」、`noindex,nofollow`。
-- 上線後要做：Search Console 對修護組商品頁做即時測試並要求建立索引；兩篇文章可一併重新要求。
+- 合併與部署：PR #192 合併為 `aab69ed`（CI 通過；Codex 審查沒有意見），合併後約 30 秒正式站換成新版 JS。
+- 正式站驗證（Chrome，2026-11-28）：修護組商品頁正常顯示、robots `index,follow`。
+- Search Console：修護組商品頁、`/blog/period-cleansing-pad-change`、`/blog/intimate-shaving-razor-guide` 三頁即時測試都是「網址可供 Google 使用／網頁可以建立索引」（商品頁含產品摘要、商家資訊、導覽標記各 1 項有效），都已按「要求建立索引」，回覆「已將網址加入優先檢索佇列」。
+- 未驗證：Google 何時重新檢索、三頁何時從「已由 noindex 標記排除」移到已收錄；「Google 轉譯時讀不到商品」是推斷，沒有直接證實。
 
 ## GA4 排除內部流量（2026-11-25，PR #189／#190 已上線）
 
