@@ -13,7 +13,10 @@
   - `ScrollToTop` 換頁時呼叫 `syncPosthog`。
   - `vercel.json` CSP：`script-src` 加 `https://us-assets.i.posthog.com`；`connect-src` 加 `https://us.i.posthog.com`、`https://us-assets.i.posthog.com`（與母站相同）。
   - 隱私權頁：「瀏覽統計資料」與服務供應商加入 PostHog（畫面錄影、遮蔽輸入、哪些頁不錄、Cookie／本機儲存、網址去除查詢參數）。PostHog 尚未啟用時政策已列入；文字仍待店主／律師確認。
-- 驗證（本機）：`tests/posthog.test.ts` 5 項、`tests/vercel-insights.test.ts` 加 UTM；typecheck、Vitest 872 項、build、`verify:content`、`npm audit` 0 個漏洞。
+- Codex 審查 2 項意見（已修正）：
+  - 頁首會員選單（桌機下拉、手機選單）以一般文字與 title 顯示姓名、Email，輸入遮蔽擋不到。兩處加 `ph-no-capture`，錄影中整塊不顯示。
+  - 載入後開 `?ga_internal=1` 會停止收集，但 `?ga_internal=0` 沒有恢復。新增 `restoreCaptureIfUnmarked`：只在網址明確帶 `=0`、且 PostHog 是停止狀態時呼叫 `opt_in_capturing`（不送 opt-in 事件）。
+- 驗證（本機）：`tests/posthog.test.ts` 7 項、`tests/vercel-insights.test.ts` 加 UTM；typecheck、Vitest 874 項、build、`verify:content`、`npm audit` 0 個漏洞。
 - 未驗證：正式站實際送出事件與錄影。要等有專案金鑰、填入 `DEFAULT_POSTHOG_KEY` 並部署後才能驗證。
 - 待店主：請組織管理員建立「LUCISSI CARE」專案（或把店主帳號升為管理員），或決定暫時共用母站專案 623517。
 

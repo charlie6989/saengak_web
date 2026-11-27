@@ -7,10 +7,11 @@
  * - 送出前把本站網址的查詢字串去掉，只留商品分類（category、collection）與 UTM 參數，避免訂單編號等資料進入 PostHog。
  * - 畫面錄影預設關閉，依頁面開關：輸入框一律遮蔽、`.ph-mask` 內的文字遮蔽；
  *   登入、註冊、會員、訂單查詢等顯示或填寫個人資料的頁面不錄。
+ *   其他頁面上顯示會員姓名、Email 的區塊（頁首會員選單）加 `ph-no-capture`，錄影中整塊不顯示、也不記錄點擊。
  * 隱私權政策已說明（src/pages/privacy）；CSP 放行 us.i.posthog.com 與 us-assets.i.posthog.com（vercel.json）。
  */
 import type { CaptureResult, PostHog } from 'posthog-js';
-import { isAnalyticsHost, isTrackedPath, resolveInternalTraffic } from './analytics';
+import { INTERNAL_TRAFFIC_PARAM, isAnalyticsHost, isTrackedPath, resolveInternalTraffic } from './analytics';
 
 export const POSTHOG_HOST = 'https://us.i.posthog.com';
 /** LUCISSI CARE 專用的 PostHog 專案金鑰；專案建立前為空字串（不載入）。 */
@@ -121,6 +122,21 @@ const state: { client: PostHog | null; loading: boolean; recording: boolean; pat
   path: null,
 };
 
+/**
+ * `?ga_internal=0` 取消內部流量標記時，恢復先前因標記而停止的收集（停止狀態由 PostHog 存在瀏覽器裡）。
+ * 網站沒有其他同意／拒絕追蹤的機制，PostHog 的停止狀態只會來自內部流量標記；只在明確帶 =0 時恢復。
+ */
+export function restoreCaptureIfUnmarked(client: Pick<PostHog, 'has_opted_out_capturing' | 'opt_in_capturing'>, search: string): boolean {
+  if (new URLSearchParams(search).get(INTERNAL_TRAFFIC_PARAM) !== '0') return false;
+  try {
+    if (!client.has_opted_out_capturing()) return false;
+    client.opt_in_capturing({ captureEventName: false });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function applySessionReplay() {
   const client = state.client;
   if (!client || state.path === null) return;
@@ -147,6 +163,7 @@ export function syncPosthog(pathname: string, search: string): void {
       state.recording = false;
       return;
     }
+    restoreCaptureIfUnmarked(state.client, search);
     applySessionReplay();
     return;
   }
@@ -168,6 +185,7 @@ export function syncPosthog(pathname: string, search: string): void {
         before_send: (event) => redactPosthogEvent(event, siteHost),
       });
       state.client = posthog;
+      restoreCaptureIfUnmarked(posthog, search);
       applySessionReplay();
     })
     .catch(() => {

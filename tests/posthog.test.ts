@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { describe, expect, it, vi } from 'vitest';
 import type { CaptureResult } from 'posthog-js';
 import {
   isAutomatedBrowser,
@@ -6,6 +7,7 @@ import {
   redactPosthogEvent,
   redactSiteUrl,
   resolvePosthogKey,
+  restoreCaptureIfUnmarked,
   sessionReplayAllowed,
   validPosthogKey,
 } from '../src/lib/posthog';
@@ -80,5 +82,27 @@ describe('posthog', () => {
     expect(redacted?.$set_once?.$initial_current_url).toBe('https://lucissicare.com/?utm_source=line');
     expect(redactPosthogEvent(event({ $pathname: '/admin/orders' }), 'lucissicare.com')).toBeNull();
     expect(redactPosthogEvent(null, 'lucissicare.com')).toBeNull();
+  });
+
+  it('restores capture only when ?ga_internal=0 clears an earlier opt-out', () => {
+    const optedOut = { has_opted_out_capturing: vi.fn(() => true), opt_in_capturing: vi.fn() };
+    expect(restoreCaptureIfUnmarked(optedOut, '?ga_internal=0')).toBe(true);
+    expect(optedOut.opt_in_capturing).toHaveBeenCalledWith({ captureEventName: false });
+
+    const capturing = { has_opted_out_capturing: vi.fn(() => false), opt_in_capturing: vi.fn() };
+    expect(restoreCaptureIfUnmarked(capturing, '?ga_internal=0')).toBe(false);
+    expect(capturing.opt_in_capturing).not.toHaveBeenCalled();
+
+    const untouched = { has_opted_out_capturing: vi.fn(() => true), opt_in_capturing: vi.fn() };
+    expect(restoreCaptureIfUnmarked(untouched, '')).toBe(false);
+    expect(restoreCaptureIfUnmarked(untouched, '?ga_internal=1')).toBe(false);
+    expect(untouched.opt_in_capturing).not.toHaveBeenCalled();
+  });
+
+  it('keeps the header account details (name, email) out of session replay', () => {
+    const header = readFileSync(new URL('../src/components/feature/Header.tsx', import.meta.url), 'utf8');
+    // 桌機下拉選單與手機選單各一處，兩處都要整塊排除
+    const blocks = header.match(/<div className="[^"]*ph-no-capture[^"]*">[\s\S]{0,600}?user\.email/g) ?? [];
+    expect(blocks).toHaveLength(2);
   });
 });
