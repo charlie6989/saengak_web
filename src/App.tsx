@@ -7,6 +7,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import CartSidebar from './components/feature/CartSidebar';
 import ScrollToTop from './components/system/ScrollToTop';
+import VercelInsights from './components/system/VercelInsights';
 import ErrorBoundary from './components/system/ErrorBoundary';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
                 </Suspense>
               </ErrorBoundary>
               <CartSidebar />
+              <VercelInsights />
             </BrowserRouter>
           </CartProvider>
         </AuthProvider>

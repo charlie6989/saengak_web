@@ -66,7 +66,8 @@ const hasFileExtension = (pathname: string) => /\.[a-z0-9]+$/i.test(pathname);
 
 /** API、建置產物、圖片與點開頭的路徑（.well-known）不經過這裡。 */
 export function isPassthroughPath(pathname: string): boolean {
-  return /^\/(?:api|assets|images)(?:\/|$)/.test(pathname) || /^\/\./.test(pathname);
+  // _vercel：Vercel Web Analytics／Speed Insights 的腳本與收集端點，由平台處理
+  return /^\/(?:api|assets|images|_vercel)(?:\/|$)/.test(pathname) || /^\/\./.test(pathname);
 }
 
 function isDocumentRequest(request: Request, url: URL) {
@@ -300,5 +301,5 @@ export default function middleware(request: Request): Promise<Response> {
 export const config = {
   // Node.js runtime：與 api/ 函式相同，以 .js 副檔名載入專案內的 TypeScript 模組
   runtime: 'nodejs',
-  matcher: ['/((?!api/|assets/|images/).*)'],
+  matcher: ['/((?!api/|assets/|images/|_vercel/).*)'],
 };

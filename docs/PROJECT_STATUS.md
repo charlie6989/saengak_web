@@ -1,5 +1,19 @@
 # 項目狀態
 
+## Vercel Web Analytics 與 Speed Insights（2026-11-28，PR 待合併）
+
+- 店主問現有分析工具後要求「請安裝」。安裝前只有 GA4（另有 Sentry 只收錯誤）；Vercel Analytics、Speed Insights、PostHog 都沒有。
+- **Vercel 後台（已執行）**：正式站專案是 `saengak-web-d2ux`（`lucissicare.com`、`saengak.com.tw` 都在這個專案）。團隊方案頁面顯示 Pro。Web Analytics 原本未開啟，選「Web Analytics（Included in your plan，12 個月紀錄，超過額度每 100 萬事件 $30）」按 Enable；沒有選 Web Analytics Plus（$10／月）。Speed Insights 頁面打開時已是安裝步驟畫面（之前已開啟，何時開啟、費用未查）。
+- **程式碼**：
+  - 套件 `@vercel/analytics` 2.0.1、`@vercel/speed-insights` 2.1.0（固定版本；2.1.1 在 11/26 才發布，未採用）。
+  - `src/lib/vercelInsights.ts`：只在 `lucissicare.com`／`www` 啟用；不送後台、登入回跳、重設密碼頁與內部流量瀏覽器（沿用 GA4 的 `lucissi_ga_internal` 標記）；送出前去掉查詢字串，只留 `category`、`collection`；商品頁與文章頁分組為 `/product/[id]`、`/blog/[handle]`。
+  - `src/components/system/VercelInsights.tsx` 掛在 `App.tsx` 的 router 內；Analytics 傳 route／path，由換頁觸發 pageview。
+  - `middleware.ts`：`/_vercel/` 直接放行（`isPassthroughPath` 與 matcher）。
+  - 隱私權頁：「瀏覽統計資料」與服務供應商加入 Vercel Web Analytics、Speed Insights（不使用 Cookie），更新日改 2026年11月28日。政策文字仍待店主／律師確認。
+- 驗證（本機）：`tests/vercel-insights.test.ts` 6 項、`tests/middleware.test.ts` 更新 matcher；typecheck、Vitest 865 項、build、`verify:content`、`npm audit` 0 個漏洞。正式站收資料要部署後驗證。
+- 未處理：PostHog 需要店主先建立 PostHog 帳號與專案（選資料區域），提供公開的專案金鑰後才能接。
+- 待確認：文件記載「Vercel Hobby 12 個函式上限」，但團隊頁面顯示 Pro；方案是否已變更、函式上限是否仍適用，未查。
+
 ## 上線表現與商品頁 noindex 修正（2026-11-28，PR #192 已上線）
 
 - 上線表現（2026-11-28 讀取，唯讀）：
