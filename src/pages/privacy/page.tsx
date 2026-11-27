@@ -8,10 +8,10 @@ const dataUses = [
   ['購物與訂單資料', '購物車、商品、收件與訂單狀態，依結帳畫面所示方式處理。'],
   ['訪客結帳資料', '以訪客身分結帳時填寫的 Email，用於訂單確認、電子發票通知、客服查詢訂單，以及您日後以同一 Email 註冊並完成驗證時，將訂單併入會員帳號。'],
   ['網站運作資料', '瀏覽器可能儲存購物車或登入狀態；主機與服務供應商也可能留下必要的安全與錯誤紀錄。'],
-  ['瀏覽統計資料', '網站使用 Google Analytics 統計瀏覽情形，例如瀏覽的頁面、停留時間、來源網站、裝置與瀏覽器類型、概略地區。Google Analytics 會在瀏覽器設定 Cookie（例如 _ga），不會取得您填寫的姓名、Email 或付款資料。您可以在瀏覽器封鎖或刪除 Cookie，或安裝 Google 提供的「Google Analytics 停用瀏覽器外掛程式」拒絕統計。'],
+  ['瀏覽統計資料', '網站使用 Google Analytics 與 Vercel Web Analytics 統計瀏覽情形，例如瀏覽的頁面、停留時間、來源網站、裝置與瀏覽器類型、概略地區；另以 Vercel Speed Insights 記錄網頁載入速度等效能數據。Google Analytics 會在瀏覽器設定 Cookie（例如 _ga）；Vercel Web Analytics 與 Speed Insights 不使用 Cookie。這些服務都不會取得您填寫的姓名、Email 或付款資料。您可以在瀏覽器封鎖或刪除 Cookie，或安裝 Google 提供的「Google Analytics 停用瀏覽器外掛程式」拒絕 Google Analytics 統計。'],
 ];
 
-// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字；2026-11-19 店主決定加 GA4，新增「瀏覽統計資料」與服務供應商 Google Analytics；2026-11-09 店主決定訪客 Email 不設保存期限（長期保存，仍可依請求刪除，法定交易與發票紀錄除外）、無載具個人發票開立後寄到顧客 Email、客服以 Email 查詢訪客訂單。其餘保存期間比照 LUCISSI，未列固定年限；政策文字仍待律師審閱。
+// OWNER-REVIEW：店主已於 2026-11-07 核准現行文字；2026-11-19 店主決定加 GA4，新增「瀏覽統計資料」與服務供應商 Google Analytics；2026-11-28 店主要求安裝 Vercel Web Analytics 與 Speed Insights，「瀏覽統計資料」與服務供應商一併列入；2026-11-09 店主決定訪客 Email 不設保存期限（長期保存，仍可依請求刪除，法定交易與發票紀錄除外）、無載具個人發票開立後寄到顧客 Email、客服以 Email 查詢訪客訂單。其餘保存期間比照 LUCISSI，未列固定年限；政策文字仍待律師審閱。
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-stone-50 text-gray-800">
@@ -41,7 +41,7 @@ export default function Privacy() {
 
         <section className="mt-8 space-y-4 rounded-2xl bg-white p-7 shadow-xs">
           <h2 className="text-2xl font-semibold">服務供應商與資料安全</h2>
-          <p className="leading-7">網站使用或可能使用 Vercel（網站託管）、Supabase（會員、訂單與受限發票處理資料）、Shopify（商品、購物車與結帳）、TapPay（付款）、ShipAny 與其承運商（宅配、收件與追蹤）、SiteGiant（訂單出貨管理）、綠界科技與其合作超商（超商取貨運單、到店與取件通知），Amego 光貿（電子發票、統編、載具、捐贈與通知），以及 Google Analytics（瀏覽統計）。各服務只依完成交易、配送、法定發票及安全維運所需範圍處理資料。</p>
+          <p className="leading-7">網站使用或可能使用 Vercel（網站託管）、Supabase（會員、訂單與受限發票處理資料）、Shopify（商品、購物車與結帳）、TapPay（付款）、ShipAny 與其承運商（宅配、收件與追蹤）、SiteGiant（訂單出貨管理）、綠界科技與其合作超商（超商取貨運單、到店與取件通知），Amego 光貿（電子發票、統編、載具、捐贈與通知），以及 Google Analytics 與 Vercel Web Analytics、Speed Insights（瀏覽統計與網頁效能）。各服務只依完成交易、配送、法定發票及安全維運所需範圍處理資料。</p>
           <p className="leading-7">ShipAny、SiteGiant、綠界科技及承運商可能處理收件人姓名、電話、地址或取貨門市；Amego 可能處理買受人名稱、統一編號、通知 Email、載具或捐贈碼；個人發票未指定手機條碼或捐贈時，會開立至光貿會員載具，並將發票通知寄到您的 Email。發票暫存資料位於瀏覽器不可直接讀寫的後端，完成開立或作廢後會清除工作佇列中的敏感請求內容；依法必須保存的訂單與發票紀錄則依適用法令辦理。</p>
           <p className="leading-7">會員與訂單資料已設定帳號隔離規則；但任何網路服務都無法保證絕對安全，請勿在非官方管道提供密碼、卡號或驗證碼。</p>
         </section>

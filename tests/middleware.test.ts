@@ -314,7 +314,7 @@ describe('server-rendered documents', () => {
       expect(response.headers.get('x-middleware-next'), url).toBe('1');
       expect(fake.shellRequests).toHaveLength(0);
     }
-    expect(config.matcher).toEqual(['/((?!api/|assets/|images/).*)']);
+    expect(config.matcher).toEqual(['/((?!api/|assets/|images/|_vercel/).*)']);
     expect(config.runtime).toBe('nodejs');
   });
 
