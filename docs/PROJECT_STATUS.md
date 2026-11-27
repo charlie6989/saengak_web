@@ -1,6 +1,6 @@
 # 項目狀態
 
-## Vercel Web Analytics 與 Speed Insights（2026-11-28，PR 待合併）
+## Vercel Web Analytics 與 Speed Insights（2026-11-28，PR #194 已上線，修正 PR 待合併）
 
 - 店主問現有分析工具後要求「請安裝」。安裝前只有 GA4（另有 Sentry 只收錯誤）；Vercel Analytics、Speed Insights、PostHog 都沒有。
 - **Vercel 後台（已執行）**：正式站專案是 `saengak-web-d2ux`（`lucissicare.com`、`saengak.com.tw` 都在這個專案）。團隊方案頁面顯示 Pro。Web Analytics 原本未開啟，選「Web Analytics（Included in your plan，12 個月紀錄，超過額度每 100 萬事件 $30）」按 Enable；沒有選 Web Analytics Plus（$10／月）。Speed Insights 頁面打開時已是安裝步驟畫面（之前已開啟，何時開啟、費用未查）。
@@ -11,6 +11,12 @@
   - `middleware.ts`：`/_vercel/` 直接放行（`isPassthroughPath` 與 matcher）。
   - 隱私權頁：「瀏覽統計資料」與服務供應商加入 Vercel Web Analytics、Speed Insights（不使用 Cookie），更新日改 2026年11月28日。政策文字仍待店主／律師確認。
 - 驗證（本機）：`tests/vercel-insights.test.ts` 6 項、`tests/middleware.test.ts` 更新 matcher；typecheck、Vitest 865 項、build、`verify:content`、`npm audit` 0 個漏洞。正式站收資料要部署後驗證。
+- 合併與部署：PR #194 合併為 `3788d89`（CI 通過；Codex 審查在合併後完成，有 2 項意見，見下方修正）。約 45 秒後正式站換成新版；`/_vercel/insights/script.js` 與 `/_vercel/speed-insights/script.js` 都回 200。
+- 正式站驗證（Chrome，2026-11-28）：這個 Chrome 的內部流量標記已不在（localStorage 沒有 `lucissi_ga_internal`，原因未查）。開 `/products?category=生理期用品` 再站內點到 `/community`：送出 2 次 `/_vercel/insights/view` 與 1 次 `/_vercel/speed-insights/vitals`，都回 200，主控台沒有錯誤；Vercel Analytics 後台（Production、24 小時）顯示 1 位訪客、4 次瀏覽，頁面 `/community`、`/products`（這是驗證造訪，不是真實顧客）。之後開 `/?ga_internal=1` 重新標記，再開 `/`、`/faq` 只載入腳本、沒有再送 view。
+- Codex 意見修正（程式碼，PR 待合併）：
+  - 傳入 route 後 SDK 只在 route／path 改變時送 pageview，而 path 原本只有路徑，切換商品分類（`/products?category=…`）不會記錄。改為 `insightsPath`：路徑加上分類參數（只留 `category`、`collection`）。
+  - `?ga_internal=1` 原本只由 GA4 的 `initAnalytics` 寫入標記；GA4 關閉（`VITE_PUBLIC_GA4_MEASUREMENT_ID=off`）時 Vercel 不會排除。改為 beforeSend 直接用 `resolveInternalTraffic` 讀寫同一個標記。
+  - 驗證（本機）：`tests/vercel-insights.test.ts` 增至 8 項；typecheck、Vitest 867 項、build、`verify:content` 通過。
 - 未處理：PostHog 需要店主先建立 PostHog 帳號與專案（選資料區域），提供公開的專案金鑰後才能接。
 - 待確認：文件記載「Vercel Hobby 12 個函式上限」，但團隊頁面顯示 Pro；方案是否已變更、函式上限是否仍適用，未查。
 
