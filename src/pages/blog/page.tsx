@@ -8,7 +8,7 @@ import Footer from '../../components/feature/Footer';
 import { formatTwd, estimateReadingMinutes, sortAvailableFirst } from '../../domain/algorithms';
 import { NOINDEX_ROBOTS } from '../../lib/seo';
 import { replaceStructuredData, setPageMeta } from '../../lib/documentMeta';
-import { articlePageState, servedDocumentFor } from '../../lib/servedDocument';
+import { lookupPageState, servedDocumentFor } from '../../lib/servedDocument';
 import { articleBreadcrumbs, articleMeta, breadcrumbJsonLd, buildArticleJsonLd } from '../../lib/structuredData';
 import { getShopifyArticles, lookupShopifyArticleByHandle, getShopifyProducts, type ShopifyArticle, type ShopifyProduct } from '../../lib/shopify';
 
@@ -58,7 +58,7 @@ export default function BlogArticle() {
       try {
         const result = await lookupShopifyArticleByHandle(activeHandle);
         if (isMounted) {
-          const state = articlePageState(result.status, servedDocumentFor(window.location.pathname));
+          const state = lookupPageState(result.status, servedDocumentFor(window.location.pathname));
           setArticle(result.status === 'found' ? result.article : null);
           setLookupUnavailable(state.view === 'unavailable');
           setNoindexMissing(state.noindex);

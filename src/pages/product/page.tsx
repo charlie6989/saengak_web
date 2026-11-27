@@ -6,7 +6,7 @@ import Header from '../../components/feature/Header';
 import Footer from '../../components/feature/Footer';
 import ShopifyDescriptionViewer from '../../components/feature/ShopifyDescriptionViewer';
 import {
-  getShopifyProduct,
+  lookupShopifyProduct,
   getShopifyProducts,
   type ShopifyProductVariant,
   type ShopifyProductOption,
@@ -31,6 +31,7 @@ import SizeChartTable from '../../components/feature/SizeChartTable';
 import type { SizeChart } from '../../domain/sizeChart';
 import { siteContent } from '../../content/site';
 import { NOINDEX_ROBOTS } from '../../lib/pageTitle';
+import { lookupPageState, servedDocumentFor } from '../../lib/servedDocument';
 import { isSealedCareProduct, SEALED_CARE_NOTICE } from '../../domain/returnPolicy';
 
 interface Product {
@@ -124,6 +125,11 @@ export default function ProductPage() {
   const [ratingsMap, setRatingsMap] = useState<Record<string, { rating: number; count: number }>>({});
   const [relatedWishlist, setRelatedWishlist] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  // Shopify 暫時讀不到，或伺服器已確認有這個商品但瀏覽器沒有讀到
+  const [lookupUnavailable, setLookupUnavailable] = useState(false);
+  // 站內換頁到確定不存在的商品時才由瀏覽器設 noindex；第一份 HTML 的 robots 由伺服器決定（找不到時回 404），
+  // 不因瀏覽器端失敗或較舊的查詢改成 noindex（規則見 src/lib/servedDocument.ts）。
+  const [noindexMissing, setNoindexMissing] = useState(false);
   const thumbnailListRef = useRef<HTMLUListElement>(null);
   const { addToCart, setIsCartOpen, getTotalItems, getTotalPrice } = useCart();
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
@@ -193,9 +199,12 @@ export default function ProductPage() {
    * ------------------------------------------------------------------- */
   const fetchProduct = async () => {
     setLoading(true);
+    setLookupUnavailable(false);
+    setNoindexMissing(false);
     try {
       if (resolvedId) {
-        const shopifyProduct = await getShopifyProduct(resolvedId);
+        const lookup = await lookupShopifyProduct(resolvedId);
+        const shopifyProduct = lookup.status === 'found' ? lookup.product : null;
         if (shopifyProduct) {
           // 初始化規格選項 (Options)：預設選第一個有庫存的規格，避免一進頁面就顯示「已售完」
           const initialOptions: Record<string, string> = {};
@@ -277,14 +286,19 @@ export default function ProductPage() {
           setLoading(false);
           return;
         }
+
+        // Shopify 找不到商品或讀取失敗時不改用示範商品；依伺服器的判斷顯示「找不到」或「暫時無法載入」
+        const state = lookupPageState(lookup.status, servedDocumentFor(window.location.pathname));
+        setLookupUnavailable(state.view === 'unavailable');
+        setNoindexMissing(state.noindex);
       }
 
-      // Shopify 找不到商品或讀取失敗時，顯示「找不到該商品」，不改用示範商品
       setProduct(null);
     } catch (err) {
       console.error('Error fetching product data:', err);
       captureExceptionSafe(err, { source: 'ProductPage' });
       setProduct(null);
+      setLookupUnavailable(true);
     } finally {
       setLoading(false);
     }
@@ -438,16 +452,18 @@ export default function ProductPage() {
     } else {
       // 沒有可解析的商品編號時直接顯示「找不到該商品」，不要停在載入中
       setProduct(null);
+      setLookupUnavailable(false);
+      setNoindexMissing(lookupPageState('not-found', servedDocumentFor(window.location.pathname)).noindex);
       setLoading(false);
     }
   }, [resolvedId]);
 
-  // 找不到商品時不讓搜尋引擎收錄這個網址
+  // 站內換頁到確定不存在的商品時不讓搜尋引擎收錄這個網址
   useEffect(() => {
-    if (!loading && !product) {
+    if (!loading && !product && noindexMissing) {
       document.querySelector('meta[name="robots"]')?.setAttribute('content', NOINDEX_ROBOTS);
     }
-  }, [loading, product]);
+  }, [loading, product, noindexMissing]);
 
   /** --------------------------------------------------------------------
    *  Computed: Active Variant, Price, Stock & Options List, Reviews Stats
@@ -968,6 +984,38 @@ export default function ProductPage() {
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand mb-4"></div>
             <p className="text-gray-600 font-medium">正在載入商品資料...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!product && lookupUnavailable) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: '#F7F6F3' }}>
+        <Header />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Noto Sans TC, sans-serif' }}>
+              商品暫時無法載入
+            </h1>
+            <p className="text-gray-500 text-sm">連線可能不穩定，請稍後再試一次。</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => fetchProduct()}
+                className="inline-block px-6 py-2.5 bg-brand hover:bg-brand-ink text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer"
+              >
+                重新載入
+              </button>
+              <Link
+                to="/products"
+                className="inline-block px-6 py-2.5 border border-brand text-brand text-sm font-semibold rounded-xl hover:bg-brand/5 transition-colors"
+              >
+                返回全部商品
+              </Link>
+            </div>
           </div>
         </div>
         <Footer />
