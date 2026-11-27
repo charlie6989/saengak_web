@@ -1,5 +1,20 @@
 # 項目狀態
 
+## 上線表現與商品頁 noindex 修正（2026-11-28，PR 待合併）
+
+- 上線表現（2026-11-28 讀取，唯讀）：
+  - GA4（10/31–11/27，實際資料從 11/18 起）：22 位使用者、40 個工作階段、355 次瀏覽；直接 75%、參照 17.5%（lucissi.com 為主）、Facebook 7.5%、自然搜尋 0。11/25 才開始排除內部流量，之前多數是店主與自動化驗證。最近 7 天 15 位使用者，其中中國、德國、芬蘭、美國的造訪可能是爬蟲（未確認）。主要事件、營收 0。
+  - Search Console（資料到 11/25）：曝光 104、點擊 0、平均排名 16.2；已收錄 34 頁（11/20 為 7 頁）。非品牌查詢「私密處保濕」「冰絲內褲缺點」「安全褲還要穿內褲嗎」已在前 10 名。未收錄 26 頁：已發現未建立索引 13、已檢索未建立索引 6（都是商品頁）、轉址 4、noindex 3。
+  - Shopify：仍無真實訂單（最新 #1019，11/09，已取消）。
+  - Bing Webmaster Tools 未登入，沒有讀取。
+- 發現：noindex 3 頁中，除毛、生理期清潔兩篇最後檢索 11/23，早於 PR #182；修護組商品頁 `/product/7829164785731` 最後檢索 11/25，在 #182 之後。以 Googlebot UA 取伺服器 HTML 三頁都是 `index,follow`。原因（由程式碼推斷，未直接證實）：商品頁只要瀏覽器端讀不到商品（Storefront 失敗也一樣）就把 robots 改成 noindex，#182 只修了文章頁。
+- 修正（程式碼）：
+  - `src/lib/shopify.ts` 新增 `lookupShopifyProduct`（found／not-found／unavailable）；`getShopifyProduct`、`getShopifyProductByHandle` 行為不變（讀不到都回 null）。
+  - `src/lib/servedDocument.ts`：`articlePageState` 改名 `lookupPageState`，文章頁與商品頁共用。
+  - `src/pages/product/page.tsx`：第一份 HTML 不再由瀏覽器改 robots；伺服器回 200 而瀏覽器讀不到時顯示「商品暫時無法載入」與重新載入按鈕；只在站內換頁到確定不存在的商品時設 noindex。
+- 驗證（本機）：`tests/product-lookup.test.ts` 5 項；typecheck、Vitest 859 項、build、`verify:content` 通過。本機 dev server（沒有 middleware，任何網址回 200）：直接開修護組商品頁正常顯示、`index,follow`；直接開不存在的 `/product/1` 顯示「商品暫時無法載入」、`index,follow`；從全部商品站內換頁到 `/product/2` 顯示「找不到該商品」、`noindex,nofollow`。
+- 上線後要做：Search Console 對修護組商品頁做即時測試並要求建立索引；兩篇文章可一併重新要求。
+
 ## GA4 排除內部流量（2026-11-25，PR #189／#190 已上線）
 
 - 店主要求排除內部流量。設定前 11/18–11/25 的報表：30 個工作階段、14 位使用者，直接流量佔 80%，多數可能是店主與自動化驗證的造訪；這段已收的資料不會被回溯排除。

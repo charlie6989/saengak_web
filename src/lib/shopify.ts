@@ -569,13 +569,23 @@ export async function getShopifyProducts(optionsOrFirst: number | {
 /**
  * 依 ID (純數字 ID、Shopify GID) 或 Handle 查詢商品
  */
-export async function getShopifyProduct(idOrHandle: string): Promise<ShopifyProduct | null> {
-  if (!idOrHandle) return null;
+export type ProductLookup =
+  | { status: 'found'; product: ShopifyProduct }
+  | { status: 'not-found' }
+  | { status: 'unavailable' };
 
-  let trimmed = decodeURIComponent(idOrHandle.trim());
+/**
+ * 依數字 ID、GID 或 handle 取得單一商品，並區分「確定不存在」與「暫時讀不到」。
+ * Shopify 查詢失敗時不能斷定商品不存在，商品頁不可因此設成 noindex（規則見 src/lib/servedDocument.ts）。
+ */
+export async function lookupShopifyProduct(idOrHandle: string): Promise<ProductLookup> {
+  if (!idOrHandle) return { status: 'not-found' };
+
+  const trimmed = decodeURIComponent(idOrHandle.trim());
   const gidMatch = trimmed.match(/(\d+)$/);
   const isNumeric = /^\d+$/.test(trimmed) || (trimmed.includes('gid:') && Boolean(gidMatch));
   const numericId = gidMatch ? gidMatch[1] : trimmed;
+  let failed = false;
 
   if (isNumeric) {
     const gid = `gid://shopify/Product/${numericId}`;
@@ -596,21 +606,31 @@ export async function getShopifyProduct(idOrHandle: string): Promise<ShopifyProd
 
       if (data.node) {
         const product = formatShopifyProduct(data.node);
-        return isPublicShopifyProduct(product) ? product : null;
+        return isPublicShopifyProduct(product) ? { status: 'found', product } : { status: 'not-found' };
       }
-    } catch {
-      // 若 ID 查詢未果，繼續嘗試 handle
+    } catch (err) {
+      // ID 查詢失敗，繼續嘗試 handle；兩者都沒有結果時回報暫時讀不到
+      console.warn('Storefront product lookup by id failed:', err);
+      failed = true;
     }
   }
 
-  return getShopifyProductByHandle(trimmed);
+  const byHandle = await lookupShopifyProductByHandle(trimmed);
+  if (byHandle.status === 'not-found' && failed) return { status: 'unavailable' };
+  return byHandle;
 }
 
 /**
- * 依 Handle 取得單一商品詳情
+ * 依數字 ID、GID 或 handle 取得單一商品；找不到或暫時讀不到都回 null。
+ * 需要決定 robots 時請用 lookupShopifyProduct。
  */
-export async function getShopifyProductByHandle(handle: string): Promise<ShopifyProduct | null> {
-  if (!handle) return null;
+export async function getShopifyProduct(idOrHandle: string): Promise<ShopifyProduct | null> {
+  const result = await lookupShopifyProduct(idOrHandle);
+  return result.status === 'found' ? result.product : null;
+}
+
+async function lookupShopifyProductByHandle(handle: string): Promise<ProductLookup> {
+  if (!handle) return { status: 'not-found' };
 
   const gqlQuery = `
     query GetProductByHandle($handle: String!) {
@@ -626,12 +646,21 @@ export async function getShopifyProductByHandle(handle: string): Promise<Shopify
       variables: { handle },
     });
 
-    if (!data.product) return null;
+    if (!data.product) return { status: 'not-found' };
     const product = formatShopifyProduct(data.product);
-    return isPublicShopifyProduct(product) ? product : null;
-  } catch {
-    return null;
+    return isPublicShopifyProduct(product) ? { status: 'found', product } : { status: 'not-found' };
+  } catch (err) {
+    console.warn('Storefront product lookup by handle failed:', err);
+    return { status: 'unavailable' };
   }
+}
+
+/**
+ * 依 Handle 取得單一商品詳情
+ */
+export async function getShopifyProductByHandle(handle: string): Promise<ShopifyProduct | null> {
+  const result = await lookupShopifyProductByHandle(handle);
+  return result.status === 'found' ? result.product : null;
 }
 
 /**

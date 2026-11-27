@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { articlePageState } from '../src/lib/servedDocument';
+import { lookupPageState } from '../src/lib/servedDocument';
 
 async function loadAt(pathname: string, responseStatus?: number) {
   vi.resetModules();
@@ -38,16 +38,16 @@ describe('served document', () => {
 describe('article page state', () => {
   it('never sets noindex on the server-rendered document', () => {
     // 剛上架：伺服器找到文章回 200，瀏覽器讀到的資料還沒有它
-    expect(articlePageState('not-found', { served: true, status: 200 })).toEqual({ view: 'unavailable', noindex: false });
+    expect(lookupPageState('not-found', { served: true, status: 200 })).toEqual({ view: 'unavailable', noindex: false });
     // 伺服器也找不到：已回 404 與 noindex，瀏覽器只顯示找不到
-    expect(articlePageState('not-found', { served: true, status: 404 })).toEqual({ view: 'not-found', noindex: false });
-    expect(articlePageState('not-found', { served: true })).toEqual({ view: 'not-found', noindex: false });
+    expect(lookupPageState('not-found', { served: true, status: 404 })).toEqual({ view: 'not-found', noindex: false });
+    expect(lookupPageState('not-found', { served: true })).toEqual({ view: 'not-found', noindex: false });
   });
 
   it('sets noindex only for a missing article reached by in-app navigation', () => {
-    expect(articlePageState('not-found', { served: false })).toEqual({ view: 'not-found', noindex: true });
-    expect(articlePageState('unavailable', { served: false })).toEqual({ view: 'unavailable', noindex: false });
-    expect(articlePageState('found', { served: false })).toEqual({ view: 'found', noindex: false });
-    expect(articlePageState('found', { served: true, status: 200 })).toEqual({ view: 'found', noindex: false });
+    expect(lookupPageState('not-found', { served: false })).toEqual({ view: 'not-found', noindex: true });
+    expect(lookupPageState('unavailable', { served: false })).toEqual({ view: 'unavailable', noindex: false });
+    expect(lookupPageState('found', { served: false })).toEqual({ view: 'found', noindex: false });
+    expect(lookupPageState('found', { served: true, status: 200 })).toEqual({ view: 'found', noindex: false });
   });
 });
